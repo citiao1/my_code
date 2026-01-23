@@ -85,7 +85,7 @@ void lcd_pro(int light){
     lcd.print("LED STATE:OFF                 ");
   }
   lcd.setCursor(0,1);
-  lcd.print("LIGHT:"+String(light)+"%");
+  lcd.print("LIGHT:"+String(light)+"%                      ");
 }
 void loop() {
   if(!client.connected()){
