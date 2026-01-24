@@ -22,102 +22,119 @@
 </template>
 
 <script>
-// 引入 mqtt 库
-import mqtt from 'mqtt'
+// 1. 引入刚才创建的兼容库文件
+// (Paho 库会自动把全局变量挂载到 window 对象上，所以不需要 import x from ...)
+// 加一个 "Paho from"，意思是从那个文件里把 Paho 拿出来
+import Paho from '@/common/mqtt.js'
 
 export default {
   data() {
     return {
       client: null,
       isConnected: false,
-      statusText: '正在连接...',
+      statusText: '等待连接...',
       brightness: 0,
       logs: [],
-      // --- 配置你的 MQTT 信息 ---
-      // 注意：App/H5 必须用 wxs (加密) 或 ws (非加密) 协议
-      // EMQX 的 WebSocket 端口通常是 8083
-      url: 'ws://broker.emqx.io:8083/mqtt',
+      // 配置信息
+      host: 'broker.emqx.io',
+      port: 8084,
       topicPub: 'China/Beijing/huayuan/302/command',
       topicSub: 'China/Beijing/huayuan/302/status'
     }
   },
   onLoad() {
-    this.connectMQTT()
+    // 延迟一点点执行，确保库加载完毕
+    setTimeout(() => {
+      this.connectMQTT()
+    }, 500)
   },
   methods: {
-    // 1. 连接 MQTT
+    // --- 连接 MQTT (Paho 写法) ---
     connectMQTT() {
-      this.addLog('开始连接服务器...')
+      this.addLog('正在初始化 Paho 客户端...')
       
-      // 创建客户端实例
-      this.client = mqtt.connect(this.url, {
-        clientId: 'App-' + Math.random().toString(16).substr(2, 8),
-        clean: true,
-        connectTimeout: 4000,
-        reconnectPeriod: 1000,
-      })
+      // 生成随机ID
+      let clientId = 'App-' + Math.random().toString(16).substr(2, 8);
+      
+      // 创建客户端实例 (注意：Paho 是全局对象)
+      // 参数：主机地址, 端口, 路径(默认/mqtt), 客户端ID
+      try {
+        this.client = new Paho.MQTT.Client(this.host, this.port, "/mqtt", clientId);
+      } catch (e) {
+        this.addLog('初始化失败: ' + e.message);
+        return;
+      }
 
-      // 连接成功回调
-      this.client.on('connect', () => {
-        this.isConnected = true
-        this.statusText = '在线'
-        this.addLog('✅ 连接成功!')
-        
-        // 订阅状态
-        this.client.subscribe(this.topicSub, (err) => {
-          if (!err) this.addLog('已订阅状态频道')
-        })
-      })
+      // 设置回调
+      this.client.onConnectionLost = (responseObject) => {
+        this.isConnected = false;
+        this.statusText = '离线';
+        if (responseObject.errorCode !== 0) {
+          this.addLog('连接断开:' + responseObject.errorMessage);
+        }
+      };
 
-      // 连接断开回调
-      this.client.on('close', () => {
-        this.isConnected = false
-        this.statusText = '离线'
-      })
-
-      // 收到消息回调
-      this.client.on('message', (topic, message) => {
-        const msg = message.toString()
-        this.addLog('收到: ' + msg)
+      this.client.onMessageArrived = (message) => {
+        const msg = message.payloadString;
+        this.addLog('收到: ' + msg);
         
         // 解析亮度 (如果设备发回 "亮度:50%")
         if (msg.includes('亮度:')) {
-           // 简单的正则提取数字
            let num = msg.replace(/[^0-9]/g, '');
            if(num) this.brightness = parseInt(num);
         }
-      })
+      };
+
+      // 开始连接
+      this.addLog('开始连接服务器...');
+      this.client.connect({
+        useSSL: true, // EMQX 8083 是非加密 ws
+        cleanSession: true,
+        keepAliveInterval: 60,
+        onSuccess: () => {
+          this.isConnected = true;
+          this.statusText = '在线';
+          this.addLog('✅ 连接成功!');
+          // 订阅
+          this.client.subscribe(this.topicSub);
+        },
+        onFailure: (e) => {
+          this.isConnected = false;
+          this.statusText = '连接失败';
+          this.addLog('❌ 连接失败: ' + e.errorMessage);
+        }
+      });
     },
 
-    // 2. 发送指令
+    // --- 发送指令 ---
     sendCmd(cmd) {
       if (this.client && this.isConnected) {
-        this.client.publish(this.topicPub, cmd)
-        this.addLog('发送: ' + cmd)
+        let message = new Paho.MQTT.Message(cmd);
+        message.destinationName = this.topicPub;
+        this.client.send(message);
+        this.addLog('发送: ' + cmd);
       } else {
-        uni.showToast({ title: '未连接服务器', icon: 'none' })
+        uni.showToast({ title: '未连接', icon: 'none' });
       }
     },
 
-    // 3. 滑块拖动结束
+    // 滑块变动
     onSliderChange(e) {
-      this.brightness = e.detail.value
-      // 发送 L:50 格式
-      this.sendCmd('L:' + this.brightness)
+      this.brightness = e.detail.value;
+      this.sendCmd('L:' + this.brightness);
     },
 
     // 日志辅助
     addLog(txt) {
       let time = new Date().toLocaleTimeString();
-      this.logs.unshift(`[${time}] ${txt}`) // 新消息在最上面
-      if(this.logs.length > 20) this.logs.pop() // 只保留20条
+      this.logs.unshift(`[${time}] ${txt}`);
     }
   }
 }
 </script>
 
 <style>
-/* 简单的 CSS 美化 */
+/* 样式保持不变 */
 .content { padding: 30px; }
 .header { text-align: center; margin-bottom: 30px; }
 .title { font-size: 24px; font-weight: bold; }
