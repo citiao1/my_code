@@ -73,7 +73,7 @@ void callback(char* topic,byte* payload,unsigned int length){
     blink_time=time1;
   }else if(msg=="door open"){
     blink_flag=0;
-    myServo.write(90);
+    myServo.write(180);
   }else if(msg=="door close"){
     myServo.write(0);
   }
