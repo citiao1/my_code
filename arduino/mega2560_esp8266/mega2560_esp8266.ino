@@ -15,7 +15,7 @@ int sound_flag=0;
 void setup() {
   Serial.begin(115200);
   Serial1.begin(9600);
-  Serial.println("mega2560准备就绪");// put your setup code here, to run once:
+  Serial.println("mega2560准备就绪");
   pinMode(11,OUTPUT);
   pinMode(8,OUTPUT);
   pinMode(3,INPUT_PULLUP);
@@ -51,7 +51,7 @@ void key_pro(){
   if(digitalRead(7)==0){
     guest_flag=0;
     door_state^=1;
-    sound_flag=0;
+    
     while(digitalRead(7)==0);
     if(door_state==1){
       Serial1.println("door open");
@@ -143,6 +143,14 @@ void loop() {
         Serial1.println("guest");
         guest_flag=1;
         sound_flag=1;
+      }
+      else if(command=="door open"){
+        sound_flag=0;
+        Serial1.print("door open");
+      }
+      else if(command=="door close"){
+        sound_flag=0;
+        Serial1.print("door close");
       }
       else{
         Serial.println("无效指令");

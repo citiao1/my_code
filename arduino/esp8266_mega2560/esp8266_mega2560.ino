@@ -126,9 +126,11 @@ void loop() {
         guest_flag=0;
         door_state="OPEN";
         client.publish(topic_pub_door,"door open");
+        mySerial.println("door open");
       }else if(data=="door close"){
         door_state="CLOSE";
         client.publish(topic_pub_door,"door close");
+        mySerial.println("door close");
       }
     
     }
