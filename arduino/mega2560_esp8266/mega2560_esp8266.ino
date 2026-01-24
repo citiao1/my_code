@@ -7,12 +7,19 @@ int knod_time=0;
 int last_light=0;
 int light1=1;
 int knod_set=1;
+int guest_flag=0;
+int door_state=0;
+long sound_time=0;
+int sound_state=0;
+int sound_flag=0;
 void setup() {
   Serial.begin(115200);
   Serial1.begin(9600);
   Serial.println("mega2560准备就绪");// put your setup code here, to run once:
   pinMode(11,OUTPUT);
+  pinMode(8,OUTPUT);
   pinMode(3,INPUT_PULLUP);
+  pinMode(7,INPUT_PULLUP);
   pinMode(A0,INPUT);
   analogWrite(11,0);
 }
@@ -35,12 +42,23 @@ void key_pro(){
   key_time=time1;
   if(digitalRead(3)==0){
       led_state^=1;
-  
   if(led_state==1){
     Serial1.println("LED ON");
   }else{
     Serial1.println("LED OFF");
   }
+  }
+  if(digitalRead(7)==0){
+    guest_flag=0;
+    door_state^=1;
+    sound_flag=0;
+    while(digitalRead(7)==0);
+    if(door_state==1){
+      Serial1.println("door open");
+      
+    }else{
+      Serial1.println("door close");
+    }
   }
 }
 void led_app(int led_state,int light){
@@ -64,6 +82,26 @@ void knod_pro(){
   Serial1.println("light:"+String(light1));
   }else{return;}
 }
+
+void sound_app(int sounding_time){
+    time1=millis();
+    if(sound_flag==1){
+      if(time1-sound_time<sounding_time)return;
+      sound_time=time1;
+      sound_state^=1;
+      if(sound_state==1){
+        digitalWrite(8, HIGH);
+      }else{
+        digitalWrite(8, LOW);
+      }
+    }
+    else{
+      digitalWrite(8, LOW);
+      return;
+    }
+
+}
+
 void loop() {
   
   if(Serial1.available()){
@@ -101,6 +139,11 @@ void loop() {
           knod_set=1;
         }
       }
+      else if(command=="客人来了"){
+        Serial1.println("guest");
+        guest_flag=1;
+        sound_flag=1;
+      }
       else{
         Serial.println("无效指令");
         Serial1.println("无效指令");
@@ -109,5 +152,6 @@ void loop() {
   }
   key_pro();
   knod_pro();
+  sound_app(200);
   led_app(led_state,light);
 } 

@@ -10,11 +10,15 @@ const char* password="a9u64egf";
 const char* mqtt_server="broker.emqx.io";
 const char* topic_pub = "China/Beijing/huayuan/302/status";
 const char* topic_sub = "China/Beijing/huayuan/302/command";
+const char* topic_sub_door = "China/Beijing/huayuan/302/door/status";
+const char* topic_pub_door = "China/Beijing/huayuan/302/door/command";
 WiFiClient espClient;
 PubSubClient client(espClient);
 int led_state=0;
 int light=0;
 int val=0;
+int guest_flag=0;
+String door_state="CLOSE";
 void setup() {
   Serial.begin(115200);
   Serial.println("esp8266准备就绪");
@@ -54,6 +58,7 @@ void reconnect(){
     if(client.connect(clientId.c_str())){
       Serial.println("连接成功");
       client.subscribe(topic_sub);
+      client.subscribe(topic_sub_door);
       lcd.setCursor(0,1);
       lcd.print("MQTT OK!          ");
     }else{
@@ -76,16 +81,19 @@ void callback(char* topic,byte* payload,unsigned int length){
 }
 void lcd_pro(int light){
   if(led_state==1){
-    
     lcd.setCursor(0,0);
     lcd.print("LED STATE:ON                ");
-  }else{
-    
+  }else{  
     lcd.setCursor(0,0);
     lcd.print("LED STATE:OFF                 ");
   }
+  if(guest_flag==1){
+    lcd.setCursor(0,1);
+    lcd.print("guests arrived!      ");
+  }else{
   lcd.setCursor(0,1);
-  lcd.print("LIGHT:"+String(light)+"%                      ");
+  lcd.print("LIGHT:"+String(light)+"% "+door_state+"                  ");
+  }
 }
 void loop() {
   if(!client.connected()){
@@ -110,6 +118,17 @@ void loop() {
         int index=data.indexOf(':');
         String Num=data.substring(index+1);
         val=Num.toInt();
+      }
+      else if(data=="guest"){
+        guest_flag=1;
+        client.publish(topic_pub_door,"guest");
+      }else if(data=="door open"){
+        guest_flag=0;
+        door_state="OPEN";
+        client.publish(topic_pub_door,"door open");
+      }else if(data=="door close"){
+        door_state="CLOSE";
+        client.publish(topic_pub_door,"door close");
       }
     
     }
