@@ -1,6 +1,9 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <Servo.h>
+#include <SPI.h>
+#include <MFRC522.h>
+MFRC522 mfrc522(15,0);
 const char* ssid="CMCC-6Ftg";
 const char* password="a9u64egf";
 const char* mqtt_server="broker.emqx.io";
@@ -18,18 +21,23 @@ long blink_time=0;
 int blink_state=0;
 int blink_flag=0;
 long blinking_time=0;
-
+long rfid_time=0;
 WiFiClient espClient;
 PubSubClient client(espClient);
 Servo myServo;
+String content="";
+String card=" 92 D2 2A07";
 void setup() {
-  pinMode(12,OUTPUT);
+  
   pinMode(16,OUTPUT);
   pinMode(5,OUTPUT);
   pinMode(4,INPUT_PULLUP);
+  pinMode(10,OUTPUT);
   Serial.begin(115200);
   Serial.println("esp8266_1准备就绪");
   setup_wifi();
+  SPI.begin();
+  mfrc522.PCD_Init();
   client.setServer(mqtt_server,1883);
   client.setCallback(callback); 
   myServo.attach(2);
@@ -108,9 +116,9 @@ void sound_app(){
 void led_app(){
   time1=millis();
   if(time1-led_time<5000){
-    digitalWrite(12, HIGH);
+    digitalWrite(10, HIGH);
     return;
-  }digitalWrite(12,LOW);
+  }digitalWrite(10,LOW);
   led_state=0; 
 }
 void blink(int blink_time1){
@@ -127,12 +135,41 @@ void blink(int blink_time1){
       return;
   }blink_flag=0;
 }
+
+void rfid_pro(){
+  time1=millis();
+  if(time1-rfid_time<200)return;
+  rfid_time=time1;
+  if ( ! mfrc522.PICC_IsNewCardPresent())return;
+  if ( ! mfrc522.PICC_ReadCardSerial())return;
+  for(byte i=0;i<mfrc522.uid.size;i++){
+    
+    content.concat(String(mfrc522.uid.uidByte[i]<0x10? "0":" "));
+    content.concat(String(mfrc522.uid.uidByte[i],HEX));
+  }
+
+  content.toUpperCase();
+
+  if(content==card){
+    myServo.write(180);
+    client.publish(topic_pub_door,"欢迎回家");
+  }else{
+    sound_state=1;
+    myServo.write(0);
+    time1=millis();
+    sound_time=time1;
+    client.publish(topic_pub_door,"错误门卡");
+  }
+  content="";
+}
+
 void loop() {
   if(!client.connected()){
     reconnect();
   }
   client.loop();
   key_pro();
+  rfid_pro();
   if(sound_state==1){
     sound_app();
   }

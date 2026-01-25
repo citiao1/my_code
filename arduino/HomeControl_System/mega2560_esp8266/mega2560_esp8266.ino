@@ -13,7 +13,10 @@ int door_state=0;
 long sound_time=0;
 int sound_state=0;
 int sound_flag=0;
-long home_time=0;
+long dht_time=0;
+float last_humidity=0;
+float last_temperature=0;
+bool statusChanged = false;
 DHT dht(13,DHT11);
 struct home_status{
   float humidity=0;
@@ -53,10 +56,13 @@ void key_pro(){
   key_time=time1;
   if(digitalRead(3)==0){
       led_state^=1;
+      statusChanged=true;
   if(led_state==1){
     Serial1.println("LED ON");
+    
   }else{
     Serial1.println("LED OFF");
+    
   }
   }
   if(digitalRead(7)==0){
@@ -66,9 +72,11 @@ void key_pro(){
     while(digitalRead(7)==0);
     if(door_state==1){
       Serial1.println("door open");
+      statusChanged=true;
       
     }else{
       Serial1.println("door close");
+      statusChanged=true;
     }
   }
 }
@@ -96,6 +104,7 @@ void knod_pro(){
   time1=millis();
   if(time1-knod_time<100)return;
   knod_time=time1;
+  statusChanged=true;
   Serial1.println("light:"+String(light1));
   }else{return;}
 }
@@ -118,16 +127,31 @@ void sound_app(int sounding_time){
     }
 
 }
-void home_app(){
+void dht_app(){
   time1=millis();
-  if(time1-home_time<200)return;
-  home_time=time1;
+  if(time1-dht_time<200)return;
+  dht_time=time1;
   home_status.humidity=dht.readHumidity();
   home_status.temperature=dht.readTemperature();
-  home_status.light_state=led_state;
-  home_status.light=light1;
-  home_status.door_state=door_state;
-  
+  if(last_humidity!=home_status.humidity)statusChanged=true;
+  if(last_temperature!=home_status.temperature)statusChanged=true;
+  last_humidity=home_status.humidity;
+  last_temperature=home_status.temperature;
+}
+void report_status() {
+  home_status.humidity = dht.readHumidity();
+  home_status.temperature = dht.readTemperature();
+  home_status.light_state = led_state;
+  home_status.light = light1;
+  home_status.door_state = door_state;
+  String msg = "home_status:" + String(home_status.humidity) + "," + 
+               String(home_status.temperature) + "," + 
+               String(home_status.light_state) + "," + 
+               String(home_status.light) + "," + 
+               String(home_status.door_state);
+               
+  Serial1.println(msg); 
+
 }
 void loop() {
   
@@ -143,14 +167,14 @@ void loop() {
         Serial.println("执行：开灯");
         Serial1.println("灯光状态：开启");
         Serial1.println("LED ON");
-
+        statusChanged=true;
       }else if(command=="OFF"){
         led_state=0;
         
         Serial.println("执行：关灯");
         Serial1.println("灯光状态：关闭");
         Serial1.println("LED OFF");
-
+        statusChanged=true;
       }
       else if(command=="light"){
         Serial.println("执行：输出亮度");
@@ -168,6 +192,7 @@ void loop() {
         }else{
           knod_set=1;
         }
+        statusChanged=true;
       }
       else if(command=="door:客人来了"){
         Serial1.println("guest");
@@ -177,27 +202,40 @@ void loop() {
       else if(command=="door open"){
         door_state=1;
         sound_flag=0;
+        statusChanged=true;
         //Serial1.print("door open");
       }
       else if(command=="door close"){
         door_state=0;
         sound_flag=0;
+        statusChanged=true;
         //Serial1.print("door close");
       }
       else if(command=="door:door open"){
         door_state=1;
         sound_flag=0;
         Serial1.println("door open");
+        statusChanged=true;
        
       }
       else if(command=="door:door close"){
         door_state=0;
         sound_flag=0;
         Serial1.println("door close");
-        
+        statusChanged=true;
+      }
+      else if(command=="door:欢迎回家"){
+        door_state=1;
+        led_state=1;
+        Serial1.println("come home");
+        statusChanged=true;
+      }else if(command=="door:错误门卡"){
+        door_state=0;
+        Serial1.println("wrong card");
+        statusChanged=true;
       }
       else if(command=="get_status"){
-        Serial1.println("home_status:"+String(home_status.humidity)+","+String(home_status.temperature)+","+String(home_status.light_state)+","+String(home_status.light)+","+String(home_status.door_state));
+        statusChanged=true;
         
       }
       else{
@@ -206,9 +244,13 @@ void loop() {
       }
     }
   }
+  if(statusChanged){
+    report_status();
+    statusChanged = false;
+  }
   key_pro();
   knod_pro();
   sound_app(200);
-  home_app();
+  dht_app();
   led_app(led_state,light);
 } 

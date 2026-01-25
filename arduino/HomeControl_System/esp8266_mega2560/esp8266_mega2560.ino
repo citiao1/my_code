@@ -164,6 +164,14 @@ void loop() {
         else msg="大门：关闭";
         client.publish(topic_pub_home,msg.c_str());
       }
+      else if(data=="come home"){
+        led_state=1;
+        door_state=1;
+        door_state="OPEN";
+      }else if(data=="wrong card"){
+        door_state=0;
+        door_state="CLOSE";
+      }
     
     }
     lcd_pro(val);
