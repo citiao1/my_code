@@ -1,30 +1,80 @@
 <template>
   <div class="content">
     <div class="header">
-      <h2 class="title">🏠 智能家居控制</h2>
-      <p class="status">状态: <span :class="{ online: isConnected }">{{ statusText }}</span></p>
+      <h2 class="title">🏠 智能家居 V3.0</h2>
+      <div class="status-bar">
+        <span class="badge" :class="{ online: isConnected }">
+          {{ isConnected ? '☁️ 已连接云端' : '❌ 等待连接...' }}
+        </span>
+        <button class="refresh-btn" @click="manualQuery" :disabled="!isConnected">
+          🔄 刷新
+        </button>
+      </div>
     </div>
 
-    <div class="btn-group">
-      <button class="btn on-btn" @click="sendCmd('ON')">开灯</button>
-      <button class="btn off-btn" @click="sendCmd('OFF')">关灯</button>
+    <div class="card env-card">
+      <div class="card-title">🌡️ 环境监测</div>
+      <div class="env-grid">
+        <div class="env-item">
+          <text class="env-val temp">{{ env.temp }}</text>
+          <text class="env-unit">℃</text>
+          <text class="env-label">室内温度</text>
+        </div>
+        <div class="env-item">
+          <text class="env-val hum">{{ env.hum }}</text>
+          <text class="env-unit">%</text>
+          <text class="env-label">空气湿度</text>
+        </div>
+      </div>
+      <div class="update-time">更新时间: {{ lastUpdate }}</div>
     </div>
 
-    <div class="slider-area">
-      <p>当前亮度: {{ brightness }}%</p>
-      <slider :value="brightness" @change="onSliderChange" min="0" max="100" show-value block-size="20"/>
+    <div class="card light-card">
+      <div class="card-header">
+        <text class="card-title">💡 灯光控制</text>
+        <text class="state-text" :class="{on: light.isOn}">{{ light.isOn ? '已开启' : '已关闭' }}</text>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn btn-yellow" @click="sendCmd('ON')">全开</button>
+        <button class="btn btn-gray" @click="sendCmd('OFF')">全关</button>
+      </div>
+
+      <div class="slider-area">
+        <text>亮度: {{ light.val }}%</text>
+        <slider 
+          :value="light.val" 
+          @change="onSliderChange" 
+          min="0" max="100" 
+          active-color="#ffc107" 
+          block-size="24"
+        />
+      </div>
+    </div>
+
+    <div class="card door-card" :class="{ alert: door.isAlert }">
+      <div class="card-header">
+        <text class="card-title">🔒 门禁系统</text>
+        <text class="state-text" :class="{open: door.isOpen}">{{ door.isOpen ? '🔓 已开启' : '🔒 已关闭' }}</text>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-green" @click="sendDoorCmd('door open')">远程开门</button>
+        <button class="btn btn-red" @click="sendDoorCmd('door close')">远程关门</button>
+      </div>
+      
+      <div class="msg-box" v-if="door.lastMsg">
+        📢 最新消息: {{ door.lastMsg }}
+      </div>
     </div>
 
     <div class="log-box">
-      <p v-for="(log, index) in logs" :key="index">{{ log }}</p>
+      <view v-for="(log, index) in logs" :key="index" class="log-item">{{ log }}</view>
     </div>
   </div>
 </template>
 
 <script>
-// 1. 引入刚才创建的兼容库文件
-// (Paho 库会自动把全局变量挂载到 window 对象上，所以不需要 import x from ...)
-// 加一个 "Paho from"，意思是从那个文件里把 Paho 拿出来
 import Paho from '@/common/mqtt.js'
 
 export default {
@@ -32,122 +82,270 @@ export default {
     return {
       client: null,
       isConnected: false,
-      statusText: '等待连接...',
-      brightness: 0,
+      timer: null, // 自动轮询定时器
+      lastUpdate: '--:--',
+      
+      // 状态数据
+      env: { temp: '--', hum: '--' },
+      light: { isOn: false, val: 0 },
+      door: { isOpen: false, lastMsg: '', isAlert: false },
+      
       logs: [],
-      // 配置信息
-      host: 'broker.emqx.io',
-      port: 8084,
-      topicPub: 'China/Beijing/huayuan/302/command',
-      topicSub: 'China/Beijing/huayuan/302/status'
+      
+      // MQTT 配置 (完全复用 Web V3 的配置)
+      config: {
+        host: 'broker.emqx.io',
+        port: 8084, // WSS 端口
+        path: '/mqtt',
+        // 订阅主题
+        subHome: 'China/Beijing/huayuan/302/home/status',
+        subDoor: 'China/Beijing/huayuan/302/door/status',
+        // 发布主题
+        pubCmd: 'China/Beijing/huayuan/302/command',
+        pubDoor: 'China/Beijing/huayuan/302/door/status' // 门控指令专用
+      }
     }
   },
   onLoad() {
-    // 延迟一点点执行，确保库加载完毕
+    // 延迟连接，防止页面未渲染完
     setTimeout(() => {
-      this.connectMQTT()
-    }, 500)
+      this.connectMQTT();
+    }, 500);
+  },
+  onUnload() {
+    // 退出页面时清理定时器和连接
+    if (this.timer) clearInterval(this.timer);
+    if (this.client && this.isConnected) this.client.disconnect();
   },
   methods: {
-    // --- 连接 MQTT (Paho 写法) ---
+    // --- 连接逻辑 ---
     connectMQTT() {
-      this.addLog('正在初始化 Paho 客户端...')
+      this.addLog('正在连接服务器...');
+      let clientId = 'AppV3-' + Math.random().toString(16).substr(2, 8);
       
-      // 生成随机ID
-      let clientId = 'App-' + Math.random().toString(16).substr(2, 8);
-      
-      // 创建客户端实例 (注意：Paho 是全局对象)
-      // 参数：主机地址, 端口, 路径(默认/mqtt), 客户端ID
       try {
-        this.client = new Paho.MQTT.Client(this.host, this.port, "/mqtt", clientId);
+        this.client = new Paho.MQTT.Client(this.config.host, this.config.port, this.config.path, clientId);
       } catch (e) {
         this.addLog('初始化失败: ' + e.message);
         return;
       }
 
-      // 设置回调
-      this.client.onConnectionLost = (responseObject) => {
+      this.client.onConnectionLost = (res) => {
         this.isConnected = false;
-        this.statusText = '离线';
-        if (responseObject.errorCode !== 0) {
-          this.addLog('连接断开:' + responseObject.errorMessage);
-        }
+        this.addLog('连接断开:' + res.errorMessage);
+        // 断线重连
+        setTimeout(() => this.connectMQTT(), 5000);
       };
 
       this.client.onMessageArrived = (message) => {
-        const msg = message.payloadString;
-        this.addLog('收到: ' + msg);
-        
-        // 解析亮度 (如果设备发回 "亮度:50%")
-        if (msg.includes('亮度:')) {
-           let num = msg.replace(/[^0-9]/g, '');
-           if(num) this.brightness = parseInt(num);
-        }
+        this.handleMessage(message.destinationName, message.payloadString);
       };
 
-      // 开始连接
-      this.addLog('开始连接服务器...');
       this.client.connect({
-        useSSL: true, // EMQX 8083 是非加密 ws
+        useSSL: true, 
         cleanSession: true,
         keepAliveInterval: 60,
         onSuccess: () => {
           this.isConnected = true;
-          this.statusText = '在线';
           this.addLog('✅ 连接成功!');
-          // 订阅
-          this.client.subscribe(this.topicSub);
+          // 订阅两个状态频道
+          this.client.subscribe(this.config.subHome);
+          this.client.subscribe(this.config.subDoor);
+          
+          // 连接成功后，立即查一次状态，并开启自动轮询
+          this.manualQuery();
+          this.startAutoQuery();
         },
         onFailure: (e) => {
           this.isConnected = false;
-          this.statusText = '连接失败';
           this.addLog('❌ 连接失败: ' + e.errorMessage);
         }
       });
     },
 
-    // --- 发送指令 ---
+    // --- 核心：消息处理 (复用 Web V3 逻辑) ---
+    handleMessage(topic, msg) {
+      // 1. 处理环境与设备状态 (来自 Gateway 的中文消息)
+      if (topic === this.config.subHome) {
+        this.lastUpdate = new Date().toLocaleTimeString();
+        
+        // 解析逻辑：匹配 Gateway 发来的 "湿度:xx%" 等格式
+        if (msg.includes('温度')) this.env.temp = this.extractNum(msg);
+        if (msg.includes('湿度')) this.env.hum = this.extractNum(msg);
+        
+        if (msg.includes('灯光')) this.light.isOn = msg.includes('开启');
+        if (msg.includes('亮度')) {
+           let val = parseInt(this.extractNum(msg));
+           if (!isNaN(val)) this.light.val = val;
+        }
+        
+        if (msg.includes('大门')) this.door.isOpen = msg.includes('开启');
+      }
+
+      // 2. 处理门禁事件 (有人按门铃/刷卡)
+      if (topic === this.config.subDoor) {
+        this.door.lastMsg = msg + ' (' + new Date().toLocaleTimeString() + ')';
+        
+        if (msg.includes('客人') || msg.includes('错误')) {
+          this.triggerAlert(); // 触发红色闪烁报警
+          uni.vibrateLong();   // 手机震动提醒
+        }
+        
+        // 这里的逻辑是为了响应 Mega 的 "door open" 确认回传
+        if (msg.includes('door open')) this.door.isOpen = true;
+        if (msg.includes('door close')) this.door.isOpen = false;
+      }
+    },
+
+    // --- 控制指令 ---
+    
+    // 1. 通用设备指令
     sendCmd(cmd) {
+      this.publish(this.config.pubCmd, cmd);
+    },
+
+    // 2. 门禁专用指令 (发到 door/status)
+    sendDoorCmd(cmd) {
+      this.publish(this.config.pubDoor, cmd);
+    },
+
+    // 3. 调节亮度
+    onSliderChange(e) {
+      this.light.val = e.detail.value;
+      // 格式: light:50
+      this.sendCmd('light:' + this.light.val);
+    },
+
+    // 4. 手动/自动查询
+    manualQuery() {
+      this.sendCmd('get_status');
+      uni.showToast({ title: '已发送查询', icon: 'none' });
+    },
+    
+    startAutoQuery() {
+      if (this.timer) clearInterval(this.timer);
+      // 每 10 秒自动同步一次，防止状态不同步
+      this.timer = setInterval(() => {
+        if (this.isConnected) this.sendCmd('get_status');
+      }, 10000);
+    },
+
+    // --- 辅助函数 ---
+    publish(topic, payload) {
       if (this.client && this.isConnected) {
-        let message = new Paho.MQTT.Message(cmd);
-        message.destinationName = this.topicPub;
+        let message = new Paho.MQTT.Message(payload);
+        message.destinationName = topic;
         this.client.send(message);
-        this.addLog('发送: ' + cmd);
+        this.addLog('发送: ' + payload);
       } else {
         uni.showToast({ title: '未连接', icon: 'none' });
       }
     },
 
-    // 滑块变动
-    onSliderChange(e) {
-      this.brightness = e.detail.value;
-      this.sendCmd('L:' + this.brightness);
+    extractNum(str) {
+      let match = str.match(/-?\d+(\.\d+)?/);
+      return match ? match[0] : '--';
     },
 
-    // 日志辅助
+    triggerAlert() {
+      this.door.isAlert = true;
+      setTimeout(() => { this.door.isAlert = false }, 3000);
+    },
+
     addLog(txt) {
       let time = new Date().toLocaleTimeString();
       this.logs.unshift(`[${time}] ${txt}`);
+      if(this.logs.length > 20) this.logs.pop();
     }
   }
 }
 </script>
 
 <style>
-/* 样式保持不变 */
-.content { padding: 30px; }
-.header { text-align: center; margin-bottom: 30px; }
-.title { font-size: 24px; font-weight: bold; }
-.status { color: #999; margin-top: 10px; }
-.status span.online { color: #4cd964; font-weight: bold; }
+/* 页面整体背景 */
+.content {
+  padding: 20px;
+  background-color: #f4f6f9;
+  min-height: 100vh;
+}
 
-.btn-group { display: flex; justify-content: space-around; margin-bottom: 40px; }
-.btn { width: 120px; height: 120px; border-radius: 60px; border: none; font-size: 20px; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-.on-btn { background: #007aff; }
-.off-btn { background: #ff3b30; }
-.on-btn:active { background: #0056b3; }
-.off-btn:active { background: #ce2c24; }
+/* 顶部 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.title { font-size: 20px; font-weight: bold; color: #333; }
+.status-bar { display: flex; align-items: center; gap: 10px; }
+.badge { font-size: 12px; padding: 4px 8px; background: #eee; border-radius: 10px; color: #666; }
+.badge.online { background: #d4edda; color: #155724; }
+.refresh-btn { font-size: 12px; padding: 5px 10px; background: #007bff; color: white; border-radius: 20px; border:none; }
 
-.slider-area { margin: 20px 0; padding: 20px; background: #f8f8f8; border-radius: 10px; }
-.log-box { background: #333; color: #0f0; padding: 10px; height: 150px; overflow-y: scroll; font-size: 12px; border-radius: 8px; margin-top: 20px; }
+/* 通用卡片样式 */
+.card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+.card-header {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+.card-title { font-size: 16px; font-weight: bold; color: #333; }
+.state-text { font-size: 14px; color: #999; }
+.state-text.on { color: #ffc107; font-weight: bold; }
+.state-text.open { color: #dc3545; font-weight: bold; }
+
+/* 环境卡片 */
+.env-grid { display: flex; justify-content: space-around; text-align: center; margin: 15px 0; }
+.env-val { font-size: 28px; font-weight: bold; }
+.env-val.temp { color: #e67e22; }
+.env-val.hum { color: #3498db; }
+.env-unit { font-size: 12px; color: #999; margin-left: 2px; }
+.env-label { font-size: 12px; color: #666; display: block; margin-top: 5px; }
+.update-time { text-align: center; font-size: 10px; color: #ccc; margin-top: 10px; }
+
+/* 按钮组 */
+.btn-group { display: flex; gap: 15px; margin-bottom: 15px; }
+.btn { 
+  flex: 1; 
+  height: 44px; 
+  line-height: 44px; 
+  text-align: center; 
+  border-radius: 8px; 
+  font-size: 16px; 
+  border: none;
+  color: white;
+}
+.btn-yellow { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #333; }
+.btn-gray { background: #bdc3c7; }
+.btn-green { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+.btn-red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+/* 滑块 */
+.slider-area { background: #f8f9fa; padding: 15px; border-radius: 10px; }
+
+/* 门禁卡片特殊样式 */
+.door-card.alert { animation: flash 1s infinite; border: 2px solid red; }
+@keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.8; background-color: #fff0f0; } 100% { opacity: 1; } }
+.msg-box { background: #fff3cd; color: #856404; padding: 10px; font-size: 12px; border-radius: 6px; text-align: center; }
+
+/* 日志 */
+.log-box { 
+  background: #2c3e50; 
+  color: #7bed9f; 
+  padding: 10px; 
+  height: 120px; 
+  border-radius: 8px; 
+  font-size: 10px; 
+  overflow-y: scroll; 
+}
+.log-item { margin-bottom: 4px; border-bottom: 1px dashed #444; }
 </style>
