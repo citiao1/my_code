@@ -198,7 +198,7 @@ void loop() {
       }
       else if(command=="get_status"){
         Serial1.println("home_status:"+String(home_status.humidity)+","+String(home_status.temperature)+","+String(home_status.light_state)+","+String(home_status.light)+","+String(home_status.door_state));
-        Serial.println("home_status:"+String(home_status.humidity)+","+String(home_status.temperature)+","+String(home_status.light_state)+","+String(home_status.light)+","+String(home_status.door_state));
+        
       }
       else{
         Serial.println("无效指令");
