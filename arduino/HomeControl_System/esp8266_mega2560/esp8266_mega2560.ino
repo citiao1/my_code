@@ -12,6 +12,7 @@ const char* topic_pub = "China/Beijing/huayuan/302/status";
 const char* topic_sub = "China/Beijing/huayuan/302/command";
 const char* topic_sub_door = "China/Beijing/huayuan/302/door/status";
 const char* topic_pub_door = "China/Beijing/huayuan/302/door/command";
+const char* topic_pub_home = "China/Beijing/huayuan/302/home/status";
 WiFiClient espClient;
 PubSubClient client(espClient);
 int led_state=0;
@@ -19,6 +20,13 @@ int light=0;
 int val=0;
 int guest_flag=0;
 String door_state="CLOSE";
+struct home_status{
+  float humidity=0;
+  float temperature=0;
+  int light;
+  int door_state;
+  int light_state;
+}home_status;
 void setup() {
   Serial.begin(115200);
   Serial.println("esp8266准备就绪");
@@ -75,9 +83,13 @@ void callback(char* topic,byte* payload,unsigned int length){
     msg+=char(payload[i]);
 
   }
+  if(String(topic)==String(topic_sub_door)){
+    mySerial.println("door:"+msg);
+  }else{
   Serial.print("云端指令:");
   Serial.println(msg);
   mySerial.println(msg);
+  }
 }
 void lcd_pro(int light){
   if(led_state==1){
@@ -131,6 +143,26 @@ void loop() {
         door_state="CLOSE";
         client.publish(topic_pub_door,"door close");
         mySerial.println("door close");
+      }else if(data.startsWith("home_status")){
+        String msg="";
+        sscanf(data.c_str(), "home_status:%f,%f,%d,%d,%d", 
+                   &home_status.humidity, &home_status.temperature, &home_status.light_state, &home_status.light, &home_status.door_state);
+        msg="湿度:"+String(home_status.humidity)+"%";
+        client.publish(topic_pub_home,msg.c_str());
+
+        msg="温度:"+String(home_status.temperature)+"℃";
+        client.publish(topic_pub_home,msg.c_str());
+
+        if(home_status.light_state==1)msg="灯光：开启";
+        else msg="灯光：关闭";
+        client.publish(topic_pub_home,msg.c_str());
+
+        msg="亮度:"+String(home_status.light)+"%";
+        client.publish(topic_pub_home,msg.c_str());
+
+        if(home_status.door_state==1)msg="大门：开启";
+        else msg="大门：关闭";
+        client.publish(topic_pub_home,msg.c_str());
       }
     
     }

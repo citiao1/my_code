@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能家居控制中心</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        h1 { color: #333; }
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 100%; max-width: 800px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card h2 { margin-top: 0; color: #555; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        /* 状态指示 */
+        #status-bar { margin-bottom: 20px; padding: 10px 20px; border-radius: 20px; background: #ddd; color: #666; font-weight: bold; }
+        .connected { background: #d4edda !important; color: #155724 !important; }
+        
+        /* 按钮样式 */
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        button { flex: 1; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; }
+        .btn-on { background-color: #ffc107; color: #000; }
+        .btn-off { background-color: #6c757d; color: white; }
+        .btn-open { background-color: #28a745; color: white; }
+        .btn-close { background-color: #dc3545; color: white; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+
+        /* 滑块样式 */
+        .slider-container { margin-top: 20px; }
+        input[type=range] { width: 100%; height: 10px; border-radius: 5px; background: #d3d3d3; outline: none; }
+        
+        /* 日志区域 */
+        #log-area { width: 100%; max-width: 800px; height: 150px; overflow-y: scroll; background: #333; color: #0f0; padding: 10px; border-radius: 10px; font-family: monospace; margin-top: 20px; font-size: 14px; }
+        
+        /* 警告动画 */
+        .alert { animation: flash 1s infinite; background-color: #ffcccc; border: 2px solid red; }
+        @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <h1>🏠 智能家居上位机</h1>
+    <div id="status-bar">正在连接 MQTT 服务器...</div>
+
+    <div class="dashboard">
+        <div class="card">
+            <h2>💡 客厅灯光</h2>
+            <div class="btn-group">
+                <button class="btn-on" onclick="controlLight('ON')">开灯</button>
+                <button class="btn-off" onclick="controlLight('OFF')">关灯</button>
+            </div>
+            <div class="slider-container">
+                <label>亮度调节: <span id="bright-val">50</span>%</label>
+                <input type="range" min="0" max="100" value="50" onchange="changeBrightness(this.value)" oninput="document.getElementById('bright-val').innerText = this.value">
+            </div>
+            <div style="margin-top:15px; text-align:center;">
+                <button style="background:#17a2b8; color:white; width:100%" onclick="controlLight('light')">查询状态</button>
+            </div>
+        </div>
+
+        <div class="card" id="door-card">
+            <h2>🚪 门禁系统</h2>
+            <div class="status-display" id="door-status-text" style="text-align:center; font-size:1.2em; margin-bottom:10px; color:#666;">
+                状态: 待机
+            </div>
+            <div class="btn-group">
+                <button class="btn-open" onclick="controlDoor('door open')">开门</button>
+                <button class="btn-close" onclick="controlDoor('door close')">关门</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="log-area"></div>
+
+<script>
+    // MQTT 配置
+    const brokerUrl = 'wss://broker.emqx.io:8084/mqtt'; 
+    const options = {
+        clean: true,
+        connectTimeout: 4000,
+        clientId: 'WebClient_' + Math.random().toString(16).substr(2, 8),
+    };
+
+    // 定义主题
+    const topics = {
+        lightCmd: 'China/Beijing/huayuan/302/command',
+        lightStatus: 'China/Beijing/huayuan/302/status',
+        
+        // 【修改点】根据你的要求，门禁指令发送到 status 频道
+        // 这样 esp8266_mega2560 网关才能通过 subscribe(topic_sub_door) 收到消息
+        doorCmd: 'China/Beijing/huayuan/302/door/status', 
+        
+        // 门禁状态反馈（通常门禁端也会发到这里，或者发到 command 对应的频道）
+        // 我们依然监听 status 频道来获取“客人来了”的消息
+        doorStatus: 'China/Beijing/huayuan/302/door/status'
+    };
+
+    const client = mqtt.connect(brokerUrl, options);
+    const statusBar = document.getElementById('status-bar');
+    const logArea = document.getElementById('log-area');
+
+    // 连接成功回调
+    client.on('connect', function () {
+        statusBar.innerText = "✅ 已连接到设备云端";
+        statusBar.classList.add('connected');
+        log("系统连接成功...");
+        
+        // 订阅状态主题 (监听灯光反馈和门禁反馈)
+        client.subscribe([topics.lightStatus, topics.doorStatus], function (err) {
+            if (!err) {
+                log("监听状态频道成功");
+            }
+        });
+    });
+
+    // 接收消息回调
+    client.on('message', function (topic, message) {
+        const msgStr = message.toString();
+        
+        // 避免打印自己发送的指令（因为订阅了 doorCmd 相同的 topic）
+        // 只有当消息不是我们的操作指令时才处理，或者全部打印方便调试
+        log(`[收到] ${topic}: ${msgStr}`);
+
+        // 处理门铃消息
+        if (topic === topics.doorStatus && msgStr.includes("客人")) {
+            triggerDoorbellAlert();
+        }
+
+        // 处理灯光状态反馈
+        if (topic === topics.lightStatus) {
+            if(msgStr.includes("亮度")) {
+                const match = msgStr.match(/\d+/);
+                if(match) {
+                    document.getElementById('bright-val').innerText = match[0];
+                    document.querySelector('input[type=range]').value = match[0];
+                }
+            }
+        }
+    });
+
+    client.on('error', function (error) {
+        statusBar.innerText = "❌ 连接错误: " + error;
+        statusBar.style.background = "#f8d7da";
+    });
+
+    // --- 控制函数 ---
+
+    function controlLight(cmd) {
+        client.publish(topics.lightCmd, cmd);
+        log(`[发送] 灯光指令: ${cmd}`);
+    }
+
+    function changeBrightness(val) {
+        // Mega 代码解析格式为 light:数值
+        const cmd = `light:${val}`;
+        client.publish(topics.lightCmd, cmd);
+        log(`[发送] 亮度调节: ${cmd}`);
+    }
+
+    function controlDoor(cmd) {
+        // 【修改点】这里会将指令发送到 door/status
+        client.publish(topics.doorCmd, cmd);
+        log(`[发送] 门禁指令: ${cmd}`);
+        
+        // 更新本地UI状态提示
+        const statusText = document.getElementById('door-status-text');
+        if(cmd === 'door open') statusText.innerText = "状态: 门已开启";
+        else statusText.innerText = "状态: 门已关闭";
+    }
+
+    // 门铃报警效果
+    function triggerDoorbellAlert() {
+        const doorCard = document.getElementById('door-card');
+        const statusText = document.getElementById('door-status-text');
+        
+        statusText.innerText = "🔔 客人来了！";
+        statusText.style.color = "red";
+        statusText.style.fontWeight = "bold";
+        
+        doorCard.classList.add('alert');
+        
+        setTimeout(() => {
+            doorCard.classList.remove('alert');
+            statusText.innerText = "状态: 待机";
+            statusText.style.color = "#666";
+        }, 5000);
+    }
+
+    function log(msg) {
+        const time = new Date().toLocaleTimeString();
+        const p = document.createElement('div');
+        p.innerText = `[${time}] ${msg}`;
+        logArea.prepend(p);
+    }
+</script>
+
+</body>
+</html>
