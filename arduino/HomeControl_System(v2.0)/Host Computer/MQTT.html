@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏠 智能家居中控台 (最终版)</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root { --primary: #007bff; --bg: #f4f6f9; --text: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        /* 顶部栏 */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .connection-status { padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .online { background: #d4edda; color: #155724; }
+        .offline { background: #f8d7da; color: #721c24; }
+        .btn-query { background: #341f97; color: white; padding: 8px 20px; font-size: 14px; border-radius: 20px; border:none; cursor: pointer; }
+        .btn-query:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* 仪表盘 */
+        .status-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: white; padding: 20px; border-radius: 12px; display: flex; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #ddd; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-icon { font-size: 32px; margin-right: 15px; width: 50px; text-align: center; }
+        .stat-info h4 { margin: 0 0 5px 0; color: #666; font-size: 14px; }
+        .stat-info .value { font-size: 22px; font-weight: bold; color: #333; }
+        
+        /* 状态颜色 */
+        .stat-card.temp { border-color: #ff9f43; } .stat-card.temp .stat-icon { color: #ff9f43; }
+        .stat-card.hum { border-color: #54a0ff; } .stat-card.hum .stat-icon { color: #54a0ff; }
+        .stat-card.light { border-color: #feca57; } .stat-card.light.on .stat-icon { color: #feca57; text-shadow: 0 0 10px #feca57; }
+        .stat-card.door { border-color: #ff6b6b; } .stat-card.door.open { border-color: #ff4757; background: #fff0f0; } .stat-card.door.open .stat-icon { color: #ff4757; }
+
+        /* 控制区 */
+        .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .control-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .control-title { border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 20px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        
+        .btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:active { transform: scale(0.98); }
+        .btn-on { background: #ffd32a; color: #333; }
+        .btn-off { background: #dfe4ea; color: #666; }
+        .btn-open { background: #ff6b6b; color: white; }
+        .btn-close { background: #2ed573; color: white; }
+
+        /* 报警动画 */
+        .alert-mode { animation: flash 1s infinite; border: 2px solid red !important; }
+        @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.8; background-color: #fff0f0; } 100% { opacity: 1; } }
+
+        .log-box { background: #2f3542; color: #7bed9f; padding: 15px; border-radius: 8px; height: 150px; overflow-y: auto; font-family: monospace; font-size: 12px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div id="app" class="container">
+    <div class="header">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <h2>📊 家庭中控台</h2>
+            <button class="btn-query" @click="manualQuery" :disabled="!isConnected">
+                <i class="fas fa-sync-alt" :class="{'fa-spin': loading}"></i> 刷新状态
+            </button>
+        </div>
+        <div class="connection-status" :class="isConnected ? 'online' : 'offline'">
+            {{ isConnected ? '✅ MQTT 已连接' : '❌ 未连接' }}
+        </div>
+    </div>
+
+    <div class="status-dashboard">
+        <div class="stat-card temp">
+            <div class="stat-icon"><i class="fas fa-thermometer-half"></i></div>
+            <div class="stat-info">
+                <h4>室内温度</h4>
+                <div class="value">{{ env.temp }} <small>℃</small></div>
+            </div>
+        </div>
+        <div class="stat-card hum">
+            <div class="stat-icon"><i class="fas fa-tint"></i></div>
+            <div class="stat-info">
+                <h4>空气湿度</h4>
+                <div class="value">{{ env.hum }} <small>%</small></div>
+            </div>
+        </div>
+        <div class="stat-card light" :class="{ 'on': light.isOn }">
+            <div class="stat-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="stat-info">
+                <h4>灯光状态</h4>
+                <div class="value">
+                    {{ light.isOn ? '开启' : '关闭' }}
+                    <span style="font-size:14px; color:#888" v-if="light.isOn">({{ light.val }}%)</span>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card door" :class="{ 'open': door.isOpen, 'alert-mode': door.isAlert }">
+            <div class="stat-icon">
+                <i class="fas" :class="door.isOpen ? 'fa-door-open' : 'fa-door-closed'"></i>
+            </div>
+            <div class="stat-info">
+                <h4>大门状态</h4>
+                <div class="value">{{ door.isOpen ? '已开启' : '已关闭' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-grid">
+        <div class="control-card">
+            <div class="control-title"><i class="fas fa-sliders-h"></i> 灯光控制</div>
+            <div class="btn-group">
+                <button class="btn-on" @click="sendCmd('ON')">开灯</button>
+                <button class="btn-off" @click="sendCmd('OFF')">关灯</button>
+            </div>
+            <div style="margin-top:20px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span>亮度: {{ light.val }}%</span>
+                </div>
+                <input type="range" v-model="light.val" min="0" max="100" @change="sendLightVal" style="width:100%">
+            </div>
+        </div>
+
+        <div class="control-card">
+            <div class="control-title"><i class="fas fa-lock"></i> 门禁控制</div>
+            <div class="btn-group">
+                <button class="btn-open" @click="sendDoorCmd('door open')">远程开门</button>
+                <button class="btn-close" @click="sendDoorCmd('door close')">远程关门</button>
+            </div>
+            <div style="background:#f1f2f6; padding:10px; border-radius:8px; font-size:13px; color:#666; margin-top:10px;">
+                <i class="fas fa-info-circle"></i> 最新消息: {{ door.lastMsg || '暂无' }}
+            </div>
+        </div>
+    </div>
+
+    <div class="log-box">
+        <div v-for="(log, i) in logs" :key="i">
+            [{{ log.time }}] {{ log.msg }}
+        </div>
+    </div>
+</div>
+
+<script>
+    const { createApp, reactive, ref, onMounted } = Vue;
+
+    createApp({
+        setup() {
+            const config = {
+                broker: 'wss://broker.emqx.io:8084/mqtt',
+                topicCmd: 'China/Beijing/huayuan/302/command',
+                
+                // 1. 订阅改为通配符，同时监听 status(报警) 和 command(确认)
+                subDoor: 'China/Beijing/huayuan/302/door/+', 
+                subHome: 'China/Beijing/huayuan/302/home/status',
+                
+                // 2. 指令发送地址（保持不变）
+                topicDoorPub: 'China/Beijing/huayuan/302/door/status' 
+            };
+
+            const client = ref(null);
+            const isConnected = ref(false);
+            const loading = ref(false);
+
+            // 状态数据
+            const env = reactive({ temp: '--', hum: '--' });
+            const light = reactive({ isOn: false, val: 0 });
+            const door = reactive({ isOpen: false, lastMsg: '', isAlert: false });
+            const logs = ref([]);
+
+            // 连接 MQTT
+            const connectMQTT = () => {
+                const clientId = 'WebClient_' + Math.random().toString(16).substr(2, 8);
+                client.value = mqtt.connect(config.broker, { clientId });
+
+                client.value.on('connect', () => {
+                    isConnected.value = true;
+                    log('✅ MQTT 连接成功');
+                    // 订阅所有相关主题
+                    client.value.subscribe([config.subHome, config.subDoor]);
+                    
+                    // 3. 连上后只查一次，不再自动轮询
+                    manualQuery();
+                });
+
+                client.value.on('message', (topic, message) => {
+                    handleMessage(topic, message.toString());
+                });
+            };
+
+            // 消息解析
+            const handleMessage = (topic, msg) => {
+                // 环境与灯光状态
+                if (topic.includes('home/status')) {
+                    loading.value = false;
+                    if (msg.includes('温度')) env.temp = extractNum(msg);
+                    if (msg.includes('湿度')) env.hum = extractNum(msg);
+                    if (msg.includes('灯光')) light.isOn = msg.includes('开启');
+                    if (msg.includes('亮度')) light.val = parseInt(extractNum(msg));
+                    if (msg.includes('大门')) door.isOpen = msg.includes('开启');
+                }
+
+                // 门禁消息 (通配符匹配)
+                if (topic.includes('door')) {
+                    door.lastMsg = msg;
+                    
+                    // 4. 处理开门确认信号 (这是之前遗漏的)
+                    if (msg.includes('door open')) {
+                        door.isOpen = true;
+                        log('门已开启');
+                    }
+                    if (msg.includes('door close')) {
+                        door.isOpen = false;
+                        log('门已关闭');
+                    }
+                    
+                    // 处理报警
+                    if (msg.includes('客人') || msg.includes('错误')) {
+                        triggerAlert();
+                    }
+                }
+            };
+
+            // 发送通用指令
+            const sendCmd = (cmd) => {
+                if (!client.value) return;
+                client.value.publish(config.topicCmd, cmd);
+                log('发送: ' + cmd);
+            };
+
+            // 发送门禁指令
+            const sendDoorCmd = (cmd) => {
+                if (!client.value) return;
+                client.value.publish(config.topicDoorPub, cmd);
+                log('发送门控: ' + cmd);
+            };
+
+            const sendLightVal = () => {
+                sendCmd(`light:${light.val}`);
+            };
+
+            // 手动查询 (只发一次，不轮询)
+            const manualQuery = () => {
+                loading.value = true;
+                sendCmd('get_status');
+                setTimeout(() => loading.value = false, 1000);
+            };
+
+            const extractNum = (str) => {
+                const match = str.match(/-?\d+(\.\d+)?/);
+                return match ? match[0] : '--';
+            };
+
+            const triggerAlert = () => {
+                door.isAlert = true;
+                setTimeout(() => door.isAlert = false, 3000);
+            };
+
+            const log = (msg) => {
+                logs.value.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`);
+            };
+
+            onMounted(() => {
+                connectMQTT();
+            });
+
+            return {
+                isConnected, env, light, door, logs, loading,
+                manualQuery, sendCmd, sendDoorCmd, sendLightVal
+            };
+        }
+    }).mount('#app');
+</script>
+
+</body>
+</html>
