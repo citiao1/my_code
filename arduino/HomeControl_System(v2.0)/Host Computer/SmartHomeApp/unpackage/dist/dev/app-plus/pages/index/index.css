@@ -1,72 +1,173 @@
 
-/* 样式与之前保持一致，无需改动 */
-.content { padding: 20px; background-color: #f4f6f9; min-height: 100vh;
+/* 页面背景 - 现代灰蓝渐变 */
+.content {
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  box-sizing: border-box;
 }
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+
+/* 顶部栏 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding: 0 5px;
 }
-.title { font-size: 20px; font-weight: bold; color: #333;
+.title-box { display: flex; flex-direction: column;
 }
-.status-bar { display: flex; align-items: center; gap: 10px;
+.title { font-size: 24px; font-weight: 800; color: #2c3e50; margin-bottom: 2px;
 }
-.badge { font-size: 12px; padding: 4px 8px; background: #eee; border-radius: 10px; color: #666;
+.subtitle { font-size: 12px; color: #7f8c8d; letter-spacing: 1px;
 }
-.badge.online { background: #d4edda; color: #155724;
+.status-bar {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.6);
+  padding: 6px 12px;
+  border-radius: 20px;
+  -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
 }
-.refresh-btn { font-size: 12px; padding: 5px 10px; background: #007bff; color: white; border-radius: 20px; border:none;
+.status-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: #ccc;
 }
-.card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+.status-dot.online { background: #2ecc71; box-shadow: 0 0 5px #2ecc71;
 }
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;
+.status-dot.reconnecting { background: #f1c40f; animation: pulse 1s infinite;
 }
-.card-title { font-size: 16px; font-weight: bold; color: #333;
+.status-text { font-size: 12px; color: #555; font-weight: bold; margin-right: 8px;
 }
-.state-text { font-size: 14px; color: #999;
+.refresh-icon { font-size: 14px; color: #555; transition: transform 0.5s;
 }
-.state-text.on { color: #ffc107; font-weight: bold;
+.refresh-icon.spinning { animation: spin 1s infinite linear;
 }
-.state-text.open { color: #dc3545; font-weight: bold;
+
+/* 玻璃拟态通用卡片 */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: transform 0.2s;
 }
-.env-grid { display: flex; justify-content: space-around; text-align: center; margin: 15px 0;
+.glass-card:active { transform: scale(0.995);
 }
-.env-val { font-size: 28px; font-weight: bold;
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
 }
-.env-val.temp { color: #e67e22;
+.card-title { font-size: 16px; font-weight: bold; color: #2c3e50;
 }
-.env-val.hum { color: #3498db;
+
+/* 摄像头卡片 */
+.video-box { 
+  width: 100%; height: 220px; background: #222; border-radius: 12px; 
+  position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
 }
-.env-unit { font-size: 12px; color: #999; margin-left: 2px;
+.overlay { display: flex; flex-direction: column; align-items: center; color: rgba(255,255,255,0.7); gap: 10px; font-size: 14px;
 }
-.env-label { font-size: 12px; color: #666; display: block; margin-top: 5px;
+.icon { font-size: 30px; margin-bottom: 5px;
 }
-.update-time { text-align: center; font-size: 10px; color: #ccc; margin-top: 10px;
+.cam-controls { margin-top: 20px;
 }
-.btn-group { display: flex; gap: 15px; margin-bottom: 15px;
+.main-btn {
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  color: white; border: none; border-radius: 12px; height: 44px; font-size: 16px; font-weight: bold;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3); transition: 0.3s;
 }
-.btn { flex: 1; height: 44px; line-height: 44px; text-align: center; border-radius: 8px; font-size: 16px; border: none; color: white;
+.main-btn.active { background: #ff6b6b; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
-.btn-yellow { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #333;
+.sub-btns { display: flex; gap: 12px; margin-top: 15px;
 }
-.btn-gray { background: #bdc3c7;
+.sub-btn { flex: 1; height: 38px; border-radius: 10px; background: #f1f2f6; color: #555; font-size: 14px; font-weight: bold; border: none;
 }
-.btn-green { background: linear-gradient(135deg, #2ecc71, #27ae60);
+.sub-btn.action { background: #2ecc71; color: white;
 }
-.btn-red { background: linear-gradient(135deg, #e74c3c, #c0392b);
+.sub-btn.action.stop { background: #e74c3c;
 }
-.slider-area { background: #f8f9fa; padding: 15px; border-radius: 10px;
+.fade-in { animation: fadeIn 0.5s ease;
 }
-.door-card.alert { animation: flash 1s infinite; border: 2px solid red;
+
+/* 环境小卡片 */
+.grid-row { display: flex; gap: 15px; margin-bottom: 20px;
 }
-@keyframes flash {
+.mini-card { flex: 1; display: flex; align-items: center; padding: 15px; margin-bottom: 0;
+}
+.mini-icon { font-size: 24px; margin-right: 12px; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+}
+.mini-icon.temp { background: rgba(255, 159, 67, 0.1); color: #ff9f43;
+}
+.mini-icon.hum { background: rgba(84, 160, 255, 0.1); color: #54a0ff;
+}
+.mini-val { font-size: 22px; font-weight: 800; color: #333;
+}
+.mini-unit { font-size: 12px; color: #999; margin-left: 5px;
+}
+
+/* 灯光卡片优化 */
+.light-card { position: relative; overflow: hidden;
+}
+.light-card.light-on { background: rgba(255, 255, 255, 0.95); border: 2px solid #f1c40f;
+}
+.light-bulb { font-size: 28px; filter: grayscale(100%); transition: all 0.5s;
+}
+.light-bulb.on { filter: grayscale(0%); text-shadow: 0 0 20px #f1c40f; transform: scale(1.1);
+}
+.light-status-text { font-size: 12px; color: #999; margin-left: 8px;
+}
+.switch-group { display: flex; background: #f1f2f6; border-radius: 10px; padding: 4px; margin-bottom: 20px;
+}
+.switch-btn { 
+  flex: 1; text-align: center; padding: 10px 0; font-size: 14px; font-weight: bold; color: #7f8c8d; border-radius: 8px; transition: 0.3s;
+}
+.switch-btn.active { background: white; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.slider-container { background: linear-gradient(90deg, #333, #666); padding: 15px; border-radius: 12px; color: white;
+}
+.slider-label { font-size: 12px; margin-bottom: 5px; display: block; opacity: 0.8;
+}
+
+/* 门禁卡片 */
+.door-status-tag { 
+  font-size: 12px; padding: 4px 10px; border-radius: 20px; background: #ff6b6b; color: white; font-weight: bold;
+}
+.door-status-tag.open { background: #2ecc71;
+}
+.door-btns { display: flex; gap: 15px;
+}
+.door-btn { 
+  flex: 1; height: 50px; border-radius: 12px; border: none; font-size: 16px; font-weight: bold; color: white;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.door-btn.open { background: linear-gradient(135deg, #2ecc71, #26de81); box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+.door-btn.close { background: linear-gradient(135deg, #ff6b6b, #ee5253); box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+/* 动画 */
+@keyframes spin {
+100% { transform: rotate(360deg);
+}
+}
+@keyframes pulse {
 0% { opacity: 1;
 }
-50% { opacity: 0.8; background-color: #fff0f0;
+50% { opacity: 0.5;
 }
 100% { opacity: 1;
 }
 }
-.msg-box { background: #fff3cd; color: #856404; padding: 10px; font-size: 12px; border-radius: 6px; text-align: center;
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px);
 }
-.log-box { background: #2c3e50; color: #7bed9f; padding: 10px; height: 120px; border-radius: 8px; font-size: 10px; overflow-y: scroll;
+to { opacity: 1; transform: translateY(0);
 }
-.log-item { margin-bottom: 4px; border-bottom: 1px dashed #444;
+}
+.msg-box { background: #fff3cd; color: #856404; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 13px; text-align: center; border: 1px solid #ffeeba;
+}
+.door-control.alert { animation: pulse 0.5s infinite; border: 2px solid #ff4757;
 }
