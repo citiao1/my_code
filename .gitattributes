@@ -1,0 +1,1 @@
+my_tools/f2_translate.exe filter=lfs diff=lfs merge=lfs -text
