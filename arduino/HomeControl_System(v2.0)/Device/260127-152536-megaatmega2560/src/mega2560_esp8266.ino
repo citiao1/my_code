@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include<DHT.h>
+#include <Servo.h>
 long time1=0;
 long key_time=0;
 int led_state=0;
@@ -18,6 +19,14 @@ long dht_time=0;
 float last_humidity=0;
 float last_temperature=0;
 bool statusChanged = false;
+const int pinX = A9;  
+const int pinY = A8;  
+const int pinSW = 2;  
+long ps2_timer = 0;
+int command_angleX=90;
+int command_angleY=90;
+Servo myServoX;
+Servo myServoY;
 DHT dht(13,DHT11);
 struct home_status{
   float humidity=0;
@@ -37,6 +46,50 @@ void setup() {
   pinMode(7,INPUT_PULLUP);//门禁按钮
   pinMode(A0,INPUT);//亮度调节旋钮
   analogWrite(11,0);//初始关闭灯光
+  pinMode(pinX, INPUT);//摇杆X轴
+  pinMode(pinY, INPUT);//摇杆Y轴
+  pinMode(pinSW, INPUT_PULLUP);//摇杆按键
+  myServoX.attach(5);//舵机X轴
+  myServoY.attach(6);//舵机Y轴
+}
+void ps2_pro() {//摇杆处理
+
+  if (millis() - ps2_timer < 20) return; 
+  ps2_timer = millis();
+
+  long totalX = 0;
+  long totalY = 0;
+  for (int i = 0; i < 10; i++) {
+    totalX += analogRead(pinX);
+    totalY += analogRead(pinY);
+    delay(1);
+  }
+  int avgX = totalX / 10;
+  int avgY = totalY / 10;
+  int sw = digitalRead(pinSW);
+
+  int angleX = map(avgX, 0, 700, 90, -90); 
+  int angleY = map(avgY, 0, 700, -90, 90);
+
+  if (angleX > 45) command_angleX++;
+  if (angleX < -45) command_angleX--;
+  
+  if (angleY > 45) command_angleY++;
+  if (angleY < -45) command_angleY--;
+
+
+  command_angleX = constrain(command_angleX, 0, 180);
+  command_angleY = constrain(command_angleY, 0, 180);
+
+
+  if (sw == LOW) {
+    command_angleX = 90;
+    command_angleY = 90;
+  }
+}
+void Servo_app(){//舵机应用
+  myServoX.write(command_angleX);
+  myServoY.write(command_angleY);
 }
 int extractNumber(String str) {
   String numStr = "";
@@ -244,6 +297,21 @@ void loop() {
       else if(command=="get_status"){
         statusChanged=true;
         
+      }else if(command=="CamX_up"){
+        command_angleX+=5;
+        command_angleX=constrain(command_angleX,0,180);
+      }else if(command=="CamX_down"){
+        command_angleX-=5;
+        command_angleX=constrain(command_angleX,0,180);
+      }else if(command=="CamY_up"){
+        command_angleY+=5;
+        command_angleY=constrain(command_angleY,0,180);
+      }else if(command=="CamY_down"){
+        command_angleY-=5;
+        command_angleY=constrain(command_angleY,0,180);
+      }else if(command=="Cam_center"){
+        command_angleX=90;
+        command_angleY=90;
       }
       else{
         Serial.println("无效指令");
@@ -257,7 +325,9 @@ void loop() {
   }
   key_pro();
   knod_pro();
+  ps2_pro();
   sound_app(200);
+  Servo_app();
   dht_app();
   led_app(led_state,light);
 } 
