@@ -31,13 +31,6 @@ if (uni.restoreGlobal) {
 }
 (function(vue) {
   "use strict";
-  function formatAppLog(type, filename, ...args) {
-    if (uni.__log__) {
-      uni.__log__(type, filename, ...args);
-    } else {
-      console[type].apply(console, [...args, filename]);
-    }
-  }
   if (typeof window === "undefined") {
     globalThis.window = globalThis;
   }
@@ -1174,11 +1167,17 @@ if (uni.restoreGlobal) {
         },
         env: { temp: "--", hum: "--" },
         light: { isOn: false, val: 0 },
-        door: { isOpen: false, lastMsg: "", isAlert: false },
+        door: { isOpen: false, lastMsg: "" },
+        logs: [],
+        // 本地 AI 相关
         isCameraOn: false,
         isModelLoading: false,
         isRecognizing: false,
         faceStatus: "",
+        // 远程 ESP32 相关
+        camIP: "192.168.1.16",
+        // 默认内置 IP
+        showRemote: false,
         commandData: { type: "init", timestamp: 0 }
       };
     },
@@ -1196,21 +1195,26 @@ if (uni.restoreGlobal) {
         if (this.isReconnecting)
           return "重连中";
         return "离线";
+      },
+      streamUrl() {
+        return this.camIP ? `http://${this.camIP}:81/stream` : "";
       }
     },
     onLoad() {
-      setTimeout(() => this.connectMQTT(), 1500);
-    },
-    onUnload() {
-      if (this.client && this.isConnected) {
-        try {
-          this.client.disconnect();
-        } catch (e) {
-        }
-      }
-      this.commandData = { type: "stopCam", timestamp: Date.now() };
+      setTimeout(() => this.connectMQTT(), 1e3);
     },
     methods: {
+      // --- 远程监控逻辑 ---
+      toggleRemote() {
+        if (!this.camIP)
+          return uni.showToast({ title: "请输入IP", icon: "none" });
+        this.showRemote = !this.showRemote;
+      },
+      // 由 renderjs 调用，发送摇杆指令
+      sendJoystickCmd(cmd) {
+        this.sendCmd(cmd);
+      },
+      // --- 本地 AI 逻辑 ---
       toggleCamera() {
         this.commandData = { type: this.isCameraOn ? "stopCam" : "startCam", timestamp: Date.now() };
       },
@@ -1220,6 +1224,7 @@ if (uni.restoreGlobal) {
       triggerRecognize() {
         this.commandData = { type: this.isRecognizing ? "stopRec" : "startRec", timestamp: Date.now() };
       },
+      // 接收 renderjs 的状态更新
       onAiStatus(e) {
         if (e.camera !== void 0)
           this.isCameraOn = e.camera;
@@ -1230,17 +1235,17 @@ if (uni.restoreGlobal) {
         if (e.msg)
           this.faceStatus = e.msg;
       },
-      onFaceMatch(e) {
+      onFaceMatch() {
         uni.showToast({ title: "欢迎回家！", icon: "success" });
         this.sendDoorCmd("door open");
         this.commandData = { type: "stopRec", timestamp: Date.now() };
       },
-      // --- 调试版连接代码 ---
+      // --- MQTT 核心 ---
       connectMQTT() {
         if (this.isConnected)
           return;
         this.isReconnecting = true;
-        let clientId = "AppAI_" + Math.random().toString(16).substr(2, 8);
+        let clientId = "App_" + Math.random().toString(16).substr(2, 8);
         try {
           this.client = new Paho$1.MQTT.Client(this.config.host, this.config.port, this.config.path, clientId);
         } catch (e) {
@@ -1249,7 +1254,6 @@ if (uni.restoreGlobal) {
         this.client.onConnectionLost = (res) => {
           this.isConnected = false;
           this.isReconnecting = true;
-          formatAppLog("log", "at pages/index/index.vue:195", "连接断开:", res.errorMessage);
           setTimeout(() => this.connectMQTT(), 5e3);
         };
         this.client.onMessageArrived = (msg) => this.handleMessage(msg.destinationName, msg.payloadString);
@@ -1258,19 +1262,15 @@ if (uni.restoreGlobal) {
           cleanSession: true,
           keepAliveInterval: 60,
           onSuccess: () => {
-            formatAppLog("log", "at pages/index/index.vue:207", "✅ MQTT 连接成功!");
             this.isConnected = true;
             this.isReconnecting = false;
             this.client.subscribe(this.config.subHome);
             this.client.subscribe(this.config.subDoor);
             this.manualQuery();
           },
-          onFailure: (e) => {
+          onFailure: () => {
             this.isConnected = false;
-            setTimeout(() => {
-              if (!this.isConnected)
-                this.connectMQTT();
-            }, 3e3);
+            setTimeout(() => this.connectMQTT(), 3e3);
           }
         });
       },
@@ -1293,36 +1293,23 @@ if (uni.restoreGlobal) {
             this.door.isOpen = true;
           if (msg.includes("door close"))
             this.door.isOpen = false;
-          if (msg.includes("客人") || msg.includes("错误")) {
-            this.door.isAlert = true;
-            setTimeout(() => this.door.isAlert = false, 3e3);
-            uni.vibrateLong();
-          }
+          this.logs.unshift({ time: (/* @__PURE__ */ new Date()).toLocaleTimeString(), msg });
+          if (this.logs.length > 20)
+            this.logs.pop();
         }
       },
-      // --- 修复发送指令的 Bug ---
       sendCmd(cmd) {
         if (this.client && this.isConnected) {
-          try {
-            let message = new Paho$1.MQTT.Message(cmd);
-            message.destinationName = this.config.pubCmd;
-            this.client.send(message);
-            formatAppLog("log", "at pages/index/index.vue:254", "发送成功:", cmd);
-          } catch (e) {
-            formatAppLog("error", "at pages/index/index.vue:255", "发送失败:", e);
-          }
+          let m = new Paho$1.MQTT.Message(cmd);
+          m.destinationName = this.config.pubCmd;
+          this.client.send(m);
         }
       },
       sendDoorCmd(cmd) {
         if (this.client && this.isConnected) {
-          try {
-            let message = new Paho$1.MQTT.Message(cmd);
-            message.destinationName = this.config.pubDoor;
-            this.client.send(message);
-            formatAppLog("log", "at pages/index/index.vue:265", "门禁指令发送:", cmd);
-          } catch (e) {
-            formatAppLog("error", "at pages/index/index.vue:266", "发送失败:", e);
-          }
+          let m = new Paho$1.MQTT.Message(cmd);
+          m.destinationName = this.config.pubDoor;
+          this.client.send(m);
         }
       },
       onSliderChange(e) {
@@ -1373,221 +1360,296 @@ if (uni.restoreGlobal) {
           )
         ])
       ]),
-      vue.createElementVNode("div", { class: "card glass-card" }, [
-        vue.createElementVNode("div", { class: "card-header" }, [
-          vue.createElementVNode("text", { class: "card-title" }, "📷 智能门禁"),
-          vue.createElementVNode(
-            "div",
-            {
-              class: vue.normalizeClass(["door-status-tag", { open: $data.door.isOpen }])
-            },
-            vue.toDisplayString($data.door.isOpen ? "🔓 已开启" : "🔒 已锁"),
-            3
-            /* TEXT, CLASS */
-          )
-        ]),
-        vue.createElementVNode("div", {
-          id: "video-container",
-          class: "video-box"
-        }, [
-          !$data.isCameraOn ? (vue.openBlock(), vue.createElementBlock("div", {
-            key: 0,
-            class: "overlay"
-          }, [
-            vue.createElementVNode("text", { class: "icon" }, "📸"),
-            vue.createElementVNode("text", null, "点击启动摄像头")
-          ])) : vue.createCommentVNode("v-if", true),
-          $data.isModelLoading && $data.isCameraOn ? (vue.openBlock(), vue.createElementBlock("div", {
-            key: 1,
-            class: "overlay loading"
-          }, [
-            vue.createElementVNode("text", null, "⌛ AI 模型加载中...")
-          ])) : vue.createCommentVNode("v-if", true)
-        ]),
-        vue.createElementVNode("div", { class: "cam-controls" }, [
-          vue.createElementVNode(
-            "button",
-            {
-              class: vue.normalizeClass(["main-btn", { active: $data.isCameraOn }]),
-              onClick: _cache[1] || (_cache[1] = (...args) => $options.toggleCamera && $options.toggleCamera(...args))
-            },
-            vue.toDisplayString($data.isCameraOn ? "关闭摄像头" : "启动识别系统"),
-            3
-            /* TEXT, CLASS */
-          ),
-          $data.isCameraOn && !$data.isModelLoading ? (vue.openBlock(), vue.createElementBlock("div", {
-            key: 0,
-            class: "sub-btns fade-in"
-          }, [
-            vue.createElementVNode("button", {
-              class: "sub-btn",
-              onClick: _cache[2] || (_cache[2] = (...args) => $options.triggerRegister && $options.triggerRegister(...args))
-            }, "录入人脸"),
-            vue.createElementVNode(
-              "button",
-              {
-                class: vue.normalizeClass(["sub-btn action", { stop: $data.isRecognizing }]),
-                onClick: _cache[3] || (_cache[3] = (...args) => $options.triggerRecognize && $options.triggerRecognize(...args))
-              },
-              vue.toDisplayString($data.isRecognizing ? "停止识别" : "开始开门"),
-              3
-              /* TEXT, CLASS */
-            )
-          ])) : vue.createCommentVNode("v-if", true)
-        ]),
-        $data.faceStatus ? (vue.openBlock(), vue.createElementBlock(
-          "div",
-          {
-            key: 0,
-            class: "tips"
-          },
-          vue.toDisplayString($data.faceStatus),
-          1
-          /* TEXT */
-        )) : vue.createCommentVNode("v-if", true)
-      ]),
-      vue.createElementVNode("div", { class: "grid-row" }, [
-        vue.createElementVNode("div", { class: "mini-card glass-card" }, [
-          vue.createElementVNode("div", { class: "mini-icon temp" }, "🌡️"),
-          vue.createElementVNode("div", { class: "mini-info" }, [
-            vue.createElementVNode(
-              "text",
-              { class: "mini-val" },
-              vue.toDisplayString($data.env.temp),
-              1
-              /* TEXT */
-            ),
-            vue.createElementVNode("text", { class: "mini-unit" }, "℃ 温度")
-          ])
-        ]),
-        vue.createElementVNode("div", { class: "mini-card glass-card" }, [
-          vue.createElementVNode("div", { class: "mini-icon hum" }, "💧"),
-          vue.createElementVNode("div", { class: "mini-info" }, [
-            vue.createElementVNode(
-              "text",
-              { class: "mini-val" },
-              vue.toDisplayString($data.env.hum),
-              1
-              /* TEXT */
-            ),
-            vue.createElementVNode("text", { class: "mini-unit" }, "% 湿度")
-          ])
-        ])
-      ]),
-      vue.createElementVNode(
-        "div",
-        {
-          class: vue.normalizeClass(["card glass-card light-card", { "light-on": $data.light.isOn }])
-        },
-        [
-          vue.createElementVNode("div", { class: "card-header" }, [
-            vue.createElementVNode("div", { class: "header-left" }, [
-              vue.createElementVNode("text", { class: "card-title" }, "💡 智能灯光"),
-              vue.createElementVNode(
-                "text",
-                { class: "light-status-text" },
-                vue.toDisplayString($data.light.isOn ? "已开启" : "已关闭"),
-                1
-                /* TEXT */
-              )
+      vue.createElementVNode("div", { class: "container" }, [
+        vue.createElementVNode("div", { class: "col-1" }, [
+          vue.createElementVNode("div", { class: "card glass-card" }, [
+            vue.createElementVNode("div", { class: "card-header" }, [
+              vue.createElementVNode("text", { class: "card-title" }, "📊 环境状态")
             ]),
-            vue.createElementVNode(
-              "div",
-              {
-                class: vue.normalizeClass(["light-bulb", { on: $data.light.isOn }]),
-                style: vue.normalizeStyle({ opacity: $data.light.isOn ? $data.light.val / 100 + 0.3 : 0.3 })
-              },
-              " 💡 ",
-              6
-              /* CLASS, STYLE */
-            )
-          ]),
-          vue.createElementVNode("div", { class: "light-controls" }, [
-            vue.createElementVNode("div", { class: "switch-group" }, [
+            vue.createElementVNode("div", { class: "dashboard-grid" }, [
+              vue.createElementVNode("div", { class: "stat-item" }, [
+                vue.createElementVNode("div", { class: "mini-icon temp" }, "🌡️"),
+                vue.createElementVNode("div", { class: "mini-val" }, [
+                  vue.createTextVNode(
+                    vue.toDisplayString($data.env.temp),
+                    1
+                    /* TEXT */
+                  ),
+                  vue.createElementVNode("text", { class: "unit" }, "℃")
+                ])
+              ]),
+              vue.createElementVNode("div", { class: "stat-item" }, [
+                vue.createElementVNode("div", { class: "mini-icon hum" }, "💧"),
+                vue.createElementVNode("div", { class: "mini-val" }, [
+                  vue.createTextVNode(
+                    vue.toDisplayString($data.env.hum),
+                    1
+                    /* TEXT */
+                  ),
+                  vue.createElementVNode("text", { class: "unit" }, "%")
+                ])
+              ]),
               vue.createElementVNode(
                 "div",
                 {
-                  class: vue.normalizeClass(["switch-btn", { active: $data.light.isOn }]),
-                  onClick: _cache[4] || (_cache[4] = ($event) => $options.sendCmd("ON"))
+                  class: vue.normalizeClass(["stat-item", { "on": $data.light.isOn }])
                 },
-                "ON",
+                [
+                  vue.createElementVNode("div", { class: "mini-icon light" }, "💡"),
+                  vue.createElementVNode(
+                    "div",
+                    { class: "mini-val" },
+                    vue.toDisplayString($data.light.isOn ? "ON" : "OFF"),
+                    1
+                    /* TEXT */
+                  )
+                ],
                 2
                 /* CLASS */
               ),
               vue.createElementVNode(
                 "div",
                 {
-                  class: vue.normalizeClass(["switch-btn", { active: !$data.light.isOn }]),
-                  onClick: _cache[5] || (_cache[5] = ($event) => $options.sendCmd("OFF"))
+                  class: vue.normalizeClass(["stat-item", { "open": $data.door.isOpen }])
                 },
-                "OFF",
+                [
+                  vue.createElementVNode("div", { class: "mini-icon door" }, "🔒"),
+                  vue.createElementVNode(
+                    "div",
+                    {
+                      class: "mini-val",
+                      style: { "font-size": "16px" }
+                    },
+                    vue.toDisplayString($data.door.isOpen ? "开启" : "关闭"),
+                    1
+                    /* TEXT */
+                  )
+                ],
                 2
                 /* CLASS */
               )
+            ])
+          ]),
+          vue.createElementVNode("div", { class: "card glass-card" }, [
+            vue.createElementVNode("div", { class: "card-header" }, [
+              vue.createElementVNode("text", { class: "card-title" }, "🎛️ 快速控制")
             ]),
-            vue.createElementVNode("div", { class: "slider-container" }, [
+            vue.createElementVNode("div", { class: "control-row" }, [
+              vue.createElementVNode("button", {
+                class: "btn btn-yellow",
+                onClick: _cache[1] || (_cache[1] = ($event) => $options.sendCmd("ON"))
+              }, "💡 开灯"),
+              vue.createElementVNode("button", {
+                class: "btn btn-gray",
+                onClick: _cache[2] || (_cache[2] = ($event) => $options.sendCmd("OFF"))
+              }, "🌑 关灯")
+            ]),
+            vue.createElementVNode("div", { class: "slider-box" }, [
               vue.createElementVNode(
                 "text",
-                { class: "slider-label" },
+                { class: "label" },
                 "亮度 " + vue.toDisplayString($data.light.val) + "%",
                 1
                 /* TEXT */
               ),
               vue.createElementVNode("slider", {
                 value: $data.light.val,
-                onChange: _cache[6] || (_cache[6] = (...args) => $options.onSliderChange && $options.onSliderChange(...args)),
+                onChange: _cache[3] || (_cache[3] = (...args) => $options.onSliderChange && $options.onSliderChange(...args)),
                 min: "0",
                 max: "100",
                 "active-color": "#ffd700",
-                backgroundColor: "rgba(255,255,255,0.2)",
-                "block-size": "20",
-                "block-color": "#fff"
+                "block-size": "20"
               }, null, 40, ["value"])
+            ]),
+            vue.createElementVNode("div", {
+              class: "control-row",
+              style: { "margin-top": "15px" }
+            }, [
+              vue.createElementVNode("button", {
+                class: "btn btn-green",
+                onClick: _cache[4] || (_cache[4] = ($event) => $options.sendDoorCmd("door open"))
+              }, "🔓 开门"),
+              vue.createElementVNode("button", {
+                class: "btn btn-red",
+                onClick: _cache[5] || (_cache[5] = ($event) => $options.sendDoorCmd("door close"))
+              }, "🔒 关门")
+            ])
+          ]),
+          vue.createElementVNode("div", { class: "card glass-card" }, [
+            vue.createElementVNode("div", { class: "card-header" }, [
+              vue.createElementVNode("text", { class: "card-title" }, "📝 系统日志")
+            ]),
+            vue.createElementVNode("div", { class: "log-box" }, [
+              (vue.openBlock(true), vue.createElementBlock(
+                vue.Fragment,
+                null,
+                vue.renderList($data.logs, (log, i) => {
+                  return vue.openBlock(), vue.createElementBlock("div", {
+                    key: i,
+                    class: "log-line"
+                  }, [
+                    vue.createElementVNode(
+                      "text",
+                      { class: "log-time" },
+                      "[" + vue.toDisplayString(log.time) + "]",
+                      1
+                      /* TEXT */
+                    ),
+                    vue.createTextVNode(
+                      " " + vue.toDisplayString(log.msg),
+                      1
+                      /* TEXT */
+                    )
+                  ]);
+                }),
+                128
+                /* KEYED_FRAGMENT */
+              ))
             ])
           ])
-        ],
-        2
-        /* CLASS */
-      ),
-      vue.createElementVNode(
-        "div",
-        {
-          class: vue.normalizeClass(["card glass-card door-control", { alert: $data.door.isAlert }])
-        },
-        [
-          vue.createElementVNode("div", { class: "card-header" }, [
-            vue.createElementVNode("text", { class: "card-title" }, "🔒 远程控制")
-          ]),
-          vue.createElementVNode("div", { class: "door-btns" }, [
-            vue.createElementVNode("button", {
-              class: "door-btn open",
-              onClick: _cache[7] || (_cache[7] = ($event) => $options.sendDoorCmd("door open"))
+        ]),
+        vue.createElementVNode("div", { class: "col-2" }, [
+          vue.createElementVNode("div", { class: "card glass-card main-cam-card" }, [
+            vue.createElementVNode("div", { class: "card-header" }, [
+              vue.createElementVNode("text", { class: "card-title" }, "📸 本地门禁 (AI)"),
+              vue.createElementVNode(
+                "div",
+                {
+                  class: vue.normalizeClass(["tag", { active: $data.isCameraOn }])
+                },
+                vue.toDisplayString($data.isCameraOn ? "运行中" : "已停止"),
+                3
+                /* TEXT, CLASS */
+              )
+            ]),
+            vue.createElementVNode("div", {
+              class: "video-box",
+              id: "local-video-container"
             }, [
-              vue.createElementVNode("text", null, "🔓"),
-              vue.createTextVNode(" 开门 ")
+              !$data.isCameraOn ? (vue.openBlock(), vue.createElementBlock("div", {
+                key: 0,
+                class: "overlay"
+              }, [
+                vue.createElementVNode("text", { class: "icon" }, "📷"),
+                vue.createElementVNode("text", null, "点击下方启动摄像头")
+              ])) : vue.createCommentVNode("v-if", true),
+              $data.isModelLoading && $data.isCameraOn ? (vue.openBlock(), vue.createElementBlock("div", {
+                key: 1,
+                class: "overlay loading"
+              }, [
+                vue.createElementVNode("text", null, "⌛ AI 模型加载中...")
+              ])) : vue.createCommentVNode("v-if", true)
+            ]),
+            vue.createElementVNode("div", { class: "cam-controls" }, [
+              vue.createElementVNode(
+                "button",
+                {
+                  class: vue.normalizeClass(["main-btn", { active: $data.isCameraOn }]),
+                  onClick: _cache[6] || (_cache[6] = (...args) => $options.toggleCamera && $options.toggleCamera(...args))
+                },
+                vue.toDisplayString($data.isCameraOn ? "关闭摄像头" : "① 启动识别系统"),
+                3
+                /* TEXT, CLASS */
+              ),
+              $data.isCameraOn && !$data.isModelLoading ? (vue.openBlock(), vue.createElementBlock("div", {
+                key: 0,
+                class: "sub-btns fade-in"
+              }, [
+                vue.createElementVNode("button", {
+                  class: "sub-btn",
+                  onClick: _cache[7] || (_cache[7] = (...args) => $options.triggerRegister && $options.triggerRegister(...args))
+                }, "② 录入人脸"),
+                vue.createElementVNode(
+                  "button",
+                  {
+                    class: vue.normalizeClass(["sub-btn action", { stop: $data.isRecognizing }]),
+                    onClick: _cache[8] || (_cache[8] = (...args) => $options.triggerRecognize && $options.triggerRecognize(...args))
+                  },
+                  vue.toDisplayString($data.isRecognizing ? "⏹ 停止识别" : "③ 开始刷脸开门"),
+                  3
+                  /* TEXT, CLASS */
+                )
+              ])) : vue.createCommentVNode("v-if", true)
+            ]),
+            $data.faceStatus ? (vue.openBlock(), vue.createElementBlock(
+              "div",
+              {
+                key: 0,
+                class: "tips"
+              },
+              vue.toDisplayString($data.faceStatus),
+              1
+              /* TEXT */
+            )) : vue.createCommentVNode("v-if", true)
+          ])
+        ]),
+        vue.createElementVNode("div", { class: "col-3" }, [
+          vue.createElementVNode("div", { class: "card glass-card" }, [
+            vue.createElementVNode("div", { class: "card-header" }, [
+              vue.createElementVNode("text", { class: "card-title" }, "🎥 远程监控 (ESP32)")
+            ]),
+            vue.createElementVNode("div", { class: "ip-input-box" }, [
+              vue.withDirectives(vue.createElementVNode(
+                "input",
+                {
+                  class: "ip-input",
+                  type: "text",
+                  "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => $data.camIP = $event),
+                  placeholder: "输入 ESP32 IP"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [vue.vModelText, $data.camIP]
+              ])
+            ]),
+            vue.createElementVNode("div", { class: "video-box remote-box" }, [
+              !$data.showRemote ? (vue.openBlock(), vue.createElementBlock("div", {
+                key: 0,
+                class: "overlay"
+              }, [
+                vue.createElementVNode("text", null, "点击连接查看画面")
+              ])) : vue.createCommentVNode("v-if", true),
+              $data.showRemote ? (vue.openBlock(), vue.createElementBlock("image", {
+                key: 1,
+                src: $options.streamUrl,
+                class: "remote-img",
+                mode: "aspectFit"
+              }, null, 8, ["src"])) : vue.createCommentVNode("v-if", true)
+            ]),
+            vue.createElementVNode(
+              "button",
+              {
+                class: vue.normalizeClass(["btn", $data.showRemote ? "btn-red" : "btn-blue"]),
+                style: { "width": "100%", "margin-top": "10px" },
+                onClick: _cache[10] || (_cache[10] = (...args) => $options.toggleRemote && $options.toggleRemote(...args))
+              },
+              vue.toDisplayString($data.showRemote ? "断开连接" : "连接监控"),
+              3
+              /* TEXT, CLASS */
+            ),
+            vue.createElementVNode("div", { class: "divider" }),
+            vue.createElementVNode("div", {
+              class: "card-header",
+              style: { "margin-bottom": "5px" }
+            }, [
+              vue.createElementVNode("text", { class: "card-title" }, "🕹️ 云台控制")
+            ]),
+            vue.createElementVNode("div", {
+              id: "joystick-zone",
+              class: "joystick-area"
+            }, [
+              vue.createElementVNode("text", { class: "joystick-tip" }, "拖动控制方向")
             ]),
             vue.createElementVNode("button", {
-              class: "door-btn close",
-              onClick: _cache[8] || (_cache[8] = ($event) => $options.sendDoorCmd("door close"))
-            }, [
-              vue.createElementVNode("text", null, "🔒"),
-              vue.createTextVNode(" 关门 ")
-            ])
-          ]),
-          $data.door.lastMsg ? (vue.openBlock(), vue.createElementBlock(
-            "div",
-            {
-              key: 0,
-              class: "msg-box"
-            },
-            "🔔 " + vue.toDisplayString($data.door.lastMsg),
-            1
-            /* TEXT */
-          )) : vue.createCommentVNode("v-if", true)
-        ],
-        2
-        /* CLASS */
-      ),
+              class: "btn btn-gray",
+              style: { "margin-top": "10px" },
+              onClick: _cache[11] || (_cache[11] = ($event) => $options.sendCmd("Cam_center"))
+            }, "归位 (Reset)")
+          ])
+        ])
+      ]),
       vue.createElementVNode("div", {
         prop: vue.wp($data.commandData),
         "change:prop": _ctx.ai.receiveCommand,
@@ -1599,6 +1661,13 @@ if (uni.restoreGlobal) {
     block0(_sfc_main$1);
   const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__file", "C:/Users/123/Desktop/my_code/arduino/HomeControl_System(v2.0)/Host Computer/SmartHomeApp/pages/index/index.vue"]]);
   __definePage("pages/index/index", PagesIndexIndex);
+  function formatAppLog(type, filename, ...args) {
+    if (uni.__log__) {
+      uni.__log__(type, filename, ...args);
+    } else {
+      console[type].apply(console, [...args, filename]);
+    }
+  }
   const _sfc_main = {
     onLaunch: function() {
       formatAppLog("log", "at App.vue:4", "App Launch");

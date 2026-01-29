@@ -46,12 +46,21 @@ __renderjsModules["246eb7ca"] = (() => {
   });
   var stdin_default = {
     data() {
-      return { videoEl: null, stream: null, faceMatcher: null, loopTimer: null, myDescriptor: null, isLoaded: false };
+      return {
+        videoEl: null,
+        stream: null,
+        faceMatcher: null,
+        loopTimer: null,
+        myDescriptor: null,
+        isLoaded: false,
+        joystickManager: null,
+        joystickTimer: null
+      };
     },
     mounted() {
-    },
-    beforeDestroy() {
-      this.stopCamera();
+      setTimeout(() => {
+        this.loadNippleJS();
+      }, 1e3);
     },
     methods: {
       receiveCommand(n) {
@@ -75,6 +84,63 @@ __renderjsModules["246eb7ca"] = (() => {
             break;
         }
       },
+      // --- 摇杆逻辑 (Nipple.js) ---
+      loadNippleJS() {
+        if (window.nipplejs) {
+          this.initJoystick();
+          return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js";
+        script.onload = () => this.initJoystick();
+        document.head.appendChild(script);
+      },
+      initJoystick() {
+        const zone = document.getElementById("joystick-zone");
+        if (!zone || !window.nipplejs)
+          return;
+        this.joystickManager = window.nipplejs.create({
+          zone,
+          mode: "static",
+          position: { left: "50%", top: "50%" },
+          color: "#007bff",
+          size: 100
+        });
+        let currentCmd = "";
+        this.joystickManager.on("move", (evt, data) => {
+          if (data.direction) {
+            const dir = data.direction.angle;
+            let newCmd = "";
+            if (dir === "up")
+              newCmd = "CamY_up";
+            if (dir === "down")
+              newCmd = "CamY_down";
+            if (dir === "left")
+              newCmd = "CamX_down";
+            if (dir === "right")
+              newCmd = "CamX_up";
+            if (newCmd && newCmd !== currentCmd) {
+              if (this.joystickTimer) {
+                clearInterval(this.joystickTimer);
+                this.joystickTimer = null;
+              }
+              currentCmd = newCmd;
+              this.$ownerInstance.callMethod("sendJoystickCmd", newCmd);
+              this.joystickTimer = setInterval(() => {
+                this.$ownerInstance.callMethod("sendJoystickCmd", newCmd);
+              }, 150);
+            }
+          }
+        });
+        this.joystickManager.on("end", () => {
+          if (this.joystickTimer) {
+            clearInterval(this.joystickTimer);
+            this.joystickTimer = null;
+          }
+          currentCmd = "";
+        });
+      },
+      // --- AI 逻辑 (Face-api.js) ---
       startSequence() {
         return __async(this, null, function* () {
           if (this.isLoaded) {
@@ -83,12 +149,12 @@ __renderjsModules["246eb7ca"] = (() => {
           }
           this.updateOwner({ loading: true, msg: "\u6B63\u5728\u52A0\u8F7D AI..." });
           if (!window.faceapi)
-            yield this.loadScript();
+            yield this.loadFaceScript();
           yield this.initAI();
           this.startCamera();
         });
       },
-      loadScript() {
+      loadFaceScript() {
         return new Promise((resolve, reject) => {
           const script = document.createElement("script");
           script.src = "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js";
@@ -119,7 +185,7 @@ __renderjsModules["246eb7ca"] = (() => {
       },
       startCamera() {
         return __async(this, null, function* () {
-          const container = document.getElementById("video-container");
+          const container = document.getElementById("local-video-container");
           if (!this.videoEl) {
             this.videoEl = document.createElement("video");
             this.videoEl.style.cssText = "width:100%;height:100%;object-fit:cover;transform:scaleX(-1);border-radius:12px;";
