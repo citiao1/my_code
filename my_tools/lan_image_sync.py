@@ -1,204 +1,211 @@
-import time
 import threading
+import time
 import io
 import hashlib
 import socket
-import json
-from flask import Flask, send_file, jsonify, Response
-from PIL import ImageGrab
+import ctypes
+import os
+from PIL import Image, ImageTk, ImageGrab, ImageDraw
+from flask import Flask, send_file, jsonify
+import customtkinter as ctk
+import pystray # 引入系统托盘库
+from pystray import MenuItem as item
 
+# --- 1. 基础配置与后端逻辑 ---
+
+ctk.set_appearance_mode("System") 
+ctk.set_default_color_theme("blue")
+
+PORT = 5000
 app = Flask(__name__)
 
-# 全局变量
-global_img_bytes = None
-global_img_hash = "init"
-PORT = 5000
+# 全局状态
+class GlobalState:
+    img_bytes = None
+    img_hash = "init"
+    server_running = True
+    local_ip = "127.0.0.1"
 
-# --- 前端代码 (HTML + JS) ---
-# 核心逻辑：JS定时询问服务器，有新图则更新<img>标签并触发<a>标签下载
-HTML_TEMPLATE = """
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>剪贴板自动同步</title>
-    <style>
-        body { 
-            font-family: -apple-system, sans-serif; 
-            background: #1e1e1e; 
-            color: #fff;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            margin: 0; 
-            overflow: hidden;
-        }
-        .container {
-            text-align: center;
-            width: 90%;
-        }
-        #status {
-            color: #4CAF50;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        img { 
-            max-width: 100%; 
-            max-height: 70vh; 
-            border-radius: 12px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 2px solid #333;
-            transition: transform 0.3s;
-        }
-        .log {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #888;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div id="status">正在监听电脑剪贴板...</div>
-        <img id="clipboard-img" src="" alt="等待图片..." style="display:none;">
-        <div class="log" id="log-msg">暂无新图片</div>
-    </div>
-
-    <script>
-        let lastHash = "init";
-        
-        // 定时检查函数 (每1秒一次)
-        setInterval(checkUpdate, 1000);
-
-        function checkUpdate() {
-            fetch('/check_status')
-                .then(response => response.json())
-                .then(data => {
-                    // 如果服务器有图，且哈希值不等于当前显示的图
-                    if (data.has_image && data.hash !== lastHash) {
-                        console.log("检测到新图片: " + data.hash);
-                        updateImage(data.hash, data.timestamp);
-                    }
-                })
-                .catch(err => {
-                    document.getElementById('status').innerText = "连接断开，正在重连...";
-                    document.getElementById('status').style.color = "red";
-                });
-        }
-
-        function updateImage(newHash, timestamp) {
-            const imgUrl = '/image?t=' + timestamp;
-            const imgObj = document.getElementById('clipboard-img');
-            const logObj = document.getElementById('log-msg');
-            const statusObj = document.getElementById('status');
-
-            // 1. 更新显示的图片
-            imgObj.src = imgUrl;
-            imgObj.style.display = 'block';
-            imgObj.onload = () => {
-                statusObj.innerText = "已同步最新图片";
-                statusObj.style.color = "#4CAF50";
-            };
-
-            // 2. 触发自动下载
-            downloadImage(imgUrl, 'clip_' + timestamp + '.png');
-
-            // 3. 更新本地记录
-            lastHash = newHash;
-            logObj.innerText = "已下载: clip_" + timestamp + ".png";
-        }
-
-        function downloadImage(url, filename) {
-            // 创建一个隐藏的<a>标签并模拟点击
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    </script>
-</body>
-</html>
-"""
+state = GlobalState()
 
 def get_host_ip():
-    """自动获取本机IP"""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('8.8.8.8', 80))
         ip = s.getsockname()[0]
-    except Exception:
-        ip = '127.0.0.1'
-    finally:
         s.close()
-    return ip
+        return ip
+    except:
+        return "127.0.0.1"
 
-def monitor_clipboard():
-    """剪贴板监听线程"""
-    global global_img_bytes, global_img_hash
-    print(" [INFO] 剪贴板监听中...")
-    
-    while True:
+def monitor_clipboard(update_callback):
+    while state.server_running:
         try:
             img = ImageGrab.grabclipboard()
-            if img and not isinstance(img, list):
-                # 图片转字节
+            if isinstance(img, Image.Image): 
                 img_buffer = io.BytesIO()
                 img.save(img_buffer, format='PNG')
                 current_bytes = img_buffer.getvalue()
-                
-                # 计算哈希
                 new_hash = hashlib.md5(current_bytes).hexdigest()
                 
-                if new_hash != global_img_hash:
-                    global_img_hash = new_hash
-                    global_img_bytes = current_bytes
-                    print(f" [New] 捕获新图片，准备发送...")
+                if new_hash != state.img_hash:
+                    state.img_hash = new_hash
+                    state.img_bytes = current_bytes
+                    update_callback(img)
+                    print(f"新图片捕获: {len(current_bytes)/1024:.1f} KB")
         except:
             pass
-        time.sleep(1)
+        time.sleep(1.5)
 
-# --- 路由接口 ---
+@app.route('/check')
+def check():
+    return jsonify({"hash": state.img_hash, "timestamp": int(time.time())})
 
-@app.route('/')
-def index():
-    """返回前端网页"""
-    return HTML_TEMPLATE
-
-@app.route('/check_status')
-def check_status():
-    """前端JS每秒调用的接口，只返回状态json，不消耗流量"""
-    return jsonify({
-        "has_image": (global_img_bytes is not None),
-        "hash": global_img_hash,
-        "timestamp": int(time.time())
-    })
-
-@app.route('/image')
-def get_image():
-    """下载图片的接口"""
-    if global_img_bytes:
-        return send_file(
-            io.BytesIO(global_img_bytes), 
-            mimetype='image/png',
-            as_attachment=True, # 强制浏览器识别为附件下载
-            download_name=f'clip_{int(time.time())}.png'
-        )
+@app.route('/download')
+def download():
+    if state.img_bytes:
+        return send_file(io.BytesIO(state.img_bytes), mimetype='image/png')
     return "", 404
 
-if __name__ == '__main__':
-    host_ip = get_host_ip()
-    
-    t = threading.Thread(target=monitor_clipboard, daemon=True)
-    t.start()
-    
-    print("\n" + "="*50)
-    print(f" 系统已就绪！")
-    print(f" 请在鸿蒙平板浏览器打开: http://{host_ip}:{PORT}")
-    print("="*50 + "\n")
-    
-    app.run(host='0.0.0.0', port=PORT, debug=False)
+def run_flask():
+    import logging
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+    app.run(host='0.0.0.0', port=PORT, debug=False, use_reloader=False)
+
+# --- 2. 托盘与 GUI 逻辑 ---
+
+class ModernSyncApp(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+
+        # 窗口设置
+        self.title("剪贴板同步助手")
+        self.geometry("400x520")
+        self.resizable(False, False)
+        
+        # === 核心修改：拦截关闭事件 ===
+        self.protocol("WM_DELETE_WINDOW", self.hide_window)
+        
+        state.local_ip = get_host_ip()
+        self.setup_ui()
+        self.start_services()
+        
+        # 启动托盘图标
+        self.init_tray_icon()
+
+    def setup_ui(self):
+        # (保持原有的 UI 代码不变)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+
+        # 1. Header
+        self.header_frame = ctk.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.header_frame.grid(row=0, column=0, sticky="ew", padx=20, pady=(20, 10))
+        
+        self.title_label = ctk.CTkLabel(self.header_frame, text="ClipSync Pro", font=ctk.CTkFont(size=24, weight="bold"))
+        self.title_label.pack(side="left")
+        
+        self.status_indicator = ctk.CTkLabel(self.header_frame, text="● 运行中", text_color="#2CC069", font=ctk.CTkFont(size=12, weight="bold"))
+        self.status_indicator.pack(side="right", pady=5)
+
+        # 2. IP Card
+        self.info_card = ctk.CTkFrame(self, corner_radius=15)
+        self.info_card.grid(row=1, column=0, sticky="ew", padx=20, pady=10)
+        
+        ctk.CTkLabel(self.info_card, text="平板连接地址", text_color="gray", font=ctk.CTkFont(size=12)).pack(pady=(15, 0))
+        self.ip_label = ctk.CTkLabel(self.info_card, text=state.local_ip, font=ctk.CTkFont(family="Arial", size=28, weight="bold"), text_color=("#1a73e8", "#64b5f6"))
+        self.ip_label.pack(pady=5)
+        ctk.CTkLabel(self.info_card, text=f"端口: {PORT}", text_color="gray", font=ctk.CTkFont(size=12)).pack(pady=(0, 15))
+
+        # 3. Preview
+        self.preview_frame = ctk.CTkFrame(self, corner_radius=15)
+        self.preview_frame.grid(row=2, column=0, sticky="nsew", padx=20, pady=10)
+        
+        ctk.CTkLabel(self.preview_frame, text="当前剪贴板", font=ctk.CTkFont(size=14, weight="bold")).pack(pady=10, anchor="w", padx=15)
+        self.image_label = ctk.CTkLabel(self.preview_frame, text="\n\n等待截图...\n\n(点击 X 即可最小化到托盘)", text_color="gray", font=ctk.CTkFont(size=14))
+        self.image_label.pack(expand=True, fill="both", padx=10, pady=(0, 10))
+
+        # 4. Button (改为隐藏到后台)
+        self.hide_btn = ctk.CTkButton(self, text="隐藏到后台 (不退出)", fg_color="#607D8B", hover_color="#455A64", command=self.hide_window)
+        self.hide_btn.grid(row=3, column=0, pady=20)
+
+    # --- 托盘图标相关逻辑 ---
+
+    def create_icon_image(self):
+        """用代码画一个简单的图标 (避免依赖外部 .ico 文件)"""
+        width = 64
+        height = 64
+        color1 = (0, 122, 255) # 蓝色
+        color2 = (255, 255, 255) # 白色
+        
+        image = Image.new('RGB', (width, height), color1)
+        dc = ImageDraw.Draw(image)
+        # 画个简单的 C 字母代表 ClipSync
+        dc.arc([10, 10, 54, 54], 45, 315, fill=color2, width=8)
+        return image
+
+    def init_tray_icon(self):
+        """初始化托盘图标 (在独立线程运行)"""
+        # 定义菜单
+        menu = (
+            item('显示主界面', self.show_window, default=True), # default=True表示双击触发
+            item('彻底退出', self.quit_app)
+        )
+        
+        icon_img = self.create_icon_image()
+        self.tray_icon = pystray.Icon("ClipSync", icon_img, "剪贴板同步助手", menu)
+        
+        # 托盘图标必须在独立线程运行，否则会阻塞 GUI
+        threading.Thread(target=self.tray_icon.run, daemon=True).start()
+
+    def hide_window(self):
+        """隐藏窗口"""
+        self.withdraw() # 隐藏 Tkinter 窗口
+        # 这里的 notify 是可选的，有些系统可能不支持
+        try:
+            self.tray_icon.notify("程序已缩至后台，右键图标可退出", "剪贴板同步")
+        except:
+            pass
+
+    def show_window(self, icon=None, item=None):
+        """显示窗口"""
+        # 必须在主线程操作 UI，使用 after 确保线程安全
+        self.after(0, self.deiconify)
+        self.after(0, self.lift) # 把它置顶一下
+
+    def quit_app(self, icon=None, item=None):
+        """彻底退出"""
+        state.server_running = False
+        self.tray_icon.stop() # 停止托盘
+        self.quit() # 停止 GUI 循环
+        self.destroy() # 销毁窗口
+        os._exit(0) # 强制杀进程
+
+    # --- 业务逻辑 ---
+
+    def update_preview(self, pil_image):
+        max_w, max_h = 320, 180
+        pil_image.thumbnail((max_w, max_h), Image.Resampling.LANCZOS)
+        ctk_img = ctk.CTkImage(light_image=pil_image, dark_image=pil_image, size=pil_image.size)
+        self.image_label.configure(image=ctk_img, text="")
+        self.image_label.image = ctk_img
+
+    def start_services(self):
+        t1 = threading.Thread(target=run_flask, daemon=True)
+        t1.start()
+        t2 = threading.Thread(target=monitor_clipboard, args=(self.safe_update,), daemon=True)
+        t2.start()
+
+    def safe_update(self, image):
+        self.after(0, self.update_preview, image)
+
+if __name__ == "__main__":
+    # High DPI 适配
+    try:
+        ctypes.windll.shcore.SetProcessDpiAwareness(1)
+    except:
+        pass
+        
+    app = ModernSyncApp()
+    app.mainloop()
