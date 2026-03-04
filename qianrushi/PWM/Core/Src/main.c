@@ -26,6 +26,7 @@
 #include "lcd.h"
 #include "string.h"
 #include "stdio.h"
+#include  <stdint.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,6 +42,13 @@
 #define LEDFLOWLE 0X80
 #define LEDFLOWRB 0x08
 #define LEDFLOWRE 0X01
+/* 修改 main.c 顶部的宏定义 */
+#define GRAPH_HIGH_Y  160   // 高电平显示的行位置 (Xpos)
+#define GRAPH_LOW_Y   210   // 低电平显示的行位置 (Xpos)
+#define CYCLE_WIDTH   80    // 一个周期在屏幕上占的宽度 (像素)  // ★ 关键修改：周期改小一点，让屏幕能多显示几个波
+
+// 保存上一次的占空比，用于防闪烁判断
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -63,6 +71,13 @@ volatile uint8_t blink_mask = 0x01;
 u16  PWMValue;
 int count=0;
 u32 fre,capture_value;
+u32 ic_period=0;
+u32 ic_pulse=0;
+float duty_cycle=0.0;
+float frequency=0.0;
+u32 uwTick_ic=0;
+u32 pwm_freq=1000;
+float last_drawn_duty = -1.0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -83,7 +98,7 @@ void Key_Pro(void){
 		}
 		if(KeyState==1){			 
 		PWMValue +=5; 
-		if(PWMValue >= 1000)PWMValue =1000; 
+		if(PWMValue >= 100)PWMValue =100; 
 		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, PWMValue); 
 		KeyState=0;
 		}
@@ -92,7 +107,21 @@ void Key_Pro(void){
 			PWMValue-=5;
 			__HAL_TIM_SET_COMPARE(&htim2,TIM_CHANNEL_2,PWMValue);
 			KeyState=0;
-		}else{
+		}else if(KeyState==3){
+      pwm_freq+=100;
+      if(pwm_freq>=20000)pwm_freq=20000;
+      u32 new_psc=(80000000/(pwm_freq*100))-1;
+      __HAL_TIM_SET_PRESCALER(&htim2,new_psc);
+      KeyState=0;
+    }else if(KeyState==4){
+      pwm_freq-=100;
+      if(pwm_freq<=100)pwm_freq=100;
+      u32 new_psc=(80000000/(pwm_freq*100))-1;
+      __HAL_TIM_SET_PRESCALER(&htim2,new_psc);
+      KeyState=0;
+    }
+    
+    else{
 			KeyState=0;
 		}
 	}
@@ -107,9 +136,90 @@ void LED_Disp(volatile uint8_t Led_num)
     UNLOCKLED;
     LOCKLED;
 }
+
 void App_Low4Blink()
 {        
     blink_state ^= 1;
+}
+
+/* 这里是配合上面参数的 Draw_Wave 实现 */
+void Draw_Wave(void)
+{
+    // 1. 先清除绘图区域
+    LCD_SetBackColor(White);
+    LCD_ClearLine(Line6);
+    LCD_ClearLine(Line7);
+    LCD_ClearLine(Line8);
+    LCD_ClearLine(Line9);
+    
+    // 2. 设置波形颜色
+    LCD_SetTextColor(Blue);
+
+    // 3. 计算高低电平的像素宽度
+    int high_width = (int)(CYCLE_WIDTH * duty_cycle / 100.0f);
+    int low_width = CYCLE_WIDTH - high_width;
+    int row_height = 8;  // 波形线条的高度（厚度）
+
+    // 4. 循环绘制波形
+    int cur_y = 20;
+    
+    while(cur_y < 300)
+    {
+        // --- 特殊情况：0% 或 100% 占空比 ---
+        if(duty_cycle >= 99.9f) {
+            // 全是高电平 - 填充矩形
+            for(int x = GRAPH_HIGH_Y; x < GRAPH_HIGH_Y + row_height; x++) {
+                LCD_SetCursor(x, cur_y);
+                LCD_WriteRAM_Prepare();
+                for(int y = 0; y < CYCLE_WIDTH; y++) {
+                    LCD_WriteRAM(Blue);
+                }
+            }
+            cur_y += CYCLE_WIDTH;
+            continue;
+        }
+        if(duty_cycle <= 0.1f) {
+            // 全是低电平 - 填充矩形
+            for(int x = GRAPH_LOW_Y; x < GRAPH_LOW_Y + row_height; x++) {
+                LCD_SetCursor(x, cur_y);
+                LCD_WriteRAM_Prepare();
+                for(int y = 0; y < CYCLE_WIDTH; y++) {
+                    LCD_WriteRAM(Blue);
+                }
+            }
+            cur_y += CYCLE_WIDTH;
+            continue;
+        }
+
+        // --- 正常方波 ---
+        
+        // A. 画高电平矩形（填充）
+        if(high_width > 0) {
+            for(int x = GRAPH_HIGH_Y; x < GRAPH_HIGH_Y + row_height; x++) {
+                LCD_SetCursor(x, cur_y);
+                LCD_WriteRAM_Prepare();
+                for(int y = 0; y < high_width; y++) {
+                    LCD_WriteRAM(Blue);
+                }
+            }
+        }
+
+        // B. 画低电平矩形（填充）
+        if(low_width > 0) {
+            for(int x = GRAPH_LOW_Y; x < GRAPH_LOW_Y + row_height; x++) {
+                LCD_SetCursor(x, cur_y + high_width);
+                LCD_WriteRAM_Prepare();
+                for(int y = 0; y < low_width; y++) {
+                    LCD_WriteRAM(Blue);
+                }
+            }
+        }
+        
+        cur_y += CYCLE_WIDTH;
+    }
+    
+    // 恢复文字颜色
+    LCD_SetTextColor(Black);
 }
 
 void lcd_middledisplay(u8 Line, char* sources)
@@ -121,21 +231,42 @@ void lcd_middledisplay(u8 Line, char* sources)
 void Lcd_Pro(void){
 		if((uwTick-uwTick_Lcd)<200)return;
 		uwTick_Lcd=uwTick;
-		sprintf((char *)LineString,"PWM: %d",PWMValue);
+    if(uwTick-uwTick_ic>50){
+      if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_11)==GPIO_PIN_SET){
+        duty_cycle=100.0f;
+      }else{
+        duty_cycle=0.0f;
+      }
+      frequency=0.0f;
+    }
+		sprintf((char *)LineString,"PWM_duty: %d",PWMValue);
 		lcd_middledisplay(Line3, LineString);
-		sprintf((char *)LineString,"PWM: %d",capture_value);
-		lcd_middledisplay(Line4, LineString);
+    sprintf((char *)LineString,"count: %.2f",duty_cycle);
+    lcd_middledisplay(Line4, LineString);
+    sprintf((char *)LineString,"frequency: %.2f",frequency);
+    lcd_middledisplay(Line5, LineString);
+    Draw_Wave();
 
 }
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim){
 		if(htim->Instance==TIM17){
 				capture_value=HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1);
 				TIM17->CNT = 0;
-				fre=80000000/(80*capture_value);
+				if(capture_value > 0) {
+            fre = 80000000 / (80 * capture_value);
+        }
 		}
+    if(htim->Instance==TIM4&&htim->Channel==HAL_TIM_ACTIVE_CHANNEL_1){
+      uwTick_ic=uwTick;
+      ic_period=HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_1);
+      ic_pulse=HAL_TIM_ReadCapturedValue(htim,TIM_CHANNEL_2);
+      if(ic_period>0){
+        duty_cycle=((float)ic_pulse/ic_period)*100.0f;
+        frequency=1000000.0f/ic_period;
+      }
+    }
 
 }
-
 
 
 
@@ -182,8 +313,12 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM2_Init();
   MX_TIM17_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 	LED_Disp(0);
+  HAL_TIM_IC_Start_IT(&htim17,TIM_CHANNEL_1);
+  HAL_TIM_IC_Start_IT(&htim4,TIM_CHANNEL_1);
+  HAL_TIM_IC_Start(&htim4,TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_2);
 	__HAL_TIM_CLEAR_IT(&htim2,TIM_IT_UPDATE); 
 	HAL_TIM_IC_Start_IT(&htim17,TIM_CHANNEL_1);
@@ -193,6 +328,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    
     Lcd_Pro();
 		Key_Pro();
 		

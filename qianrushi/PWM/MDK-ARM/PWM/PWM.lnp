@@ -6,6 +6,7 @@
 "pwm\tim.o"
 "pwm\stm32g4xx_it.o"
 "pwm\stm32g4xx_hal_msp.o"
+"pwm\system_stm32g4xx.o"
 "pwm\stm32g4xx_hal_pwr_ex.o"
 "pwm\stm32g4xx_hal_tim.o"
 "pwm\stm32g4xx_hal_tim_ex.o"
@@ -21,7 +22,6 @@
 "pwm\stm32g4xx_hal_dma_ex.o"
 "pwm\stm32g4xx_hal_pwr.o"
 "pwm\stm32g4xx_hal_cortex.o"
-"pwm\system_stm32g4xx.o"
 --strict --scatter "PWM\PWM.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
