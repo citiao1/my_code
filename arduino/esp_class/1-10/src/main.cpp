@@ -22,8 +22,16 @@ void key_pro(){
   time1=millis();
   if(time1-key_time<10)return;
   key_time=time1;
-  if(digitalRead(4)==HIGH)led_state=1;
-  if(digitalRead(5)==LOW)led_state=0;
+  if(digitalRead(4)==HIGH){
+    led_state=1;
+    Serial.println("启动");
+    while(digitalRead(4)==HIGH);
+  }
+  if(digitalRead(5)==LOW){
+    led_state=0;
+    Serial.println("停止");
+    while(digitalRead(5)==HIGH);
+  }
 }
 void led_app(){
     time1=millis();
