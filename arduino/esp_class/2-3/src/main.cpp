@@ -13,7 +13,7 @@ void light_pro(){
 void setup() {
   Serial.begin(115200);
   pinMode(12,OUTPUT);
-  
+  pinMode(A0,INPUT);
 
 }
 

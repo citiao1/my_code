@@ -8,6 +8,7 @@ void setup() {
   myservo.attach(4);
   myservo.write(0);
   Serial.begin(115200);
+  pinMode(A0,INPUT);
 }
 
 void loop() {
