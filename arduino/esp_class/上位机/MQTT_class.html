@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQTT 全功能调试上位机</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        :root {
+            --primary: #3498db; --success: #2ecc71; --danger: #e74c3c;
+            --bg: #f4f7f6; --card-bg: #ffffff; --text-main: #2c3e50; --text-light: #7f8c8d;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); color: var(--text-main); display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .container { background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); width: 100%; max-width: 600px; }
+        h2 { text-align: center; margin-top: 0; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
+        .section { background: var(--bg); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        .section h3 { margin: 0 0 15px 0; font-size: 16px; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        
+        /* 表单与输入框 */
+        .input-group { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .input-group label { min-width: 80px; font-size: 14px; font-weight: bold; }
+        input[type="text"] { flex: 1; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; transition: 0.3s; }
+        input[type="text"]:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(52,152,219,0.2); }
+        
+        /* 按钮样式 */
+        button { padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        button:hover { filter: brightness(1.1); }
+        button:active { transform: translateY(1px); }
+        .btn-primary { background-color: var(--primary); }
+        .btn-success { background-color: var(--success); }
+        .btn-danger { background-color: var(--danger); }
+        .btn-gray { background-color: #95a5a6; }
+        
+        /* 状态指示 */
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #e74c3c; color: white; }
+        .status-connected { background: var(--success); }
+        
+        /* 实验面板特定样式 */
+        .data-display { display: flex; justify-content: space-around; margin-bottom: 15px; text-align: center; }
+        .data-item { background: white; padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); width: 40%; }
+        .data-val { font-size: 24px; color: var(--primary); font-weight: bold; margin: 5px 0 0 0; }
+        .ctrl-group { display: flex; justify-content: space-around; }
+        
+        /* 调试日志区 */
+        #log-box { width: 100%; height: 150px; background: #1e1e1e; color: #a6e22e; font-family: monospace; padding: 10px; border-radius: 6px; border: none; resize: vertical; box-sizing: border-box; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>物联网上位机工作站</h2>
+
+    <div class="section">
+        <h3>⚙️ 连接配置 <span id="status-badge" class="status-badge">未连接</span></h3>
+        <div class="input-group">
+            <label>服务器地址</label>
+            <input type="text" id="ws-url" value="ws://192.168.50.185:8083/mqtt" placeholder="例如: ws://192.168.x.x:8083/mqtt">
+        </div>
+        <div class="input-group">
+            <label>个人标识符</label>
+            <input type="text" id="identity" value="ZS123" placeholder="例如: 拼音缩写或学号后缀">
+            <button class="btn-success" id="btn-connect" onclick="toggleConnect()">连接</button>
+        </div>
+    </div>
+
+    <div class="section" id="task-panel" style="opacity: 0.5; pointer-events: none;">
+        <h3>📋 实验 5-4 面板 (自动匹配标识符)</h3>
+        <div class="data-display">
+            <div class="data-item">
+                <div style="font-size: 12px; color: var(--text-light);">1#板 距离 (cm)</div>
+                <div id="dist-val" class="data-val">--</div>
+            </div>
+            <div class="data-item">
+                <div style="font-size: 12px; color: var(--text-light);">2#板 亮度</div>
+                <div id="light-val" class="data-val">--</div>
+            </div>
+        </div>
+        <div class="ctrl-group">
+            <div style="text-align: center;">
+                <div style="font-size: 12px; margin-bottom: 5px;">控制 1#板蓝灯(IO0)</div>
+                <button class="btn-primary" onclick="pubTaskCmd('led1', '1')">开</button>
+                <button class="btn-gray" onclick="pubTaskCmd('led1', '0')">关</button>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 12px; margin-bottom: 5px;">控制 2#板红灯(IO2)</div>
+                <button class="btn-danger" onclick="pubTaskCmd('led2', '1')">开</button>
+                <button class="btn-gray" onclick="pubTaskCmd('led2', '0')">关</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="debug-panel" style="opacity: 0.5; pointer-events: none;">
+        <h3>🛠️ 通用调试助手</h3>
+        <div class="input-group">
+            <input type="text" id="sub-topic" placeholder="输入要订阅的主题 (如: outTopic)">
+            <button class="btn-primary" onclick="customSubscribe()">订阅</button>
+        </div>
+        <div class="input-group">
+            <input type="text" id="pub-topic" placeholder="发布主题" style="flex: 0.4;">
+            <input type="text" id="pub-payload" placeholder="发布内容 (Payload)">
+            <button class="btn-danger" onclick="customPublish()">发送</button>
+        </div>
+        <div style="margin-top: 10px;">
+            <div style="font-size: 12px; margin-bottom: 5px; color: var(--text-light); display: flex; justify-content: space-between;">
+                <span>实时消息日志:</span>
+                <a href="#" style="color: var(--primary); text-decoration: none;" onclick="clearLog()">清空</a>
+            </div>
+            <textarea id="log-box" readonly></textarea>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let client = null;
+    let isConnected = false;
+    let currentId = "";
+
+    // UI 元素
+    const statusBadge = document.getElementById('status-badge');
+    const btnConnect = document.getElementById('btn-connect');
+    const taskPanel = document.getElementById('task-panel');
+    const debugPanel = document.getElementById('debug-panel');
+    const logBox = document.getElementById('log-box');
+    const distVal = document.getElementById('dist-val');
+    const lightVal = document.getElementById('light-val');
+
+    // 追加日志辅助函数
+    function appendLog(text) {
+        const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+        logBox.value += `[${time}] ${text}\n`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function clearLog() {
+        logBox.value = "";
+    }
+
+    // 连接/断开逻辑
+    function toggleConnect() {
+        if (isConnected) {
+            client.end();
+            return;
+        }
+
+        const url = document.getElementById('ws-url').value;
+        currentId = document.getElementById('identity').value.trim();
+
+        if (!url || !currentId) {
+            alert("请完整填写服务器地址和个人标识符！");
+            return;
+        }
+
+        appendLog(`正在连接到 ${url}...`);
+        btnConnect.innerText = "连接中...";
+        btnConnect.disabled = true;
+
+        client = mqtt.connect(url);
+
+        client.on('connect', () => {
+            isConnected = true;
+            statusBadge.innerText = "已连接";
+            statusBadge.classList.add('status-connected');
+            btnConnect.innerText = "断开连接";
+            btnConnect.classList.replace('btn-success', 'btn-danger');
+            btnConnect.disabled = false;
+            
+            // 启用面板
+            taskPanel.style.opacity = "1";
+            taskPanel.style.pointerEvents = "auto";
+            debugPanel.style.opacity = "1";
+            debugPanel.style.pointerEvents = "auto";
+
+            appendLog(`✅ 连接成功！当前标识符: ${currentId}`);
+
+            // 自动订阅实验 5-4 要求的传感器主题
+            const topicDist = `distance_${currentId}`;
+            const topicLight = `light_${currentId}`;
+            client.subscribe([topicDist, topicLight], (err) => {
+                if (!err) appendLog(`➡️ 已自动订阅: ${topicDist}, ${topicLight}`);
+            });
+        });
+
+        client.on('error', (err) => {
+            appendLog(`❌ 连接错误: ${err}`);
+            resetUI();
+        });
+
+        client.on('close', () => {
+            if (isConnected) appendLog(`🔌 已断开连接`);
+            resetUI();
+        });
+
+        // 接收消息回调
+        client.on('message', (topic, message) => {
+            const payload = message.toString();
+            appendLog(`📥 收到 [${topic}] : ${payload}`);
+
+            // 如果是实验 5-4 的主题，自动更新上方卡片的数值
+            if (topic === `distance_${currentId}`) {
+                distVal.innerText = payload;
+            } else if (topic === `light_${currentId}`) {
+                lightVal.innerText = payload;
+            }
+        });
+    }
+
+    function resetUI() {
+        isConnected = false;
+        statusBadge.innerText = "未连接";
+        statusBadge.classList.remove('status-connected');
+        btnConnect.innerText = "连接";
+        btnConnect.classList.replace('btn-danger', 'btn-success');
+        btnConnect.disabled = false;
+        
+        taskPanel.style.opacity = "0.5";
+        taskPanel.style.pointerEvents = "none";
+        debugPanel.style.opacity = "0.5";
+        debugPanel.style.pointerEvents = "none";
+        
+        distVal.innerText = "--";
+        lightVal.innerText = "--";
+    }
+
+    // 实验面板控制下发
+    function pubTaskCmd(prefix, payload) {
+        if (!isConnected) return;
+        const topic = `${prefix}_${currentId}`;
+        client.publish(topic, payload);
+        appendLog(`📤 发布 [${topic}] : ${payload}`);
+    }
+
+    // 自定义订阅
+    function customSubscribe() {
+        const topic = document.getElementById('sub-topic').value.trim();
+        if (!topic) return;
+        client.subscribe(topic, (err) => {
+            if (!err) {
+                appendLog(`➡️ 成功订阅新主题: ${topic}`);
+                document.getElementById('sub-topic').value = ""; // 清空输入框
+            }
+        });
+    }
+
+    // 自定义发布
+    function customPublish() {
+        const topic = document.getElementById('pub-topic').value.trim();
+        const payload = document.getElementById('pub-payload').value;
+        if (!topic) return;
+        client.publish(topic, payload);
+        appendLog(`📤 发布 [${topic}] : ${payload}`);
+    }
+</script>
+
+</body>
+</html>
