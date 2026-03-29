@@ -3,7 +3,7 @@
 #include <Adafruit_NeoPixel.h>
 
 Adafruit_NeoPixel pixels=Adafruit_NeoPixel(4,13,NEO_GRB+NEO_KHZ800);
-
+int serial_flag=0;
 long time1=0;
 long key_time=0;
 long led_time=0;
@@ -22,14 +22,28 @@ void key_pro(){
   time1=millis();
   if(time1-key_time<10)return;
   key_time=time1;
+  
   if(digitalRead(4)==HIGH){
     led_state=1;
-    Serial.println("启动");
+    serial_flag=1;
+    if(serial_flag==1){
+      Serial.println("启动");
+      serial_flag=0;
+    }
     while(digitalRead(4)==HIGH);
   }
-  if(digitalRead(5)==LOW){
+  if(digitalRead(5)==HIGH){
     led_state=0;
-    Serial.println("停止");
+    serial_flag=1;
+    if(serial_flag==1){
+      Serial.println("关闭");
+      for(int i=0;i<4;i++){
+        pixels.setPixelColor(i,0,0,0);
+        pixels.show();
+      }
+      serial_flag=0;
+    }
+    
     while(digitalRead(5)==HIGH);
   }
 }

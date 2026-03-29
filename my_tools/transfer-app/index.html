@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>极速传图 Ultimate</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; text-align: center; padding: 0; margin: 0; background: #121212; color: #fff; height: 100vh; overflow: hidden; }
+        
+        /* === 布局系统 === */
+        #pc-area { display: none; height: 100vh; display: flex; flex-direction: row; }
+        
+        /* 左侧历史栏 */
+        .sidebar {
+            width: 220px;
+            background: #1e1e1e;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .history-title { font-size: 14px; color: #888; margin-bottom: 10px; text-align: left; padding-left: 5px;}
+        .history-item {
+            width: 100%;
+            height: 120px;
+            background: #000;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            overflow: hidden;
+            position: relative;
+        }
+        .history-item.active { border-color: #0a84ff; }
+        .history-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.2s; }
+        .history-item:hover img { opacity: 1; }
+        
+        /* 右侧主区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background: #f0f2f5;
+            color: #333;
+            overflow-y: auto;
+            align-items: center;
+        }
+
+        .card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 90%; max-width: 800px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* 图片展示区 */
+        .img-container {
+            width: 100%;
+            min-height: 300px;
+            max-height: 60vh;
+            background: #000;
+            border-radius: 8px;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            cursor: zoom-in; /* 鼠标变成放大镜 */
+            position: relative;
+        }
+        #received-img { max-width: 100%; max-height: 100%; display: block; transition: transform 0.3s ease; }
+        
+        /* 按钮组 */
+        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; width: 100%; }
+        .btn { background: #0a84ff; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-size: 16px; cursor: pointer; font-weight: bold; min-width: 100px; }
+        .btn.secondary { background: #555; }
+        .btn:active { transform: scale(0.98); }
+
+        /* === 全屏放大查看器 (Lightbox) === */
+        #lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000;
+            justify-content: center; align-items: center;
+        }
+        #lightbox-img { max-width: 95%; max-height: 95%; transition: transform 0.1s; cursor: grab; }
+        .close-lightbox { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; z-index: 1001;}
+        .zoom-hint { position: absolute; bottom: 20px; color: #aaa; font-size: 14px; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 20px;}
+
+        /* === 手机端样式 (保持不变，微调布局) === */
+        #phone-area { display: none; padding: 20px; height: 100vh; box-sizing: border-box; overflow-y: auto;}
+        .phone-card { background: #1e1e1e; padding: 20px; border-radius: 16px; margin: 0 auto; max-width: 600px; }
+        #camera-container { width: 100%; height: 60vh; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 20px; position: relative;}
+        #camera-feed { width: 100%; height: 100%; object-fit: cover; }
+        .controls { display: flex; justify-content: center; gap: 20px; align-items: center; margin-top: 20px;}
+        .shutter-btn { width: 70px; height: 70px; border-radius: 50%; background: white; border: 4px solid rgba(255,255,255,0.3); cursor: pointer; }
+        .album-btn { background: #333; padding: 10px 20px; border-radius: 20px; font-size: 14px; color: white; border: 1px solid #555; }
+        input[type="file"] { display: none; }
+
+    </style>
+</head>
+<body>
+
+    <div id="pc-area" style="display:none;">
+        <div class="sidebar" id="history-list">
+            <div class="history-title">🕒 历史记录 (最近12张)</div>
+            </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 style="margin:0 0 10px 0;">💻 电脑接收端</h2>
+                
+                <div class="img-container" onclick="openLightbox()">
+                    <img id="received-img" src="" alt="等待图片..." />
+                    <div style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.6); color:white; padding:4px 8px; border-radius:4px; font-size:12px; pointer-events:none;">🔍 点击全屏放大</div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn secondary" onclick="rotateImage(-90)">🔄 左转</button>
+                    <button class="btn secondary" onclick="rotateImage(90)">🔁 右转</button>
+                    <button id="copy-btn" class="btn" onclick="copyImage()">📋 复制</button>
+                    <a id="download-link" class="btn secondary" style="text-decoration:none; display:flex; align-items:center;" download="photo.png">⬇️ 下载</a>
+                </div>
+                <div class="status" id="status-text" style="margin-top:10px;">准备就绪</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lightbox" onclick="closeLightbox()">
+        <span class="close-lightbox">&times;</span>
+        <img id="lightbox-img" src="" onclick="event.stopPropagation()"> <div class="zoom-hint">🖱️ 滚轮缩放 / 👆 拖拽图片</div>
+    </div>
+
+    <div id="phone-area">
+        <div class="phone-card">
+            <h2>📷 极速传图 Pro</h2>
+            <div id="camera-container">
+                <video id="camera-feed" autoplay playsinline muted></video>
+            </div>
+            <div id="upload-status" style="color:#4caf50; font-size:14px;">准备拍摄</div>
+            <div class="controls">
+                <label class="album-btn">🖼️ 相册 <input type="file" accept="image/*" onchange="handleFileSelect(event)"></label>
+                <button class="shutter-btn" onclick="takePhoto()"></button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue, get, remove, query, limitToFirst, orderByKey } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC4993Zp3oTBS_0kRhgzilbFDmdZORnEBQ",
+  authDomain: "myphototransfer.firebaseapp.com",
+  databaseURL: "https://myphototransfer-default-rtdb.firebaseio.com",
+  projectId: "myphototransfer",
+  storageBucket: "myphototransfer.firebasestorage.app",
+  messagingSenderId: "5697446202",
+  appId: "1:5697446202:web:15ccdc7767d6a97ab3b003",
+  measurementId: "G-TMH8HLCBH3"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        // 注意：数据节点改成 'history'，不再是单一的 'latest_image'
+        const historyRef = ref(db, 'history'); 
+
+        let currentRotation = 0;
+        let historyData = {}; // 暂存历史数据
+
+        // === 初始化判断 ===
+        if (window.innerWidth > 800) {
+            initPC();
+        } else {
+            initPhone();
+        }
+
+        // =======================
+        // 💻 电脑端逻辑
+        // =======================
+        function initPC() {
+            document.getElementById('pc-area').style.display = 'flex'; // Flex布局
+            
+            // 监听历史记录节点
+            onValue(historyRef, (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                historyData = data;
+                updateSidebar(data);
+
+                // 默认显示最新的一张图（Key最大的那个）
+                const keys = Object.keys(data);
+                const latestKey = keys[keys.length - 1];
+                showImage(data[latestKey], latestKey);
+            });
+        }
+
+        function updateSidebar(data) {
+            const listEl = document.getElementById('history-list');
+            // 保留标题，清空内容
+            listEl.innerHTML = '<div class="history-title">🕒 历史记录 (点选切换)</div>';
+            
+            // 反向遍历（最新的在上面）
+            const keys = Object.keys(data).reverse();
+            
+            keys.forEach(key => {
+                const imgData = data[key];
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.id = 'thumb-' + key;
+                div.innerHTML = `<img src="${imgData}" loading="lazy">`;
+                div.onclick = () => showImage(imgData, key);
+                listEl.appendChild(div);
+            });
+        }
+
+        function showImage(base64Data, key) {
+            const mainImg = document.getElementById('received-img');
+            
+            // 如果显示的已经是这张图，就不重置旋转
+            if (mainImg.getAttribute('data-key') !== key) {
+                currentRotation = 0;
+                mainImg.style.transform = `rotate(0deg)`;
+                mainImg.setAttribute('data-key', key);
+            }
+            
+            mainImg.src = base64Data;
+            document.getElementById('download-link').href = base64Data;
+            
+            // 高亮侧边栏选中项
+            document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+            const activeThumb = document.getElementById('thumb-' + key);
+            if(activeThumb) activeThumb.classList.add('active');
+        }
+
+        window.rotateImage = function(deg) {
+            const img = document.getElementById('received-img');
+            if (!img.src) return;
+            currentRotation += deg;
+            img.style.transform = `rotate(${currentRotation}deg)`;
+        }
+
+        window.copyImage = function() {
+            // 复制逻辑保持不变（同上个版本，含旋转处理）
+            const img = document.getElementById('received-img');
+            const btn = document.getElementById('copy-btn');
+            if (!img.src) return;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            if (currentRotation % 180 !== 0) {
+                canvas.width = img.naturalHeight;
+                canvas.height = img.naturalWidth;
+            } else {
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+            }
+            
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(currentRotation * Math.PI / 180);
+            ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+            
+            canvas.toBlob(async function(blob) {
+                try {
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                    const originalText = btn.innerText;
+                    btn.innerText = "✅ 已复制";
+                    btn.style.background = "#28a745";
+                    setTimeout(() => { btn.innerText = originalText; btn.style.background = "#0a84ff"; }, 2000);
+                } catch (err) { alert('复制失败'); }
+            }, 'image/png');
+        }
+
+        // --- 放大镜功能 (Lightbox) ---
+        let scale = 1;
+        let isDragging = false;
+        let startX, startY, translateX = 0, translateY = 0;
+
+        window.openLightbox = function() {
+            const src = document.getElementById('received-img').src;
+            if(!src) return;
+            const lb = document.getElementById('lightbox');
+            const lbImg = document.getElementById('lightbox-img');
+            
+            lb.style.display = 'flex';
+            lbImg.src = src;
+            
+            // 重置状态
+            scale = 1; translateX = 0; translateY = 0;
+            updateTransform();
+
+            // 继承当前的旋转角度
+            lbImg.style.transform = `rotate(${currentRotation}deg) scale(1)`;
+        }
+
+        window.closeLightbox = function() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+
+        // 滚轮缩放
+        document.getElementById('lightbox').addEventListener('wheel', function(e) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            scale *= delta;
+            if (scale < 0.5) scale = 0.5; // 最小缩放
+            if (scale > 5) scale = 5;     // 最大缩放
+            updateTransform();
+        });
+
+        // 简单的拖拽逻辑
+        const lbImg = document.getElementById('lightbox-img');
+        lbImg.addEventListener('mousedown', e => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.style.cursor = 'grabbing'; });
+        window.addEventListener('mouseup', () => { isDragging = false; lbImg.style.cursor = 'grab'; });
+        window.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            e.preventDefault();
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            updateTransform();
+        });
+
+        function updateTransform() {
+            const lbImg = document.getElementById('lightbox-img');
+            // 注意：这里我们叠加了旋转和缩放、位移
+            lbImg.style.transform = `translate(${translateX}px, ${translateY}px) rotate(${currentRotation}deg) scale(${scale})`;
+        }
+
+
+        // =======================
+        // 📱 手机端逻辑 (带自动清理功能)
+        // =======================
+        function initPhone() {
+            document.getElementById('phone-area').style.display = 'block';
+            startCamera();
+        }
+
+        async function startCamera() {
+            // 同上个版本，尝试高清
+            const video = document.getElementById('camera-feed');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                document.getElementById('upload-status').innerText = "⚠️ 请检查相机权限";
+            }
+        }
+
+        // 核心上传逻辑：先清理，后上传
+        window.uploadImage = async function(canvas) {
+            const status = document.getElementById('upload-status');
+            status.innerText = "⏳ 处理中...";
+
+            // 1. 压缩图片 (保持高清设置)
+            const maxWidth = 1920; 
+            let finalWidth = canvas.width;
+            let finalHeight = canvas.height;
+            if (canvas.width > maxWidth) {
+                const s = maxWidth / canvas.width;
+                finalWidth = maxWidth; finalHeight = canvas.height * s;
+            }
+            const cCanvas = document.createElement('canvas');
+            cCanvas.width = finalWidth; cCanvas.height = finalHeight;
+            cCanvas.getContext('2d').drawImage(canvas, 0, 0, finalWidth, finalHeight);
+            const dataUrl = cCanvas.toDataURL('image/jpeg', 0.9); // 90% 质量
+
+            status.innerText = "♻️ 整理空间...";
+
+            // 2. 检查并清理旧图片 (保持最多12张)
+            try {
+                // 获取当前所有记录的 Key（只获取 Key，不下载内容，省流量）
+                const snapshot = await get(query(historyRef, orderByKey())); 
+                if (snapshot.exists()) {
+                    const keys = Object.keys(snapshot.val());
+                    if (keys.length >= 12) {
+                        // 删除最老的一个
+                        const oldestKey = keys[0];
+                        await remove(ref(db, 'history/' + oldestKey));
+                    }
+                }
+                
+                // 3. 上传新图片
+                status.innerText = "🚀 上传中...";
+                await push(historyRef, dataUrl); // 使用 push 生成新记录
+                
+                status.innerText = "✅ 发送成功";
+                document.getElementById('camera-container').style.border = "4px solid #4caf50";
+                setTimeout(() => { document.getElementById('camera-container').style.border = "none"; }, 500);
+
+            } catch (error) {
+                console.error(error);
+                status.innerText = "❌ 失败: " + error.message;
+            }
+        };
+
+        window.takePhoto = function() {
+            const video = document.getElementById('camera-feed');
+            if (!video.srcObject) return;
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            uploadImage(canvas);
+        };
+
+        window.handleFileSelect = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width; canvas.height = img.height;
+                    canvas.getContext('2d').drawImage(img, 0, 0);
+                    uploadImage(canvas);
+                }
+            }
+            reader.readAsDataURL(file);
+        };
+    </script>
+</body>
+</html>

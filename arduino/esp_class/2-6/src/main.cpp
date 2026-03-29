@@ -25,7 +25,7 @@ void lcd_app(){
   lcd.setCursor(0,0);
   lcd.print("HUMI:"+String(humidity,2)+"%");  
   lcd.setCursor(0,1);
-  lcd.print("TEMP:"+String(temperature,2)+"℃");
+  lcd.print("TEMP:"+String(temperature,2)+"C");
 
 }
 void setup() {

@@ -22,10 +22,10 @@ void fan_app(){
     analogWrite(16,0);
     Serial.println("风扇停转");
   }else if(temperature>=26&&temperature<30){
-    analogWrite(16,500);
+    analogWrite(16,100);
     Serial.println("低速旋转");
   }else if(temperature>=30){
-    analogWrite(16,1500);
+    analogWrite(16,255);
     Serial.println("高速旋转");
   }
 }
@@ -48,7 +48,10 @@ void setup() {
 void loop() {
   dht_app();
   key_pro();
-  if(fan_state==1){fan_app();}
+  if(fan_state==1)
+  {
+    fan_app();
+  }
   else{
     analogWrite(16,0);
   }

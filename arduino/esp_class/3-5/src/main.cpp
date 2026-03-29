@@ -17,8 +17,8 @@ void setup() {
 
 void loop() {
   speed=analogRead(A0);
-  speed=map(speed,0,1023,0,1500);
+  speed=map(speed,0,1023,0,255);
   serial_out();
-  analogWrite(13,speed);
+  analogWrite(16,speed);
 }
 

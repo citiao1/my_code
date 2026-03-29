@@ -9,7 +9,7 @@ void setup() {
 }
 
 void loop() {
-  if(analogRead(A0)>15){
+  if(analogRead(A0)>100){
     myservo.write(60);
     delay(100);
     myservo.write(120);
@@ -17,6 +17,7 @@ void loop() {
   }else{
     myservo.write(0);
   }
+  Serial.println(analogRead(A0));
 }
 
 

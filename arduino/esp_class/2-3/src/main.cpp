@@ -19,7 +19,7 @@ void setup() {
 
 void loop() {
   light_pro();
-  if(light>150){
+  if(light>1000){
     digitalWrite(12,LOW);
   }else{
     digitalWrite(12,HIGH);
