@@ -18,11 +18,11 @@ void buzzer_app(){
   time1=millis();
   if(time1-buzzer_time<200)return;
   buzzer_time=time1;
-  tone(15,distance);
+  tone(15,distance*10);
 }
 void serial_app (){
   time1=millis();
-  if(time1-serial_time<200)return;
+  if(time1-serial_time<10)return;
   serial_time=time1;
   Serial.println(distance);
 }

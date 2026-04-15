@@ -1,0 +1,33 @@
+Log file created at: 2021/10/10 07:10:31  PID: 15352
+Running on machine: DESKTOP-F7N639C
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1010 07:10:31.058741 15216 code_page.cpp:268] in function[Unisound::OutputDebugPrintf], version: V1.0.1 
+ 
+I1010 07:10:48.960950 15216 UniOneDebugToolDlg.cpp:957] in function[CUniOneDebugToolDlg::StartBurn], opening Serial Port 16 
+I1010 07:10:48.960950 15216 code_page.cpp:268] in function[Unisound::OutputDebugPrintf], COM put_setting 921600, N, 8, 1 port:16 
+ 
+I1010 07:12:30.653571 15216 UniOneDebugToolDlg.cpp:957] in function[CUniOneDebugToolDlg::StartBurn], opening Serial Port 16 
+I1010 07:12:30.653571 15216 code_page.cpp:268] in function[Unisound::OutputDebugPrintf], COM put_setting 921600, N, 8, 1 port:16 
+ 
+Log file created at: 2021/10/10 07:15:06  PID: 4088
+Running on machine: DESKTOP-F7N639C
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1010 07:15:06.045444 12196 code_page.cpp:268] in function[Unisound::OutputDebugPrintf], version: V1.0.1 
+ 
+I1010 07:15:09.529191 12196 UniOneDebugToolDlg.cpp:957] in function[CUniOneDebugToolDlg::StartBurn], opening Serial Port 16 
+I1010 07:15:09.529191 12196 code_page.cpp:268] in function[Unisound::OutputDebugPrintf], COM put_setting 921600, N, 8, 1 port:16 
+ 
+I1010 07:17:42.077939 12196 UniOneDebugToolDlg.cpp:957] in function[CUniOneDebugToolDlg::StartBurn], opening Serial Port 16 
+I1010 07:17:42.093297 12196 code_page.cpp:268] in function[Unisound::OutputDebugPrintf], COM put_setting 921600, N, 8, 1 port:16 
+ 
+Log file created at: 2021/10/10 07:30:12  PID: 10536
+Running on machine: DESKTOP-F7N639C
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I1010 07:30:12.518921 10708 code_page.cpp:268] in function[Unisound::OutputDebugPrintf], version: V1.0.1 
+ 
+I1010 07:30:15.299741 10708 UniOneDebugToolDlg.cpp:957] in function[CUniOneDebugToolDlg::StartBurn], opening Serial Port 4 
+I1010 07:30:15.315141 10708 code_page.cpp:268] in function[Unisound::OutputDebugPrintf], COM put_setting 921600, N, 8, 1 port:4 
+ 
+I1010 07:31:06.819021 10708 UniOneDebugToolDlg.cpp:957] in function[CUniOneDebugToolDlg::StartBurn], opening Serial Port 4 
+I1010 07:31:06.819021 10708 code_page.cpp:268] in function[Unisound::OutputDebugPrintf], COM put_setting 921600, N, 8, 1 port:4 
+ 

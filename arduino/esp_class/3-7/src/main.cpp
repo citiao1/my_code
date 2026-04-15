@@ -22,7 +22,7 @@ void dht_app(){
   if(time1-dht_time<200)return;
   dht_time=time1;
   temperature=dht.readTemperature();
-  Serial.println("Temperature: "+String(temperature,2)+"C");
+ 
 }
 void key_pro(){
   time1=millis();
@@ -30,13 +30,17 @@ void key_pro(){
   key_time=time1;
   if(digitalRead(5)==HIGH){
     auto_mode^=1;
+    while(digitalRead(5)==HIGH);
   }else if(digitalRead(12)==HIGH){
     fan_speed++;
     if(fan_speed>=3)fan_speed=0;
+    while(digitalRead(12)==HIGH);
   }else if(digitalRead(14)==HIGH){
     Servo_state^=1;
+    while(digitalRead(14)==HIGH);
   }else if(digitalRead(15)==HIGH){
     all_state^=1;
+    while(digitalRead(15)==HIGH);
   }
 }
 void fan_app(){
@@ -48,10 +52,10 @@ void fan_app(){
     analogWrite(16,0);
     fan_state=0;
   }else if(temperature>=26&&temperature<30){
-    analogWrite(16,500);
+    analogWrite(16,100);
     fan_state=1;
   }else if(temperature>=30){
-    analogWrite(16,1500);
+    analogWrite(16,255);
     fan_state=2;
   }
   }else{
@@ -62,11 +66,11 @@ void fan_app(){
       fan_state=0;
       break;
     case 1:
-      analogWrite(16,500);
+      analogWrite(16,100);
       fan_state=1;
       break;
     case 2:
-      analogWrite(16,1500);
+      analogWrite(16,255);
       fan_state=2;
       break;
     default:

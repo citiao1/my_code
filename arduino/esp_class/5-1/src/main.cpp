@@ -1,11 +1,14 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
-const char* ssid="CMCC-6Ftg";
-const char* password="a9u64egf";
-const char* mqtt_server="broker.emqx.io";
-const char* topic_pub = "China/Beijing/huayuan/302/status";
-const char* topic_sub = "China/Beijing/huayuan/302/command";
+const char* ssid="abc";
+const char* password="fsx20060809";
+const char* mqtt_server="192.168.28.139";
+const char* topic_pub = "temp";
+const char* topic_sub = "inTopic";
+const char* topic_sub_1="led";
+long time1=0;
+long temp_time=0;
 WiFiClient espClient;
 PubSubClient client(espClient);
 void setup_wifi(){
@@ -27,6 +30,7 @@ void reconnect(){
     if(client.connect(clientId.c_str())){
       Serial.println("连接成功");
       client.subscribe(topic_sub);
+      client.subscribe(topic_sub_1);
     }else{
       Serial.print("连接失败,rc=");
       Serial.println(client.state());
@@ -38,10 +42,25 @@ void callback(char* topic,byte* payload,unsigned int length){
   String msg="";
   for(int i=0;i<length;i++){
     msg+=char(payload[i]);
-
   }
-  Serial.print("云端指令:");
-  Serial.println(msg);
+ 
+  if(strcmp(topic, topic_sub) == 0){
+    Serial.print("云端指令inTopic:");
+    Serial.println(msg);
+  }else if(strcmp(topic, topic_sub_1) == 0){
+    if(msg=="0")digitalWrite(2,LOW);
+    else if(msg=="1")digitalWrite(2,HIGH);
+    Serial.print("云端指令led:");
+    Serial.println(msg);
+  }
+  
+}
+void temp(){
+  time1=millis();
+  if(time1-temp_time<200)return;
+  temp_time=time1;
+  client.publish(topic_pub,"111");
+
 }
 void setup() {
  Serial.begin(115200);
@@ -49,6 +68,7 @@ void setup() {
   setup_wifi();
   client.setServer(mqtt_server,1883);
   client.setCallback(callback);
+  pinMode(2,OUTPUT);
 }
 
 void loop() {
@@ -56,5 +76,6 @@ void loop() {
     reconnect();
   }
   client.loop();
+  temp();
 }
 

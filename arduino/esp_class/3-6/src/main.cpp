@@ -19,13 +19,13 @@ void fan_app(){
   if(time1-fan_time<100)return;
   fan_time=time1;
   if(temperature<26){
-    analogWrite(16,0);
+    analogWrite(4,0);
     Serial.println("风扇停转");
   }else if(temperature>=26&&temperature<30){
-    analogWrite(16,100);
+    analogWrite(4,100);
     Serial.println("低速旋转");
   }else if(temperature>=30){
-    analogWrite(16,255);
+    analogWrite(4,255);
     Serial.println("高速旋转");
   }
 }
@@ -33,16 +33,16 @@ void key_pro(){
   time1=millis();
   if(time1-key_time<10)return;
   key_time=time1;
-  if(digitalRead(4)==HIGH){
+  if(digitalRead(5)==HIGH){
     fan_state^=1;
     if(fan_state==0)Serial.println("风扇停转");
-    while(digitalRead(4)==HIGH);
+    while(digitalRead(5)==HIGH);
   }
 }
 void setup() {
   Serial.begin(115200);
   dht.begin();
-  pinMode(4,INPUT);
+  pinMode(5,INPUT);
 }
 
 void loop() {
@@ -53,7 +53,7 @@ void loop() {
     fan_app();
   }
   else{
-    analogWrite(16,0);
+    analogWrite(4,0);
   }
 }
 

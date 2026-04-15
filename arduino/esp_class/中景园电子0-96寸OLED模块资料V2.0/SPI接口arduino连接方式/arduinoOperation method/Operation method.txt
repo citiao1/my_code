@@ -1,0 +1,11 @@
+1.Put U8glib in arduino library directory
+2.Open the file  U8gLogo
+3.Connection mode
+
+Adruino		=	OLED
+13		=	SCL
+11		=	SDA
+9		=	DC
+REST		=	RES
+
+4.Compile and download
