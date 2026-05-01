@@ -1,0 +1,173 @@
+Microsoft (R) Macro Assembler Version 6.11		    04/27/26 13:03:07
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+ 0000 5F 43 56 4B 64 34		    SCORES   DB 95, 67, 86, 75, 100, 52, 72, 80, 93, 87
+       48 50 5D 57
+ 000A = 000A			    LEN      EQU $ - SCORES
+
+ 000A 41 76 65 72 61 67		    MSG_AVG  DB 'Average Score: $'
+       65 20 53 63 6F 72
+       65 3A 20 24
+ 001A 0D 0A 45 78 63 65		    MSG_EXC  DB 0Dh, 0Ah, 'Excellent Count(>=85): $'
+       6C 6C 65 6E 74 20
+       43 6F 75 6E 74 28
+       3E 3D 38 35 29 3A
+       20 24
+ 0034 0D 0A 42 65 6C 6F		    MSG_BEL  DB 0Dh, 0Ah, 'Below Average Count: $'
+       77 20 41 76 65 72
+       61 67 65 20 43 6F
+       75 6E 74 3A 20 24
+
+ 004C 00			    AVG_VAL  DB 0
+ 004D 00			    EXC_CNT  DB 0
+ 004E 00			    BEL_CNT  DB 0
+ 004F				DATAS ENDS
+
+ 0000				STACKS SEGMENT
+ 0000  0100 [			    DB 100H DUP(0)
+        00
+       ]
+ 0100				STACKS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS,SS:STACKS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX, DATAS
+ 0003  8E D8			    MOV DS, AX
+
+
+ 0005  8D 1E 0000 R		    LEA BX, SCORES
+ 0009  B9 000A			    MOV CX, LEN
+ 000C  B8 0000			    MOV AX, 0           
+ 000F				SUM_LOOP:
+ 000F  8A 17			    MOV DL, [BX]        
+ 0011  B6 00			    MOV DH, 0           
+ 0013  03 C2			    ADD AX, DX          
+ 0015  43			    INC BX
+ 0016  E2 F7			    LOOP SUM_LOOP
+
+ 0018  B3 0A			    MOV BL, 10
+ 001A  F6 F3			    DIV BL              
+ 001C  A2 004C R		    MOV AVG_VAL, AL    
+
+
+ 001F  8D 1E 0000 R		    LEA BX, SCORES
+ 0023  B9 000A			    MOV CX, LEN
+ 0026				COUNT_LOOP:
+ 0026  8A 07			    MOV AL, [BX]
+
+				    
+ 0028  3C 55			    CMP AL, 85
+ 002A  72 04			    JB CHECK_BELOW     
+ 002C  FE 06 004D R		    INC EXC_CNT        
+
+ 0030				CHECK_BELOW:
+
+ 0030  3A 06 004C R		    CMP AL, AVG_VAL
+ 0034  73 04			    JAE NEXT_SCORE      
+ 0036  FE 06 004E R		    INC BEL_CNT         
+
+ 003A				NEXT_SCORE:
+ 003A  43			    INC BX
+ 003B  E2 E9			    LOOP COUNT_LOOP
+
+
+ 003D  8D 16 000A R		    LEA DX, MSG_AVG
+ 0041  B4 09			    MOV AH, 09H
+ 0043  CD 21			    INT 21H
+ 0045  A0 004C R		    MOV AL, AVG_VAL
+ 0048  E8 0020			    CALL PRINT_NUM
+
+ 004B  8D 16 001A R		    LEA DX, MSG_EXC
+ 004F  B4 09			    MOV AH, 09H
+ 0051  CD 21			    INT 21H
+ 0053  A0 004D R		    MOV AL, EXC_CNT
+ 0056  E8 0012			    CALL PRINT_NUM
+
+ 0059  8D 16 0034 R		    LEA DX, MSG_BEL
+ 005D  B4 09			    MOV AH, 09H
+ 005F  CD 21			    INT 21H
+ 0061  A0 004E R		    MOV AL, BEL_CNT
+ 0064  E8 0004			    CALL PRINT_NUM
+
+				    ; ÍË³ö³ÌÐò
+ 0067  B4 4C			    MOV AH, 4CH
+ 0069  CD 21			    INT 21H
+
+
+ 006B				PRINT_NUM PROC
+ 006B  B4 00			    MOV AH, 0
+ 006D  B3 0A			    MOV BL, 10
+ 006F  F6 F3			    DIV BL      
+ 0071  8A FC			    MOV BH, AH  
+
+ 0073  B4 00			    MOV AH, 0
+ 0075  F6 F3			    DIV BL      
+ 0077  8B C8			    MOV CX, AX  
+
+ 0079  8A D1			    MOV DL, CL
+ 007B  80 C2 30			    ADD DL, 30H 
+ 007E  B4 02			    MOV AH, 02H
+ 0080  CD 21			    INT 21H
+
+ 0082  8A D5			    MOV DL, CH
+ 0084  80 C2 30			    ADD DL, 30H
+ 0087  B4 02			    MOV AH, 02H
+ 0089  CD 21			    INT 21H
+
+ 008B  8A D7			    MOV DL, BH
+ 008D  80 C2 30			    ADD DL, 30H
+ 0090  B4 02			    MOV AH, 02H
+ 0092  CD 21			    INT 21H
+ 0094  C3			    RET
+ 0095				PRINT_NUM ENDP
+
+ 0095				CODES ENDS
+				END START
+
+
+
+Microsoft (R) Macro Assembler Version 6.11		    04/27/26 13:03:07
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0095	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 004F	  Para	  Private 
+STACKS . . . . . . . . . . . . .	16 Bit	 0100	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+PRINT_NUM  . . . . . . . . . . .	P Near	 006B	  CODES	Length= 002A Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+AVG_VAL  . . . . . . . . . . . .	Byte	 004C	  DATAS	
+BEL_CNT  . . . . . . . . . . . .	Byte	 004E	  DATAS	
+CHECK_BELOW  . . . . . . . . . .	L Near	 0030	  CODES	
+COUNT_LOOP . . . . . . . . . . .	L Near	 0026	  CODES	
+EXC_CNT  . . . . . . . . . . . .	Byte	 004D	  DATAS	
+LEN  . . . . . . . . . . . . . .	Number	 000Ah	 
+MSG_AVG  . . . . . . . . . . . .	Byte	 000A	  DATAS	
+MSG_BEL  . . . . . . . . . . . .	Byte	 0034	  DATAS	
+MSG_EXC  . . . . . . . . . . . .	Byte	 001A	  DATAS	
+NEXT_SCORE . . . . . . . . . . .	L Near	 003A	  CODES	
+SCORES . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+SUM_LOOP . . . . . . . . . . . .	L Near	 000F	  CODES	
+
+	   0 Warnings
+	   0 Errors

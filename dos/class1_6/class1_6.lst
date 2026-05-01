@@ -1,0 +1,83 @@
+Microsoft (R) Macro Assembler Version 6.11		    04/23/26 09:55:02
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+ 0000 3C			    SCORE_VAL DB 60
+ 0001 45 78 63 65 6C 6C		    MSG_EXC   DB 'Excellent', 0Dh, 0Ah, '$'
+       65 6E 74 0D 0A 24
+ 000D 4D 65 64 69 75 6D		    MSG_MED   DB 'Medium level', 0Dh, 0Ah, '$'
+       20 6C 65 76 65 6C
+       0D 0A 24
+ 001C 50 61 73 73 0D 0A		    MSG_PASS  DB 'Pass', 0Dh, 0Ah, '$'
+       24
+ 0023 46 61 69 6C 75 72		    MSG_FAIL  DB 'Failure', 0Dh, 0Ah, '$'
+       65 0D 0A 24
+ 002D				DATAS ENDS
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX, DATAS
+ 0003  8E D8			    MOV DS, AX
+ 0005  A0 0000 R		    MOV AL, SCORE_VAL   
+ 0008  3C 55			    CMP AL, 85          
+ 000A  73 0E			    JAE IS_EXC          
+ 000C  3C 46			    CMP AL, 70          
+ 000E  73 10			    JAE IS_MED          
+ 0010  3C 3C			    CMP AL, 60          
+ 0012  73 12			    JAE IS_PASS         
+ 0014  8D 16 0023 R		    LEA DX, MSG_FAIL
+ 0018  EB 10			    JMP PRINT_RES
+
+ 001A				IS_EXC:
+ 001A  8D 16 0001 R		    LEA DX, MSG_EXC
+ 001E  EB 0A			    JMP PRINT_RES
+ 0020				IS_MED:
+ 0020  8D 16 000D R		    LEA DX, MSG_MED
+ 0024  EB 04			    JMP PRINT_RES
+ 0026				IS_PASS:
+ 0026  8D 16 001C R		    LEA DX, MSG_PASS
+
+ 002A				PRINT_RES:
+ 002A  B4 09			    MOV AH, 09H
+ 002C  CD 21			    INT 21H
+
+				   
+ 002E  B4 4C			    MOV AH, 4CH
+ 0030  CD 21			    INT 21H
+ 0032				CODES ENDS
+				END START
+
+
+Microsoft (R) Macro Assembler Version 6.11		    04/23/26 09:55:02
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0032	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 002D	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+IS_EXC . . . . . . . . . . . . .	L Near	 001A	  CODES	
+IS_MED . . . . . . . . . . . . .	L Near	 0020	  CODES	
+IS_PASS  . . . . . . . . . . . .	L Near	 0026	  CODES	
+MSG_EXC  . . . . . . . . . . . .	Byte	 0001	  DATAS	
+MSG_FAIL . . . . . . . . . . . .	Byte	 0023	  DATAS	
+MSG_MED  . . . . . . . . . . . .	Byte	 000D	  DATAS	
+MSG_PASS . . . . . . . . . . . .	Byte	 001C	  DATAS	
+PRINT_RES  . . . . . . . . . . .	L Near	 002A	  CODES	
+SCORE_VAL  . . . . . . . . . . .	Byte	 0000	  DATAS	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors

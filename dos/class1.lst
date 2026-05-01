@@ -1,0 +1,51 @@
+Microsoft (R) Macro Assembler Version 6.11		    04/20/26 13:30:00
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+ 0000 3F 06 5B 4F 66 6D		    SEG_TABLE DB 3FH, 06H, 5BH, 4FH, 66H, 6DH, 7DH, 07H, 7FH, 6FH
+       7D 07 7F 6F
+ 000A 07			    TEST_NUM  DB 7    
+ 000B				DATAS ENDS
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS
+ 0000				START:
+				    
+ 0000  B8 ---- R		    MOV AX, DATAS
+ 0003  8E D8			    MOV DS, AX
+
+ 0005  A0 000A R		    MOV AL, TEST_NUM 
+ 0008  8D 1E 0000 R		    LEA BX, SEG_TABLE 
+ 000C  D7			    XLAT              
+ 000D  8A D0			    MOV DL, AL        
+				    
+ 000F  B4 4C			    MOV AH, 4CH
+ 0011  CD 21			    INT 21H
+ 0013				CODES ENDS
+				END START
+
+
+Microsoft (R) Macro Assembler Version 6.11		    04/20/26 13:30:00
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0013	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 000B	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+SEG_TABLE  . . . . . . . . . . .	Byte	 0000	  DATAS	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+TEST_NUM . . . . . . . . . . . .	Byte	 000A	  DATAS	
+
+	   0 Warnings
+	   0 Errors
