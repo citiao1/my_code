@@ -1,10 +1,10 @@
-Microsoft (R) Macro Assembler Version 6.11		    04/27/26 13:02:50
+Microsoft (R) Macro Assembler Version 6.11		    05/03/26 22:51:27
 tempfile.asm						     Page 1 - 1
 
 
  0000				DATAS SEGMENT
 
- 0000 32 78 54 00 F8 87		    BUF DB 32H, 78H, 54H, 00H, 0F8H, 87H, 37H, 89H, 28H, 0F1H
+ 0000 32 90 54 00 F8 87		    BUF DB 32H, 90H, 54H, 00H, 0F8H, 87H, 37H, 89H, 28H, 0F1H
        37 89 28 F1
  000A = 000A			    LEN EQU $ - BUF     
  000A				DATAS ENDS
@@ -47,7 +47,7 @@ tempfile.asm						     Page 1 - 1
 
 
 
-Microsoft (R) Macro Assembler Version 6.11		    04/27/26 13:02:50
+Microsoft (R) Macro Assembler Version 6.11		    05/03/26 22:51:27
 tempfile.asm						     Symbols 2 - 1
 
 

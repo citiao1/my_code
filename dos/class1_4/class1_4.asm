@@ -1,5 +1,5 @@
 DATAS SEGMENT
-    SCORE    DB 100 
+    SCORE    DB 70
     MSG_PASS DB 'PASS', 0Dh, 0Ah, '$'
     MSG_FAIL DB 'FAILURE', 0Dh, 0Ah, '$'
 DATAS ENDS
@@ -29,5 +29,6 @@ PRINT_RES:
     INT 21H
 CODES ENDS
 END START
+
 
 

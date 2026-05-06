@@ -1,5 +1,5 @@
 DATAS SEGMENT
-    SCORE_VAL DB 60
+    SCORE_VAL DB 85
     MSG_EXC   DB 'Excellent', 0Dh, 0Ah, '$'
     MSG_MED   DB 'Medium level', 0Dh, 0Ah, '$'
     MSG_PASS  DB 'Pass', 0Dh, 0Ah, '$'
@@ -39,5 +39,6 @@ PRINT_RES:
     INT 21H
 CODES ENDS
 END START
+
 
 

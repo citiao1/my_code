@@ -1,9 +1,9 @@
-Microsoft (R) Macro Assembler Version 6.11		    04/23/26 09:55:02
+Microsoft (R) Macro Assembler Version 6.11		    05/03/26 22:19:22
 tempfile.asm						     Page 1 - 1
 
 
  0000				DATAS SEGMENT
- 0000 3C			    SCORE_VAL DB 60
+ 0000 55			    SCORE_VAL DB 85
  0001 45 78 63 65 6C 6C		    MSG_EXC   DB 'Excellent', 0Dh, 0Ah, '$'
        65 6E 74 0D 0A 24
  000D 4D 65 64 69 75 6D		    MSG_MED   DB 'Medium level', 0Dh, 0Ah, '$'
@@ -50,7 +50,8 @@ tempfile.asm						     Page 1 - 1
 				END START
 
 
-Microsoft (R) Macro Assembler Version 6.11		    04/23/26 09:55:02
+
+Microsoft (R) Macro Assembler Version 6.11		    05/03/26 22:19:22
 tempfile.asm						     Symbols 2 - 1
 
 
