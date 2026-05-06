@@ -1,0 +1,19 @@
+
+
+CODES SEGMENT
+    ASSUME CS:CODES
+START:
+
+    
+    MOV AX, 0       
+    MOV CX, 100    
+
+SUM_LOOP:
+    ADD AX, CX     
+    LOOP SUM_LOOP  
+
+    MOV AH, 4CH
+    INT 21H
+CODES ENDS
+END START
+

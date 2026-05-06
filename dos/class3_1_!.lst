@@ -1,0 +1,205 @@
+Microsoft (R) Macro Assembler Version 6.11		    04/23/26 09:55:39
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+ 0000 50 6C 65 61 73 65		    PROMPT   DB 'Please input a string: $'
+       20 69 6E 70 75 74
+       20 61 20 73 74 72
+       69 6E 67 3A 20 24
+ 0018 0D 0A 54 6F 74 61		    MSG_LEN  DB 0Dh, 0Ah, 'Total Length: $'
+       6C 20 4C 65 6E 67
+       74 68 3A 20 24
+ 0029 0D 0A 44 69 67 69		    MSG_DIG  DB 0Dh, 0Ah, 'Digit Count : $'
+       74 20 43 6F 75 6E
+       74 20 3A 20 24
+ 003A 0D 0A 41 6C 70 68		    MSG_ALP  DB 0Dh, 0Ah, 'Alpha Count : $'
+       61 20 43 6F 75 6E
+       74 20 3A 20 24
+ 004B 0D 0A 4F 74 68 65		    MSG_OTH  DB 0Dh, 0Ah, 'Other Count : $'
+       72 20 43 6F 75 6E
+       74 20 3A 20 24
+
+
+ 005C 00			    CNT_DIG  DB 0
+ 005D 00			    CNT_ALP  DB 0
+ 005E 00			    CNT_OTH  DB 0
+				    
+
+ 005F 64			    MAX_LEN  DB 100         
+ 0060 00			    ACT_LEN  DB ?           
+ 0061  0064 [			    BUFFER   DB 100 DUP(0)  
+        00
+       ]
+ 00C5				DATAS ENDS
+
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX, DATAS
+ 0003  8E D8			    MOV DS, AX
+
+ 0005  8D 16 0000 R		    LEA DX, PROMPT
+ 0009  B4 09			    MOV AH, 09H
+ 000B  CD 21			    INT 21H
+
+
+ 000D  8D 16 005F R		    LEA DX, MAX_LEN
+ 0011  B4 0A			    MOV AH, 0AH
+ 0013  CD 21			    INT 21H
+
+ 0015  8A 0E 0060 R		    MOV CL, ACT_LEN    
+ 0019  B5 00			    MOV CH, 0
+ 001B  E3 33			    JCXZ PRINT_ALL       
+
+ 001D  8D 1E 0061 R		    LEA BX, BUFFER       
+
+ 0021				CHECK_LOOP:
+ 0021  8A 07			    MOV AL, [BX]         
+				    
+ 0023  3C 30			    CMP AL, '0'
+ 0025  72 14			    JB IS_OTHER         
+ 0027  3C 39			    CMP AL, '9'
+ 0029  76 16			    JBE IS_DIGIT        
+
+				    
+ 002B  3C 41			    CMP AL, 'A'
+ 002D  72 0C			    JB IS_OTHER          
+ 002F  3C 5A			    CMP AL, 'Z'
+ 0031  76 14			    JBE IS_ALPHA        
+
+ 0033  3C 61			    CMP AL, 'a'
+ 0035  72 04			    JB IS_OTHER          
+ 0037  3C 7A			    CMP AL, 'z'
+ 0039  76 0C			    JBE IS_ALPHA         
+
+ 003B				IS_OTHER:
+ 003B  FE 06 005E R		    INC CNT_OTH          
+ 003F  EB 0C			    JMP NEXT_CHAR       
+
+ 0041				IS_DIGIT:
+ 0041  FE 06 005C R		    INC CNT_DIG          
+ 0045  EB 06			    JMP NEXT_CHAR
+
+ 0047				IS_ALPHA:
+ 0047  FE 06 005D R		    INC CNT_ALP          
+ 004B  EB 00			    JMP NEXT_CHAR
+
+ 004D				NEXT_CHAR:
+ 004D  43			    INC BX               
+ 004E  E2 D1			    LOOP CHECK_LOOP      
+
+				    
+ 0050				PRINT_ALL:
+				   
+ 0050  8D 16 0018 R		    LEA DX, MSG_LEN
+ 0054  B4 09			    MOV AH, 09H
+ 0056  CD 21			    INT 21H
+ 0058  A0 0060 R		    MOV AL, ACT_LEN      
+ 005B  E8 002E			    CALL PRINT_NUM      
+
+
+ 005E  8D 16 0029 R		    LEA DX, MSG_DIG
+ 0062  B4 09			    MOV AH, 09H
+ 0064  CD 21			    INT 21H
+ 0066  A0 005C R		    MOV AL, CNT_DIG
+ 0069  E8 0020			    CALL PRINT_NUM
+
+ 006C  8D 16 003A R		    LEA DX, MSG_ALP
+ 0070  B4 09			    MOV AH, 09H
+ 0072  CD 21			    INT 21H
+ 0074  A0 005D R		    MOV AL, CNT_ALP
+ 0077  E8 0012			    CALL PRINT_NUM
+
+ 007A  8D 16 004B R		    LEA DX, MSG_OTH
+ 007E  B4 09			    MOV AH, 09H
+ 0080  CD 21			    INT 21H
+ 0082  A0 005E R		    MOV AL, CNT_OTH
+ 0085  E8 0004			    CALL PRINT_NUM
+
+ 0088  B4 4C			    MOV AH, 4CH
+ 008A  CD 21			    INT 21H
+
+
+ 008C				PRINT_NUM PROC
+ 008C  B4 00			    MOV AH, 0
+ 008E  B3 0A			    MOV BL, 10
+ 0090  F6 F3			    DIV BL      
+ 0092  8A FC			    MOV BH, AH  
+
+ 0094  B4 00			    MOV AH, 0
+ 0096  F6 F3			    DIV BL      
+ 0098  8B C8			    MOV CX, AX  
+
+				    
+ 009A  8A D1			    MOV DL, CL
+ 009C  80 C2 30			    ADD DL, 30H 
+ 009F  B4 02			    MOV AH, 02H
+ 00A1  CD 21			    INT 21H
+
+				   
+ 00A3  8A D5			    MOV DL, CH
+ 00A5  80 C2 30			    ADD DL, 30H
+ 00A8  B4 02			    MOV AH, 02H
+ 00AA  CD 21			    INT 21H
+
+				    
+ 00AC  8A D7			    MOV DL, BH
+ 00AE  80 C2 30			    ADD DL, 30H
+ 00B1  B4 02			    MOV AH, 02H
+ 00B3  CD 21			    INT 21H
+
+ 00B5  C3			    RET         
+ 00B6				PRINT_NUM ENDP
+
+ 00B6				CODES ENDS
+				END START
+
+
+Microsoft (R) Macro Assembler Version 6.11		    04/23/26 09:55:39
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 00B6	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 00C5	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+PRINT_NUM  . . . . . . . . . . .	P Near	 008C	  CODES	Length= 002A Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+ACT_LEN  . . . . . . . . . . . .	Byte	 0060	  DATAS	
+BUFFER . . . . . . . . . . . . .	Byte	 0061	  DATAS	
+CHECK_LOOP . . . . . . . . . . .	L Near	 0021	  CODES	
+CNT_ALP  . . . . . . . . . . . .	Byte	 005D	  DATAS	
+CNT_DIG  . . . . . . . . . . . .	Byte	 005C	  DATAS	
+CNT_OTH  . . . . . . . . . . . .	Byte	 005E	  DATAS	
+IS_ALPHA . . . . . . . . . . . .	L Near	 0047	  CODES	
+IS_DIGIT . . . . . . . . . . . .	L Near	 0041	  CODES	
+IS_OTHER . . . . . . . . . . . .	L Near	 003B	  CODES	
+MAX_LEN  . . . . . . . . . . . .	Byte	 005F	  DATAS	
+MSG_ALP  . . . . . . . . . . . .	Byte	 003A	  DATAS	
+MSG_DIG  . . . . . . . . . . . .	Byte	 0029	  DATAS	
+MSG_LEN  . . . . . . . . . . . .	Byte	 0018	  DATAS	
+MSG_OTH  . . . . . . . . . . . .	Byte	 004B	  DATAS	
+NEXT_CHAR  . . . . . . . . . . .	L Near	 004D	  CODES	
+PRINT_ALL  . . . . . . . . . . .	L Near	 0050	  CODES	
+PROMPT . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors

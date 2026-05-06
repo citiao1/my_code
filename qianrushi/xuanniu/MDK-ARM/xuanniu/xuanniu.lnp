@@ -1,0 +1,27 @@
+--cpu Cortex-M3
+"xuanniu\startup_stm32f103xb.o"
+"xuanniu\main.o"
+"xuanniu\gpio.o"
+"xuanniu\i2c.o"
+"xuanniu\tim.o"
+"xuanniu\stm32f1xx_it.o"
+"xuanniu\stm32f1xx_hal_msp.o"
+"xuanniu\stm32f1xx_hal_gpio_ex.o"
+"xuanniu\stm32f1xx_hal_i2c.o"
+"xuanniu\stm32f1xx_hal.o"
+"xuanniu\stm32f1xx_hal_rcc.o"
+"xuanniu\stm32f1xx_hal_rcc_ex.o"
+"xuanniu\stm32f1xx_hal_gpio.o"
+"xuanniu\stm32f1xx_hal_dma.o"
+"xuanniu\stm32f1xx_hal_cortex.o"
+"xuanniu\stm32f1xx_hal_pwr.o"
+"xuanniu\stm32f1xx_hal_flash.o"
+"xuanniu\stm32f1xx_hal_flash_ex.o"
+"xuanniu\stm32f1xx_hal_exti.o"
+"xuanniu\stm32f1xx_hal_tim.o"
+"xuanniu\stm32f1xx_hal_tim_ex.o"
+"xuanniu\system_stm32f1xx.o"
+--strict --scatter "xuanniu\xuanniu.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "xuanniu.map" -o xuanniu\xuanniu.axf

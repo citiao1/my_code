@@ -1,0 +1,13 @@
+train: C:\Users\28097\Desktop\my_code\my_code\my_tools\ADB_test\UI-Monkey.v1i.yolov8\train\images
+val: C:\Users\28097\Desktop\my_code\my_code\my_tools\ADB_test\UI-Monkey.v1i.yolov8\train\images
+
+
+nc: 4
+names: ['back', 'butten', 'close', 'input']
+
+roboflow:
+  workspace: -ghupq
+  project: ui-monkey
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/-ghupq/ui-monkey/dataset/1

@@ -1,0 +1,96 @@
+Microsoft (R) Macro Assembler Version 6.11		    05/03/26 22:18:09
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+ 0000 0D 0A 44 49 47 49		    MSG_DIGIT DB 0Dh, 0Ah, 'DIGIT', 0Dh, 0Ah, '$'
+       54 0D 0A 24
+ 000A 0D 0A 43 48 41 52		    MSG_CHAR  DB 0Dh, 0Ah, 'CHAR', 0Dh, 0Ah, '$'
+       0D 0A 24
+ 0013 0D 0A 4F 54 48 45		    MSG_OTHER DB 0Dh, 0Ah, 'OTHER', 0Dh, 0Ah, '$'
+       52 0D 0A 24
+ 001D				DATAS ENDS
+
+
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX, DATAS
+ 0003  8E D8			    MOV DS, AX
+
+
+ 0005  B4 01			    MOV AH, 01H
+ 0007  CD 21			    INT 21H             
+
+
+ 0009  3C 30			    CMP AL, '0'
+ 000B  72 0A			    JB CHECK_UPPER      
+ 000D  3C 39			    CMP AL, '9'
+ 000F  77 06			    JA CHECK_UPPER     
+ 0011  8D 16 0000 R		    LEA DX, MSG_DIGIT  
+ 0015  EB 1A			    JMP PRINT_RES
+
+ 0017				CHECK_UPPER:
+
+ 0017  3C 41			    CMP AL, 'A'
+ 0019  72 12			    JB IS_OTHER        
+ 001B  3C 5A			    CMP AL, 'Z'
+ 001D  76 08			    JBE IS_CHAR         
+
+ 001F				CHECK_LOWER:
+
+ 001F  3C 61			    CMP AL, 'a'
+ 0021  72 0A			    JB IS_OTHER        
+ 0023  3C 7A			    CMP AL, 'z'
+ 0025  77 06			    JA IS_OTHER        
+
+ 0027				IS_CHAR:
+
+ 0027  8D 16 000A R		    LEA DX, MSG_CHAR
+ 002B  EB 04			    JMP PRINT_RES
+
+ 002D				IS_OTHER:
+
+ 002D  8D 16 0013 R		    LEA DX, MSG_OTHER
+
+ 0031				PRINT_RES:
+ 0031  B4 09			    MOV AH, 09H
+ 0033  CD 21			    INT 21H
+
+ 0035  B4 4C			    MOV AH, 4CH
+ 0037  CD 21			    INT 21H
+ 0039				CODES ENDS
+				END START
+
+
+Microsoft (R) Macro Assembler Version 6.11		    05/03/26 22:18:09
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0039	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 001D	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+CHECK_LOWER  . . . . . . . . . .	L Near	 001F	  CODES	
+CHECK_UPPER  . . . . . . . . . .	L Near	 0017	  CODES	
+IS_CHAR  . . . . . . . . . . . .	L Near	 0027	  CODES	
+IS_OTHER . . . . . . . . . . . .	L Near	 002D	  CODES	
+MSG_CHAR . . . . . . . . . . . .	Byte	 000A	  DATAS	
+MSG_DIGIT  . . . . . . . . . . .	Byte	 0000	  DATAS	
+MSG_OTHER  . . . . . . . . . . .	Byte	 0013	  DATAS	
+PRINT_RES  . . . . . . . . . . .	L Near	 0031	  CODES	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors
