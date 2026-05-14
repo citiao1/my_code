@@ -1,5 +1,0 @@
-Log file created at: 2026/04/24 23:13:01  PID: 15308
-Running on machine: F
-Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
-I0424 23:13:01.337968 44876 code_page.cpp:268] in function[Unisound::OutputDebugPrintf], version: V1.0.1 
- 
