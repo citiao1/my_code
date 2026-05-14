@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏠 FSX 智能家居中控 (AI 安全认证版)</title>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root { --bg: #f0f2f5; --primary: #3498db; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 850px) { .container { grid-template-columns: 1fr; } }
+        
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card-header { font-weight: bold; font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #f5f5f5; padding-bottom: 10px; }
+        
+        .top-bar { max-width: 1200px; margin: 0 auto 20px auto; background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 15px; }
+        .top-main { display: flex; justify-content: space-between; align-items: center; }
+        .config-row { display: flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
+        .ip-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; outline: none; width: 160px; font-family: monospace; }
+        
+        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-item { background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #eee; transition: 0.3s; }
+        .stat-item.active { background: #e3f2fd; border-color: #90caf9; }
+        .stat-val { font-size: 24px; font-weight: bold; margin: 5px 0; color: #333; }
+        .stat-label { font-size: 14px; color: #666; font-weight: bold; }
+        
+        .c-temp { color: #e67e22; } .c-hum { color: #3498db; }
+        .c-led.active i { color: #f1c40f; text-shadow: 0 0 10px rgba(241, 196, 15, 0.5); }
+        .c-fan.active i { color: #27ae60; animation: spin 1s linear infinite; }
+        .c-servo.active i { color: #9b59b6; }
+        .c-ac.active i { color: #00bcd4; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .control-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn:active:not(:disabled) { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(100%); }
+        .btn-green { background: #2ecc71; } .btn-red { background: #e74c3c; } 
+        .btn-blue { background: #3498db; } .btn-gray { background: #95a5a6; } .btn-purple { background: #9b59b6; }
+        
+        /* 语音按钮动画 */
+        .btn-voice { background: #6c757d; }
+        .btn-voice.listening { background: #e74c3c; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
+
+        /* 摄像头 UI */
+        .camera-box { position: relative; width: 100%; height: 220px; background: #1a1a1a; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; border: 2px solid #ddd;}
+        .camera-box.unlocked { border-color: #2ecc71; box-shadow: 0 0 15px rgba(46, 204, 113, 0.3); }
+        .cam-overlay { position: absolute; color: white; background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 20px; font-size: 13px; z-index: 10; }
+        #webcam { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); } /* 镜像翻转 */
+
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .online { background: #d4edda; color: #155724; } .offline { background: #f8d7da; color: #721c24; }
+        .lock-badge { background: #ffeeba; color: #856404; } .unlock-badge { background: #d4edda; color: #155724; }
+        .log-box { height: 180px; overflow-y: auto; background: #2c3e50; color: #7bed9f; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 12px; }
+        .log-line { border-bottom: 1px dashed #444; padding: 4px 0; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="top-bar">
+        <div class="top-main">
+            <h2 style="margin:0"><i class="fas fa-microchip"></i> FSX 智能家居中控 (AI安全版)</h2>
+            <div style="display: flex; gap: 10px;">
+                <span class="badge" :class="isVerified ? 'unlock-badge' : 'lock-badge'">
+                    <i class="fas" :class="isVerified ? 'fa-lock-open' : 'fa-lock'"></i> 
+                    {{ isVerified ? '系统已解锁' : '系统已锁定' }}
+                </span>
+                <span class="badge" :class="isConnected ? 'online' : 'offline'">
+                    {{ isConnected ? '✅ MQTT 在线' : '❌ MQTT 断开' }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="config-row">
+            <span style="font-size: 14px; font-weight: bold; color: #666;">服务器 IP:</span>
+            <input type="text" v-model="brokerIP" placeholder="例如 10.185.92.139" class="ip-input">
+            <button class="btn" :class="isConnected ? 'btn-red' : 'btn-green'" @click="toggleConnection" style="padding: 8px 15px; font-size: 12px;">
+                <i class="fas" :class="isConnected ? 'fa-unlink' : 'fa-link'"></i>
+                {{ isConnected ? '断开连接' : '立即连接' }}
+            </button>
+            <button class="btn btn-blue" style="padding: 8px 15px; font-size: 12px;" @click="manualQuery" :disabled="!isConnected">
+                <i class="fas fa-sync-alt"></i> 刷新数据
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="col">
+            <div class="card" style="margin-bottom: 20px; border-top: 4px solid #3498db;">
+                <div class="card-header">
+                    <span><i class="fas fa-user-shield"></i> Face ID 安全认证</span>
+                </div>
+                
+                <div class="camera-box" :class="{ 'unlocked': isVerified }">
+                    <div class="cam-overlay" v-if="!modelsLoaded">⌛ AI 模型加载中...</div>
+                    <div class="cam-overlay" v-else-if="!isCamOn">📷 摄像头未启动</div>
+                    <video id="webcam" autoplay muted playsinline></video>
+                </div>
+
+                <div class="control-row" v-if="!isVerified">
+                    <button class="btn btn-gray" @click="toggleCamera" :disabled="!modelsLoaded">
+                        {{ isCamOn ? '关闭摄像头' : '1. 开启摄像头' }}
+                    </button>
+                    <button class="btn btn-blue" @click="registerFace" :disabled="!isCamOn">
+                        2. 录入我的脸
+                    </button>
+                    <button class="btn btn-green" style="grid-column: span 2;" @click="verifyFace" :disabled="!hasRegistered || !isCamOn">
+                        <i class="fas fa-scan"></i> 3. 开始刷脸解锁系统
+                    </button>
+                </div>
+                <div v-else>
+                    <button class="btn btn-red" style="width: 100%;" @click="lockSystem">
+                        <i class="fas fa-lock"></i> 重新锁定系统
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><span><i class="fas fa-broadcast-tower"></i> 环境与设备状态</span></div>
+                <div class="dashboard-grid">
+                    <div class="stat-item"><div class="c-temp"><i class="fas fa-thermometer-half"></i></div><div class="stat-val">{{ dht.temp }}℃</div><div class="stat-label">温度</div></div>
+                    <div class="stat-item"><div class="c-hum"><i class="fas fa-tint"></i></div><div class="stat-val">{{ dht.hum }}%</div><div class="stat-label">湿度</div></div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="stat-item c-led" :class="{ active: state.led === 1 }"><i class="fas fa-lightbulb fa-2x"></i><div class="stat-val">{{ state.led ? '开' : '关' }}</div><div class="stat-label">LED</div></div>
+                    <div class="stat-item c-fan" :class="{ active: state.fan === 1 }"><i class="fas fa-fan fa-2x"></i><div class="stat-val">{{ state.fan ? '开' : '关' }}</div><div class="stat-label">风扇</div></div>
+                    <div class="stat-item c-servo" :class="{ active: state.servo === 1 }"><i class="fas fa-person-booth fa-2x"></i><div class="stat-val">{{ state.servo ? '开' : '关' }}</div><div class="stat-label">窗帘</div></div>
+                    <div class="stat-item c-ac" :class="{ active: state.condition === 1 }"><i class="fas fa-snowflake fa-2x"></i><div class="stat-val">{{ state.condition ? '开' : '关' }}</div><div class="stat-label">空调</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-header">
+                    <span><i class="fas fa-gamepad"></i> 远程控制台</span>
+                    <button class="btn btn-voice" :class="{ listening: isListening }" @click="toggleVoice" :disabled="!isVerified" style="padding: 6px 12px; font-size: 12px;">
+                        <i class="fas" :class="isListening ? 'fa-microphone-lines' : 'fa-microphone'"></i> {{ isListening ? '正在聆听...' : '语音指令' }}
+                    </button>
+                </div>
+                
+                <div class="control-row">
+                    <button class="btn btn-blue" @click="sendCmd('led_on')" :disabled="!isVerified">💡 开灯</button>
+                    <button class="btn btn-gray" @click="sendCmd('led_off')" :disabled="!isVerified">关灯</button>
+                </div>
+                <div class="control-row">
+                    <button class="btn btn-blue" @click="sendCmd('fan_on')" :disabled="!isVerified">🌀 开风扇</button>
+                    <button class="btn btn-gray" @click="sendCmd('fan_off')" :disabled="!isVerified">关风扇</button>
+                </div>
+                <div class="control-row">
+                    <button class="btn btn-blue" @click="sendCmd('servo_on')" :disabled="!isVerified">↕ 打开窗帘</button>
+                    <button class="btn btn-gray" @click="sendCmd('servo_off')" :disabled="!isVerified">关闭窗帘</button>
+                </div>
+                <div class="control-row">
+                    <button class="btn btn-blue" @click="sendCmd('condition_on')" :disabled="!isVerified">❄ 开空调</button>
+                    <button class="btn btn-gray" @click="sendCmd('condition_off')" :disabled="!isVerified">关空调</button>
+                </div>
+                
+                <hr style="border:1px solid #eee; margin: 15px 0;">
+                
+                <div class="control-row">
+                    <button class="btn btn-green" @click="sendCmd('all_on')" :disabled="!isVerified">⚡ 全部开启</button>
+                    <button class="btn btn-red" @click="sendCmd('all_off')" :disabled="!isVerified">🔌 全部关闭</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="log-box">
+                    <div v-for="(log, i) in logs" :key="i" class="log-line">
+                        <span style="color:#aaa;">[{{ log.time }}]</span> 
+                        <span :style="{ color: log.type === 'rx' ? '#7bed9f' : '#ff9f43' }">{{ log.type === 'rx' ? '⬇' : '⬆' }}</span> {{ log.msg }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const { createApp, reactive, ref, onMounted } = Vue;
+
+    createApp({
+        setup() {
+            // MQTT 配置
+            const brokerIP = ref('10.185.92.139'); 
+            const isConnected = ref(false);
+            const client = ref(null);
+            const logs = ref([]);
+            const dht = reactive({ temp: '--', hum: '--' });
+            const state = reactive({ fan: 0, led: 0, servo: 0, condition: 0 });
+
+            // AI 安全配置
+            const modelsLoaded = ref(false);
+            const isCamOn = ref(false);
+            const hasRegistered = ref(false);
+            const isVerified = ref(false); // 核心：权限锁
+            let localStream = null;
+            let faceMatcher = null;
+            let verifyInterval = null;
+
+            // 语音控制配置
+            const isListening = ref(false);
+            let recognition = null;
+
+            const addLog = (msg, type) => {
+                logs.value.unshift({ time: new Date().toLocaleTimeString(), msg, type });
+                if(logs.value.length > 30) logs.value.pop();
+            };
+
+            // ======================
+            // 1. MQTT 连接逻辑
+            // ======================
+            const toggleConnection = () => {
+                if (isConnected.value) {
+                    client.value.end(true);
+                    isConnected.value = false;
+                    addLog('手动断开连接', 'rx');
+                } else { connectMQTT(); }
+            };
+
+            const connectMQTT = () => {
+                if (client.value) client.value.end(true);
+                const wsUrl = `ws://${brokerIP.value}:8083/mqtt`;
+                addLog(`尝试连接到: ${wsUrl}...`, 'tx');
+                
+                client.value = mqtt.connect(wsUrl, { 
+                    clientId: 'Web_' + Math.random().toString(16).substr(2, 8),
+                    protocolVersion: 4, keepalive: 60, clean: true, connectTimeout: 5000 
+                });
+                
+                client.value.on('connect', () => {
+                    isConnected.value = true;
+                    addLog('✅ MQTT 服务器连接成功！', 'rx');
+                    client.value.subscribe(['fsx_dht', 'fsx_state']);
+                    setTimeout(manualQuery, 500);
+                });
+
+                client.value.on('message', (topic, payload) => {
+                    const msg = payload.toString();
+                    if (topic === 'fsx_dht' && msg.startsWith('dht:')) {
+                        const vals = msg.substring(4).split(',');
+                        if(vals.length >= 2) { dht.temp = vals[0]; dht.hum = vals[1]; }
+                    }
+                    if (topic === 'fsx_state' && msg.startsWith('state:')) {
+                        const s = msg.substring(6).split(',');
+                        if(s.length >= 4) {
+                            state.fan = parseInt(s[0]); state.led = parseInt(s[1]);
+                            state.servo = parseInt(s[2]); state.condition = parseInt(s[3]);
+                        }
+                    }
+                });
+                client.value.on('error', (err) => { addLog('❌ 连接出错: ' + err.message, 'rx'); isConnected.value = false; });
+                client.value.on('close', () => { isConnected.value = false; });
+            };
+
+            // 控制指令发送（带权限校验）
+            const sendCmd = (cmd, requireAuth = true) => {
+                // 如果需要权限校验且未解锁，则拦截
+                if (requireAuth && !isVerified.value) {
+                    alert("权限拒绝：请先完成 Face ID 刷脸解锁！");
+                    addLog('❌ 尝试发送指令失败，系统已锁定', 'rx');
+                    return;
+                }
+                if (isConnected.value) {
+                    client.value.publish('fsx_command', cmd);
+                    addLog('发送指令: ' + cmd, 'tx');
+                } else {
+                    alert("MQTT 未连接");
+                }
+            };
+
+            const manualQuery = () => {
+                sendCmd('get_state', false); // 查询状态不需要权限
+                setTimeout(() => sendCmd('get_dht', false), 300);
+            };
+
+            // ======================
+            // 2. 人脸识别 (Face ID) 逻辑
+            // ======================
+            // ======================
+            // 2. 人脸识别 (Face ID) 逻辑
+            // ======================
+            // ======================
+            // 2. 人脸识别 (Face ID) 逻辑
+            // ======================
+            const initFaceAPI = async () => {
+                // 判断核心库是否成功加载
+                if (typeof faceapi === 'undefined') {
+                    addLog('❌ 致命错误: face-api.js 核心库未加载，请检查网络或刷新页面', 'rx');
+                    alert("安全模块加载失败，请刷新网页重试！");
+                    return;
+                }
+
+                // 使用 fastly 加速节点，国内访问更稳定
+                const modelUrl = 'https://fastly.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights';
+                
+                addLog('⌛ 正在从云端下载 AI 模型 (约6MB)，请耐心等待...', 'rx');
+                
+                try {
+                    await Promise.all([
+                        faceapi.nets.ssdMobilenetv1.loadFromUri(modelUrl),
+                        faceapi.nets.faceLandmark68Net.loadFromUri(modelUrl),
+                        faceapi.nets.faceRecognitionNet.loadFromUri(modelUrl)
+                    ]);
+                    modelsLoaded.value = true;
+                    addLog('✅ AI 人脸模型加载完毕！可以开启摄像头了', 'rx');
+                } catch(e) {
+                    console.error("模型加载具体报错:", e);
+                    addLog('❌ AI 模型加载失败，请按 F12 查看控制台报错', 'rx');
+                }
+            };
+
+            const toggleCamera = async () => {
+                const videoEl = document.getElementById('webcam');
+                if (isCamOn.value) {
+                    if(localStream) localStream.getTracks().forEach(t => t.stop());
+                    videoEl.srcObject = null;
+                    isCamOn.value = false;
+                } else {
+                    try {
+                        localStream = await navigator.mediaDevices.getUserMedia({ video: {} });
+                        videoEl.srcObject = localStream;
+                        isCamOn.value = true;
+                    } catch(e) { alert("摄像头权限被拒绝或无设备！"); }
+                }
+            };
+
+            const registerFace = async () => {
+                const videoEl = document.getElementById('webcam');
+                addLog('正在提取面部特征...', 'tx');
+                const detection = await faceapi.detectSingleFace(videoEl).withFaceLandmarks().withFaceDescriptor();
+                if (detection) {
+                    faceMatcher = new faceapi.FaceMatcher(detection.descriptor, 0.6); // 设定0.6的容错阈值
+                    hasRegistered.value = true;
+                    alert("人脸录入成功！现在可以刷脸解锁了。");
+                    addLog('👤 人脸基准特征录入成功', 'rx');
+                } else {
+                    alert("未检测到人脸，请正对摄像头！");
+                }
+            };
+
+            const verifyFace = () => {
+                if (verifyInterval) clearInterval(verifyInterval);
+                const videoEl = document.getElementById('webcam');
+                addLog('👀 开始身份核验...', 'tx');
+                
+                verifyInterval = setInterval(async () => {
+                    const detection = await faceapi.detectSingleFace(videoEl).withFaceLandmarks().withFaceDescriptor();
+                    if (detection && faceMatcher) {
+                        const match = faceMatcher.findBestMatch(detection.descriptor);
+                        // distance 越小越相似
+                        if (match.label !== 'unknown' && match.distance < 0.5) {
+                            clearInterval(verifyInterval);
+                            isVerified.value = true;
+                            addLog('🔓 Face ID 核验通过，系统解锁！', 'rx');
+                            toggleCamera(); // 验证通过后自动关掉摄像头省电
+                        }
+                    }
+                }, 800);
+            };
+
+            const lockSystem = () => {
+                isVerified.value = false;
+                addLog('🔒 系统已手动锁定', 'rx');
+            };
+
+            // ======================
+            // 3. Web 语音识别逻辑
+            // ======================
+            const initSpeech = () => {
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    recognition = new SpeechRecognition();
+                    recognition.lang = 'zh-CN';
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    
+                    recognition.onstart = () => { isListening.value = true; addLog('🎙️ 请开始说话...', 'rx'); };
+                    recognition.onend = () => { isListening.value = false; };
+                    recognition.onresult = (event) => {
+                        const text = event.results[0][0].transcript;
+                        addLog(`🗣️ 听到语音: "${text}"`, 'rx');
+                        processVoiceCommand(text);
+                    };
+                    recognition.onerror = (e) => { addLog(`语音识别错误: ${e.error}`, 'rx'); isListening.value = false; };
+                } else {
+                    addLog('❌ 您的浏览器不支持语音识别', 'rx');
+                }
+            };
+
+            const toggleVoice = () => {
+                if (!isVerified.value) { alert("请先解锁系统"); return; }
+                if (!recognition) { alert("浏览器不支持该功能 (推荐使用 Chrome)"); return; }
+                isListening.value ? recognition.stop() : recognition.start();
+            };
+
+            const processVoiceCommand = (text) => {
+                // 灯光控制
+                if (text.includes('开灯') || text.includes('打开灯')) sendCmd('led_on');
+                else if (text.includes('关灯') || text.includes('关闭灯')) sendCmd('led_off');
+                
+                // 风扇控制
+                else if (text.includes('开风扇') || text.includes('打开风扇') || text.includes('开启风扇')) sendCmd('fan_on');
+                else if (text.includes('关风扇') || text.includes('关闭风扇')) sendCmd('fan_off');
+                
+                // 窗帘控制
+                else if (text.includes('开窗帘') || text.includes('打开窗帘') || text.includes('拉开窗帘')) sendCmd('servo_on');
+                else if (text.includes('关窗帘') || text.includes('关闭窗帘') || text.includes('拉上窗帘')) sendCmd('servo_off');
+                
+                // 空调控制
+                else if (text.includes('开空调') || text.includes('打开空调') || text.includes('开启空调')) sendCmd('condition_on');
+                else if (text.includes('关空调') || text.includes('关闭空调')) sendCmd('condition_off');
+                
+                // 全局控制（加入了“全部开启”）
+                else if (text.includes('全部打开') || text.includes('全开') || text.includes('全部开启') || text.includes('打开全部') || text.includes('打开所有')) sendCmd('all_on');
+                else if (text.includes('全部关闭') || text.includes('全关') || text.includes('关闭全部') || text.includes('关闭所有')) sendCmd('all_off');
+                
+                // 无法识别
+                else addLog('⚠️ 未找到对应的语音指令', 'rx');
+            };
+
+            onMounted(() => {
+                connectMQTT();
+                initFaceAPI();
+                initSpeech();
+            });
+
+            return { 
+                brokerIP, isConnected, dht, state, logs, toggleConnection, manualQuery, sendCmd,
+                modelsLoaded, isCamOn, hasRegistered, isVerified, toggleCamera, registerFace, verifyFace, lockSystem,
+                isListening, toggleVoice
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>

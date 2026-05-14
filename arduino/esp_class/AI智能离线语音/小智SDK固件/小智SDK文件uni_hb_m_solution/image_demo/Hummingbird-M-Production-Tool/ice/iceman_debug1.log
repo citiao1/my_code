@@ -1,0 +1,1303 @@
+Debug: 451 168 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0x0
+
+Debug: 453 168 transport.c:239 handle_transport_init(): handle_transport_init
+Debug: 454 168 aice_transport.c:398 aice_transport_init(): aice_transport_init
+Debug: 455 168 aice_transport.c:414 aice_transport_init(): current transport aice_jtag
+Debug: 456 168 aice_interface.c:244 aice_init_targets(): aice_init_targets
+Debug: 457 168 openocd.c:153 handle_init_command(): Examining targets...
+Debug: 458 168 target.c:1531 target_call_event_callbacks(): target event 17 (examine-start)
+Debug: 459 168 nds32.c:3245 nds32_callback_event_handler(): nds32_callback_event_handler: target_number=0, target->target_number=0, event=0x00000011
+Info : 460 168 nds32.c:3964 nds32_reset_halt(): reset halt as init
+Debug: 461 168 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x0000001F.
+Debug: 462 169 aice_apis.c:1776 aice_issue_reset_hold(): aice_issue_reset_hold, coreid = 0
+Debug: 463 169 aice_apis.c:1783 aice_issue_reset_hold(): aice_issue_reset_hold 0, 0, 0
+Debug: 464 170 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x38 [EDM_CTL], DATA: 0x80000040.
+Debug: 465 170 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x38 [EDM_CTL], DATA: 0x80000040.
+Debug: 466 170 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x50 [DIMBR], DATA: 0xFFFF0000.
+Debug: 467 171 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x04 [GET_JTAG_PIN_STATUS], DATA: 0xC0000005.
+Debug: 468 171 aice_print_info.c:293 aice_print_info(): WRITE_CTRL: ADDR: 0x04 [JTAG_PIN_STATUS], DATA: 0xC0000001.
+Debug: 469 172 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006000.
+Debug: 470 173 aice_usb_command.c:952 aice_usb_execute_custom_script(): custom_script t_write_misc 0 2 4
+
+Debug: 471 173 aice_usb_command.c:1024 aice_usb_execute_custom_script(): custom_script aice_write_misc, 0x0, 0x2, 0x4
+Debug: 472 173 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x02 [EDM_CMDR], DATA: 0x00000004.
+Debug: 473 173 aice_usb_command.c:952 aice_usb_execute_custom_script(): custom_script delay 50
+
+Debug: 474 173 aice_usb_command.c:979 aice_usb_execute_custom_script(): custom_script aice_write_ctrl = 0x10000, delay = 0x32
+Debug: 475 173 aice_print_info.c:293 aice_print_info(): WRITE_CTRL: ADDR: 0x0D [CUSTOM_DELAY], DATA: 0x00010000.
+Debug: 476 224 aice_usb_command.c:952 aice_usb_execute_custom_script(): custom_script t_write_misc 0 2 0
+
+Debug: 477 224 aice_usb_command.c:1024 aice_usb_execute_custom_script(): custom_script aice_write_misc, 0x0, 0x2, 0x0
+Debug: 478 224 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x02 [EDM_CMDR], DATA: 0x00000000.
+Debug: 479 225 aice_usb_command.c:952 aice_usb_execute_custom_script(): custom_script delay 50
+
+Debug: 480 225 aice_usb_command.c:979 aice_usb_execute_custom_script(): custom_script aice_write_ctrl = 0x10000, delay = 0x32
+Debug: 481 225 aice_print_info.c:293 aice_print_info(): WRITE_CTRL: ADDR: 0x0D [CUSTOM_DELAY], DATA: 0x00010000.
+Debug: 482 276 aice_usb_command.c:952 aice_usb_execute_custom_script(): custom_script t_write_misc 0 2 5
+
+Debug: 483 277 aice_usb_command.c:1024 aice_usb_execute_custom_script(): custom_script aice_write_misc, 0x0, 0x2, 0x5
+Debug: 484 277 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x02 [EDM_CMDR], DATA: 0x00000005.
+Debug: 485 278 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x38 [EDM_CTL], DATA: 0x80000040.
+Debug: 486 278 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000005.
+Debug: 487 278 aice_apis.c:685 aice_init_edm_registers(): aice_init_edm_registers - EDM_CTL: 0xa000004f
+Debug: 488 278 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x38 [EDM_CTL], DATA: 0xA000004F.
+Debug: 489 278 aice_register.c:358 aice_backup_tmp_registers(): backup_tmp_registers -
+Debug: 490 279 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006000.
+Debug: 491 279 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000000.
+Debug: 492 279 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 493 279 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000000
+Debug: 494 279 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 495 279 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x40000009[NOP], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 496 280 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 497 280 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 498 281 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000007.
+Debug: 499 282 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 500 282 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000003.
+Debug: 501 282 nds32.c:145 nds32_get_core_reg(): reading register 0(r0), value: 0x00000003
+Debug: 502 282 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 503 282 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000001
+Debug: 504 282 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 505 282 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64170003[MTSR_DTR], 0x64000008[DSB], 0x40000009[NOP], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 506 283 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 507 283 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 508 284 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000007.
+Debug: 509 285 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 510 285 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x200216E0.
+Debug: 511 285 nds32.c:145 nds32_get_core_reg(): reading register 1(r1), value: 0x200216e0
+Debug: 512 285 aice_register.c:460 aice_backup_tmp_registers(): r0: 0x00000003, r1: 0x200216e0
+Debug: 513 285 aice_apis.c:1943 aice_issue_reset_hold(): hardware reset-and-hold success
+Debug: 514 285 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000004.
+Debug: 515 286 target.c:1531 target_call_event_callbacks(): target event 18 (examine-end)
+Debug: 516 286 nds32.c:3245 nds32_callback_event_handler(): nds32_callback_event_handler: target_number=0, target->target_number=0, event=0x00000012
+Debug: 517 286 command.c:143 script_debug(): command - ocd_command ocd_command type ocd_flash init
+Debug: 518 286 command.c:143 script_debug(): command - ocd_flash ocd_flash init
+Debug: 519 286 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0x1bc0
+
+Debug: 520 287 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 521 287 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 522 287 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 523 287 nds32_v3_common.c:68 nds32_v3_debug_entry(): nds32_v3_debug_entry
+Debug: 524 287 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 525 287 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x0000002a
+Debug: 526 288 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 527 288 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64000002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 528 288 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 529 289 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 530 289 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 531 290 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 532 290 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0xDA0C003F.
+Debug: 533 290 nds32.c:145 nds32_get_core_reg(): reading register 42(cr0), value: 0xda0c003f
+Debug: 534 290 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 535 290 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x0000002d
+Debug: 536 290 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 537 290 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64006002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 538 291 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 539 291 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 540 292 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 541 292 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 542 293 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x4908BB05.
+Debug: 543 293 nds32.c:145 nds32_get_core_reg(): reading register 45(cr3), value: 0x4908bb05
+Debug: 544 293 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 545 293 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x0000002e
+Debug: 546 293 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 547 293 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64008002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 548 293 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 549 294 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 550 294 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 551 295 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 552 295 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x5D294065.
+Debug: 553 295 nds32.c:145 nds32_get_core_reg(): reading register 46(cr4), value: 0x5d294065
+Debug: 554 295 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 555 295 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x0000002b
+Debug: 556 295 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 557 295 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64002002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 558 296 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 559 296 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 560 296 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 561 297 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 562 297 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x000022CB.
+Debug: 563 297 nds32.c:145 nds32_get_core_reg(): reading register 43(cr1), value: 0x000022cb
+Debug: 564 297 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 565 297 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x0000002c
+Debug: 566 297 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 567 297 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64004002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 568 298 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 569 298 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 570 299 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 571 299 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 572 300 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x000022CB.
+Debug: 573 300 nds32.c:145 nds32_get_core_reg(): reading register 44(cr2), value: 0x000022cb
+Debug: 574 300 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 575 300 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000032
+Debug: 576 300 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 577 300 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64020002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 578 300 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 579 301 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 580 301 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 581 302 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 582 302 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x0007240A.
+Debug: 583 302 nds32.c:145 nds32_get_core_reg(): reading register 50(ir0), value: 0x0007240a
+Debug: 584 302 nds32.c:1725 nds32_init_option_registers(): ACE init nds32_init_option_registers
+Debug: 585 302 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 586 302 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x0000002f
+Debug: 587 302 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 588 302 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64000402[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 589 303 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 590 303 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 591 304 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 592 304 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 593 304 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000000.
+Debug: 594 304 nds32.c:145 nds32_get_core_reg(): reading register 47(cr5), value: 0x00000000
+Debug: 595 304 nds32.c:116 nds32_get_core_reg(): reading register(cached) 42(cr0), value: 0xda0c003f
+Debug: 596 304 nds32.c:1799 nds32_init_option_registers(): COP: has cop extension
+Debug: 597 304 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 598 304 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000030
+Debug: 599 304 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 600 305 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x6400A002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 601 305 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 602 305 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 603 306 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 604 306 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 605 307 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x80010001.
+Debug: 606 307 nds32.c:145 nds32_get_core_reg(): reading register 48(cr6), value: 0x80010001
+Debug: 607 307 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 608 307 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x000000a6
+Debug: 609 307 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 610 307 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x6408A002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 611 307 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 612 308 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 613 308 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 614 309 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 615 309 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000000.
+Debug: 616 309 nds32.c:145 nds32_get_core_reg(): reading register 166(fucpr), value: 0x00000000
+Debug: 617 309 nds32.c:456 nds32_set_core_reg(): writing register 166(fucpr) with value 0x00000001
+Debug: 618 309 aice_register.c:667 aice_write_register(): aice_write_register
+Debug: 619 309 aice_register.c:277 aice_write_reg(): aice_write_reg, reg_no: 0x000000a6, value: 0x00000001
+Debug: 620 309 aice_print_info.c:351 aice_print_info(): WRITE_DTR: TARGET: 0x00, DATA: 0x00000001.
+Debug: 621 310 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006002.
+Debug: 622 310 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 623 310 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64070002[MFSR_DTR], 0x6408A003[MTSR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 624 310 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 625 311 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 626 311 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 627 311 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 628 311 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x000000a6
+Debug: 629 311 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 630 311 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x6408A002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 631 312 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 632 312 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 633 313 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 634 313 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 635 313 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000001.
+Debug: 636 313 nds32.c:116 nds32_get_core_reg(): reading register(cached) 166(fucpr), value: 0x00000001
+Debug: 637 313 nds32.c:364 nds32_check_extension(): fucpr_value: 0x00000001
+Debug: 638 313 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 639 313 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x000000d4
+Debug: 640 313 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 641 313 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x6A000301[FMFCFG], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 642 314 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 643 314 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 644 315 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 645 315 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 646 315 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x09000009.
+Debug: 647 315 nds32.c:145 nds32_get_core_reg(): reading register 212(fpcfg), value: 0x09000009
+Debug: 648 315 nds32.c:456 nds32_set_core_reg(): writing register 166(fucpr) with value 0x00000000
+Debug: 649 315 aice_register.c:667 aice_write_register(): aice_write_register
+Debug: 650 315 aice_register.c:277 aice_write_reg(): aice_write_reg, reg_no: 0x000000a6, value: 0x00000000
+Debug: 651 315 aice_print_info.c:351 aice_print_info(): WRITE_DTR: TARGET: 0x00, DATA: 0x00000000.
+Debug: 652 316 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006002.
+Debug: 653 316 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 654 316 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64070002[MFSR_DTR], 0x6408A003[MTSR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 655 317 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 656 317 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 657 318 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 658 318 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 659 318 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x000000a6
+Debug: 660 318 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 661 318 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x6408A002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 662 318 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 663 319 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 664 319 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 665 320 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 666 320 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000000.
+Debug: 667 320 nds32.c:116 nds32_get_core_reg(): reading register(cached) 166(fucpr), value: 0x00000000
+Debug: 668 320 nds32.c:364 nds32_check_extension(): fucpr_value: 0x00000000
+Debug: 669 320 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 670 320 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000031
+Debug: 671 320 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 672 320 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64008402[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 673 321 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 674 321 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 675 322 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 676 322 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 677 322 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000030.
+Debug: 678 322 nds32.c:145 nds32_get_core_reg(): reading register 49(cr7), value: 0x00000030
+Debug: 679 322 nds32.c:1997 nds32_init_option_registers(): msc_cfg2_value = 30
+Debug: 680 322 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 681 322 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x000000ae
+Debug: 682 322 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 683 322 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x6408C002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 684 323 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 685 323 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 686 324 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 687 324 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 688 325 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000000.
+Debug: 689 325 nds32.c:145 nds32_get_core_reg(): reading register 174(hspr0), value: 0x00000000
+Debug: 690 325 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 691 325 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x000000a8
+Debug: 692 325 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 693 325 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x6405E402[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 694 325 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 695 325 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 696 326 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 697 326 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 698 327 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000003.
+Debug: 699 327 nds32.c:145 nds32_get_core_reg(): reading register 168(idr1), value: 0x00000003
+Debug: 700 327 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 701 327 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000035
+Debug: 702 327 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 703 327 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64022402[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 704 327 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 705 327 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 706 328 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 707 328 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 708 329 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x0100480B.
+Debug: 709 329 nds32.c:145 nds32_get_core_reg(): reading register 53(ir3), value: 0x0100480b
+Debug: 710 329 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 711 329 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000032
+Debug: 712 329 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 713 329 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64020002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 714 329 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 715 329 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 716 330 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 717 330 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 718 331 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x0007240A.
+Debug: 719 331 nds32.c:145 nds32_get_core_reg(): reading register 50(ir0), value: 0x0007240a
+Debug: 720 331 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 721 331 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000035
+Debug: 722 331 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 723 331 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64022402[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 724 331 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 725 331 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 726 332 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 727 332 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 728 333 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x0100480B.
+Debug: 729 333 nds32.c:145 nds32_get_core_reg(): reading register 53(ir3), value: 0x0100480b
+Debug: 730 333 nds32.c:116 nds32_get_core_reg(): reading register(cached) 50(ir0), value: 0x0007240a
+Debug: 731 333 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 732 333 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000056
+Debug: 733 333 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 734 333 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64040002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 735 333 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 736 333 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 737 334 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 738 335 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 739 335 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00072000.
+Debug: 740 335 nds32.c:145 nds32_get_core_reg(): reading register 86(mr0), value: 0x00072000
+Debug: 741 335 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 742 335 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x0000005e
+Debug: 743 335 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 744 335 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64050002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 745 336 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 746 336 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 747 337 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 748 337 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 749 337 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000030.
+Debug: 750 337 nds32.c:145 nds32_get_core_reg(): reading register 94(mr8), value: 0x00000030
+Debug: 751 337 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 752 337 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x000000a6
+Debug: 753 337 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 754 337 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x6408A002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 755 338 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 756 338 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 757 339 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 758 339 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 759 340 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000000.
+Debug: 760 340 nds32.c:145 nds32_get_core_reg(): reading register 166(fucpr), value: 0x00000000
+Debug: 761 340 nds32.c:364 nds32_check_extension(): fucpr_value: 0x00000000
+Debug: 762 340 nds32.c:964 nds32_full_context(): ace_support=0, ace_enable=0
+Debug: 763 340 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x04 [ACC_CTL], DATA: 0x00000000.
+Debug: 764 340 nds32.c:970 nds32_full_context(): before=0x0, set_acc_mode=0x1
+Debug: 765 340 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006000.
+Debug: 766 340 nds32_v3_common.c:55 nds32_v3_get_debug_reason(): edmsw(DR41) = 0x6000
+Debug: 767 341 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006000.
+Debug: 768 341 nds32_v3_common.c:55 nds32_v3_get_debug_reason(): edmsw(DR41) = 0x6000
+Debug: 769 341 nds32.c:2829 nds32_examine_debug_reason(): nds32 examines debug reason: DEBUG INTERRUPT
+Debug: 770 341 nds32.c:2897 nds32_examine_debug_reason(): target->debug_reason = 0
+
+Debug: 771 341 nds32.c:116 nds32_get_core_reg(): reading register(cached) 50(ir0), value: 0x0007240a
+Debug: 772 341 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 773 341 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000036
+Debug: 774 341 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 775 341 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64024402[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 776 341 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 777 342 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 778 342 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 779 343 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 780 343 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000000.
+Debug: 781 343 nds32.c:145 nds32_get_core_reg(): reading register 54(ir4), value: 0x00000000
+Debug: 782 343 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 783 343 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x00000038
+Debug: 784 343 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 785 343 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64026402[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 786 344 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 787 344 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 788 344 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 789 345 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 790 345 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x00000000.
+Debug: 791 345 nds32.c:145 nds32_get_core_reg(): reading register 56(ir6), value: 0x00000000
+Debug: 792 345 target.c:1531 target_call_event_callbacks(): target event 0 (gdb-halt)
+Debug: 793 345 nds32.c:3245 nds32_callback_event_handler(): nds32_callback_event_handler: target_number=0, target->target_number=0, event=0x00000000
+Debug: 794 345 target.c:1531 target_call_event_callbacks(): target event 1 (halted)
+Debug: 795 345 nds32.c:3245 nds32_callback_event_handler(): nds32_callback_event_handler: target_number=0, target->target_number=0, event=0x00000001
+Debug: 797 345 tcl.c:1175 handle_flash_init_command(): Initializing flash devices...
+Debug: 798 345 command.c:143 script_debug(): command - ocd_command ocd_command type ocd_mflash init
+Debug: 799 345 command.c:143 script_debug(): command - ocd_mflash ocd_mflash init
+Debug: 800 345 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0x8d9b
+
+Debug: 801 346 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 802 346 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 803 346 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 805 346 mflash.c:1377 handle_mflash_init_command(): Initializing mflash devices...
+Debug: 806 346 command.c:143 script_debug(): command - ocd_command ocd_command type ocd_nand init
+Debug: 807 346 command.c:143 script_debug(): command - ocd_nand ocd_nand init
+Debug: 808 346 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0x9030
+
+Debug: 809 346 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 810 346 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 811 347 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 813 347 tcl.c:497 handle_nand_init_command(): Initializing NAND devices...
+Debug: 814 347 command.c:143 script_debug(): command - ocd_command ocd_command type ocd_pld init
+Debug: 815 347 command.c:143 script_debug(): command - ocd_pld ocd_pld init
+Debug: 816 347 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0x92ba
+
+Debug: 817 347 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 818 347 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 819 348 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 821 348 pld.c:205 handle_pld_init_command(): Initializing PLDs...
+Info : 822 348 server.c:337 add_service(): Listening on port 9902 for gdb connections
+Debug: 823 353 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 824 353 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 825 353 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 826 359 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 827 359 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 828 359 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 829 365 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 830 365 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 831 365 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 832 370 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 833 370 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 834 370 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 835 376 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 836 376 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 837 376 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 838 381 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 839 381 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 840 382 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 841 387 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 842 387 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 843 387 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 844 393 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 845 393 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 846 393 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 847 399 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 848 399 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 849 399 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Info : 850 401 server.c:101 add_connection(): accepting 'burner' connection on tcp/9900
+Debug: 851 401 nds32_burner_server.c:644 burner_new_connection(): burner_new_connection
+Debug: 852 401 nds32_burner_server.c:645 burner_new_connection(): halt target...
+Debug: 853 401 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x28 [EDM_CFG], DATA: 0x1012010F.
+Debug: 854 401 aice_apis.c:774 aice_edm_init(): After reset, EDM_CFG = 0x1012010f
+Debug: 855 401 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x50 [DIMBR], DATA: 0xFFFF0000.
+Debug: 856 402 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x00 [DIMIR], DATA: 0x00000000.
+Debug: 857 402 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x38 [EDM_CTL], DATA: 0xA0000040.
+Debug: 858 402 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x38 [EDM_CTL], DATA: 0xA0000040.
+Debug: 859 403 aice_apis.c:792 aice_edm_init(): edm_ctl_backup = 0xa0000040
+Debug: 860 403 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x38 [EDM_CTL], DATA: 0xA0000040.
+Debug: 861 403 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x0000000E.
+Debug: 862 404 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x28 [EDM_CFG], DATA: 0x1012010F.
+Debug: 863 404 aice_apis.c:809 aice_edm_init(): After reset, EDM_CFG = 0x1012010f
+EDM version 0x1012Debug: 865 404 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x38 [EDM_CTL], DATA: 0xA0000040.
+Debug: 866 405 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x28 [EDM_CFG], DATA: 0x1012010F.
+Debug: 867 405 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x00 [BPC0], DATA: 0x00000001.
+Debug: 868 405 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x00 [BPC0], DATA: 0x00000001.
+Debug: 869 405 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x01 [BPC1], DATA: 0x00000001.
+Debug: 870 406 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x01 [BPC1], DATA: 0x00000001.
+Debug: 871 406 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x02 [BPC2], DATA: 0x00000001.
+Debug: 872 407 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x02 [BPC2], DATA: 0x00000001.
+Debug: 873 407 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x03 [BPC3], DATA: 0x00000001.
+Debug: 874 408 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x03 [BPC3], DATA: 0x00000001.
+Debug: 875 408 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x04 [BPC4], DATA: 0x00000001.
+Debug: 876 408 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x04 [BPC4], DATA: 0x00000001.
+Debug: 877 408 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x05 [BPC5], DATA: 0x00000001.
+Debug: 878 409 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x05 [BPC5], DATA: 0x00000001.
+Debug: 879 409 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x06 [BPC6], DATA: 0x00000001.
+Debug: 880 410 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x06 [BPC6], DATA: 0x00000001.
+Debug: 881 410 aice_print_info.c:320 aice_print_info(): WRITE_EDMSR: TARGET: 0x00, ADDR: 0x07 [BPC7], DATA: 0x00000001.
+Debug: 882 411 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x07 [BPC7], DATA: 0x00000001.
+Info : 883 411 nds32_v3.c:748 nds32_update_edm_config(): nds32.cpu0: total hardware breakpoint 8 (simple breakpoint 0)
+Info : 884 411 nds32_v3.c:749 nds32_update_edm_config(): nds32.cpu0: total hardware watchpoint 8
+Debug: 885 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=c0
+Debug: 886 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=c0
+Debug: 887 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=c0
+Debug: 888 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=c0
+Debug: 889 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=c0
+Debug: 890 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=c0
+Debug: 891 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=c0
+Debug: 892 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=c0
+Debug: 893 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 894 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 895 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 896 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 897 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 898 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 899 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 900 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 901 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 902 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 903 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 904 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 905 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 906 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 907 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 908 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 909 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 910 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 911 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 912 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 913 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 914 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 915 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 916 411 nds32_v3.c:71 nds32_v3_reset_hb_id(): nds32_wp_hb_id[]=0
+Debug: 917 411 nds32.c:2907 nds32_login(): nds32_login
+Debug: 918 411 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006000.
+Info : 919 411 nds32.c:2912 nds32_login(): edm_passcode =>Current privilege level: 0
+Debug: 920 411 aice_apis.c:1267 aice_halt_target(): === aice_halt_target ===
+Debug: 921 411 aice_apis.c:1273 aice_halt_target(): aice_halt_target check halted
+Debug: 922 411 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 923 411 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x0000002b
+Debug: 924 411 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 925 411 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64002002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 926 412 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 927 412 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 928 413 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 929 414 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 930 414 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x000022CB.
+Debug: 931 414 aice_register.c:641 aice_read_register(): aice_read_register
+Debug: 932 414 aice_register.c:199 aice_read_reg(): aice_read_reg, reg_no: 0x0000002c
+Debug: 933 414 aice_apis.c:592 aice_execute_dim(): aice_execute_dim
+Debug: 934 414 aice_print_info.c:342 aice_print_info(): WRITE_DIM: TARGET: 0x00, INSN: 0x64004002[MFSR], 0x64070003[MTSR_DTR], 0x64000008[DSB], 0x4C003FFA[BEQ_MINUS_12].
+Debug: 935 415 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x00000002.
+Debug: 936 415 aice_print_info.c:351 aice_print_info(): EXECUTE: TARGET: 0x00, DATA: 0x00000000.
+Debug: 937 416 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 938 416 aice_print_info.c:320 aice_print_info(): READ_EDMSR: TARGET: 0x00, ADDR: 0x30 [EDMSW], DATA: 0x00006001.
+Debug: 939 417 aice_print_info.c:351 aice_print_info(): READ_DTR: TARGET: 0x00, DATA: 0x000022CB.
+Debug: 940 417 nds32_burner_server.c:120 burner_update_lm_info(): value_cr1: 22cb, value_cr2: 22cb
+Debug: 941 417 nds32_burner_server.c:169 burner_update_lm_info(): value_mr6: 0, value_mr7: 0
+Debug: 942 417 nds32_burner_server.c:652 burner_new_connection(): access_channel 0x800cef00, 0x0
+Debug: 943 417 nds32_burner_server.c:653 burner_new_connection(): access_control 0x1, direct_access_local_memory 0x0
+Debug: 944 417 aice_print_info.c:309 aice_print_info(): WRITE_MISC: TARGET: 0x00, ADDR: 0x04 [ACC_CTL], DATA: 0x00000000.
+Debug: 947 5347 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0xc2e8
+
+Debug: 948 10350 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0xc342
+
+Debug: 949 15352 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0xc39d
+
+Debug: 950 20354 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0xc3f8
+
+Debug: 951 25356 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0xc453
+
+Debug: 952 30357 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0xc4ae
+
+Debug: 953 35359 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0xc509
+
+Debug: 954 40360 nds32.c:3309 nds32_log_callback(): nds32_log_callback: FileSize = 0xc564
+
+Debug: 955 40482 nds32_burner_server.c:675 burner_connection_closed(): burner_connection_closed
+Info : 956 40482 server.c:557 server_loop(): dropped 'burner' connection
+Debug: 957 40482 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 958 40482 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 959 40483 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 960 40488 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 961 40488 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 962 40489 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 963 40494 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 964 40494 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 965 40495 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 966 40499 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 967 40499 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 968 40500 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 969 40504 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 970 40504 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 971 40505 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 972 40510 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 973 40510 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 974 40511 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 975 40516 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 976 40516 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 977 40517 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 978 40522 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 979 40522 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 980 40523 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 981 40528 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 982 40528 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 983 40529 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 984 40533 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 985 40534 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 986 40534 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 987 40539 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 988 40539 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 989 40540 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 990 40544 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 991 40544 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 992 40545 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 993 40550 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 994 40550 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 995 40551 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 996 40555 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 997 40555 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 998 40556 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 999 40561 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1000 40561 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1001 40562 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1002 40567 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1003 40567 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1004 40568 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1005 40573 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1006 40573 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1007 40573 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1008 40578 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1009 40578 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1010 40579 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1011 40584 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1012 40584 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1013 40585 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1014 40589 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1015 40589 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1016 40590 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1017 40595 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1018 40595 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1019 40596 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1020 40600 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1021 40600 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1022 40601 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1023 40606 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1024 40606 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1025 40607 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1026 40612 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1027 40612 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1028 40613 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1029 40618 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1030 40618 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1031 40619 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1032 40623 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1033 40623 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1034 40624 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1035 40629 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1036 40629 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1037 40630 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1038 40634 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1039 40634 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1040 40635 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1041 40640 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1042 40640 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1043 40641 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1044 40645 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1045 40645 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1046 40646 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1047 40650 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1048 40650 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1049 40651 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1050 40656 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1051 40656 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1052 40657 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1053 40661 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1054 40661 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1055 40662 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1056 40666 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1057 40666 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1058 40667 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1059 40672 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1060 40672 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1061 40673 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1062 40677 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1063 40677 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1064 40678 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1065 40682 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1066 40682 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1067 40683 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1068 40688 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1069 40688 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1070 40689 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1071 40694 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1072 40694 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1073 40695 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1074 40699 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1075 40699 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1076 40700 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1077 40704 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1078 40704 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1079 40705 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1080 40710 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1081 40710 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1082 40711 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1083 40716 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1084 40716 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1085 40717 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1086 40722 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1087 40722 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1088 40723 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1089 40727 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1090 40727 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1091 40728 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1092 40733 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1093 40733 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1094 40734 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1095 40739 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1096 40739 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1097 40740 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1098 40744 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1099 40744 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1100 40745 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1101 40750 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1102 40750 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1103 40751 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1104 40755 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1105 40755 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1106 40756 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1107 40761 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1108 40761 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1109 40762 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1110 40766 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1111 40766 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1112 40767 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1113 40772 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1114 40772 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1115 40773 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1116 40777 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1117 40777 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1118 40778 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1119 40783 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1120 40783 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1121 40784 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1122 40790 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1123 40790 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1124 40790 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1125 40795 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1126 40795 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1127 40795 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1128 40800 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1129 40800 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1130 40801 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1131 40805 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1132 40805 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1133 40806 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1134 40810 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1135 40810 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1136 40811 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1137 40816 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1138 40816 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1139 40817 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1140 40822 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1141 40822 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1142 40823 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1143 40827 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1144 40827 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1145 40828 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1146 40833 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1147 40833 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1148 40834 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1149 40838 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1150 40838 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1151 40839 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1152 40843 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1153 40843 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1154 40844 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1155 40849 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1156 40849 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1157 40850 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1158 40854 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1159 40854 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1160 40855 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1161 40859 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1162 40859 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1163 40860 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1164 40865 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1165 40865 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1166 40866 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1167 40871 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1168 40871 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1169 40872 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1170 40876 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1171 40876 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1172 40877 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1173 40882 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1174 40882 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1175 40883 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1176 40888 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1177 40888 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1178 40889 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1179 40894 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1180 40894 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1181 40895 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1182 40899 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1183 40900 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1184 40900 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1185 40904 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1186 40904 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1187 40905 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1188 40910 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1189 40910 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1190 40911 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1191 40916 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1192 40916 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1193 40917 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1194 40922 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1195 40922 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1196 40923 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1197 40928 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1198 40928 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1199 40929 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1200 40933 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1201 40933 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1202 40934 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1203 40938 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1204 40938 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1205 40939 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1206 40944 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1207 40944 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1208 40945 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1209 40949 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1210 40949 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1211 40950 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1212 40954 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1213 40954 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1214 40955 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1215 40960 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1216 40960 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1217 40961 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1218 40966 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1219 40966 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1220 40967 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1221 40972 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1222 40972 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1223 40973 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1224 40977 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1225 40977 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1226 40978 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1227 40982 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1228 40982 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1229 40983 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1230 40988 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1231 40988 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1232 40989 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1233 40993 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1234 40993 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1235 40994 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1236 40998 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1237 40998 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1238 40999 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1239 41003 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1240 41003 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1241 41004 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1242 41009 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1243 41009 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1244 41010 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1245 41014 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1246 41014 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1247 41015 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1248 41020 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1249 41020 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1250 41021 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1251 41026 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1252 41026 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1253 41027 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1254 41032 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1255 41032 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1256 41033 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1257 41038 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1258 41038 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1259 41039 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1260 41043 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1261 41043 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1262 41044 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1263 41049 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1264 41049 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1265 41050 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1266 41054 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1267 41054 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1268 41055 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1269 41059 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1270 41059 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1271 41060 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1272 41065 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1273 41065 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1274 41066 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1275 41070 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1276 41070 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1277 41071 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1278 41075 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1279 41075 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1280 41076 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1281 41081 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1282 41081 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1283 41082 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1284 41087 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1285 41087 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1286 41088 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1287 41092 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1288 41092 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1289 41093 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1290 41098 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1291 41098 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1292 41099 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1293 41103 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1294 41103 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1295 41104 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1296 41109 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1297 41109 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1298 41110 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1299 41114 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1300 41114 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1301 41115 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1302 41121 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1303 41121 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1304 41121 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1305 41127 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1306 41127 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1307 41127 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1308 41131 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1309 41131 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1310 41132 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1311 41136 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1312 41136 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1313 41137 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1314 41142 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1315 41142 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1316 41143 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1317 41148 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1318 41148 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1319 41149 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1320 41153 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1321 41153 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1322 41154 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1323 41159 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1324 41159 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1325 41160 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1326 41165 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1327 41165 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1328 41165 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1329 41171 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1330 41171 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1331 41171 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1332 41177 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1333 41177 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1334 41178 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1335 41182 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1336 41183 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1337 41183 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1338 41188 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1339 41188 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1340 41189 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1341 41194 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1342 41194 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1343 41195 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1344 41200 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1345 41200 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1346 41201 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1347 41206 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1348 41206 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1349 41207 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1350 41211 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1351 41211 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1352 41212 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1353 41217 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1354 41217 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1355 41218 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1356 41223 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1357 41223 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1358 41223 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1359 41228 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1360 41228 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1361 41229 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1362 41233 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1363 41233 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1364 41234 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1365 41239 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1366 41239 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1367 41240 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1368 41244 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1369 41244 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1370 41245 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1371 41250 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1372 41250 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1373 41251 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1374 41255 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1375 41255 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1376 41256 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1377 41261 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1378 41261 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1379 41262 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1380 41267 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1381 41267 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1382 41268 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1383 41272 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1384 41272 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1385 41273 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1386 41278 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1387 41278 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1388 41279 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1389 41284 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1390 41284 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1391 41285 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1392 41289 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1393 41289 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1394 41290 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1395 41295 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1396 41295 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1397 41296 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1398 41300 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1399 41300 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1400 41301 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1401 41305 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1402 41305 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1403 41306 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1404 41310 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1405 41310 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1406 41311 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1407 41316 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1408 41316 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1409 41317 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1410 41322 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1411 41322 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1412 41323 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1413 41328 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1414 41328 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1415 41329 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1416 41333 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1417 41334 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1418 41334 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1419 41339 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1420 41339 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1421 41340 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1422 41345 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1423 41345 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1424 41346 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1425 41351 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1426 41351 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1427 41352 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1428 41357 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1429 41357 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1430 41358 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1431 41362 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1432 41362 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1433 41363 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1434 41368 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1435 41368 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1436 41369 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1437 41374 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1438 41374 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1439 41375 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1440 41380 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1441 41380 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1442 41381 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1443 41385 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1444 41385 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1445 41386 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1446 41391 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1447 41391 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1448 41392 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1449 41397 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1450 41397 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1451 41398 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1452 41402 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1453 41402 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1454 41403 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1455 41408 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1456 41408 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1457 41409 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1458 41413 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1459 41413 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1460 41414 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1461 41419 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1462 41419 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1463 41420 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1464 41425 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1465 41425 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1466 41426 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1467 41431 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1468 41431 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1469 41432 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1470 41436 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1471 41436 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1472 41437 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1473 41442 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1474 41442 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1475 41443 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1476 41447 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1477 41447 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1478 41448 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1479 41453 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1480 41453 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1481 41453 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1482 41457 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1483 41457 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1484 41458 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1485 41463 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1486 41463 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1487 41464 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1488 41469 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1489 41469 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1490 41470 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1491 41474 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1492 41474 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1493 41475 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1494 41480 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1495 41480 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1496 41481 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1497 41485 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1498 41485 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1499 41486 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1500 41491 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1501 41491 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1502 41492 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1503 41496 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1504 41496 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1505 41497 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1506 41502 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1507 41502 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1508 41502 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1509 41507 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1510 41507 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1511 41508 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1512 41513 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1513 41513 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1514 41513 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1515 41519 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1516 41519 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1517 41519 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1518 41524 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1519 41524 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1520 41525 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1521 41530 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1522 41530 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1523 41531 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1524 41536 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1525 41536 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1526 41537 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1527 41541 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1528 41541 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1529 41542 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1530 41547 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1531 41547 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1532 41548 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1533 41553 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1534 41553 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1535 41553 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1536 41568 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1537 41568 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1538 41569 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1539 41572 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1540 41572 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1541 41572 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1542 41576 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1543 41576 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1544 41577 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1545 41582 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1546 41582 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1547 41583 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1548 41588 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1549 41588 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1550 41588 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1551 41593 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1552 41593 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1553 41594 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1554 41598 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1555 41598 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1556 41599 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1557 41604 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1558 41604 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1559 41605 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1560 41610 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1561 41611 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1562 41611 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1563 41615 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1564 41615 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1565 41616 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1566 41621 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1567 41621 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1568 41622 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1569 41626 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1570 41626 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1571 41627 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1572 41632 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1573 41632 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1574 41633 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1575 41639 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1576 41639 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1577 41639 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1578 41644 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1579 41644 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1580 41645 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1581 41650 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1582 41650 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1583 41651 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1584 41655 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1585 41655 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1586 41656 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1587 41661 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1588 41661 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1589 41662 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1590 41667 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1591 41667 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1592 41667 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1593 41672 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1594 41672 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1595 41673 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1596 41678 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1597 41678 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1598 41679 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1599 41684 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1600 41684 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1601 41685 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1602 41689 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1603 41690 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1604 41690 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1605 41695 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1606 41695 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1607 41695 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1608 41700 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1609 41700 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1610 41701 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1611 41706 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1612 41706 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1613 41706 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1614 41711 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1615 41711 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1616 41712 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1617 41716 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1618 41716 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1619 41717 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1620 41721 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1621 41721 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1622 41722 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1623 41727 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1624 41727 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1625 41728 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1626 41732 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1627 41732 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1628 41733 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1629 41738 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1630 41738 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1631 41739 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1632 41744 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1633 41744 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1634 41745 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1635 41749 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1636 41749 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1637 41750 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1638 41754 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1639 41755 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1640 41755 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1641 41760 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1642 41760 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1643 41761 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1644 41767 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1645 41767 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1646 41767 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1647 41771 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1648 41771 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1649 41772 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1650 41780 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1651 41780 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1652 41780 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1653 41784 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1654 41784 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1655 41785 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1656 41789 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1657 41789 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1658 41790 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1659 41794 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1660 41794 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1661 41795 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1662 41800 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1663 41800 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1664 41801 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1665 41806 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1666 41806 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1667 41807 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1668 41811 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1669 41812 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1670 41812 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1671 41817 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1672 41817 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1673 41818 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1674 41822 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1675 41822 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1676 41823 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1677 41827 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1678 41827 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1679 41828 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1680 41833 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1681 41833 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1682 41834 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1683 41839 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1684 41839 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1685 41840 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1686 41845 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1687 41845 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1688 41846 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1689 41851 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1690 41851 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1691 41852 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1692 41856 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1693 41856 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1694 41857 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1695 41861 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1696 41861 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1697 41862 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1698 41866 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1699 41867 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1700 41867 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1701 41872 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1702 41872 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1703 41873 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1704 41878 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1705 41878 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1706 41879 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1707 41883 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1708 41883 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1709 41884 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1710 41889 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1711 41889 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1712 41889 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1713 41894 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1714 41894 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1715 41895 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1716 41900 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1717 41900 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1718 41901 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1719 41906 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1720 41906 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1721 41907 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1722 41911 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1723 41911 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1724 41912 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1725 41917 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1726 41917 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1727 41918 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1728 41922 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1729 41923 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1730 41923 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1731 41928 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1732 41928 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1733 41929 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1734 41933 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1735 41933 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1736 41934 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1737 41938 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1738 41939 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1739 41939 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.
+Debug: 1740 41944 aice_print_info.c:293 aice_print_info(): READ_CTRL: ADDR: 0x00 [GET_ICE_STATE], DATA: 0x0000003A.
+Debug: 1741 41944 aice_apis.c:1400 aice_state(): aice_sdm_check_powered_down
+Debug: 1742 41945 aice_print_info.c:309 aice_print_info(): READ_MISC: TARGET: 0x00, ADDR: 0x03 [DBGER], DATA: 0x10000003.

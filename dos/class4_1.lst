@@ -1,0 +1,76 @@
+Microsoft (R) Macro Assembler Version 6.11		    05/03/26 22:51:27
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				DATAS SEGMENT
+
+ 0000 32 90 54 00 F8 87		    BUF DB 32H, 90H, 54H, 00H, 0F8H, 87H, 37H, 89H, 28H, 0F1H
+       37 89 28 F1
+ 000A = 000A			    LEN EQU $ - BUF     
+ 000A				DATAS ENDS
+
+
+ 0000				CODES SEGMENT
+				    ASSUME CS:CODES,DS:DATAS
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX, DATAS
+ 0003  8E D8			    MOV DS, AX
+
+
+ 0005  B9 000A			    MOV CX, LEN
+ 0008  49			    DEC CX            
+				    
+ 0009				OUTER_LOOP:
+ 0009  8B D1			    MOV DX, CX          
+ 000B  8D 1E 0000 R		    LEA BX, BUF        
+				    
+ 000F				INNER_LOOP:
+ 000F  8A 07			    MOV AL, [BX]       
+ 0011  3A 47 01			    CMP AL, [BX+1]     
+ 0014  76 05			    JBE NO_SWAP        
+				    
+
+ 0016  86 47 01			    XCHG AL, [BX+1]     
+ 0019  88 07			    MOV [BX], AL        
+
+ 001B				NO_SWAP:
+ 001B  43			    INC BX              
+ 001C  E2 F1			    LOOP INNER_LOOP     
+
+ 001E  8B CA			    MOV CX, DX          
+ 0020  E2 E7			    LOOP OUTER_LOOP     
+
+ 0022  B4 4C			    MOV AH, 4CH
+ 0024  CD 21			    INT 21H
+ 0026				CODES ENDS
+				END START
+
+
+
+Microsoft (R) Macro Assembler Version 6.11		    05/03/26 22:51:27
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODES  . . . . . . . . . . . . .	16 Bit	 0026	  Para	  Private 
+DATAS  . . . . . . . . . . . . .	16 Bit	 000A	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+BUF  . . . . . . . . . . . . . .	Byte	 0000	  DATAS	
+INNER_LOOP . . . . . . . . . . .	L Near	 000F	  CODES	
+LEN  . . . . . . . . . . . . . .	Number	 000Ah	 
+NO_SWAP  . . . . . . . . . . . .	L Near	 001B	  CODES	
+OUTER_LOOP . . . . . . . . . . .	L Near	 0009	  CODES	
+START  . . . . . . . . . . . . .	L Near	 0000	  CODES	
+
+	   0 Warnings
+	   0 Errors
