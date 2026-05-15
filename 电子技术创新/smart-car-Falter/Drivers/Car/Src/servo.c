@@ -1,6 +1,6 @@
 #include "servo.h"
 #include "tim.h"
-
+//舵机角度设置
 void Servo_SetAngle(float angle)
 {
     if(angle<0) angle=0;
