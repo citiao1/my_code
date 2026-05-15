@@ -54,19 +54,21 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 
 /* USER CODE BEGIN PV */
 /* USER CODE BEGIN PV */
-// 原来是 int，改为 uint16_t
+// 超声波输入捕获变量：记录三个通道(CH1-左, CH2-中, CH3-右)的上升沿和下降沿时刻
 uint16_t upEdge1 = 0, upEdge2 = 0, upEdge3 = 0;
 uint16_t downEdge1 = 0, downEdge2 = 0, downEdge3 = 0;
-// ... 其他变量保持不变
 /* USER CODE END PV */
+// 标记当前通道是否处于等待上升沿状态 (1: Rising, 0: Falling)
 uint8_t is_rising1 = 1;
 uint8_t is_rising2 = 1;
 uint8_t is_rising3 = 1;
 
+// 计算后的原始距离值 (cm)
 volatile float distance1 = 0;
 volatile float distance2 = 0;
 volatile float distance3 = 0;
 
+// 经过应用层处理或滤波后用于控制的距离值 (默认400表示无障碍)
 volatile float dist1 = 400;
 volatile float dist2 = 400;
 volatile float dist3 = 400;
@@ -76,6 +78,7 @@ char str[30];
 int upEdge = 0;
 int downEdge = 0;
 volatile float distance = 0;
+// 记录各通道最后一次有效测距的时间戳，用于超时判断
 volatile uint32_t g_distance_time_1,g_distance_time_2,g_distance_time_3;
 volatile float g_distance = 0;
 
@@ -158,23 +161,24 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		Ultrasonic_Trig();	
+		Ultrasonic_Trig();	// 触发超声波测距
 		OLED_NewFrame();
 		
+		// 更新OLED显示内容：左、右、中距离及电机速度、当前状态
 		sprintf(str, "%.3f left   ",dist1);//左
     OLED_PrintString(0, 0, str, &font16x16, OLED_COLOR_NORMAL);
 		sprintf(str, "%.3f right   ", dist3);//右边
     OLED_PrintString(0, 25, str, &font16x16, OLED_COLOR_NORMAL);
 		sprintf(str, "%.3f middle    ", dist2);//中间
 		OLED_PrintString(0, 50, str, &font16x16, OLED_COLOR_NORMAL);
-		sprintf(str, "%d %d", left_speed,right_speed);//中间
+		sprintf(str, "%d %d", left_speed,right_speed);//电机速度
 		OLED_PrintString(0, 12, str, &font16x16, OLED_COLOR_NORMAL);
 		OLED_PrintString(0, 37, state, &font16x16, OLED_COLOR_NORMAL);
     OLED_ShowFrame();
 		
 
 
-		App_Update(dist1,dist2,dist3);    
+		App_Update(dist1,dist2,dist3);    // 核心控制循环：处理传感器数据并更新电机状态    
 
     /* USER CODE END WHILE */
 
@@ -223,9 +227,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+/**
+  * @brief 定时器输入捕获回调函数，用于计算超声波高电平脉宽并转换为距离
+  * @param htim 定时器句柄
+  */
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 	uint16_t pulse_width = 0;
+	// 通道1 (左侧超声波)
 	if(htim->Instance == TIM3 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
 	{
 		if(is_rising1){
@@ -237,10 +246,12 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 			__HAL_TIM_SET_CAPTUREPOLARITY(htim, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
 			is_rising1 = 1;
 			
+			// 计算脉宽并转换为距离 (cm): 脉宽(us) * 0.017
 			uint16_t pulse_width = (uint16_t)(downEdge1 - upEdge1);
-      distance1 = pulse_width * 0.017f; // 直接乘以 0.017 等效于 *0.034/2，节省算力
+      distance1 = pulse_width * 0.017f; 
       g_distance_time_1 = HAL_GetTick();
 		}
+	// 通道2 (中间超声波)
 	}else if(htim->Instance == TIM3 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
 	{
 		if(is_rising2){
@@ -255,6 +266,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
       distance2 = pulse_width * 0.017f;
       g_distance_time_2 = HAL_GetTick();
 		}
+	// 通道3 (右侧超声波)
 	}else if(htim->Instance == TIM3 && htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3)
 	{
 		if(is_rising3){
