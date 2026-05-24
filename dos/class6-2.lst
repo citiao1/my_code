@@ -1,0 +1,124 @@
+Microsoft (R) Macro Assembler Version 6.11		    05/24/26 19:41:37
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				data segment
+ = 0288				io8255a  equ 288h
+ = 028C				io8255c  equ 28ch
+ = 028E				io8255cr equ 28eh
+				; 共阴极段码表 0~9
+ 0000 3F 06 5B 4F 66 6D		led db 3fh, 06h, 5bh, 4fh, 66h, 6dh, 7dh, 07h, 7fh, 6fh
+       7D 07 7F 6F
+
+				; ---> 请在此处填入你学号的最后4位数字 <---
+ 000A 01 02 03 04		stu_id db 1, 2, 3, 4 
+
+				; 4位数码管的位选码表，依次选中 S0, S1, S2, S3 (对应 PC0~PC3)
+ 000E 01 02 04 08		sel_code db 01h, 02h, 04h, 08h 
+ 0012				data ends
+
+ 0000				code segment
+				assume cs: code, ds: data
+ 0000				start:
+ 0000  B8 ---- R		    mov ax, data
+ 0003  8E D8			    mov ds, ax
+
+				    ; 初始化8255为方式0全输出
+ 0005  BA 028E			    mov dx, io8255cr
+ 0008  B0 80			    mov al, 80h   
+ 000A  EE			    out dx, al
+
+ 000B				scan_loop:
+ 000B  B9 0004			    mov cx, 4        ; 4位数码管，循环扫描4次
+ 000E  BE 0000			    mov si, 0        ; 学号与位选码的索引
+
+ 0011				disp_next:
+				    ; 1. 查表获取当前数字的段码
+ 0011  8A 9C 000A R		    mov bl, stu_id[si] ; 获取当前要显示的学号数字
+ 0015  B7 00			    mov bh, 0
+ 0017  8A 87 0000 R		    mov al, led[bx]    ; 根据数字查出对应的段码
+
+				    ; 2. 送数码管段码到A口
+ 001B  BA 0288			    mov dx, io8255a
+ 001E  EE			    out dx, al
+
+				    ; 3. 送位码到C口 (点亮对应的数码管)
+ 001F  8A 84 000E R		    mov al, sel_code[si]
+ 0023  BA 028C			    mov dx, io8255c
+ 0026  EE			    out dx, al
+
+				    ; 4. 延时 (动态扫描的延时需要很短，以利用人眼视觉暂留效应)
+ 0027  E8 0017			    call scan_delay
+
+				    ; 5. 位码全为0，关闭所有数码管 (消影，防止数字重叠)
+ 002A  B0 00			    mov al, 00h
+ 002C  BA 028C			    mov dx, io8255c
+ 002F  EE			    out dx, al
+
+				    ; 准备显示下一位
+ 0030  46			    inc si
+ 0031  E2 DE			    loop disp_next
+
+				    ; 检查是否有键按下以退出程序
+ 0033  B4 06			    mov ah, 6
+ 0035  B2 FF			    mov dl, 0ffh
+ 0037  CD 21			    int 21h
+ 0039  75 02			    jnz exit         ; 有键按下则退出
+ 003B  EB CE			    jmp scan_loop    ; 无键按下，重新开始新一轮的4位扫描
+
+ 003D				exit:
+ 003D  B4 4C			    mov ah, 4ch
+ 003F  CD 21			    int 21h
+
+				; 动态扫描专用短延时子程序
+ 0041				scan_delay proc
+ 0041  51			    push cx
+ 0042  B9 0500			    mov cx, 0500h    ; 延时时间较短，避免闪烁且保证亮度
+ 0045				scan_d1: 
+ 0045  90			    nop
+ 0046  E2 FD			    loop scan_d1
+ 0048  59			    pop cx
+ 0049  C3			    ret
+ 004A				scan_delay endp
+
+ 004A				code ends
+				end start
+Microsoft (R) Macro Assembler Version 6.11		    05/24/26 19:41:37
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+code . . . . . . . . . . . . . .	16 Bit	 004A	  Para	  Private 
+data . . . . . . . . . . . . . .	16 Bit	 0012	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+scan_delay . . . . . . . . . . .	P Near	 0041	  code	Length= 0009 Public
+  scan_d1  . . . . . . . . . . .	L Near	 0045	  code	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+disp_next  . . . . . . . . . . .	L Near	 0011	  code	
+exit . . . . . . . . . . . . . .	L Near	 003D	  code	
+io8255a  . . . . . . . . . . . .	Number	 0288h	 
+io8255cr . . . . . . . . . . . .	Number	 028Eh	 
+io8255c  . . . . . . . . . . . .	Number	 028Ch	 
+led  . . . . . . . . . . . . . .	Byte	 0000	  data	
+scan_loop  . . . . . . . . . . .	L Near	 000B	  code	
+sel_code . . . . . . . . . . . .	Byte	 000E	  data	
+start  . . . . . . . . . . . . .	L Near	 0000	  code	
+stu_id . . . . . . . . . . . . .	Byte	 000A	  data	
+
+	   0 Warnings
+	   0 Errors

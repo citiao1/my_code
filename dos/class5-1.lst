@@ -1,0 +1,68 @@
+Microsoft (R) Macro Assembler Version 6.11		    05/17/26 20:35:12
+tempfile.asm						     Page 1 - 1
+
+
+ = 02A0				outport1 equ 2a0h        ; 定义Y4输出对应的端口地址，用于点亮L7 [cite: 313]
+ = 02A8				outport2 equ 2a8h        ; 定义Y5输出对应的端口地址，用于熄灭L7 [cite: 314]
+
+ 0000				code segment
+				    assume cs: code
+
+ 0000				start:  
+ 0000  BA 02A0			    mov dx, outport1
+ 0003  EE			    out dx, al           ; Y4输出负脉冲，D触发器CLK有效，L7点亮 [cite: 320, 332]
+ 0004  E8 000D			    call delay           ; 调用延时子程序，保持亮的状态 [cite: 333]
+
+ 0007  BA 02A8			    mov dx, outport2
+ 000A  EE			    out dx, al           ; Y5输出负脉冲，D触发器R有效，L7熄灭 [cite: 334]
+ 000B  E8 0006			    call delay           ; 调用延时子程序，保持灭的状态 [cite: 335]
+
+ 000E  EB F0			    jmp start            ; 无条件跳转回start，形成亮灭闪烁的死循环 [cite: 321]
+
+				    ; 规范退出程序的代码（虽然当前是死循环执行不到，但建议保留作为规范）
+ 0010  B4 4C			    mov ah, 4ch          ; [cite: 322]
+ 0012  CD 21			    int 21h              ; [cite: 323]
+
+ 0014				delay proc near          ; 延时子程序 [cite: 324]
+ 0014  BB 0014			    mov bx, 20           ; [cite: 325]
+ 0017  B9 07D0			zz: mov cx, 2000         ; [cite: 326]
+ 001A  E2 FE			z:  loop z               ; [cite: 327]
+ 001C  4B			    dec bx               ; [cite: 328]
+ 001D  75 F8			    jne zz               ; [cite: 329]
+ 001F  C3			    ret                  ; [cite: 330]
+ 0020				delay endp               ; [cite: 331]
+
+ 0020				code ends                ; [cite: 338]
+				    end start            ; [cite: 339]
+Microsoft (R) Macro Assembler Version 6.11		    05/17/26 20:35:12
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+code . . . . . . . . . . . . . .	16 Bit	 0020	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+delay  . . . . . . . . . . . . .	P Near	 0014	  code	Length= 000C Public
+  zz . . . . . . . . . . . . . .	L Near	 0017	  code	
+  z  . . . . . . . . . . . . . .	L Near	 001A	  code	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+outport1 . . . . . . . . . . . .	Number	 02A0h	 
+outport2 . . . . . . . . . . . .	Number	 02A8h	 
+start  . . . . . . . . . . . . .	L Near	 0000	  code	
+
+	   0 Warnings
+	   0 Errors

@@ -1,0 +1,110 @@
+Microsoft (R) Macro Assembler Version 6.11		    05/24/26 19:39:38
+tempfile.asm						     Page 1 - 1
+
+
+ 0000				data segment
+ = 0288				io8255a  equ 288h  ; 8255 A口地址
+ = 028C				io8255c  equ 28ch  ; 8255 C口地址 (已修正原书错误)
+ = 028E				io8255cr equ 28eh  ; 8255 控制寄存器地址 (已修正原书错误)
+				; 共阴极七段数码管段码表 0~9
+ 0000 3F 06 5B 4F 66 6D		led db 3fh, 06h, 5bh, 4fh, 66h, 6dh, 7dh, 07h, 7fh, 6fh 
+       7D 07 7F 6F
+ 000A				data ends
+
+ 0000				code segment
+				assume cs: code, ds: data
+ 0000				start:
+ 0000  B8 ---- R		    mov ax, data
+ 0003  8E D8			    mov ds, ax
+
+				    ; 1. 寄存器初始化与设置8255工作方式0
+ 0005  BA 028E			    mov dx, io8255cr 
+ 0008  B0 80			    mov al, 80h      ; 控制字80H：方式0，A口输出，B口输出，C口输出
+ 000A  EE			    out dx, al
+
+				    ; 2. 静态显示位选：位码输入端S0接PC0，输出1选中最低位数码管
+ 000B  BA 028C			    mov dx, io8255c
+ 000E  B0 01			    mov al, 01h
+ 0010  EE			    out dx, al
+
+ 0011				leddisp: 
+ 0011  BB 0000 R		    mov bx, offset led 
+ 0014  B9 000A			    mov cx, 10       ; 循环10次 (显示0~9) [cite: 288]
+ 0017  BE 0000			    mov si, 0        ; 设置查表指针偏移量
+
+ 001A				disp_loop:
+				    ; 3. 查表输出字符段码到A口
+ 001A  8A 00			    mov al, [bx+si]
+ 001C  BA 0288			    mov dx, io8255a
+ 001F  EE			    out dx, al
+
+				    ; 4. 调用软件延时
+ 0020  E8 0011			    call delay
+
+				    ; 修改指针
+ 0023  46			    inc si
+
+				    ; 5. 检查是否有键按下
+ 0024  B4 06			    mov ah, 6        ; DOS调用，直接控制台I/O [cite: 292]
+ 0026  B2 FF			    mov dl, 0ffh     ; DL=FFH 表示读取键盘缓冲区 [cite: 293]
+ 0028  CD 21			    int 21h          ; [cite: 294]
+ 002A  75 04			    jnz exit         ; 如果有按键(ZF=0标志清除)，跳转结束程序
+
+ 002C  E2 EC			    loop disp_loop   ; 表格未到末尾，继续循环显示下一个数字
+
+ 002E  EB E1			    jmp leddisp      ; 10个数字显示完毕，指针重新指向表头 [cite: 258]
+
+ 0030				exit:
+ 0030  B4 4C			    mov ah, 4ch      ; [cite: 296]
+ 0032  CD 21			    int 21h          ; [cite: 297]
+
+				; 软件延时子程序
+ 0034				delay proc
+ 0034  51			    push cx
+ 0035  B9 FFFF			    mov cx, 0FFFFh   ; 设置较长的延时，以便肉眼观察数字变化
+ 0038  90			d1: nop
+ 0039  90			    nop
+ 003A  E2 FC			    loop d1
+ 003C  59			    pop cx
+ 003D  C3			    ret
+ 003E				delay endp
+
+ 003E				code ends
+				end start 
+Microsoft (R) Macro Assembler Version 6.11		    05/24/26 19:39:38
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+code . . . . . . . . . . . . . .	16 Bit	 003E	  Para	  Private 
+data . . . . . . . . . . . . . .	16 Bit	 000A	  Para	  Private 
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+delay  . . . . . . . . . . . . .	P Near	 0034	  code	Length= 000A Public
+  d1 . . . . . . . . . . . . . .	L Near	 0038	  code	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+disp_loop  . . . . . . . . . . .	L Near	 001A	  code	
+exit . . . . . . . . . . . . . .	L Near	 0030	  code	
+io8255a  . . . . . . . . . . . .	Number	 0288h	 
+io8255cr . . . . . . . . . . . .	Number	 028Eh	 
+io8255c  . . . . . . . . . . . .	Number	 028Ch	 
+leddisp  . . . . . . . . . . . .	L Near	 0011	  code	
+led  . . . . . . . . . . . . . .	Byte	 0000	  data	
+start  . . . . . . . . . . . . .	L Near	 0000	  code	
+
+	   0 Warnings
+	   0 Errors
