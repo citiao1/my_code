@@ -1,70 +1,71 @@
-% 单独绘制 K* = 4 时，以 a 为参变量的根轨迹 (带箭头与渐近线)
+% =========================================================
+% 实验四：传递函数的零极点对系统过渡过程的影响
+% =========================================================
 clear; clc; close all;
 
-figure('Position', [200, 150, 700, 500], 'Name', 'K*=4 详细参数根轨迹');
-hold on; grid on;
-axis equal; % 保持等比例，确保圆是圆
+% 基础参数设定
+zeta = 0.5;
+wn = 1;
 
-% 1. 构造等效传递函数 Ga(s) = s / (s^2 + 4)
-sys_K4 = tf([1, 0], [1, 0, 4]); 
+% 标准二阶系统传递函数 (T=0, tau=0)
+num0 = wn^2;
+den0 = [1, 2*zeta*wn, wn^2];
+sys0 = tf(num0, den0);
 
-% 获取底层数据以绘制箭头
-[r, k] = rlocus(sys_K4);
+%% ================== 实验内容1：增加闭环极点的影响 ==================
+% 选取 T 的值满足实验要求
+T1 = 0.2; % 1/T = 5   (> 2.5) 
+T2 = 2.0; % 1/T = 0.5 (= 0.5)
+T3 = 5.0; % 1/T = 0.2 (< 0.5)
 
-% 2. 绘制渐近线 (180度，沿负实轴)
-% 我们用显眼的黑色点划线画出这条渐近线
-plot([-10, 0], [0, 0], 'k-.', 'LineWidth', 1.5, 'DisplayName', '渐近线 (180^\circ)');
+% 构建增加极点后的系统
+sys_p1 = tf(1, [T1, 1]) * sys0;
+sys_p2 = tf(1, [T2, 1]) * sys0;
+sys_p3 = tf(1, [T3, 1]) * sys0;
+sys_1st = tf(1, [T3, 1]); % 一阶系统对比
 
-% 3. 绘制实际的根轨迹 (蓝色实线)
-plot(real(r(1,:)), imag(r(1,:)), 'b-', 'LineWidth', 2, 'DisplayName', '参数根轨迹');
-plot(real(r(2,:)), imag(r(2,:)), 'b-', 'LineWidth', 2, 'HandleVisibility', 'off');
+% 绘图：极点影响
+figure('Name', '增加闭环极点对系统的影响', 'Position', [100, 100, 1200, 500], 'Color', 'w');
 
-% 4. 沿着轨迹添加方向箭头
-% 我们从轨迹数据中选取特定的索引点来画箭头，展示极点的流动方向
-% 选取圆弧上的点和实轴上的点
-arrow_indices = [15, 30, 42, 60, 80]; 
-arrow_L = 0.35; % 箭头长度
+% 1.1 阶跃响应对比
+subplot(1, 2, 1);
+step(sys0, sys_p1, sys_p2, sys_p3, sys_1st, 20);
+title('增加闭环极点 - 单位阶跃响应', 'FontSize', 14);
+legend('标准二阶 (T=0)', '远极点 (T=0.2)', '相近极点 (T=2)', '主导极点 (T=5)', '一阶系统 (T=5)', 'Location', 'best');
+grid on; set(findobj(gca,'type','line'),'LineWidth',1.5);
 
-for i = 1:size(r, 1) % 遍历两条分支
-    for idx = arrow_indices
-        if idx < length(k) - 2
-            p_curr = r(i, idx);
-            p_next = r(i, idx+2); 
-            
-            dx = real(p_next) - real(p_curr);
-            dy = imag(p_next) - imag(p_curr);
-            
-            len = sqrt(dx^2 + dy^2);
-            if len > 1e-3
-                ux = (dx / len) * arrow_L;
-                uy = (dy / len) * arrow_L;
-                
-                % 画箭头 (不参与图例显示)
-                quiver(real(p_curr), imag(p_curr), ux, uy, ...
-                    0, 'MaxHeadSize', 0.8, 'Color', 'b', 'LineWidth', 1.5, 'HandleVisibility', 'off');
-            end
-        end
-    end
-end
+% 1.2 零极点分布对比
+subplot(1, 2, 2);
+pzmap(sys0, sys_p1, sys_p2, sys_p3);
+title('增加闭环极点 - 零极点分布图', 'FontSize', 14);
+legend('标准二阶', '远极点 (T=0.2)', '相近极点 (T=2)', '主导极点 (T=5)', 'Location', 'best');
+grid on; set(findobj(gca,'type','line'),'LineWidth',1.5);
 
-% 5. 绘制几何基准圆 x^2 + y^2 = 4 作为对比
-theta = linspace(0, 2*pi, 100);
-plot(2*cos(theta), 2*sin(theta), 'k--', 'LineWidth', 1, 'DisplayName', '基准圆 x^2+y^2=4');
 
-% 6. 标记核心特征点
-plot(0, 2, 'rx', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', '起点 \pm j2 (a=0)');
-plot(0, -2, 'rx', 'MarkerSize', 10, 'LineWidth', 2, 'HandleVisibility','off');
-plot(0, 0, 'ro', 'MarkerSize', 10, 'LineWidth', 2, 'DisplayName', '终点 0 (a\rightarrow\infty)');
-plot(-2, 0, 'k*', 'MarkerSize', 10, 'LineWidth', 1.5, 'DisplayName', '会合点 (-2, 0)');
+%% ================== 实验内容2：增加闭环零点的影响 ==================
+% 选取 tau 的值满足实验要求
+tau1 = 0.2; % 1/tau = 5   (> 2.5)
+tau2 = 2.0; % 1/tau = 0.5 (= 0.5)
+tau3 = 5.0; % 1/tau = 0.2 (< 0.5)
 
-% 7. 图表美化与视角锁定
-title('当 K^* = 4 时，参数 a 从 0\rightarrow\infty 的根轨迹 (含箭头与渐近线)');
-xlabel('实轴 (Real Axis)');
-ylabel('虚轴 (Imaginary Axis)');
+% 构建增加零点后的系统
+sys_z1 = tf([tau1, 1], 1) * sys0;
+sys_z2 = tf([tau2, 1], 1) * sys0;
+sys_z3 = tf([tau3, 1], 1) * sys0;
 
-% 将 X 轴向左多留一点空间，以便看清楚渐近线和趋于无穷的箭头
-axis([-6, 3, -3, 3]); 
-xline(0, 'k-', 'HandleVisibility', 'off'); 
-yline(0, 'k-', 'HandleVisibility', 'off');
-legend('Location', 'northeastoutside'); % 将图例放外面防止遮挡图形
-hold off;
+% 绘图：零点影响
+figure('Name', '增加闭环零点对系统的影响', 'Position', [150, 150, 1200, 500], 'Color', 'w');
+
+% 2.1 阶跃响应对比
+subplot(1, 2, 1);
+step(sys0, sys_z1, sys_z2, sys_z3, 15);
+title('增加闭环零点 - 单位阶跃响应', 'FontSize', 14);
+legend('标准二阶 (\tau=0)', '远零点 (\tau=0.2)', '相近零点 (\tau=2)', '主导零点 (\tau=5)', 'Location', 'best');
+grid on; set(findobj(gca,'type','line'),'LineWidth',1.5);
+
+% 2.2 零极点分布对比
+subplot(1, 2, 2);
+pzmap(sys0, sys_z1, sys_z2, sys_z3);
+title('增加闭环零点 - 零极点分布图', 'FontSize', 14);
+legend('标准二阶', '远零点 (\tau=0.2)', '相近零点 (\tau=2)', '主导零点 (\tau=5)', 'Location', 'best');
+grid on; set(findobj(gca,'type','line'),'LineWidth',1.5);
