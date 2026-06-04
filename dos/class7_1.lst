@@ -1,0 +1,152 @@
+Microsoft (R) Macro Assembler Version 6.11		    06/01/26 23:30:55
+tempfile.asm						     Page 1 - 1
+
+
+				; ==========================================
+				; 8259中断控制器与8255接口 Proteus仿真实验代码
+				; ==========================================
+
+				; 8255 端口地址 (注：8255的A0,A1接CPU的A1,A2，因此地址偏移为0, 2, 4, 6)
+ = 0288				PA8255  EQU 288H    ; PA 口地址 (Base + 0)
+ = 028C				PC8255  EQU 28CH    ; PC 口地址 (Base + 4)
+ = 028E				CTL8255 EQU 28EH    ; 控制字寄存器地址 (Base + 6)
+
+				; 8259 命令字
+ = 0013				ICW1    EQU 13H     ; 单片8259(D1=1)，边沿触发(D3=0)，要写ICW4(D0=1)
+ = 0060				ICW2    EQU 60H     ; IRQ3中断类型号为63H，推导出IRQ0基址为60H
+ = 0001				ICW4    EQU 01H     ; 工作在8086方式(D0=1)，中断非自动结束(D1=0)
+ = 0000				OCW1    EQU 00H     ; 开放所有中断源 (若只开放IRQ3可写为 F7H)
+
+ = 02A0				P8259   EQU 2A0H    ; 8259 的偶地址 (接CPU A1，所以是A0H)
+ = 02A2				O8259   EQU 2A2H    ; 8259 的奇地址 (A2H)
+
+ 0000				DATA SEGMENT
+				    ; 共阴极数码管 0-9 的段码表
+ 0000 3F 06 5B 4F 66 6D		    TABLE DB 3FH, 06H, 5BH, 4FH, 66H, 6DH, 7DH, 07H, 7FH, 6FH 
+       7D 07 7F 6F
+ 000A				DATA ENDS
+
+ 0000				CODE SEGMENT
+				    ASSUME CS: CODE, DS: DATA
+
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX, DATA
+ 0003  8E D8			    MOV DS, AX
+
+				    ; --- 1. 8255 初始化 ---
+ 0005  BA 028E			    MOV DX, CTL8255
+ 0008  B0 80			    MOV AL, 80H     ; 控制字80H：方式0，PA、PB、PC均设为输出
+ 000A  EE			    OUT DX, AL
+
+ 000B  FA			    CLI             ; 关中断，准备修改中断向量表
+
+				    ; --- 2. 设置 63H 号的中断向量 ---
+ 000C  B8 0000			    MOV AX, 0
+ 000F  8E C0			    MOV ES, AX
+ 0011  BE 018C			    MOV SI, 63H*4   ; 63H乘4得到中断向量表中的物理偏移地址
+ 0014  B8 004E R		    MOV AX, OFFSET INT3
+ 0017  26: 89 04		    MOV ES:[SI], AX ; 存入中断服务程序的偏移地址 (IP)
+ 001A  B8 ---- R		    MOV AX, SEG INT3
+ 001D  26: 89 44 02		    MOV ES:[SI+2], AX ; 存入中断服务程序的段地址 (CS)
+
+				    ; --- 3. 8259 初始化 ---
+ 0021  BA 02A0			    MOV DX, P8259
+ 0024  B0 13			    MOV AL, ICW1
+ 0026  EE			    OUT DX, AL      ; 写入偶地址：ICW1
+				    
+ 0027  BA 02A2			    MOV DX, O8259
+ 002A  B0 60			    MOV AL, ICW2
+ 002C  EE			    OUT DX, AL      ; 写入奇地址：ICW2
+				    
+ 002D  B0 01			    MOV AL, ICW4
+ 002F  EE			    OUT DX, AL      ; 写入奇地址：ICW4
+				    
+ 0030  B0 00			    MOV AL, OCW1
+ 0032  EE			    OUT DX, AL      ; 写入奇地址：OCW1 (中断屏蔽寄存器)
+
+				    ; --- 4. 显示初始化配置 ---
+ 0033  BE 0000 R		    MOV SI, OFFSET TABLE
+ 0036  B9 000A			    MOV CX, 10      ; 设置循环次数（10次）
+				    
+ 0039  BA 028C			    MOV DX, PC8255
+ 003C  B0 01			    MOV AL, 1
+ 003E  EE			    OUT DX, AL      ; PC0输出1，选通数码管（经过原理图中的NOT反相器后变低电平有效）
+				    
+ 003F  BA 0288			    MOV DX, PA8255
+ 0042  8A 04			    MOV AL, [SI]
+ 0044  EE			    OUT DX, AL      ; PA口输出段码，初始显示 '0'
+
+ 0045  FB			    STI             ; 开中断
+
+				    ; --- 5. 主循环等待中断 ---
+				    ; 教材特别标注：由于Proteus中8086模型的Bug，需要不断向总线发中断号
+ 0046  BA 02A0			LP: MOV DX, P8259
+ 0049  B0 63			    MOV AL, 63H
+ 004B  EE			    OUT DX, AL
+ 004C  EB F8			    JMP LP
+
+
+				; ==========================================
+				; 中断服务程序 INT3
+				; ==========================================
+ 004E				INT3:
+ 004E  FA			    CLI             ; 进入中断后关中断
+ 004F  BA 0288			    MOV DX, PA8255
+ 0052  46			    INC SI          ; 指向查表中的下一个段码
+ 0053  8A 04			    MOV AL, [SI]
+ 0055  EE			    OUT DX, AL      ; 输出当前计数值到数码管
+				    
+ 0056  49			    DEC CX          ; 计数器减1
+ 0057  75 09			    JNZ NEXT        ; 如果未减到0（即没到10次），跳过重置步骤
+				    
+				    ; --- 10次中断后，重置计数器和显示 ---
+ 0059  B9 000A			    MOV CX, 10
+ 005C  BE 0000 R		    MOV SI, OFFSET TABLE
+ 005F  8A 04			    MOV AL, [SI]
+ 0061  EE			    OUT DX, AL      ; 重新显示“0”
+
+ 0062				NEXT:
+ 0062  BA 02A0			    MOV DX, P8259
+ 0065  B0 20			    MOV AL, 20H
+ 0067  EE			    OUT DX, AL      ; 向8259发送普通中断结束命令 (EOI)
+				    
+ 0068  FB			    STI             ; 恢复开中断
+ 0069  CF			    IRET            ; 从中断返回
+
+ 006A				CODE ENDS
+				END START
+Microsoft (R) Macro Assembler Version 6.11		    06/01/26 23:30:55
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+CODE . . . . . . . . . . . . . .	16 Bit	 006A	  Para	  Private 
+DATA . . . . . . . . . . . . . .	16 Bit	 000A	  Para	  Private 
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+CTL8255  . . . . . . . . . . . .	Number	 028Eh	 
+ICW1 . . . . . . . . . . . . . .	Number	 0013h	 
+ICW2 . . . . . . . . . . . . . .	Number	 0060h	 
+ICW4 . . . . . . . . . . . . . .	Number	 0001h	 
+INT3 . . . . . . . . . . . . . .	L Near	 004E	  CODE	
+LP . . . . . . . . . . . . . . .	L Near	 0046	  CODE	
+NEXT . . . . . . . . . . . . . .	L Near	 0062	  CODE	
+O8259  . . . . . . . . . . . . .	Number	 02A2h	 
+OCW1 . . . . . . . . . . . . . .	Number	 0000h	 
+P8259  . . . . . . . . . . . . .	Number	 02A0h	 
+PA8255 . . . . . . . . . . . . .	Number	 0288h	 
+PC8255 . . . . . . . . . . . . .	Number	 028Ch	 
+START  . . . . . . . . . . . . .	L Near	 0000	  CODE	
+TABLE  . . . . . . . . . . . . .	Byte	 0000	  DATA	
+
+	   0 Warnings
+	   0 Errors

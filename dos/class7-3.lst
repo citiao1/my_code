@@ -1,0 +1,139 @@
+Microsoft (R) Macro Assembler Version 6.11		    06/02/26 13:13:55
+tempfile.asm						     Page 1 - 1
+
+
+				; 实验2：8255方式1输入口程序
+				.MODEL SMALL
+ 0000				.DATA
+ = 0288				    PORT_A      EQU 288H    ; 8255 PA口地址
+ = 028B				    PORT_CTRL   EQU 28BH    ; 8255 控制口地址
+ 0000 0000			    OLD_INT_SEG DW ?
+ 0002 0000			    OLD_INT_OFF DW ?
+ 0004 0008			    INT_COUNT   DW 8        ; 中断次数计数器，初始为8
+
+ 0000				.CODE
+ 0000				START:
+ 0000  B8 ---- R		    MOV AX, @DATA
+ 0003  8E D8			    MOV DS, AX
+
+				    ; 1. 保存原IRQ3中断向量
+ 0005  B8 350B			    MOV AX, 350BH
+ 0008  CD 21			    INT 21H
+ 000A  89 1E 0002 R		    MOV OLD_INT_OFF, BX
+ 000E  8C 06 0000 R		    MOV OLD_INT_SEG, ES
+
+				    ; 2. 设置新的IRQ3中断向量
+ 0012  1E			    PUSH DS
+ 0013  B8 ---- R		    MOV AX, SEG IN_ISR
+ 0016  8E D8			    MOV DS, AX
+ 0018  BA 004A R		    MOV DX, OFFSET IN_ISR
+ 001B  B8 250B			    MOV AX, 250BH
+ 001E  CD 21			    INT 21H
+ 0020  1F			    POP DS
+
+				    ; 3. 解除8259对IRQ3的屏蔽
+ 0021  E4 21			    IN AL, 21H
+ 0023  24 F7			    AND AL, 0F7H
+ 0025  E6 21			    OUT 21H, AL
+
+				    ; 4. 初始化8255：A口方式1输入
+				    ; 控制字：1(特征位) 01(A口方式1) 1(A口输入) 0(C上半部输出) 0(B口方式0) 0(B口输出) 0(C下半部输出)
+ 0027  BA 028B			    MOV DX, PORT_CTRL
+ 002A  B0 B0			    MOV AL, 0B0H            
+ 002C  EE			    OUT DX, AL
+
+				    ; 5. 使能8255的INTE A (对于A口输入，由PC4置位实现)
+				    ; 置位/复位控制字：0(特征位) 000 100(选择PC4) 1(置位) = 09H
+ 002D  B0 09			    MOV AL, 09H             
+ 002F  EE			    OUT DX, AL
+
+				    ; 6. 等待中断循环
+ 0030				WAIT_LOOP:
+ 0030  83 3E 0004 R 00		    CMP INT_COUNT, 0        ; 判断计数器CX是否为0 (在中断中递减)
+ 0035  75 F9			    JNZ WAIT_LOOP
+
+				    ; 7. 恢复系统环境并退出
+ 0037  C5 16 0002 R		    LDS DX, DWORD PTR OLD_INT_OFF
+ 003B  B8 250B			    MOV AX, 250BH
+ 003E  CD 21			    INT 21H
+
+ 0040  E4 21			    IN AL, 21H
+ 0042  0C 08			    OR AL, 08H
+ 0044  E6 21			    OUT 21H, AL
+
+ 0046  B4 4C			    MOV AH, 4CH
+ 0048  CD 21			    INT 21H
+
+				; --- 中断服务程序 ---
+ 004A				IN_ISR PROC FAR
+ 004A  50			    PUSH AX
+ 004B  52			    PUSH DX
+
+				    ; 从A口读取外部开关预置的ASCII码数据
+ 004C  BA 0288			    MOV DX, PORT_A
+ 004F  EC			    IN AL, DX
+
+				    ; 在屏幕上显示该字符 (DOS 02H 功能调用)
+ 0050  8A D0			    MOV DL, AL
+ 0052  B4 02			    MOV AH, 02H
+ 0054  CD 21			    INT 21H
+
+				    ; 中断次数计数器减1
+ 0056  FF 0E 0004 R		    DEC INT_COUNT           
+
+				    ; 向8259发送中断结束命令(EOI)
+ 005A  B0 20			    MOV AL, 20H
+ 005C  E6 20			    OUT 20H, AL
+
+ 005E  5A			    POP DX
+ 005F  58			    POP AX
+ 0060  FB			    STI                     ; 开中断
+ 0061  CF			    IRET                    ; 中断返回
+ 0062				IN_ISR ENDP
+
+				END START
+Microsoft (R) Macro Assembler Version 6.11		    06/02/26 13:13:55
+tempfile.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+DGROUP . . . . . . . . . . . . .	GROUP
+_DATA  . . . . . . . . . . . . .	16 Bit	 0006	  Word	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	16 Bit	 0062	  Word	  Public  'CODE'	
+
+
+Procedures,  parameters and locals:
+
+                N a m e                 Type     Value    Attr
+
+IN_ISR . . . . . . . . . . . . .	P Far	 004A	  _TEXT	Length= 0018 Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 0000h	 
+@DataSize  . . . . . . . . . . .	Number	 0000h	 
+@Interface . . . . . . . . . . .	Number	 0000h	 
+@Model . . . . . . . . . . . . .	Number	 0002h	 
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 DGROUP
+@fardata?  . . . . . . . . . . .	Text   	 FAR_BSS
+@fardata . . . . . . . . . . . .	Text   	 FAR_DATA
+@stack . . . . . . . . . . . . .	Text   	 DGROUP
+INT_COUNT  . . . . . . . . . . .	Word	 0004	  _DATA	
+OLD_INT_OFF  . . . . . . . . . .	Word	 0002	  _DATA	
+OLD_INT_SEG  . . . . . . . . . .	Word	 0000	  _DATA	
+PORT_A . . . . . . . . . . . . .	Number	 0288h	 
+PORT_CTRL  . . . . . . . . . . .	Number	 028Bh	 
+START  . . . . . . . . . . . . .	L Near	 0000	  _TEXT	
+WAIT_LOOP  . . . . . . . . . . .	L Near	 0030	  _TEXT	
+
+	   0 Warnings
+	   0 Errors
