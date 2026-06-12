@@ -1,0 +1,4 @@
+Case,CharacteristicEquation,RouthConclusion
+no added zero,s^3 + a*s^2 + K = 0,unstable for K>0
+added zero z=-4,s^3 + a*s^2 + K*s + K*b = 0,unstable for K>0
+added zero z=-1,s^3 + a*s^2 + K*s + K*b = 0,can be stable for K>0
