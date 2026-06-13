@@ -1,0 +1,286 @@
+<!doctype html><html><head><meta charset='utf-8'>
+<title>信号与系统公式大全-直观版</title>
+<style>
+@page { size: A4; margin: 13mm 13mm 14mm 13mm; }
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: #172033;
+  font-family: "Noto Serif SC", "Microsoft YaHei", "SimSun", serif;
+  line-height: 1.42;
+  background: #fff;
+}
+.cover {
+  border-bottom: 3px solid #27496d;
+  padding: 3mm 0 5mm;
+  margin-bottom: 5mm;
+}
+h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 0;
+  text-align: center;
+}
+.subtitle {
+  margin-top: 5px;
+  color: #526071;
+  text-align: center;
+  font-size: 12px;
+}
+h2 {
+  margin: 9mm 0 3mm;
+  padding: 2mm 3mm;
+  color: #fff;
+  background: #27496d;
+  font-size: 17px;
+  break-after: avoid;
+}
+h3 {
+  margin: 4.5mm 0 1mm;
+  color: #1c314b;
+  font-size: 14px;
+  break-after: avoid;
+}
+.note {
+  margin: 0 0 1.5mm;
+  color: #58657a;
+  font-size: 10.5px;
+}
+.block {
+  margin: 0 0 3mm;
+  padding: 2mm 3mm;
+  border: 1px solid #d6deea;
+  border-left: 4px solid #5a7fa8;
+  background: #f7f9fc;
+  break-inside: avoid;
+}
+.eq {
+  margin: 1.6mm 0;
+  font-size: 15px;
+  color: #111827;
+  font-family: "Cambria Math", "Noto Serif SC", "Times New Roman", serif;
+}
+.frac {
+  display: inline-grid;
+  grid-template-rows: auto auto;
+  align-items: center;
+  justify-items: center;
+  vertical-align: -0.45em;
+  margin: 0 0.12em;
+  line-height: 1.05;
+}
+.frac > span:first-child {
+  display: block;
+  padding: 0 0.25em 1px;
+  border-bottom: 1px solid currentColor;
+}
+.frac > span:last-child {
+  display: block;
+  padding: 1px 0.25em 0;
+}
+.cases {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.12em;
+  vertical-align: middle;
+}
+.brace {
+  font-size: 2.9em;
+  line-height: 0.82;
+}
+.cases table {
+  border-collapse: collapse;
+  font-size: 0.98em;
+}
+.cases td {
+  padding: 0.05em 0.28em;
+  white-space: nowrap;
+}
+sup, sub { line-height: 0; }
+</style>
+</head><body>
+<section class='cover'>
+<h1>信号与系统公式大全</h1>
+<div class='subtitle'>直观版：单位阶跃函数统一写作 u(t)，离散单位阶跃写作 u[n]</div>
+</section>
+<h2>0. 约定与常用符号</h2>
+<div class='block'>
+<h3>单位阶跃、冲激、符号函数</h3>
+<p class='note'>本册把单位阶跃函数统一记作 u(t)，离散单位阶跃记作 u[n]。</p>
+<div class='eq'>u(t) = <span class="cases"><span class="brace">{</span><table><tr><td>0</td><td>t &lt; 0</td></tr><tr><td>1</td><td>t &gt; 0</td></tr></table></span></div>
+<div class='eq'>δ(t) = d u(t) / dt</div>
+<div class='eq'>u(t) = ∫<sub>-∞</sub><sup>t</sup> δ(τ) dτ</div>
+<div class='eq'>sgn(t) = 2u(t) - 1</div>
+<div class='eq'>u(t) = <span class="frac"><span>1 + sgn(t)</span><span>2</span></span></div>
+<div class='eq'>∫<sub>-∞</sub><sup>∞</sup> x(t)δ(t - t<sub>0</sub>) dt = x(t<sub>0</sub>)</div>
+</div>
+<div class='block'>
+<h3>尺度、时移、翻转</h3>
+<p class='note'>先看括号里的 t 怎么变，再判断移动、压缩或翻转。</p>
+<div class='eq'>x(t - t<sub>0</sub>)：右移 t<sub>0</sub></div>
+<div class='eq'>x(t + t<sub>0</sub>)：左移 t<sub>0</sub></div>
+<div class='eq'>|a| &gt; 1 时，x(at) 压缩；0 &lt; |a| &lt; 1 时，x(at) 展宽</div>
+<div class='eq'>x(-t)：关于 t = 0 翻转</div>
+<div class='eq'>δ(at) = <span class="frac"><span>1</span><span>|a|</span></span> δ(t)</div>
+</div>
+<div class='block'>
+<h3>能量、功率、奇偶分解</h3>
+<p class='note'>能量信号平均功率为 0；功率信号总能量一般无穷大。</p>
+<div class='eq'>E<sub>x</sub> = ∫<sub>-∞</sub><sup>∞</sup> |x(t)|<sup>2</sup> dt</div>
+<div class='eq'>P<sub>x</sub> = lim<sub>T→∞</sub> <span class="frac"><span>1</span><span>2T</span></span> ∫<sub>-T</sub><sup>T</sup> |x(t)|<sup>2</sup> dt</div>
+<div class='eq'>x<sub>e</sub>(t) = <span class="frac"><span>x(t) + x(-t)</span><span>2</span></span></div>
+<div class='eq'>x<sub>o</sub>(t) = <span class="frac"><span>x(t) - x(-t)</span><span>2</span></span></div>
+<div class='eq'>x(t) = x<sub>e</sub>(t) + x<sub>o</sub>(t)</div>
+</div>
+<h2>1. 连续时间系统的时域分析</h2>
+<div class='block'>
+<h3>LTI 系统与卷积</h3>
+<p class='note'>线性时不变系统完全由冲激响应 h(t) 描述。</p>
+<div class='eq'>y(t) = x(t) * h(t)</div>
+<div class='eq'>x(t) * h(t) = ∫<sub>-∞</sub><sup>∞</sup> x(τ)h(t - τ)dτ</div>
+<div class='eq'>x(t) * δ(t - t<sub>0</sub>) = x(t - t<sub>0</sub>)</div>
+<div class='eq'>δ(t) * h(t) = h(t)</div>
+</div>
+<div class='block'>
+<h3>零输入、零状态、阶跃输入</h3>
+<p class='note'>总响应 = 零输入响应 + 零状态响应；阶跃输入统一写作 u(t)。</p>
+<div class='eq'>y(t) = y<sub>zi</sub>(t) + y<sub>zs</sub>(t)</div>
+<div class='eq'>y<sub>zs</sub>(t) = x(t) * h(t)</div>
+<div class='eq'>s(t) = h(t) * u(t)</div>
+<div class='eq'>s(t) = ∫<sub>-∞</sub><sup>t</sup> h(τ)dτ</div>
+<div class='eq'>h(t) = d s(t) / dt</div>
+</div>
+<div class='block'>
+<h3>因果性、稳定性、可逆性</h3>
+<p class='note'>判断 LTI 系统时，优先看 h(t)。</p>
+<div class='eq'>因果：h(t) = 0，t &lt; 0</div>
+<div class='eq'>BIBO 稳定：∫<sub>-∞</sub><sup>∞</sup> |h(t)|dt &lt; ∞</div>
+<div class='eq'>可逆：h(t) * h<sub>i</sub>(t) = δ(t)</div>
+</div>
+<h2>2. 连续时间傅里叶级数 CTFS</h2>
+<div class='block'>
+<h3>三角形式</h3>
+<p class='note'>周期为 T，基波角频率 ω<sub>0</sub> = 2π / T。</p>
+<div class='eq'>x(t) = a<sub>0</sub> + Σ<sub>n=1</sub><sup>∞</sup>[a<sub>n</sub>cos(nω<sub>0</sub>t) + b<sub>n</sub>sin(nω<sub>0</sub>t)]</div>
+<div class='eq'>a<sub>0</sub> = <span class="frac"><span>1</span><span>T</span></span> ∫<sub>T</sub> x(t)dt</div>
+<div class='eq'>a<sub>n</sub> = <span class="frac"><span>2</span><span>T</span></span> ∫<sub>T</sub> x(t)cos(nω<sub>0</sub>t)dt</div>
+<div class='eq'>b<sub>n</sub> = <span class="frac"><span>2</span><span>T</span></span> ∫<sub>T</sub> x(t)sin(nω<sub>0</sub>t)dt</div>
+</div>
+<div class='block'>
+<h3>指数形式与 Parseval</h3>
+<p class='note'>实信号满足 C<sub>-k</sub> = C<sub>k</sub><sup>*</sup>。</p>
+<div class='eq'>x(t) = Σ<sub>k=-∞</sub><sup>∞</sup> C<sub>k</sub>e<sup>jkω₀t</sup></div>
+<div class='eq'>C<sub>k</sub> = <span class="frac"><span>1</span><span>T</span></span> ∫<sub>T</sub> x(t)e<sup>-jkω₀t</sup>dt</div>
+<div class='eq'>P = <span class="frac"><span>1</span><span>T</span></span> ∫<sub>T</sub>|x(t)|<sup>2</sup>dt</div>
+<div class='eq'>P = Σ<sub>k=-∞</sub><sup>∞</sup>|C<sub>k</sub>|<sup>2</sup></div>
+</div>
+<h2>3. 连续时间傅里叶变换 CTFT</h2>
+<div class='block'>
+<h3>定义</h3>
+<p class='note'>采用角频率 ω 的工程常用约定。</p>
+<div class='eq'>X(jω) = ∫<sub>-∞</sub><sup>∞</sup> x(t)e<sup>-jωt</sup>dt</div>
+<div class='eq'>x(t) = <span class="frac"><span>1</span><span>2π</span></span> ∫<sub>-∞</sub><sup>∞</sup> X(jω)e<sup>jωt</sup>dω</div>
+</div>
+<div class='block'>
+<h3>常用变换对</h3>
+<p class='note'>冲激、阶跃、指数、正余弦是最高频考点。</p>
+<div class='eq'>δ(t) ↔ 1</div>
+<div class='eq'>1 ↔ 2πδ(ω)</div>
+<div class='eq'>e<sup>jω₀t</sup> ↔ 2πδ(ω - ω<sub>0</sub>)</div>
+<div class='eq'>cos(ω<sub>0</sub>t) ↔ π[δ(ω - ω<sub>0</sub>) + δ(ω + ω<sub>0</sub>)]</div>
+<div class='eq'>sin(ω<sub>0</sub>t) ↔ <span class="frac"><span>π</span><span>j</span></span>[δ(ω - ω<sub>0</sub>) - δ(ω + ω<sub>0</sub>)]</div>
+<div class='eq'>e<sup>-at</sup>u(t) ↔ <span class="frac"><span>1</span><span>a + jω</span></span>，a &gt; 0</div>
+<div class='eq'>u(t) ↔ πδ(ω) + <span class="frac"><span>1</span><span>jω</span></span></div>
+</div>
+<div class='block'>
+<h3>性质</h3>
+<p class='note'>时域操作和频域操作成对出现。</p>
+<div class='eq'>x(t - t<sub>0</sub>) ↔ e<sup>-jωt₀</sup>X(jω)</div>
+<div class='eq'>e<sup>jω₀t</sup>x(t) ↔ X[j(ω - ω<sub>0</sub>)]</div>
+<div class='eq'>x(at) ↔ <span class="frac"><span>1</span><span>|a|</span></span>X(jω/a)</div>
+<div class='eq'>d<sup>n</sup>x(t) / dt<sup>n</sup> ↔ (jω)<sup>n</sup>X(jω)</div>
+<div class='eq'>x(t) * h(t) ↔ X(jω)H(jω)</div>
+<div class='eq'>x(t)h(t) ↔ <span class="frac"><span>1</span><span>2π</span></span>X(jω) * H(jω)</div>
+<div class='eq'>E = ∫<sub>-∞</sub><sup>∞</sup>|x(t)|<sup>2</sup>dt = <span class="frac"><span>1</span><span>2π</span></span>∫<sub>-∞</sub><sup>∞</sup>|X(jω)|<sup>2</sup>dω</div>
+</div>
+<h2>4. 连续时间系统的频域分析</h2>
+<div class='block'>
+<h3>频率响应</h3>
+<p class='note'>正弦稳态中，LTI 系统只改变幅度和相位。</p>
+<div class='eq'>H(jω) = F{h(t)}</div>
+<div class='eq'>Y(jω) = X(jω)H(jω)</div>
+<div class='eq'>x(t)=Acos(ω<sub>0</sub>t+φ)</div>
+<div class='eq'>y<sub>ss</sub>(t)=A|H(jω<sub>0</sub>)|cos[ω<sub>0</sub>t+φ+∠H(jω<sub>0</sub>)]</div>
+</div>
+<div class='block'>
+<h3>无失真传输、理想低通、采样</h3>
+<p class='note'>无失真只允许幅度缩放和整体延时。</p>
+<div class='eq'>y(t)=Kx(t-t<sub>d</sub>)</div>
+<div class='eq'>H(jω)=Ke<sup>-jωt_d</sup></div>
+<div class='eq'>h<sub>LP</sub>(t) = <span class="frac"><span>sin(ω<sub>c</sub>t)</span><span>πt</span></span> = <span class="frac"><span>ω<sub>c</sub></span><span>π</span></span>Sa(ω<sub>c</sub>t)</div>
+<div class='eq'>x<sub>s</sub>(t)=x(t)Σ<sub>n=-∞</sub><sup>∞</sup>δ(t-nT<sub>s</sub>)</div>
+<div class='eq'>X<sub>s</sub>(jω)=<span class="frac"><span>1</span><span>T<sub>s</sub></span></span>Σ<sub>k=-∞</sub><sup>∞</sup>X[j(ω-kω<sub>s</sub>)]</div>
+<div class='eq'>采样定理：ω<sub>s</sub> &gt; 2ω<sub>m</sub></div>
+</div>
+<h2>5. 拉普拉斯变换与复频域分析</h2>
+<div class='block'>
+<h3>定义与常用变换对</h3>
+<p class='note'>右边信号通常乘 u(t)，ROC 在最右极点右侧。</p>
+<div class='eq'>X(s)=∫<sub>-∞</sub><sup>∞</sup>x(t)e<sup>-st</sup>dt，s=σ+jω</div>
+<div class='eq'>u(t) ↔ <span class="frac"><span>1</span><span>s</span></span></div>
+<div class='eq'>e<sup>-at</sup>u(t) ↔ <span class="frac"><span>1</span><span>s+a</span></span></div>
+<div class='eq'>t<sup>n</sup>e<sup>-at</sup>u(t) ↔ <span class="frac"><span>n!</span><span>(s+a)<sup>n+1</sup></span></span></div>
+<div class='eq'>cos(ω<sub>0</sub>t)u(t) ↔ <span class="frac"><span>s</span><span>s<sup>2</sup>+ω<sub>0</sub><sup>2</sup></span></span></div>
+<div class='eq'>sin(ω<sub>0</sub>t)u(t) ↔ <span class="frac"><span>ω<sub>0</sub></span><span>s<sup>2</sup>+ω<sub>0</sub><sup>2</sup></span></span></div>
+</div>
+<div class='block'>
+<h3>性质、初终值、系统函数</h3>
+<p class='note'>使用初值/终值定理前要检查极点条件。</p>
+<div class='eq'>dx(t)/dt ↔ sX<sub>+</sub>(s) - x(0<sup>-</sup>)</div>
+<div class='eq'>x(t-t<sub>0</sub>)u(t-t<sub>0</sub>) ↔ e<sup>-st₀</sup>X(s)</div>
+<div class='eq'>x(0<sup>+</sup>) = lim<sub>s→∞</sub>sX(s)</div>
+<div class='eq'>x(∞) = lim<sub>s→0</sub>sX(s)</div>
+<div class='eq'>H(s)=Y<sub>zs</sub>(s)/X(s)</div>
+<div class='eq'>因果稳定：全部极点在左半平面</div>
+</div>
+<h2>6. 离散时间系统的时域分析</h2>
+<div class='block'>
+<h3>基本序列与卷积</h3>
+<p class='note'>离散单位阶跃写作 u[n]，单位样值写作 δ[n]。</p>
+<div class='eq'>δ[n] = <span class="cases"><span class="brace">{</span><table><tr><td>1</td><td>n = 0</td></tr><tr><td>0</td><td>n ≠ 0</td></tr></table></span></div>
+<div class='eq'>u[n] = <span class="cases"><span class="brace">{</span><table><tr><td>1</td><td>n ≥ 0</td></tr><tr><td>0</td><td>n &lt; 0</td></tr></table></span></div>
+<div class='eq'>u[n] - u[n-1] = δ[n]</div>
+<div class='eq'>y[n] = x[n] * h[n] = Σ<sub>k=-∞</sub><sup>∞</sup>x[k]h[n-k]</div>
+<div class='eq'>x[n] * δ[n-n<sub>0</sub>] = x[n-n<sub>0</sub>]</div>
+<div class='eq'>x[n] * u[n] = Σ<sub>k=-∞</sub><sup>n</sup>x[k]</div>
+</div>
+<div class='block'>
+<h3>差分方程与系统性质</h3>
+<p class='note'>求解思路：齐次解 + 特解，或直接转 z 域。</p>
+<div class='eq'>Σ<sub>k=0</sub><sup>N</sup>a<sub>k</sub>y[n-k] = Σ<sub>m=0</sub><sup>M</sup>b<sub>m</sub>x[n-m]</div>
+<div class='eq'>y[n] = y<sub>zi</sub>[n] + y<sub>zs</sub>[n]</div>
+<div class='eq'>因果：h[n] = 0，n &lt; 0</div>
+<div class='eq'>BIBO 稳定：Σ<sub>n=-∞</sub><sup>∞</sup>|h[n]| &lt; ∞</div>
+</div>
+<h2>7. z 变换</h2>
+<div class='block'>
+<h3>定义与常用变换对</h3>
+<p class='note'>z 变换必须连同收敛域 ROC 一起看。</p>
+<div class='eq'>X(z)=Σ<sub>n=-∞</sub><sup>∞</sup>x[n]z<sup>-n</sup></div>
+<div class='eq'>δ[n] ↔ 1</div>
+<div class='eq'>u[n] ↔ <span class="frac"><span>1</span><span>1-z<sup>-1</sup></span></span> = <span class="frac"><span>z</span><span>z-1</span></span>，|z| &gt; 1</div>
+<div class='eq'>a<sup>n</sup>u[n] ↔ <span class="frac"><span>1</span><span>1-az<sup>-1</sup></span></span> = <span class="frac"><span>z</span><span>z-a</span></span>，|z| &gt; |a|</div>
+<div class='eq'>n a<sup>n</sup>u[n] ↔ <span class="frac"><span>az<sup>-1</sup></span><span>(1-az<sup>-1</sup>)<sup>2</sup></span></span></div>
+</div>
+<div class='block'>
+<h3>性质、系统函数、稳定性</h3>
+<p class='note'>单位圆在 ROC 内时，H(e^{jΩ}) 存在。</p>
+<div class='eq'>x[n-n<sub>0</sub>] ↔ z<sup>-n₀</sup>X(z)</div>
+<div class='eq'>a<sup>n</sup>x[n] ↔ X(z/a)</div>
+<div class='eq'>n x[n] ↔ -z dX(z)/dz</div>
+<div class='eq'>x[n] * h[n] ↔ X(z)H(z)</div>
+<div class='eq'>H(z)=Y<sub>zs</sub>(z)/X(z)</div>
+<div class='eq'>H(e<sup>jΩ</sup>) = H(z)|<sub>z=e<sup>jΩ</sup></sub></div>
+<div class='eq'>因果稳定：全部极点在单位圆内</div>
+</div>
+</body></html>
