@@ -1,0 +1,282 @@
+{
+  "schema": "template_fill_pptx_plan.v1",
+  "source_pptx": "C:/Users/28097/Desktop/my_code/my_code/projects/join_youth_league_template_fill/sources/red_template.pptx",
+  "slides": [
+    {
+      "source_slide": 1,
+      "purpose": "cover",
+      "notes": "各位老师、同学大家好，我是自控2401班的傅思雄。今天我将围绕个人基本情况、学习科创实践、服务经历以及对共青团的认识，汇报我的入团申请。",
+      "transition": "fade",
+      "replacements": [
+        {
+          "slot_id": "s01_sh11",
+          "text": "入团申请答辩"
+        },
+        {
+          "slot_id": "s01_sh12",
+          "text": "以青年担当融入集体"
+        },
+        {
+          "slot_id": "s01_sh39",
+          "text": "自控2401 傅思雄｜以实践行动靠近团组织"
+        },
+        {
+          "slot_id": "s01_sh38",
+          "text": "申请人汇报"
+        },
+        {
+          "slot_id": "s01_sh43",
+          "text": "共青团"
+        }
+      ]
+    },
+    {
+      "source_slide": 2,
+      "purpose": "contents",
+      "notes": "本次汇报分为四个部分。先介绍我的基本情况，再说明学习和科创实践，随后汇报服务集体的经历，最后谈谈我对共青团的认识和入团后的计划。",
+      "transition": "fade",
+      "replacements": [
+        {
+          "slot_id": "s02_sh10",
+          "text": "目录"
+        },
+        {
+          "slot_id": "s02_sh12",
+          "text": "CONTENTS"
+        },
+        {
+          "slot_id": "s02_sh19",
+          "text": "个人基本情况"
+        },
+        {
+          "slot_id": "s02_sh18",
+          "text": "班级信息、学习状态与自我定位"
+        },
+        {
+          "slot_id": "s02_sh21",
+          "text": "学习与科创实践"
+        },
+        {
+          "slot_id": "s02_sh20",
+          "text": "专业学习、蓝桥杯与智能车准备"
+        },
+        {
+          "slot_id": "s02_sh23",
+          "text": "服务集体经历"
+        },
+        {
+          "slot_id": "s02_sh22",
+          "text": "实验室助理中的责任与协作"
+        },
+        {
+          "slot_id": "s02_sh25",
+          "text": "入团认识与计划"
+        },
+        {
+          "slot_id": "s02_sh24",
+          "text": "以更高标准要求自己、服务集体"
+        }
+      ]
+    },
+    {
+      "source_slide": 3,
+      "purpose": "section_personal",
+      "notes": "首先是个人基本情况。我来自自控2401班，希望通过入团申请，把个人成长放到更高标准和更强集体意识中去要求自己。",
+      "transition": "fade",
+      "replacements": [
+        {
+          "slot_id": "s03_sh20",
+          "text": "01"
+        },
+        {
+          "slot_id": "s03_sh14",
+          "text": "个人基本情况"
+        },
+        {
+          "slot_id": "s03_sh15",
+          "text": "申请人：傅思雄｜班级：自控2401｜当前绩点：3.3/4.33。希望在学习、实践与集体服务中持续进步。"
+        }
+      ]
+    },
+    {
+      "source_slide": 5,
+      "purpose": "personal_profile_cards_v2",
+      "notes": "????????????2401?????????????????????????????????????????????????????????",
+      "transition": "fade",
+      "replacements": [
+        {
+          "slot_id": "s05_sh11",
+          "text": "????"
+        },
+        {
+          "slot_id": "s05_sh21",
+          "text": "????\n????"
+        },
+        {
+          "slot_id": "s05_sh22",
+          "text": "????"
+        },
+        {
+          "slot_id": "s05_sh23",
+          "text": "??2401??????3.3/4.33???????????????"
+        },
+        {
+          "slot_id": "s05_sh24",
+          "text": "????"
+        },
+        {
+          "slot_id": "s05_sh25",
+          "text": "????????????????????????????"
+        },
+        {
+          "slot_id": "s05_sh16",
+          "text": "?????????????????????????????????????????????"
+        }
+      ]
+    },
+    {
+      "source_slide": 8,
+      "purpose": "section_learning",
+      "notes": "第二部分是学习与科创实践。专业学习之外，我也在通过竞赛训练把知识用到真实问题中，让能力在实践中得到检验。",
+      "transition": "fade",
+      "replacements": [
+        {
+          "slot_id": "s08_sh20",
+          "text": "02"
+        },
+        {
+          "slot_id": "s08_sh14",
+          "text": "学习与科创实践"
+        },
+        {
+          "slot_id": "s08_sh15",
+          "text": "????????????????????????????????????"
+        }
+      ]
+    },
+    {
+      "source_slide": 9,
+      "purpose": "growth_path",
+      "notes": "这条成长路径概括了我现阶段的努力方向。从专业基础到竞赛训练，再到实验室助理和集体服务，我希望让每一步都更扎实。",
+      "transition": "fade",
+      "replacements": [
+        {
+          "slot_id": "s09_sh40",
+          "text": "实践成长路径"
+        },
+        {
+          "slot_id": "s09_sh18",
+          "text": "专业学习"
+        },
+        {
+          "slot_id": "s09_sh17",
+          "text": "??????????????"
+        },
+        {
+          "slot_id": "s09_sh20",
+          "text": "蓝桥杯"
+        },
+        {
+          "slot_id": "s09_sh19",
+          "text": "获省级一等奖，等待国赛结果。"
+        },
+        {
+          "slot_id": "s09_sh22",
+          "text": "智能车"
+        },
+        {
+          "slot_id": "s09_sh21",
+          "text": "??????????????"
+        },
+        {
+          "slot_id": "s09_sh24",
+          "text": "实验助理"
+        },
+        {
+          "slot_id": "s09_sh23",
+          "text": "协助整理、调试、维护日常事务。"
+        },
+        {
+          "slot_id": "s09_sh26",
+          "text": "服务集体"
+        },
+        {
+          "slot_id": "s09_sh25",
+          "text": "?????????????"
+        }
+      ]
+    },
+    {
+      "source_slide": 10,
+      "purpose": "league_understanding",
+      "notes": "?????????????????????????????????????????????????????????????????????????",
+      "transition": "fade",
+      "replacements": [
+        {
+          "slot_id": "s10_sh13",
+          "text": "???????"
+        },
+        {
+          "slot_id": "s10_sh16",
+          "text": "????"
+        },
+        {
+          "slot_id": "s10_sh14",
+          "text": "????\n????"
+        },
+        {
+          "slot_id": "s10_sh15",
+          "text": "???"
+        },
+        {
+          "slot_id": "s10_sh11",
+          "text": "???????????????????????????????????????????????????"
+        }
+      ]
+    },
+    {
+      "source_slide": 7,
+      "purpose": "future_plan",
+      "notes": "??????????????????????????????????????????????????????????????????????????????????????????",
+      "transition": "fade",
+      "replacements": [
+        {
+          "slot_id": "s07_sh16",
+          "text": "?????"
+        },
+        {
+          "slot_id": "s07_sh9",
+          "text": "?????????"
+        },
+        {
+          "slot_id": "s07_sh6",
+          "text": "??????????????????????????????????????????????????"
+        }
+      ]
+    },
+    {
+      "source_slide": 11,
+      "purpose": "ending",
+      "notes": "我的汇报到这里结束。感谢各位老师和同学的聆听，也恳请大家对我的不足提出批评指正。",
+      "transition": "fade",
+      "replacements": [
+        {
+          "slot_id": "s11_sh11",
+          "text": "谢谢观看"
+        },
+        {
+          "slot_id": "s11_sh39",
+          "text": "恳请老师、同学批评指正"
+        },
+        {
+          "slot_id": "s11_sh38",
+          "text": "傅思雄"
+        },
+        {
+          "slot_id": "s11_sh43",
+          "text": "共青团"
+        }
+      ]
+    }
+  ]
+}
