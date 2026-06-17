@@ -1,0 +1,1302 @@
+
+===== PAGE 008 =====
+2. 电流分配关系
+发射极注入电流
+传输到集电极的电流设 =    
+E
+NC
+I
+I=    即
+根据传输过程可知 IC= INC+ ICBO
+通常 IC >> ICBO
+E
+C
+I
+I    则有
+ 为电流放大系数。它只与管子的
+结构尺寸和掺杂浓度有关，与外加电压
+无关。一般  = 0.90.99 。
+IE=IB+ IC
+放大状态下BJT中载流子的传输过程
+
+
+===== PAGE 009 =====
+
+ −= 1    又设
+ 
+B
+CEOC
+I
+II −=    则
+ 是另一个电流放大系数。同样，它
+也只与管子的结构尺寸和掺杂浓度有关，
+与外加电压无关。一般  >> 1 。
+根据 IE=IB+ IC IC= INC+ ICBO
+E
+NC
+I
+I= 
+且令
+ 
+B
+C
+CEOC
+I
+III        时，当 ICEO= (1+  ) ICBO（穿透电流）
+2. 电流分配关系
+放大状态下BJT中载流子的传输过程
+
+
+===== PAGE 010 =====
+总结 (BJT放大状态下的极间电流关系）
+很小
+CBE III +=
+EEC III 
+EB II )1( −
+BC II 
+
+===== PAGE 012 =====
+共基极放大电路
+4. 放大作用
+若 vI = 20mV
+电压放大倍数
+4920mV
+V98.0
+I
+O ==
+= v
+v
+vA
+使 iE = -1 mA，
+则 iC =  iE  = -0.98 mA，vO = -iC• RL = 0.98 V，
+当  = 0.98 时，
+
+
+===== PAGE 018 =====
+例、电路如图所示，晶体管导通时UBE＝0.7V，β=50。试分析uI
+为0V、1V、2V三种情况下T的工作状态及输出电压uO的值。
+解：（1）当uI＝0时，
+T截止，uO＝12V。
+b
+BE
+B
+R
+UuI I −=
+mA3=
+所以T处于放大状态。
+（2）当uI＝1V时，
+CCCCO RIVu −=
+A60=
+BC  II =
+V9=
+mAICS 12
+
+===== PAGE 019 =====
+（3）当uI＝2V时，
+所以T处于饱和状态。
+mAR
+UuI I 26.0
+b
+BE
+B =−=
+mA13 BC == II 
+故
+mAI 26.0B =
+mA12C = CSII
+VRIVu CC 0CCSO −=
+mAICS 12
+
+===== PAGE 022 =====
+5.2.2  基本共射极放大电路的工作原理
+1. 静态(直流工作状态)
+输入信号vi＝0时，
+放大电路的工作状态称
+为静态或直流工作状态。
+直流通路
+b
+BEQBB
+BQ
+R
+VVI −=
+BQCEOBQCQ βIIβII +=
+VCEQ=VCC－ICQRc
+
+===== PAGE 033 =====
+5.3.1  图解分析法
+1. 静态工作点的图解分析
+• 列输入回路方程
+• 列输出回路方程（直流负载线）
+VCE=VCC－iCRc
+• 首先，画出直流通路
+直流通路
+bBBBBE RiV −=v
+
+===== PAGE 042 =====
+共射极放大电路
+放大电路如图所示。已知BJT的 ß=80，
+Rb=300k ， Rc=2k， VCC= +12V，求：
+（1）放大电路的Q点。此时BJT工作在哪个区域？
+（2）当Rb=100k时，放大电路的Q点。此时BJT工作在哪
+个区域？（忽略BJT的饱和压降）
+解：（1）
+μA40300k
+2V1
+b
+BECC
+BQ =−= R
+VVI
+（2）当Rb=100k时，
+3.2mAμA4080BQCQ === βII
+5.6V3.2mA2kV12CQcCCCEQ =−=−= IRVV
+静态工作点为Q（40A，3.2mA，5.6V），BJT工作在放大区。
+其最小值也只能为0，即IC的最大电流为：
+μA120100k
+2V1
+b
+CC
+BQ == R
+VI
+mA6.9μA12080BQCQ === II 
+V2.79.6mA2k-V12CQcCCCEQ −==−= IRVV
+mA62k
+2V1
+c
+CESCC
+CM =−= R
+VVI
+CMBQ  II 由于
+所以BJT工作在饱和区。
+VCE不可能为负值，
+此时，Q（120uA，6mA，0V），
+例题
+end
+
+
+===== PAGE 044 =====
+1. BJT的H参数及小信号模型
+•H参数的引出
+),( CEB1BE vv if=
+在小信号情况下，对上两式取全微分得
+CE
+CE
+BE
+B
+B
+BE
+BE ddd
+BQCEQ
+vv
+vvv 
++
+= IV ii
+用小信号交流分量表示
+vbe= hieib+ hrevce ic= hfeib+ hoevce
+对于BJT双口网络，已知输入输出特性
+曲线如下：
+iB=f(vBE) vCE=const
+iC=f(vCE) iB=const
+可以写成：
+),( CEB2C vifi =
+CE
+CE
+C
+B
+B
+C
+C ddd
+BQCEQ
+vv 
++
+= IV
+iii
+ii
+ BJT双口网络
+
+===== PAGE 045 =====
+CEQ
+B
+BE
+ie V
+ih 
+= v
+输出端交流短路时的输入电阻；
+输出端交流短路时的正向电流传输比或电
+流放大系数；
+输入端交流开路时的反向电压传输比；
+输入端交流开路时的输出电导。
+其中：
+四个参数量纲各不相同，故称为混合参数（H参数）。
+vbe= hieib+ hrevce
+ic= hfeib+ hoevce
+CEQ
+B
+C
+fe V
+i
+ih 
+=
+BQ
+CE
+BE
+re Ih v
+v
+
+=
+BQ
+CE
+C
+oe I
+ih v
+=
+1. BJT的H参数及小信号模型
+•H参数的引出
+
+===== PAGE 049 =====
+1. BJT的H参数及小信号模型
+•H参数的确定
+ 一般用测试仪测出；
+rbe 与Q点有关，可用图示仪测出。
+rbe= rbb′ + (1+  ) re
+其中对于低频小功率管 rbb′≈200
+则
+)mA(
+)mV(26)1(200
+EQ
+be
+Ir ++
+)mA(
+)mV(26
+)mA(
+)mV(
+EQEQ
+e
+II
+Vr T ==
+而 (T=300K)
+一般也用公式估算 rbe （忽略 r′e ）
+
+
+===== PAGE 050 =====
+5.3.2  小信号模型分析法
+2. 用H参数小信号模型分析基本共射极放大电路
+（1）利用直流通路求Q点
+共射极放大电路
+b
+BEBB
+B
+R
+VVI −=
+一般硅管VBE=0.7V，锗管VBE=0.2V， 已知。
+BC IβI =
+LC
+c
+CECC
+CE )( RIR
+VVV −−=
+
+
+===== PAGE 052 =====
+2. 用H参数小信号模型分析基本共射极放大电路
+（3）求放大电路动态指标
+根据
+)( bebbi rRi +=v
+bc iβi =
+)//( Lcco RRi −=v
+则电压增益为
+beb
+Lc
+bebb
+Lcb
+bebb
+Lcc
+i
+o
+)//(
+)(
+)//(
+)(
+)//(
+rR
+RRβ
+rRi
+RRiβ
+rRi
+RRiA
++
+−=+
+−=
++
+−==
+    
+v
+v
+v （可作为公式）
+电压增益
+H参数小信号等效电路
+
+
+===== PAGE 053 =====
+2. 用H参数小信号模型分析基本共射极放大电路
+（3）求放大电路动态指标
+输入电阻
+输出电阻
+令
+0i =v
+0b =i
+0b = iβ
+Ro =  Rc 所以
+beb
+b
+bebb
+b
+i
+i
+i
+i
+rR
+i
+rRi
+iiR
++=
++=
+==
+    
+)(    
+vv
+==
+=
+Ls R,0t
+t
+o
+v
+v
+iR
+
+
+===== PAGE 056 =====
+ⅲ源电压增益
+vo
+vS
+=
+vo
+vi
+vi
+vS
+· =
+*
+is
+i
+v
+RR
+RA +
+其中，
+be
+Lc
+v
+r
+RRA )//(−=
+bebebi rrRR = //
+Avs=
+
+
+===== PAGE 057 =====
+解：（1）
+4Vk4mA212cCCCCE =−=−= RIVV
+mA2uA4050BC === IβI
+A40k300
+V12
+b
+CC
+b
+BECC
+B ==−= R
+V
+R
+VVI
+（2）
+)mA(
+)mV(26)1(200
+E
+be
+Ir ++
+87.115)//(
+be
+Lc
+i
+o
+v −=−== r
+RR
+v
+vA 
+== 863// bebebi rrRR
+k4co == RR
+si
+i
+VVS
+RR
+RAA +=
+例题1
+i
+o
+v
+v
+vA =
+s
+o
+v
+vAvs = 放大电路如图所示。试求：（1）Q点；（2） 、
+oi  RR 、 、 已知=50。
+36.73
+500863
+863)87.115(
+−=
++−=
+)mA(
+)mV(26)1(200
+CI++
+= 863
+
+
+===== PAGE 059 =====
+（1）利用直流通路求Q点
+共射极放大电路
+b
+BEBB
+B
+R
+VVI −=
+一般硅管VBE=0.7V，锗管VBE=0.2V， 已知。
+BC IβI =
+LC
+c
+CECC
+CE )( RIR
+VVV −−=
+vs=0
+课本中电路例题3
+
+===== PAGE 060 =====
+（2）画小信号等效电路
+H参数小信号等效电路
+（3）求放大电路动态指标
+电压增益为
+beb
+Lc
+bebb
+Lcc
+i
+o )//(
+)(
+)//(
+rR
+RRβ
+rRi
+RRiA +
+−=+
+−== v
+v
+v
+输入电阻
+ii
+i
+ib
+b be    
+R ii
+Rr
+==
+=+
+vv
+令
+0i =v
+0b =i
+0b = iβ
+Ro =  Rc 所以
+输出电阻
+
+===== PAGE 067 =====
+b点电位基本不变的条件：
+I1 >>IBQ ，
+CC
+b2b1
+b2
+BQ VRR
+RV +
+此时，
+VBQ与温度无关
+VBQ >>VBEQ
+Re取值越大，反馈控制作用越强
+一般取 I1 =(5~10)IBQ ， VBQ =3~5V
+1. 基极分压式射极偏置电路
+（1）稳定工作点原理
+
+
+===== PAGE 068 =====
+1. 基极分压式射极偏置电路
+（2）放大电路指标分析
+①静态工作点
+CC
+b2b1
+b2
+BQ VRR
+RV +
+e
+BEQBQ
+EQCQ
+R
+VVII −=
+)( ecCQCCeEQcCQCCCEQ RRIVRIRIVV +−−−=
+β
+II
+CQ
+BQ =
+
+
+===== PAGE 070 =====
+②电压增益
+输出回路：
+)||( Lcbo RRiβ −=v
+输入回路：
+ebbebeebebi )1( RβiriRiri ++=+=v
+电压增益：
+ebe
+Lc
+ebeb
+Lcb
+i
+o
+)1(
+)||(
+])1([
+)||(
+Rβr
+RRβ
+Rβri
+RRiβA ++
+−=++
+−== v
+v
+v
+<A>画小信号等效电路
+<B>确定模型参数
+已知，求rbe
+)mA(
+)mV(26)1(200
+EQ
+be
+Ir ++
+<C>增益
+（2）放大电路指标分析
+（可作为公式用）
+
+
+===== PAGE 071 =====
+③输入电阻
+则输入电阻
+放大电路的输入电阻不包含信号源的内阻
+（2）放大电路指标分析
+])1([ ebebi Rβri ++=v
+b2
+i
+b1
+i
+e
+i
+)1(  RRRr
+iii
+vvv ++++=
++=
+be
+bi bR
+b2b1e
+i
+i
+i 11
+)1(
+1
+1
+RRRβr
+iR
+++++
+==
+be
+v
+])1([|||| ebeb2b1 RβrRR ++=
+
+===== PAGE 072 =====
+④输出电阻
+输出电阻
+oco || RRR =
+求输出电阻的等效电路
+• 网络内独立源置零
+• 负载开路
+• 输出端口加测试电压
+0)()( ecbsbeb =+++ RiiRri
+0)()( ebccebct =+−−− Riirβiiv
+其中
+b2b1ss |||| RRRR =
+则
+)1(
+esbe
+e
+ce
+c
+t
+o
+RRr
+RβriR ++
++== v
+当
+co RR  时，
+co RR 
+一般
+cceo RrR （ ）
+（2）放大电路指标分析
+
+
+===== PAGE 074 =====
+be
+Lc )//(
+r
+RRAv
+−= 
+beb2b1 //// rRRRi =
+一般将Re 分为两部分 ，并使Re 的大部分被Ce旁路，
+Re1
+Re2
+则， Av不至于↓很大，
+又可使 Ri ↑ 
+——实用中很有意义。
+Ce
+ e1beb2b1i )1(//// RrRRR ++=
+e1be
+Lc
+V
+)1(
+)//(
+Rr
+RRA 
+
+++
+−=
+Re1
+
+===== PAGE 075 =====
+2. 含有双电源的射极偏置电路
+（1）阻容耦合
+静态工作点
+00 EEEe2e1BEBb =−−+−−− )()( VIRRVIR
+EC II 
+)()( e1e1EcCEECCCE RRIRIVVV +−−−−=
+
+C
+B
+II =
+BE 1 II )( +=
+Re1、Re2 共同引入直流电流负反馈稳定Q点
+
+===== PAGE 076 =====
+2. 含有双电源的射极偏置电路
+（1）阻容耦合
+动态
+Re1、Re2 共同引入直流电流负反馈稳定Q点
+e1be
+Lc
+V
+)1(
+)//(
+Rr
+RRA 
+
+++
+−=
+ e1bebi )1(// RrRR ++=
+co RR 
+
+===== PAGE 081 =====
+5.5.1  共集电极放大电路
+1.静态分析
+共集电极电路结构如图示
+该电路也称为射极输出器
+eb
+BEQCC
+BQ
+)1( RβR
+VVI ++
+−=
+eCQCCeEQCCCEQ RIVRIVV −−=
+BQCQ IβI =
+eEQBEQbBQCC RIVRIV ++=
+BQEQ )1( IβI +=
+由
+得
+直流通路
+
+===== PAGE 083 =====
+5.5.1  共集电极放大电路
+2.动态分析
+②电压增益
+输出回路：
+输入回路：
+Lbbeb
+Lbbbebi
+)1(     
+ )(
+Rβiri
+Riβiri
+++=
+++=v
+电压增益：
+1)1(
+)1(
+])1([
+)1(
+Lbe
+L
+Lbe
+L
+Lbeb
+Lb
+i
+o +
+++
++=++
++== Rβr
+Rβ
+Rβr
+Rβ
+Rβri
+RβiA v
+v
+v
+其中
+LeL // RRR =
+LbLbbo )1()( RβiRiβi +=+=v
+一般
+beL rR  ，则电压增益接近于1，
+同相与 io vv
+电压跟随器
+1vA
+即 。
+
+
+===== PAGE 084 =====
+5.5.1  共集电极放大电路
+2.动态分析
+③输入电阻
+当
+1 ，
+beL rRβ  时，
+Lbi || RβRR 
+输入电阻大
+])1([||     
+)1(
+Lb
+L
+i
+b
+i
+i
+i
+i
+i
+RβrR
+RβrR
+iR
+++=
++++
+==
+be
+be
+vv
+vv
+
+===== PAGE 085 =====
+④输出电阻
+由电路列出方程
+ebbt Riβiii ++=
+)( sbebt Rri +=v
+et e
+RiR=v
+其中
+bss || RRR =
+则输出电阻
+β
+rRRiR +
++== 1|| bes
+e
+t
+t
+o
+v
+当
++
++ 1
+bes
+e
+rRR ，
+1 时，
+
+bes
+o
+rRR +
+输出电阻小
+5.5.1  共集电极放大电路
+2.动态分析
+
+
+===== PAGE 086 =====
+β
+rRRR +
++= 1|| bes
+eo
+共集电极电路特点：
+同相与 io vv
+◆ 电压增益小于1但接近于1，
+◆ 输入电阻大，对电压信号源衰减小
+◆ 输出电阻小，带负载能力强
+])1([|| Lbebi RβrRR ++=
+1vA
+5.5.1  共集电极放大电路
+
+===== PAGE 090 =====
+5.5.2  共基极放大电路
+1.静态工作点
+直流通路与射极偏置电路相同
+CC
+b2b1
+b2
+BQ VRR
+RV +
+e
+BEQBQ
+EQCQ
+R
+VVII −=
+)(        ecCQCC
+eEQcCQCCCEQ
+RRIV
+RIRIVV
++−
+−−=
+β
+II
+CQ
+BQ =
+
+
+===== PAGE 091 =====
+2.动态指标
+①电压增益
+输出回路：
+输入回路：
+电压增益：
+LcL || RRR =
+交流通路
+小信号等效电路
+Lbo 'Rβi−=v
+bebi ri−=v
+be
+L
+i
+o '
+r
+βRA == v
+v
+v
+
+===== PAGE 092 =====
+② 输入电阻
+③ 输出电阻
+co RR 
+2.动态指标
+小信号等效电路
+be ee
+iβiiii RR )1(i +−=−=
+ee
+RiR /iv=
+beb ri /iv−=
+])1([/
+be
+i
+e
+i
+iiii
+rβRiR vvvv −+−==
+β
+rR += 1|| be
+e
++ 1
+ber
+BJT共基接法的输
+出特性更平坦，
+rcb>rce
+
+===== PAGE 094 =====
+电压增益：
+输入电阻：
+输出电阻：
+)//)(1(
+)//()1(
+Lebe
+Le
+RRr
+RR
+
+
+++
++
+ )//)(1(// Lebeb RRrR ++
++
++
+1
+)//(// bebs
+e
+rRRR
+cR
+be
+Lc )//(
+r
+RR
++1// be
+e
+rR
+be
+Lc )//(
+r
+RR− 
+beb // rR
+cR
+共射电路 共集电路 共基电路
+5.5.3  放大电路三种组态的比较
+
+===== PAGE 095 =====
+2.三种组态的比较
+
+
+===== PAGE 099 =====
+R1
+rbe1
+R2
+R3 R4
+rbe2
+R6
+R8.
+iV
+.
+1oV
+.
+oV
+.
+1bI
+.
+2bI
+.
+1bIβ
+.
+2bIβ
+Ri Ri2 Ro
+R5
+ 62432 )1(//// RrRRR bei ++=
+1)//)(1(
+)//)(1(
+221
+221
+1 ++
++==
+ibe
+i
+i
+o
+V
+RRr
+RR
+v
+vA 
+
+ )//)(1( 2211 ibebi RRriv ++=
+)//()1( 2211 ibo RRiv +=
+
+===== PAGE 100 =====
+62
+85
+1
+2
+)1(
+)//(
+Rr
+RR
+v
+vA
+beo
+o
+V
+
+
+++
+−==
+ )//)(1(// 2211 ibei RRrRR ++=
+5RRo 
+ 6221 )1( Rriv bebo ++=
+)//( 852 RRiv bo −=
+R1
+rbe1
+R2
+R3 R4
+rbe2
+R6
+R8.
+iV
+.
+1oV
+.
+oV
+.
+1bI
+.
+2bI
+.
+1bIβ
+.
+2bIβ
+Ri Ri2 Ro
+R5
+21 VVV AAA =
+
+===== PAGE 102 =====
+小信号等效电路
+2
+2
+2
+1 += be
+i
+rR
+1
+211
+1
+)(
+be
+iC
+v
+r
+RRA −=
+2
+22
+2
+)(
+be
+Lc
+v
+r
+RRA =
+21 vvv AAA =
+11 bebi rRR =
+is
+i
+vvs
+RR
+RAA +=
+2co RR =
+
+===== PAGE 105 =====
+5.6.1  共射-共基放大电路
+21
+o1
+o
+i
+o1
+i
+o
+vvv
+v
+v
+v
+v
+v
+v AAA •• ===
+)1( 2be1
+be21
+be1
+L1
+1
+βr
+rβ
+r
+RβA +−=−=v
+be2
+Lc22
+be2
+L22
+2
+)||('
+r
+RRβ
+r
+RβA ==v
+其中
+be2
+Lc22
+be12
+be21 )||(
+)1( r
+RRβ
+rβ
+rβA •
++−=v
+所以
+12 β
+因为
+be1
+Lc21 )||(
+r
+RRβA −=v
+因此
+组合放大电路总的电压增益等于组成
+它的各级单管放大电路电压增益的乘积。
+前一级的输出电压是后一级的输入电
+压，后一级的输入电阻是前一级的负载电
+阻RL。
+电压增益
+2
+be2
+L
+1 β
+rR +=
+
+===== PAGE 106 =====
+5.6.1  共射-共基放大电路
+输入电阻
+Ri＝
+i
+i
+i
+v ＝Rb||rbe1＝Rb1||Rb2||rbe1
+输出电阻
+Ro Rc2
+
+
+===== PAGE 108 =====
+5.6.2  共集-共集放大电路
+1. 复合管的主要特性
+两只NPN型BJT组成的复合管
+ 两只PNP型BJT组成的复合管
+rbe＝rbe1＋(1＋1)rbe2
+
+===== PAGE 110 =====
+5.6.2  共集-共集放大电路
+end
+2. 共集-共集放大电路的Av、 Ri 、Ro
+==
+i
+o
+v
+v
+vA
+( )
+( ) Lbe
+L
+1
+1
+Rβr
+Rβ
+++
++
+β
+rRRRR +
++= 1
+|||| bebs
+eo
+式中
+≈12
+rbe＝rbe1＋(1＋1)rbe2
+RL＝Re||RL
+Ri＝Rb|| [ rbe＋(1＋)RL ]
+
+
+===== PAGE 112 =====
+③增益-带宽积
+RCπ2
+1
+BJT 一旦确定， 带宽增益积基本为常数
+1. 高频响应
+HSM fAV 
+( )  ( ) cb'Lmeb'sbbb'eb'bebs
+beb
+be
+eb'
+Lm
+'1||||π2
+1
+||
+||' CRgCRRrrrRR
+rR
+r
+rRg ++++=
+bebs
+beb
+be
+eb'
+Lm
+||
+||' rRR
+rR
+r
+rRg +=
+当Rb>>Rs及Rb>>rbe时，有
+( ) ( ) cb'Lmeb'sbb'
+Lm
+1π2 CRgCRr
+Rg
+'
+'
++++=
+HSM fAV 
+
+===== PAGE 113 =====
+1. 多级放大电路的增益
+)j(
+)j()j(
+i
+o
+
+ V
+VAV 
+ =
+)j(
+)j(
+)j(
+)j(
+)j(
+)j(
+-1)o(
+o
+o1
+o2
+i
+o1
+
+
+
+
+
+
+n
+n
+V
+V
+V
+V
+V
+V
+
+
+
+
+
+
+=
+)j()j()j( 21  VnVV AAA  =
+• 前级的开路电压是下级的信号源电压
+• 前级的输出阻抗是下级的信号源阻抗
+• 下级的输入阻抗是前级的负载
+5.7.5  多级放大电路的频率响应
+

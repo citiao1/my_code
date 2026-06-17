@@ -1,0 +1,456 @@
+\documentclass[12pt]{article}
+\usepackage[paper=a4paper,margin=18mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{ctex}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{unicode-math}
+\setmainfont{Times New Roman}
+\setmathfont{Cambria Math}
+\pagestyle{empty}
+\definecolor{bg}{HTML}{202124}
+\definecolor{fg}{HTML}{F2F4F8}
+\definecolor{muted}{HTML}{C9CDD2}
+\definecolor{accent}{HTML}{71C7EC}
+\pagecolor{bg}
+\color{fg}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlist[itemize]{leftmargin=*,itemsep=5pt,topsep=2pt}
+\tcbset{
+  colback=bg,
+  colframe=accent,
+  boxrule=0.5pt,
+  arc=2pt,
+  left=8pt,
+  right=8pt,
+  top=6pt,
+  bottom=6pt
+}
+\newcommand{\sectionbox}[1]{%
+  \vspace{4pt}
+  {\Large\bfseries\color{accent}#1}\par
+  \vspace{2pt}
+}
+\newcommand{\note}[1]{{\color{muted}\small #1}}
+\newcommand{\pp}{\,/ /\,}
+\begin{document}
+
+{\huge\bfseries 05 双极结型三极管及放大电路基础：公式总结}
+
+\note{根据 ppt/05 PDF 中出现的主要公式整理。公式按课本样式排版，分式均为上下结构。}
+
+\sectionbox{1. BJT 放大状态下的电流关系}
+
+\begin{tcolorbox}
+\[
+I_E=I_B+I_C
+\]
+\[
+I_C=I_{NC}+I_{CBO}
+\]
+\[
+\alpha=\frac{I_{NC}}{I_E},\qquad
+I_C\simeq \alpha I_E
+\]
+\[
+\beta=\frac{\alpha}{1-\alpha},\qquad
+\alpha=\frac{\beta}{1+\beta}
+\]
+\[
+I_C=\frac{\alpha}{1-\alpha}I_B+\frac{1}{1-\alpha}I_{CBO}
+=\beta I_B+(1+\beta)I_{CBO}
+\]
+\[
+I_{CEO}=(1+\beta)I_{CBO}
+\]
+\[
+I_C\simeq \beta I_B,\qquad
+I_B\simeq (1-\alpha)I_E,\qquad
+I_E\simeq I_C
+\]
+\end{tcolorbox}
+
+\sectionbox{2. 放大作用与电压增益示例}
+
+\begin{tcolorbox}
+\[
+\Delta i_C=\alpha\Delta i_E
+\]
+\[
+\Delta v_o=-\Delta i_C R_L
+\]
+\[
+A_v=\frac{\Delta v_o}{\Delta v_i}
+\]
+\[
+A_v=\frac{0.98\,\mathrm{V}}{20\,\mathrm{mV}}\approx 49
+\]
+\end{tcolorbox}
+
+\sectionbox{3. 固定偏置共射放大电路的静态工作点}
+
+\begin{tcolorbox}
+\[
+I_{BQ}=\frac{V_{BB}-V_{BEQ}}{R_b}
+\]
+\[
+I_{CQ}=\beta I_{BQ}+I_{CEO}\simeq \beta I_{BQ}
+\]
+\[
+V_{CEQ}=V_{CC}-I_{CQ}R_C
+\]
+\[
+V_{CE}=V_{CC}-i_C R_C
+\]
+\[
+v_{BE}=V_{BB}+v_s-i_B R_b
+\]
+\end{tcolorbox}
+
+\sectionbox{4. 饱和、截止与直流负载线常用判据}
+
+\begin{tcolorbox}
+\[
+I_{CS}\simeq \frac{V_{CC}}{R_C}
+\]
+\[
+\beta I_B<I_{CS}\quad \Rightarrow\quad \text{放大区}
+\]
+\[
+\beta I_B\ge I_{CS}\quad \Rightarrow\quad \text{饱和区}
+\]
+\[
+I_B\simeq 0\quad \Rightarrow\quad \text{截止区}
+\]
+\[
+u_o=V_{CC}-I_C R_C
+\]
+\end{tcolorbox}
+
+\sectionbox{5. h 参数小信号模型}
+
+\begin{tcolorbox}
+\[
+v_{be}=h_{ie}i_b+h_{re}v_{ce}
+\]
+\[
+i_c=h_{fe}i_b+h_{oe}v_{ce}
+\]
+\[
+h_{ie}=\left.\frac{\partial v_{BE}}{\partial i_B}\right|_{v_{CE}},
+\qquad
+h_{re}=\left.\frac{\partial v_{BE}}{\partial v_{CE}}\right|_{i_B}
+\]
+\[
+h_{fe}=\left.\frac{\partial i_C}{\partial i_B}\right|_{v_{CE}},
+\qquad
+h_{oe}=\left.\frac{\partial i_C}{\partial v_{CE}}\right|_{i_B}
+\]
+\[
+v_{be}\simeq h_{ie}i_b,\qquad i_c\simeq \beta i_b
+\]
+\end{tcolorbox}
+
+\sectionbox{6. BJT 输入电阻 $r_{be}$}
+
+\begin{tcolorbox}
+\[
+r_{be}=r_{bb'}+(1+\beta)r_{b'e}
+\]
+\[
+r_{b'e}=\frac{V_T}{I_{EQ}}
+\]
+\[
+V_T\simeq 26\,\mathrm{mV}\quad (T=300\,\mathrm{K})
+\]
+\[
+r_{be}\approx 200\Omega +(1+\beta)\frac{26\,\mathrm{mV}}{I_{EQ}}
+\]
+\[
+r_{be}\approx 200\Omega +(1+\beta)\frac{26\,\mathrm{mV}}{I_{EQ}(\mathrm{mA})}
+\quad\text{按课件常用写法}
+\]
+\end{tcolorbox}
+
+\sectionbox{7. 基本共射放大电路的小信号指标}
+
+\begin{tcolorbox}
+\[
+v_i=i_b(R_b+r_{be})
+\]
+\[
+i_c=\beta i_b
+\]
+\[
+v_o=-i_c(R_C\pp R_L)
+\]
+\[
+A_v=\frac{v_o}{v_i}
+=-\frac{\beta(R_C\pp R_L)}{R_b+r_{be}}
+\]
+\[
+\text{若 } R_b\gg r_{be},\qquad
+A_v\approx -\frac{\beta(R_C\pp R_L)}{r_{be}}
+\]
+\[
+R_i=R_b\pp r_{be}\approx r_{be}
+\]
+\[
+R_o\approx R_C
+\]
+\end{tcolorbox}
+
+\sectionbox{8. 考虑信号源内阻时的源电压增益}
+
+\begin{tcolorbox}
+\[
+A_{vs}=\frac{v_o}{v_s}
+=\frac{v_o}{v_i}\cdot\frac{v_i}{v_s}
+=A_v\frac{R_i}{R_s+R_i}
+\]
+\[
+A_{vs}=A_v\frac{R_i}{R_s+R_i}
+\]
+\end{tcolorbox}
+
+\sectionbox{9. 分压式射极偏置电路的静态工作点}
+
+\begin{tcolorbox}
+\[
+V_{BQ}\simeq \frac{R_{b2}}{R_{b1}+R_{b2}}V_{CC}
+\]
+\[
+I_{EQ}\simeq \frac{V_{BQ}-V_{BEQ}}{R_E}
+\]
+\[
+I_{CQ}\simeq I_{EQ}
+\]
+\[
+I_{BQ}=\frac{I_{CQ}}{\beta}
+\]
+\[
+V_{CEQ}=V_{CC}-I_{CQ}R_C-I_{EQ}R_E
+\simeq V_{CC}-I_{CQ}(R_C+R_E)
+\]
+\end{tcolorbox}
+
+\sectionbox{10. 分压式射极偏置电路的小信号指标}
+
+\begin{tcolorbox}
+\[
+R_b=R_{b1}\pp R_{b2}
+\]
+\[
+v_i=i_b\left[r_{be}+(1+\beta)R_E\right]
+\]
+\[
+v_o=-\beta i_b(R_C\pp R_L)
+\]
+\[
+A_v=-\frac{\beta(R_C\pp R_L)}
+{r_{be}+(1+\beta)R_E}
+\]
+\[
+R_i=R_b\pp\left[r_{be}+(1+\beta)R_E\right]
+\]
+\[
+R_o\approx R_C
+\]
+\[
+\text{若 } R_E \text{ 被旁路电容交流短路，则 }
+A_v\approx-\frac{\beta(R_C\pp R_L)}{r_{be}}
+\]
+\end{tcolorbox}
+
+\sectionbox{11. 阻容耦合双电源射极偏置电路}
+
+\begin{tcolorbox}
+\[
+I_E=\frac{V_{EE}-V_{BE}}{R_E}
+\]
+\[
+I_C\simeq I_E
+\]
+\[
+I_B=\frac{I_C}{\beta}
+\]
+\[
+V_{CE}=V_{CC}+V_{EE}-I_C(R_C+R_E)
+\]
+\[
+A_v=-\frac{\beta(R_C\pp R_L)}
+{r_{be}+(1+\beta)R_E}
+\]
+\[
+R_i=R_b\pp\left[r_{be}+(1+\beta)R_E\right],
+\qquad
+R_o\approx R_C
+\]
+\end{tcolorbox}
+
+\sectionbox{12. 共集电极放大电路（射极输出器）}
+
+\begin{tcolorbox}
+\[
+V_{CC}=I_{BQ}R_b+V_{BEQ}+I_{EQ}R_E
+\]
+\[
+I_{EQ}=(1+\beta)I_{BQ}
+\]
+\[
+I_{BQ}=\frac{V_{CC}-V_{BEQ}}{R_b+(1+\beta)R_E}
+\]
+\[
+I_{CQ}=\beta I_{BQ}
+\]
+\[
+V_{CEQ}=V_{CC}-I_{EQ}R_E
+\]
+\[
+v_i=i_b\left[r_{be}+(1+\beta)R_L'\right]
+\]
+\[
+v_o=(1+\beta)i_bR_L'
+\]
+\[
+A_v=\frac{(1+\beta)R_L'}
+{r_{be}+(1+\beta)R_L'}
+=\frac{R_L'}{\dfrac{r_{be}}{1+\beta}+R_L'}\approx 1
+\]
+\[
+R_L'=R_E\pp R_L
+\]
+\[
+R_i=R_b\pp\left[r_{be}+(1+\beta)R_L'\right]
+\]
+\[
+R_o=R_E\pp\frac{R_s+r_{be}}{1+\beta}
+\]
+\end{tcolorbox}
+
+\sectionbox{13. 共基极放大电路}
+
+\begin{tcolorbox}
+\[
+A_v=\frac{v_o}{v_i}
+=\frac{\beta(R_C\pp R_L)}{r_{be}}
+\]
+\[
+R_i=R_E\pp\frac{r_{be}}{1+\beta}
+\]
+\[
+R_o\approx R_C
+\]
+\note{共基电路电压增益为正，输入电阻小，输出电阻约为集电极电阻。}
+\end{tcolorbox}
+
+\sectionbox{14. 三种基本组态的常用对比公式}
+
+\begin{tcolorbox}
+\[
+\begin{array}{c|c|c|c}
+\text{组态} & A_v & R_i & R_o\\
+\hline
+\text{共射} &
+-\dfrac{\beta(R_C\pp R_L)}{r_{be}} &
+R_b\pp r_{be} &
+R_C\\[10pt]
+\text{共集} &
+\dfrac{(1+\beta)R_L'}{r_{be}+(1+\beta)R_L'}\approx 1 &
+R_b\pp\left[r_{be}+(1+\beta)R_L'\right] &
+R_E\pp\dfrac{R_s+r_{be}}{1+\beta}\\[12pt]
+\text{共基} &
+\dfrac{\beta(R_C\pp R_L)}{r_{be}} &
+R_E\pp\dfrac{r_{be}}{1+\beta} &
+R_C
+\end{array}
+\]
+\end{tcolorbox}
+
+\sectionbox{15. 组合放大电路}
+
+\begin{tcolorbox}
+\[
+A_v=A_{v1}A_{v2}\cdots A_{vn}
+\]
+\[
+R_i=R_{i1}
+\]
+\[
+R_o=R_{on}
+\]
+\[
+A_{v1}=-\frac{\beta_1R_{i2}'}{r_{be1}},
+\qquad
+A_{v2}=-\frac{\beta_2(R_C\pp R_L)}{r_{be2}+R_E'}
+\]
+\[
+A_v=A_{v1}A_{v2}
+\]
+\end{tcolorbox}
+
+\sectionbox{16. 复合管等效参数}
+
+\begin{tcolorbox}
+\[
+r_{be}=r_{be1}+(1+\beta_1)r_{be2}
+\]
+\[
+\beta\simeq \beta_1\beta_2
+\]
+\[
+r_{be}=r_{be1}
+\quad\text{（互补复合管常用近似）}
+\]
+\[
+A_v=\frac{(1+\beta)R_L'}
+{r_{be}+(1+\beta)R_L'}\approx 1
+\]
+\[
+R_i=R_{b1}\pp R_{b2}\pp\left[r_{be}+(1+\beta)R_L'\right]
+\]
+\[
+R_o=R_E\pp\frac{R_s+r_{be}}{1+\beta}
+\]
+\end{tcolorbox}
+
+\sectionbox{17. 频率响应}
+
+\begin{tcolorbox}
+\[
+\left|A_v\right|
+=\left|A_{vm}\right|
+\frac{1}{\sqrt{1+\left(\dfrac{f_L}{f}\right)^2}}
+\frac{1}{\sqrt{1+\left(\dfrac{f}{f_H}\right)^2}}
+\]
+\[
+\left|A_v\right|
+\approx
+\frac{\left|A_{vm}\right|}
+{\sqrt{1+\left(\dfrac{f_L}{f}\right)^2}}
+\quad (f\ll f_H)
+\]
+\[
+\left|A_v\right|
+\approx
+\frac{\left|A_{vm}\right|}
+{\sqrt{1+\left(\dfrac{f}{f_H}\right)^2}}
+\quad (f\gg f_L)
+\]
+\[
+f=f_L\ \text{或}\ f=f_H
+\quad\Rightarrow\quad
+\left|A_v\right|=\frac{\left|A_{vm}\right|}{\sqrt{2}}
+\]
+\[
+20\lg\frac{\left|A_v\right|}{\left|A_{vm}\right|}
+=-3\,\mathrm{dB}
+\]
+\end{tcolorbox}
+
+\vfill
+\note{生成文件：output/pdf/bjt_formula_summary.pdf}
+
+\end{document}

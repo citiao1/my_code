@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>05 双极结型三极管及放大电路基础：公式总结</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    @page {
+      size: A4;
+      margin: 14mm;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #202124;
+      color: #f2f4f8;
+      font-family: "Microsoft YaHei", "SimSun", "Times New Roman", serif;
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 28px 8px 40px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+    .note {
+      color: #c9cdd2;
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+    h2 {
+      margin: 22px 0 8px;
+      color: #71c7ec;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0;
+      break-after: avoid;
+    }
+    section {
+      break-inside: avoid;
+    }
+    .box {
+      border: 1px solid #71c7ec;
+      border-radius: 5px;
+      padding: 10px 16px;
+      margin-bottom: 12px;
+      background: #202124;
+      break-inside: avoid;
+    }
+    .formula {
+      margin: 8px 0;
+      overflow: visible;
+    }
+    .hint {
+      color: #c9cdd2;
+      font-size: 13px;
+    }
+    mjx-container {
+      color: #f2f4f8 !important;
+      overflow: visible !important;
+    }
+    mjx-container[jax="SVG"][display="true"] {
+      margin: 0.35em 0 !important;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #f2f4f8;
+    }
+    th, td {
+      border: 1px solid #59616b;
+      padding: 8px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th {
+      color: #71c7ec;
+      font-weight: 700;
+    }
+    .source {
+      margin-top: 28px;
+      color: #c9cdd2;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>05 双极结型三极管及放大电路基础：公式总结</h1>
+  <div class="note">根据 <code>ppt/05 双极结型三极管及放大电路基础.pdf</code> 中出现的主要公式整理。分式、上下标、希腊字母均用数学排版渲染。</div>
+
+  <section>
+    <h2>1. BJT 放大状态下的电流关系</h2>
+    <div class="box">
+      <div class="formula">\[ I_E=I_B+I_C \]</div>
+      <div class="formula">\[ I_C=I_{NC}+I_{CBO} \]</div>
+      <div class="formula">\[ \alpha=\frac{I_{NC}}{I_E},\qquad I_C\simeq \alpha I_E \]</div>
+      <div class="formula">\[ \beta=\frac{\alpha}{1-\alpha},\qquad \alpha=\frac{\beta}{1+\beta} \]</div>
+      <div class="formula">\[ I_C=\frac{\alpha}{1-\alpha}I_B+\frac{1}{1-\alpha}I_{CBO}=\beta I_B+(1+\beta)I_{CBO} \]</div>
+      <div class="formula">\[ I_{CEO}=(1+\beta)I_{CBO} \]</div>
+      <div class="formula">\[ I_C\simeq \beta I_B,\qquad I_B\simeq (1-\alpha)I_E,\qquad I_E\simeq I_C \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. 放大作用与电压增益</h2>
+    <div class="box">
+      <div class="formula">\[ \Delta i_C=\alpha\Delta i_E \]</div>
+      <div class="formula">\[ \Delta v_o=-\Delta i_C R_L \]</div>
+      <div class="formula">\[ A_v=\frac{\Delta v_o}{\Delta v_i} \]</div>
+      <div class="formula">\[ A_v=\frac{0.98\,\mathrm{V}}{20\,\mathrm{mV}}\approx 49 \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 固定偏置共射电路静态工作点</h2>
+    <div class="box">
+      <div class="formula">\[ I_{BQ}=\frac{V_{BB}-V_{BEQ}}{R_b} \]</div>
+      <div class="formula">\[ I_{CQ}=\beta I_{BQ}+I_{CEO}\simeq \beta I_{BQ} \]</div>
+      <div class="formula">\[ V_{CEQ}=V_{CC}-I_{CQ}R_C \]</div>
+      <div class="formula">\[ V_{CE}=V_{CC}-i_C R_C \]</div>
+      <div class="formula">\[ v_{BE}=V_{BB}+v_s-i_BR_b \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. 截止、放大、饱和判据</h2>
+    <div class="box">
+      <div class="formula">\[ I_{CS}\simeq \frac{V_{CC}}{R_C} \]</div>
+      <div class="formula">\[ \beta I_B\lt I_{CS}\Rightarrow \text{放大区} \]</div>
+      <div class="formula">\[ \beta I_B\ge I_{CS}\Rightarrow \text{饱和区} \]</div>
+      <div class="formula">\[ I_B\simeq 0\Rightarrow \text{截止区} \]</div>
+      <div class="formula">\[ u_o=V_{CC}-I_CR_C \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. h 参数小信号模型</h2>
+    <div class="box">
+      <div class="formula">\[ v_{be}=h_{ie}i_b+h_{re}v_{ce} \]</div>
+      <div class="formula">\[ i_c=h_{fe}i_b+h_{oe}v_{ce} \]</div>
+      <div class="formula">\[ h_{ie}=\left.\frac{\partial v_{BE}}{\partial i_B}\right|_{v_{CE}},\qquad h_{re}=\left.\frac{\partial v_{BE}}{\partial v_{CE}}\right|_{i_B} \]</div>
+      <div class="formula">\[ h_{fe}=\left.\frac{\partial i_C}{\partial i_B}\right|_{v_{CE}},\qquad h_{oe}=\left.\frac{\partial i_C}{\partial v_{CE}}\right|_{i_B} \]</div>
+      <div class="formula">\[ v_{be}\simeq h_{ie}i_b,\qquad i_c\simeq \beta i_b \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. BJT 输入电阻 \(r_{be}\)</h2>
+    <div class="box">
+      <div class="formula">\[ r_{be}=r_{bb'}+(1+\beta)r_{b'e} \]</div>
+      <div class="formula">\[ r_{b'e}=\frac{V_T}{I_{EQ}} \]</div>
+      <div class="formula">\[ V_T\simeq 26\,\mathrm{mV}\quad (T=300\,\mathrm{K}) \]</div>
+      <div class="formula">\[ r_{be}\approx 200\Omega +(1+\beta)\frac{26\,\mathrm{mV}}{I_{EQ}(\mathrm{mA})} \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>7. 基本共射放大电路小信号指标</h2>
+    <div class="box">
+      <div class="formula">\[ v_i=i_b(R_b+r_{be}) \]</div>
+      <div class="formula">\[ i_c=\beta i_b \]</div>
+      <div class="formula">\[ v_o=-i_c(R_C\,/ /\,R_L) \]</div>
+      <div class="formula">\[ A_v=\frac{v_o}{v_i}=-\frac{\beta(R_C\,/ /\,R_L)}{R_b+r_{be}} \]</div>
+      <div class="formula">\[ \text{若 }R_b\gg r_{be},\qquad A_v\approx-\frac{\beta(R_C\,/ /\,R_L)}{r_{be}} \]</div>
+      <div class="formula">\[ R_i=R_b\,/ /\,r_{be}\approx r_{be},\qquad R_o\approx R_C \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>8. 考虑信号源内阻时的源电压增益</h2>
+    <div class="box">
+      <div class="formula">\[ A_{vs}=\frac{v_o}{v_s}=\frac{v_o}{v_i}\cdot\frac{v_i}{v_s}=A_v\frac{R_i}{R_s+R_i} \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>9. 分压式射极偏置电路静态工作点</h2>
+    <div class="box">
+      <div class="formula">\[ V_{BQ}\simeq \frac{R_{b2}}{R_{b1}+R_{b2}}V_{CC} \]</div>
+      <div class="formula">\[ I_{EQ}\simeq \frac{V_{BQ}-V_{BEQ}}{R_E} \]</div>
+      <div class="formula">\[ I_{CQ}\simeq I_{EQ},\qquad I_{BQ}=\frac{I_{CQ}}{\beta} \]</div>
+      <div class="formula">\[ V_{CEQ}=V_{CC}-I_{CQ}R_C-I_{EQ}R_E\simeq V_{CC}-I_{CQ}(R_C+R_E) \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>10. 分压式射极偏置电路小信号指标</h2>
+    <div class="box">
+      <div class="formula">\[ R_b=R_{b1}\,/ /\,R_{b2} \]</div>
+      <div class="formula">\[ v_i=i_b\left[r_{be}+(1+\beta)R_E\right] \]</div>
+      <div class="formula">\[ v_o=-\beta i_b(R_C\,/ /\,R_L) \]</div>
+      <div class="formula">\[ A_v=-\frac{\beta(R_C\,/ /\,R_L)}{r_{be}+(1+\beta)R_E} \]</div>
+      <div class="formula">\[ R_i=R_b\,/ /\,\left[r_{be}+(1+\beta)R_E\right],\qquad R_o\approx R_C \]</div>
+      <div class="formula">\[ \text{若 }R_E\text{ 被旁路电容交流短路，则 }A_v\approx-\frac{\beta(R_C\,/ /\,R_L)}{r_{be}} \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>11. 阻容耦合双电源射极偏置电路</h2>
+    <div class="box">
+      <div class="formula">\[ I_E=\frac{V_{EE}-V_{BE}}{R_E},\qquad I_C\simeq I_E,\qquad I_B=\frac{I_C}{\beta} \]</div>
+      <div class="formula">\[ V_{CE}=V_{CC}+V_{EE}-I_C(R_C+R_E) \]</div>
+      <div class="formula">\[ A_v=-\frac{\beta(R_C\,/ /\,R_L)}{r_{be}+(1+\beta)R_E} \]</div>
+      <div class="formula">\[ R_i=R_b\,/ /\,\left[r_{be}+(1+\beta)R_E\right],\qquad R_o\approx R_C \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>12. 共集电极放大电路（射极输出器）</h2>
+    <div class="box">
+      <div class="formula">\[ V_{CC}=I_{BQ}R_b+V_{BEQ}+I_{EQ}R_E,\qquad I_{EQ}=(1+\beta)I_{BQ} \]</div>
+      <div class="formula">\[ I_{BQ}=\frac{V_{CC}-V_{BEQ}}{R_b+(1+\beta)R_E},\qquad I_{CQ}=\beta I_{BQ} \]</div>
+      <div class="formula">\[ V_{CEQ}=V_{CC}-I_{EQ}R_E \]</div>
+      <div class="formula">\[ R_L'=R_E\,/ /\,R_L \]</div>
+      <div class="formula">\[ v_i=i_b\left[r_{be}+(1+\beta)R_L'\right],\qquad v_o=(1+\beta)i_bR_L' \]</div>
+      <div class="formula">\[ A_v=\frac{(1+\beta)R_L'}{r_{be}+(1+\beta)R_L'}=\frac{R_L'}{\dfrac{r_{be}}{1+\beta}+R_L'}\approx 1 \]</div>
+      <div class="formula">\[ R_i=R_b\,/ /\,\left[r_{be}+(1+\beta)R_L'\right] \]</div>
+      <div class="formula">\[ R_o=R_E\,/ /\,\frac{R_s+r_{be}}{1+\beta} \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>13. 共基极放大电路</h2>
+    <div class="box">
+      <div class="formula">\[ A_v=\frac{v_o}{v_i}=\frac{\beta(R_C\,/ /\,R_L)}{r_{be}} \]</div>
+      <div class="formula">\[ R_i=R_E\,/ /\,\frac{r_{be}}{1+\beta} \]</div>
+      <div class="formula">\[ R_o\approx R_C \]</div>
+      <div class="hint">共基电路电压增益为正，输入电阻小，输出电阻约为集电极电阻。</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>14. 三种基本组态的对比</h2>
+    <div class="box">
+      <table>
+        <thead>
+          <tr><th>组态</th><th>电压增益</th><th>输入电阻</th><th>输出电阻</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>共射</td>
+            <td>\( -\dfrac{\beta(R_C\,/ /\,R_L)}{r_{be}} \)</td>
+            <td>\( R_b\,/ /\,r_{be} \)</td>
+            <td>\( R_C \)</td>
+          </tr>
+          <tr>
+            <td>共集</td>
+            <td>\( \dfrac{(1+\beta)R_L'}{r_{be}+(1+\beta)R_L'}\approx 1 \)</td>
+            <td>\( R_b\,/ /\,\left[r_{be}+(1+\beta)R_L'\right] \)</td>
+            <td>\( R_E\,/ /\,\dfrac{R_s+r_{be}}{1+\beta} \)</td>
+          </tr>
+          <tr>
+            <td>共基</td>
+            <td>\( \dfrac{\beta(R_C\,/ /\,R_L)}{r_{be}} \)</td>
+            <td>\( R_E\,/ /\,\dfrac{r_{be}}{1+\beta} \)</td>
+            <td>\( R_C \)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>15. 组合放大电路</h2>
+    <div class="box">
+      <div class="formula">\[ A_v=A_{v1}A_{v2}\cdots A_{vn} \]</div>
+      <div class="formula">\[ R_i=R_{i1},\qquad R_o=R_{on} \]</div>
+      <div class="formula">\[ A_{v1}=-\frac{\beta_1R_{i2}'}{r_{be1}},\qquad A_{v2}=-\frac{\beta_2(R_C\,/ /\,R_L)}{r_{be2}+R_E'} \]</div>
+      <div class="formula">\[ A_v=A_{v1}A_{v2} \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>16. 复合管等效参数</h2>
+    <div class="box">
+      <div class="formula">\[ r_{be}=r_{be1}+(1+\beta_1)r_{be2} \]</div>
+      <div class="formula">\[ \beta\simeq \beta_1\beta_2 \]</div>
+      <div class="formula">\[ A_v=\frac{(1+\beta)R_L'}{r_{be}+(1+\beta)R_L'}\approx 1 \]</div>
+      <div class="formula">\[ R_i=R_{b1}\,/ /\,R_{b2}\,/ /\,\left[r_{be}+(1+\beta)R_L'\right] \]</div>
+      <div class="formula">\[ R_o=R_E\,/ /\,\frac{R_s+r_{be}}{1+\beta} \]</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>17. 频率响应</h2>
+    <div class="box">
+      <div class="formula">\[ |A_v|=|A_{vm}|\frac{1}{\sqrt{1+\left(\dfrac{f_L}{f}\right)^2}}\frac{1}{\sqrt{1+\left(\dfrac{f}{f_H}\right)^2}} \]</div>
+      <div class="formula">\[ |A_v|\approx\frac{|A_{vm}|}{\sqrt{1+\left(\dfrac{f_L}{f}\right)^2}}\quad (f\ll f_H) \]</div>
+      <div class="formula">\[ |A_v|\approx\frac{|A_{vm}|}{\sqrt{1+\left(\dfrac{f}{f_H}\right)^2}}\quad (f\gg f_L) \]</div>
+      <div class="formula">\[ f=f_L\text{ 或 }f=f_H\Rightarrow |A_v|=\frac{|A_{vm}|}{\sqrt{2}} \]</div>
+      <div class="formula">\[ 20\lg\frac{|A_v|}{|A_{vm}|}=-3\,\mathrm{dB} \]</div>
+    </div>
+  </section>
+
+  <div class="source">源文件：ppt/05 双极结型三极管及放大电路基础.pdf</div>
+</main>
+</body>
+</html>

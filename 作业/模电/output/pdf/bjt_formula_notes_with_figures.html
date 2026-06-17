@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>05 双极结型三极管及放大电路基础：公式讲义版</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #1f2023;
+      color: #f3f5f8;
+      font-family: "Microsoft YaHei", "SimSun", "Times New Roman", serif;
+      font-size: 14px;
+      line-height: 1.55;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 8px 36px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 27px;
+      line-height: 1.22;
+      color: #ffffff;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      margin: 0 0 18px;
+      color: #c8cdd4;
+      font-size: 13px;
+    }
+    .toc {
+      border: 1px solid #53606b;
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: #d7dbe0;
+      margin-bottom: 18px;
+      break-inside: avoid;
+    }
+    .toc-title {
+      color: #7bd0f6;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2px 18px;
+    }
+    section {
+      margin: 18px 0 22px;
+      padding-top: 2px;
+      break-inside: avoid;
+    }
+    h2 {
+      margin: 0 0 9px;
+      color: #7bd0f6;
+      font-size: 19px;
+      line-height: 1.3;
+      letter-spacing: 0;
+      break-after: avoid;
+    }
+    .panel {
+      border: 1px solid #5ec7ee;
+      border-radius: 6px;
+      padding: 12px;
+      background: #202124;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 0.92fr;
+      gap: 12px;
+      align-items: start;
+    }
+    .explain {
+      color: #dfe3e8;
+    }
+    .tag {
+      display: inline-block;
+      margin: 0 0 5px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: #26343a;
+      color: #91ddff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .formula {
+      margin: 7px 0;
+    }
+    .formula-block {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border: 1px solid #45535e;
+      border-radius: 5px;
+      background: #1c1d20;
+    }
+    .figure {
+      margin: 0;
+      padding: 7px;
+      border: 1px solid #59616b;
+      border-radius: 5px;
+      background: #ededed;
+      color: #333;
+    }
+    .figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 3px;
+    }
+    .figure figcaption {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #333;
+      text-align: center;
+    }
+    ul {
+      margin: 5px 0 0 18px;
+      padding: 0;
+    }
+    li {
+      margin: 3px 0;
+    }
+    .hint {
+      color: #bfc6ce;
+      font-size: 13px;
+    }
+    .wide {
+      grid-template-columns: 1fr;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #f3f5f8;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid #59616b;
+      padding: 7px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th {
+      color: #7bd0f6;
+      font-weight: 700;
+    }
+    mjx-container {
+      color: #f3f5f8 !important;
+      overflow: visible !important;
+    }
+    mjx-container[jax="SVG"][display="true"] {
+      margin: 0.25em 0 !important;
+    }
+    .source {
+      margin-top: 20px;
+      color: #c8cdd4;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>05 双极结型三极管及放大电路基础：公式讲义版</h1>
+  <div class="subtitle">在上一版公式表基础上，补充“为什么这么写、什么时候用、对应看哪张图”。插图来自 05 号 PPT 页面渲染。</div>
+
+  <div class="toc">
+    <div class="toc-title">阅读顺序</div>
+    <div class="toc-grid">
+      <div>1. BJT 电流关系</div>
+      <div>2. 放大作用</div>
+      <div>3. 静态工作点</div>
+      <div>4. 图解法与负载线</div>
+      <div>5. 小信号模型</div>
+      <div>6. 共射放大电路</div>
+      <div>7. 分压式偏置</div>
+      <div>8. 共集与共基</div>
+      <div>9. 组合与复合管</div>
+      <div>10. 频率响应</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>1. BJT 放大状态下的电流关系</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">看图：载流子传输</span>
+        <div class="explain">
+          发射极电流 \(I_E\) 进入管内后，一部分成为基极电流 \(I_B\)，大部分被集电极收集形成 \(I_C\)。所以先记住“电流守恒”，再用 \(\alpha\) 和 \(\beta\) 描述电流放大能力。
+          <ul>
+            <li>\(\alpha\)：共基电流放大系数，表示集电极得到发射极电流的比例。</li>
+            <li>\(\beta\)：共射电流放大系数，最常用于放大电路计算。</li>
+            <li>工程估算里常把穿透电流忽略，于是 \(I_C\simeq \beta I_B\)。</li>
+          </ul>
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ I_E=I_B+I_C \]</div>
+          <div class="formula">\[ I_C=I_{NC}+I_{CBO} \]</div>
+          <div class="formula">\[ \alpha=\frac{I_{NC}}{I_E},\qquad I_C\simeq \alpha I_E \]</div>
+          <div class="formula">\[ \beta=\frac{\alpha}{1-\alpha},\qquad \alpha=\frac{\beta}{1+\beta} \]</div>
+          <div class="formula">\[ I_C\simeq \beta I_B,\qquad I_{CEO}=(1+\beta)I_{CBO} \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_008.png" alt="PPT 第 8 页，BJT 电流分配关系">
+        <figcaption>PPT 第 8 页：放大状态下的电流分配</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. 为什么 BJT 能放大</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">核心：小输入控制大输出</span>
+        <div class="explain">
+          输入端的小电压变化会引起发射极或基极电流的小变化，经过晶体管电流放大后，集电极电流变化流过负载电阻 \(R_L\)，转化为更大的输出电压变化。
+          输出电压前面的负号表示共射类输出常与输入反相。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ \Delta i_C=\alpha\Delta i_E \]</div>
+          <div class="formula">\[ \Delta v_o=-\Delta i_C R_L \]</div>
+          <div class="formula">\[ A_v=\frac{\Delta v_o}{\Delta v_i} \]</div>
+          <div class="formula">\[ A_v=\frac{0.98\,\mathrm{V}}{20\,\mathrm{mV}}\approx 49 \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_012.png" alt="PPT 第 12 页，放大作用示例">
+        <figcaption>PPT 第 12 页：电流变化转化为电压变化</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 固定偏置共射电路的静态工作点</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">先算直流，再算交流</span>
+        <div class="explain">
+          静态工作点 \(Q\) 是没有输入信号时的 \(I_{BQ}\)、\(I_{CQ}\)、\(V_{CEQ}\)。它决定三极管工作在截止、放大还是饱和，也决定交流信号有没有足够摆幅。
+          固定偏置电路的计算顺序通常是：先由基极回路求 \(I_{BQ}\)，再由 \(\beta\) 求 \(I_{CQ}\)，最后由集电极回路求 \(V_{CEQ}\)。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ I_{BQ}=\frac{V_{BB}-V_{BEQ}}{R_b} \]</div>
+          <div class="formula">\[ I_{CQ}\simeq \beta I_{BQ} \]</div>
+          <div class="formula">\[ V_{CEQ}=V_{CC}-I_{CQ}R_C \]</div>
+          <div class="formula">\[ V_{CE}=V_{CC}-i_CR_C \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_022.png" alt="PPT 第 22 页，基本共射电路静态分析">
+        <figcaption>PPT 第 22 页：基本共射电路静态分析</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. 用负载线判断工作状态</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">看交点：Q 点在哪里</span>
+        <div class="explain">
+          直流负载线来自集电极回路方程。它和输出特性曲线的交点就是 \(Q\) 点。若计算得到的 \(\beta I_B\) 超过电路允许的最大集电极电流，三极管会进入饱和区，不能再按 \(I_C=\beta I_B\) 继续增大。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ I_{CS}\simeq \frac{V_{CC}}{R_C} \]</div>
+          <div class="formula">\[ \beta I_B\lt I_{CS}\Rightarrow \text{放大区} \]</div>
+          <div class="formula">\[ \beta I_B\ge I_{CS}\Rightarrow \text{饱和区} \]</div>
+          <div class="formula">\[ I_B\simeq 0\Rightarrow \text{截止区} \]</div>
+          <div class="formula">\[ u_o=V_{CC}-I_CR_C \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_042.png" alt="PPT 第 42 页，Q 点例题">
+        <figcaption>PPT 第 42 页：由 IB、IC、VCE 判断工作区</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. h 参数小信号模型</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">把非线性管子线性化</span>
+        <div class="explain">
+          小信号分析只研究 \(Q\) 点附近的微小变化，因此可以把 BJT 等效成线性受控源模型。课件后面的放大倍数、输入电阻、输出电阻公式，都是从这个模型推出来的。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ v_{be}=h_{ie}i_b+h_{re}v_{ce} \]</div>
+          <div class="formula">\[ i_c=h_{fe}i_b+h_{oe}v_{ce} \]</div>
+          <div class="formula">\[ v_{be}\simeq h_{ie}i_b,\qquad i_c\simeq \beta i_b \]</div>
+          <div class="formula">\[ r_{be}=r_{bb'}+(1+\beta)r_{b'e} \]</div>
+          <div class="formula">\[ r_{be}\approx 200\Omega +(1+\beta)\frac{26\,\mathrm{mV}}{I_{EQ}(\mathrm{mA})} \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_048.png" alt="PPT 第 48 页，BJT 简化小信号模型">
+        <figcaption>PPT 第 48 页：忽略小参数后的 BJT 小信号模型</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. 基本共射放大电路的小信号指标</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">最常考：反相电压放大</span>
+        <div class="explain">
+          共射电路的输出取自集电极。因为 \(i_c\) 增大时 \(R_C\) 上压降增大，集电极电压下降，所以电压增益带负号。若基极偏置电阻对交流来说很大，输入电阻主要由 \(r_{be}\) 决定。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ v_i=i_b(R_b+r_{be}),\qquad i_c=\beta i_b \]</div>
+          <div class="formula">\[ v_o=-i_c(R_C\,/ /\,R_L) \]</div>
+          <div class="formula">\[ A_v=\frac{v_o}{v_i}=-\frac{\beta(R_C\,/ /\,R_L)}{R_b+r_{be}} \]</div>
+          <div class="formula">\[ A_v\approx-\frac{\beta(R_C\,/ /\,R_L)}{r_{be}}\quad (R_b\gg r_{be}) \]</div>
+          <div class="formula">\[ R_i=R_b\,/ /\,r_{be}\approx r_{be},\qquad R_o\approx R_C \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_052.png" alt="PPT 第 52 页，共射电路小信号分析">
+        <figcaption>PPT 第 52 页：共射放大电路的电压增益推导</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>7. 信号源内阻与负载电阻的影响</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">输入端和输出端都会“分压”</span>
+        <div class="explain">
+          信号源内阻 \(R_s\) 会和放大电路输入电阻 \(R_i\) 分压，使真正加到输入端的 \(v_i\) 小于 \(v_s\)。负载 \(R_L\) 与 \(R_C\) 并联，会降低等效输出电阻，从而影响电压增益。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ A_{vs}=\frac{v_o}{v_s}=A_v\frac{R_i}{R_s+R_i} \]</div>
+          <div class="formula">\[ A_v=A_{vo}\frac{R_L}{R_o+R_L} \]</div>
+          <div class="formula">\[ R_C'=R_C\,/ /\,R_L \]</div>
+        </div>
+        <div class="hint">记忆：\(R_i\) 越大，输入信号损失越小；\(R_o\) 越小，带负载能力越强。</div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_055.png" alt="PPT 第 55 页，信号源和负载对放大的影响">
+        <figcaption>PPT 第 55 页：Rs、RL 对放大效果的影响</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>8. 分压式射极偏置：让 Q 点更稳定</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">负反馈稳定静态点</span>
+        <div class="explain">
+          分压式偏置用 \(R_{b1}\)、\(R_{b2}\) 近似固定基极电压，再用射极电阻 \(R_E\) 引入直流负反馈。温度升高导致 \(I_C\) 增大时，\(I_E R_E\) 增大，\(V_{BE}\) 减小，基极电流下降，从而抑制 \(I_C\) 继续增大。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ V_{BQ}\simeq \frac{R_{b2}}{R_{b1}+R_{b2}}V_{CC} \]</div>
+          <div class="formula">\[ I_{EQ}\simeq \frac{V_{BQ}-V_{BEQ}}{R_E},\qquad I_{CQ}\simeq I_{EQ} \]</div>
+          <div class="formula">\[ V_{CEQ}\simeq V_{CC}-I_{CQ}(R_C+R_E) \]</div>
+          <div class="formula">\[ I_{BQ}=\frac{I_{CQ}}{\beta} \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_068.png" alt="PPT 第 68 页，分压式射极偏置静态分析">
+        <figcaption>PPT 第 68 页：分压式射极偏置的静态工作点</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>9. 分压式偏置的小信号指标</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">射极电阻让增益变小但更稳</span>
+        <div class="explain">
+          如果 \(R_E\) 没有被旁路电容短路，交流信号也会经过 \(R_E\)，形成交流负反馈，电压增益下降，输入电阻上升。若 \(C_E\) 足够大，交流时 \(R_E\) 近似短路，增益又回到普通共射公式。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ R_b=R_{b1}\,/ /\,R_{b2} \]</div>
+          <div class="formula">\[ A_v=-\frac{\beta(R_C\,/ /\,R_L)}{r_{be}+(1+\beta)R_E} \]</div>
+          <div class="formula">\[ R_i=R_b\,/ /\,\left[r_{be}+(1+\beta)R_E\right] \]</div>
+          <div class="formula">\[ R_o\approx R_C \]</div>
+          <div class="formula">\[ C_E\text{ 旁路 }R_E:\quad A_v\approx-\frac{\beta(R_C\,/ /\,R_L)}{r_{be}} \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_070.png" alt="PPT 第 70 页，分压偏置小信号分析">
+        <figcaption>PPT 第 70 页：射极电阻参与交流时的增益公式</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>10. 共集电极放大电路（射极输出器）</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">电压跟随，输入电阻大</span>
+        <div class="explain">
+          共集电路输出取自射极，输出电压跟随输入电压，所以电压增益接近 1。它常用于缓冲：不追求电压放大，而追求高输入电阻、低输出电阻和较强带负载能力。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ R_L'=R_E\,/ /\,R_L \]</div>
+          <div class="formula">\[ A_v=\frac{(1+\beta)R_L'}{r_{be}+(1+\beta)R_L'}\approx 1 \]</div>
+          <div class="formula">\[ R_i=R_b\,/ /\,\left[r_{be}+(1+\beta)R_L'\right] \]</div>
+          <div class="formula">\[ R_o=R_E\,/ /\,\frac{R_s+r_{be}}{1+\beta} \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_083.png" alt="PPT 第 83 页，共集放大电路动态分析">
+        <figcaption>PPT 第 83 页：共集电路的电压增益</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>11. 共基极放大电路与三种组态对比</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">共基：输入小，频率特性好</span>
+        <div class="explain">
+          共基电路输入在射极，输出在集电极，电压增益为正。它的输入电阻很小，常用于需要低输入阻抗或较高频率性能的场合。和共射、共集对比时，重点看电压增益符号、输入电阻和输出电阻。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ A_v=\frac{\beta(R_C\,/ /\,R_L)}{r_{be}} \]</div>
+          <div class="formula">\[ R_i=R_E\,/ /\,\frac{r_{be}}{1+\beta} \]</div>
+          <div class="formula">\[ R_o\approx R_C \]</div>
+        </div>
+        <div class="formula-block">
+          <table>
+            <thead>
+              <tr><th>组态</th><th>电压增益特点</th><th>输入电阻</th><th>输出电阻</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>共射</td><td>大，反相</td><td>中等</td><td>较大</td></tr>
+              <tr><td>共集</td><td>约 1，同相</td><td>大</td><td>小</td></tr>
+              <tr><td>共基</td><td>大，同相</td><td>小</td><td>较大</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_094.png" alt="PPT 第 94 页，三种组态比较">
+        <figcaption>PPT 第 94 页：共射、共集、共基三种组态比较</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>12. 组合放大电路：逐级相乘</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">一级接一级</span>
+        <div class="explain">
+          多级放大电路的总电压增益等于各级电压增益相乘。分析时要注意：前一级的负载往往是后一级的输入电阻，所以不能只看单级空载增益。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ A_v=A_{v1}A_{v2}\cdots A_{vn} \]</div>
+          <div class="formula">\[ R_i=R_{i1},\qquad R_o=R_{on} \]</div>
+          <div class="formula">\[ A_{v1}=-\frac{\beta_1R_{i2}'}{r_{be1}},\qquad A_{v2}=-\frac{\beta_2(R_C\,/ /\,R_L)}{r_{be2}+R_E'} \]</div>
+          <div class="formula">\[ A_v=A_{v1}A_{v2} \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_102.png" alt="PPT 第 102 页，多级放大电路小信号等效">
+        <figcaption>PPT 第 102 页：两级放大电路的小信号等效</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>13. 复合管：等效成一个“大 β 管”</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">提高电流放大能力</span>
+        <div class="explain">
+          复合管把两个晶体管组合成等效三极管。常用近似是总电流放大系数约为两管 \(\beta\) 的乘积，因此适合需要大输入电阻或强驱动能力的场合。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ \beta\simeq \beta_1\beta_2 \]</div>
+          <div class="formula">\[ r_{be}=r_{be1}+(1+\beta_1)r_{be2} \]</div>
+          <div class="formula">\[ A_v=\frac{(1+\beta)R_L'}{r_{be}+(1+\beta)R_L'}\approx 1 \]</div>
+          <div class="formula">\[ R_o=R_E\,/ /\,\frac{R_s+r_{be}}{1+\beta} \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_110.png" alt="PPT 第 110 页，复合管共集电路">
+        <figcaption>PPT 第 110 页：复合管共集放大电路</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>14. 频率响应：低频和高频都会掉增益</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">中频最大，两端下降</span>
+        <div class="explain">
+          实际放大电路中，耦合电容和旁路电容会影响低频响应，结电容和分布电容会影响高频响应。中频段增益近似为 \(|A_{vm}|\)，当频率到达下限频率 \(f_L\) 或上限频率 \(f_H\) 时，增益下降到中频增益的 \(1/\sqrt{2}\)，也就是 -3 dB。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ |A_v|=|A_{vm}|\frac{1}{\sqrt{1+\left(\dfrac{f_L}{f}\right)^2}}\frac{1}{\sqrt{1+\left(\dfrac{f}{f_H}\right)^2}} \]</div>
+          <div class="formula">\[ f=f_L\text{ 或 }f=f_H\Rightarrow |A_v|=\frac{|A_{vm}|}{\sqrt{2}} \]</div>
+          <div class="formula">\[ 20\lg\frac{|A_v|}{|A_{vm}|}=-3\,\mathrm{dB} \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/05_pages/page_114.png" alt="PPT 第 114 页，多级放大电路频率响应">
+        <figcaption>PPT 第 114 页：幅频响应与通频带</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="source">源文件：ppt/05 双极结型三极管及放大电路基础.pdf；插图为对应 PPT 页面渲染。</div>
+</main>
+</body>
+</html>
