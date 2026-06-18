@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>模拟电子技术复习串讲：公式讲义版</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    @page { size: A4; margin: 12mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #1f2023;
+      color: #f3f5f8;
+      font-family: "Microsoft YaHei", "SimSun", "Times New Roman", serif;
+      font-size: 14px;
+      line-height: 1.55;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 8px 36px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      color: #ffffff;
+      font-size: 27px;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      margin: 0 0 16px;
+      color: #c8cdd4;
+      font-size: 13px;
+    }
+    .toc {
+      border: 1px solid #53606b;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      break-inside: avoid;
+    }
+    .toc-title {
+      color: #7bd0f6;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2px 18px;
+      color: #d7dbe0;
+    }
+    section {
+      margin: 18px 0 22px;
+      break-inside: avoid;
+    }
+    h2 {
+      margin: 0 0 9px;
+      color: #7bd0f6;
+      font-size: 19px;
+      line-height: 1.3;
+      letter-spacing: 0;
+      break-after: avoid;
+    }
+    .panel {
+      border: 1px solid #5ec7ee;
+      border-radius: 6px;
+      padding: 12px;
+      background: #202124;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 0.92fr;
+      gap: 12px;
+      align-items: start;
+    }
+    .wide { grid-template-columns: 1fr; }
+    .tag {
+      display: inline-block;
+      margin: 0 0 5px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: #26343a;
+      color: #91ddff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .explain { color: #dfe3e8; }
+    ul {
+      margin: 5px 0 0 18px;
+      padding: 0;
+    }
+    li { margin: 3px 0; }
+    .formula-block {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border: 1px solid #45535e;
+      border-radius: 5px;
+      background: #1c1d20;
+    }
+    .formula { margin: 7px 0; }
+    .hint {
+      color: #bfc6ce;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    .figure {
+      margin: 0;
+      padding: 7px;
+      border: 1px solid #59616b;
+      border-radius: 5px;
+      background: #ededed;
+      color: #333;
+    }
+    .figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 3px;
+    }
+    .figure figcaption {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #333;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #f3f5f8;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid #59616b;
+      padding: 7px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th {
+      color: #7bd0f6;
+      font-weight: 700;
+    }
+    mjx-container {
+      color: #f3f5f8 !important;
+      overflow: visible !important;
+    }
+    mjx-container[jax="SVG"][display="true"] {
+      margin: 0.25em 0 !important;
+    }
+    .source {
+      margin-top: 20px;
+      color: #c8cdd4;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>模拟电子技术复习串讲：公式讲义版</h1>
+  <div class="subtitle">根据 <code>ppt/复习串讲.pdf</code> 整理。每节保留复习串讲中的核心公式，补充使用场景和对应 PPT 插图。</div>
+
+  <div class="toc">
+    <div class="toc-title">复习主线</div>
+    <div class="toc-grid">
+      <div>1. PN 结与二极管</div>
+      <div>2. BJT/FET 与三种组态</div>
+      <div>3. 小信号模型与参数表</div>
+      <div>4. 放大电路改进与多级放大</div>
+      <div>5. 差分放大电路</div>
+      <div>6. 负反馈放大电路</div>
+      <div>7. 集成运放基础电路</div>
+      <div>8. 功率放大电路</div>
+      <div>9. 振荡与比较器</div>
+      <div>10. 直流稳压电源</div>
+    </div>
+  </div>
+
+  <section>
+    <h2>1. PN 结与二极管：先判断导通，再写模型</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">核心：单向导电性</span>
+        <div class="explain">
+          二极管题通常先判断导通/截止，再选择理想模型、恒压降模型或折线模型。硅管常取导通压降约 \(0.7\,\mathrm{V}\)，锗管常取约 \(0.2\,\mathrm{V}\)。串并联二极管电路中，先找最容易正向导通的支路。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ i_D\approx 0\quad (v_D\lt V_{\mathrm{on}}) \]</div>
+          <div class="formula">\[ v_D\approx V_{\mathrm{on}}\quad (\text{恒压降模型}) \]</div>
+          <div class="formula">\[ i_D\approx \frac{v_D-V_{\mathrm{on}}}{r_D}\quad (\text{折线模型}) \]</div>
+        </div>
+        <div class="hint">做题顺序：假设状态 - 写回路方程 - 检查假设是否自洽。</div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_002.png" alt="PN 结与二极管">
+        <figcaption>PPT 第 2 页：PN 结与二极管复习点</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. BJT/FET 与三种基本组态</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">先认公共端，再看输入输出</span>
+        <div class="explain">
+          BJT 常见三种组态是共射、共集、共基；FET 对应共源、共漏、共栅。复习串讲强调：判断组态时看信号输入和输出端，公共端决定组态名称。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ I_C\simeq \beta I_B,\qquad I_E=I_B+I_C \]</div>
+          <div class="formula">\[ r_{be}\approx 200\Omega +(1+\beta)\frac{26\,\mathrm{mV}}{I_{EQ}(\mathrm{mA})} \]</div>
+          <div class="formula">\[ i_d=g_m v_{gs}\quad (\text{FET 小信号跨导模型}) \]</div>
+        </div>
+        <div class="hint">共射/共源常用于电压放大；共集/共漏常作缓冲；共基/共栅输入电阻小、频率性能好。</div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_008.png" alt="三种组态判别">
+        <figcaption>PPT 第 8 页：三种组态的判别</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 放大电路分析方法：Q 点与交流通路分开</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">直流定 Q 点，交流算指标</span>
+        <div class="explain">
+          复习串讲把放大电路分析分成图解法和小信号模型两条路。考试计算题更常用小信号模型：直流电源对交流视为短路，耦合/旁路电容在中频视为短路。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ I_{BQ}=\frac{V_{BB}-V_{BEQ}}{R_b},\qquad I_{CQ}\simeq \beta I_{BQ} \]</div>
+          <div class="formula">\[ V_{CEQ}=V_{CC}-I_{CQ}R_C \]</div>
+          <div class="formula">\[ A_v=\frac{v_o}{v_i},\qquad R_i=\frac{v_i}{i_i},\qquad R_o=\frac{v_o}{i_o} \]</div>
+        </div>
+        <div class="hint">不能用交流小信号模型求静态工作点；静态工作点必须由直流通路确定。</div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_011.png" alt="小信号模型解题思路">
+        <figcaption>PPT 第 11 页：小信号模型解题思路</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. 三种 BJT 组态公式速记</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">把符号和量级记牢</span>
+        <div class="explain">
+          三种组态的差别主要体现在电压增益符号、输入电阻和输出电阻。共射反相并有电压放大，共集电压增益接近 1 但输入电阻大，共基同相且输入电阻小。
+        </div>
+        <div class="formula-block">
+          <table>
+            <thead>
+              <tr><th>组态</th><th>电压增益</th><th>输入电阻</th><th>输出电阻</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>共射 CE</td>
+                <td>\( -\dfrac{\beta(R_C\,/ /\,R_L)}{r_{be}} \)</td>
+                <td>\( R_b\,/ /\,r_{be} \)</td>
+                <td>\( R_C \)</td>
+              </tr>
+              <tr>
+                <td>共集 CC</td>
+                <td>\( \dfrac{(1+\beta)R_L'}{r_{be}+(1+\beta)R_L'}\approx 1 \)</td>
+                <td>\( R_b\,/ /\,[r_{be}+(1+\beta)R_L'] \)</td>
+                <td>\( R_E\,/ /\,\dfrac{R_s+r_{be}}{1+\beta} \)</td>
+              </tr>
+              <tr>
+                <td>共基 CB</td>
+                <td>\( \dfrac{\beta(R_C\,/ /\,R_L)}{r_{be}} \)</td>
+                <td>\( R_E\,/ /\,\dfrac{r_{be}}{1+\beta} \)</td>
+                <td>\( R_C \)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_013.png" alt="小信号模型组态表">
+        <figcaption>PPT 第 13 页：三种组态小信号参数表</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. BJT 与 FET 组态对应关系</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">BJT 看电流，FET 看跨导</span>
+        <div class="explain">
+          FET 是电压控制电流器件，小信号模型常用受控电流源 \(g_m v_{gs}\)。与 BJT 类比时，共源对应共射，共漏对应共集，共栅对应共基。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ A_v(\text{CS})\approx -g_m(R_D\,/ /\,R_L) \]</div>
+          <div class="formula">\[ A_v(\text{CD})\approx \frac{g_mR_L'}{1+g_mR_L'}\approx 1 \]</div>
+          <div class="formula">\[ R_i(\text{FET})\ \text{通常很大} \]</div>
+        </div>
+        <div class="hint">FET 输入端栅极电流近似为零，所以输入电阻常远大于 BJT。</div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_014.png" alt="BJT 和 FET 组态对应">
+        <figcaption>PPT 第 14 页：BJT 与 FET 组态对应关系</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. 改进放大电路：稳 Q 点、减失真、提高带载能力</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">改进目标不同，电路手段不同</span>
+        <div class="explain">
+          射极偏置电路通过直流负反馈稳定 Q 点；多级放大提高总电压增益；复合管提高等效电流放大系数和带负载能力。分析多级电路时，前一级输出电阻和后一级输入电阻会互相影响。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ A_v=A_{v1}A_{v2}\cdots A_{vn} \]</div>
+          <div class="formula">\[ R_i=R_{i1},\qquad R_o=R_{on} \]</div>
+          <div class="formula">\[ \beta_{\mathrm{eq}}\simeq \beta_1\beta_2 \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_018.png" alt="组合放大与复合管">
+        <figcaption>PPT 第 18 页：组合放大电路与复合管</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>7. 差分放大电路：放大差模，抑制共模</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">核心指标：差模增益与共模抑制</span>
+        <div class="explain">
+          差分电路用对称结构放大两个输入端的差值，同时尽量抑制两端共同变化的信号。它是集成运放输入级的基础。计算时要分清差模输入、共模输入、单端输出和双端输出。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ v_{id}=v_{i1}-v_{i2},\qquad v_{ic}=\frac{v_{i1}+v_{i2}}{2} \]</div>
+          <div class="formula">\[ A_d=\frac{v_{od}}{v_{id}},\qquad A_c=\frac{v_{oc}}{v_{ic}} \]</div>
+          <div class="formula">\[ \mathrm{KCMR}=\left|\frac{A_d}{A_c}\right|,\qquad \mathrm{KCMR_{dB}}=20\lg\left|\frac{A_d}{A_c}\right| \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_031.png" alt="差分电路">
+        <figcaption>PPT 第 31 页：差分电路结构与作用</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>8. 差分例题：按 Q 点、差模增益、输出电压走</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">考试题常把静态和动态混在一起</span>
+        <div class="explain">
+          差分题先算静态电流和各管集电极电压，再用小信号模型求差模增益。若给出输入差值 \(v_{id}\)，最后由输出方式判断 \(v_o=A_dv_{id}\) 还是单端输出的一半关系。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ I_{C1}\approx I_{C2}\approx \frac{I_E}{2} \]</div>
+          <div class="formula">\[ r_{be}\approx 200\Omega +(1+\beta)\frac{26\,\mathrm{mV}}{I_E/2} \]</div>
+          <div class="formula">\[ A_{d}\approx \frac{\beta(R_C\,/ /\,R_L)}{2r_{be}} \quad (\text{单端输出常见形式}) \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_034.png" alt="差分例题">
+        <figcaption>PPT 第 34 页：差分电路例题计算</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>9. 负反馈：判类型，再用深度反馈估算</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">四步：找反馈、判极性、判采样、判混合</span>
+        <div class="explain">
+          负反馈会牺牲一部分增益，换来更稳定的放大倍数、更小的非线性失真、更好的噪声抑制和更可控的输入/输出电阻。复习串讲强调瞬时极性法、串并联判别和负载短路法。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ A_f=\frac{A}{1+AF} \]</div>
+          <div class="formula">\[ 1+AF\gg 1\quad \Rightarrow\quad A_f\approx \frac{1}{F} \]</div>
+          <div class="formula">\[ \text{闭环增益稳定性提高约 }(1+AF)\text{ 倍} \]</div>
+        </div>
+        <div class="hint">串联反馈增大输入电阻，并联反馈减小输入电阻；电压反馈减小输出电阻，电流反馈增大输出电阻。</div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_040.png" alt="负反馈核心结论">
+        <figcaption>PPT 第 40 页：反馈类型与闭环增益</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>10. 反馈判别例题：沿反馈通路看信号</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">不要只看元件位置，要看信号回路</span>
+        <div class="explain">
+          判断反馈时，可以从输出端沿反馈网络回到输入端。若反馈信号削弱净输入信号，就是负反馈；若增强净输入信号，就是正反馈。采样输出电压还是输出电流，决定是电压反馈还是电流反馈。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ v_i=v_s-v_f\quad (\text{串联负反馈的典型关系}) \]</div>
+          <div class="formula">\[ i_i=i_s-i_f\quad (\text{并联负反馈的典型关系}) \]</div>
+          <div class="formula">\[ A_f\approx \frac{1}{F}\quad (\text{深度负反馈}) \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_044.png" alt="反馈判别例题">
+        <figcaption>PPT 第 44 页：判断反馈类型的例题</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>11. 理想运放：虚短、虚断是解题钥匙</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">在线性区才能用虚短</span>
+        <div class="explain">
+          负反馈下的理想运放通常工作在线性区，此时 \(v_P\approx v_N\)，输入电流近似为零。开环或正反馈电路常进入非线性区，不能随便使用虚短。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ v_i=v_P-v_N,\qquad v_o=A_o(v_P-v_N) \]</div>
+          <div class="formula">\[ v_P\approx v_N\quad (\text{虚短}) \]</div>
+          <div class="formula">\[ i_P\approx i_N\approx 0\quad (\text{虚断}) \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_048.png" alt="集成运放">
+        <figcaption>PPT 第 48 页：集成运放基本特性</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>12. 同相、反相、差分、求和运放电路</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">把输入节点电流方程写清楚</span>
+        <div class="explain">
+          反相电路在反相端列 KCL；同相电路看反馈分压；求和电路本质是多个输入电流在反相节点相加；差分电路要求电阻配比满足条件，才能只放大差值。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ A_v(\text{同相})=1+\frac{R_f}{R_1} \]</div>
+          <div class="formula">\[ A_v(\text{反相})=-\frac{R_f}{R_1} \]</div>
+          <div class="formula">\[ v_o=-R_f\left(\frac{v_{i1}}{R_1}+\frac{v_{i2}}{R_2}+\cdots\right) \]</div>
+          <div class="formula">\[ \frac{R_4}{R_1}=\frac{R_3}{R_2}\quad \Rightarrow\quad v_o=\frac{R_4}{R_1}(v_{i2}-v_{i1}) \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_052.png" alt="求差电路">
+        <figcaption>PPT 第 52 页：求差电路公式</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>13. 积分与微分电路：电容决定运算关系</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">积分看面积，微分看变化率</span>
+        <div class="explain">
+          积分电路把输入电压对时间积分，方波输入会得到斜坡波；微分电路输出与输入变化率成正比，阶跃输入会产生尖脉冲。实际电路常加入限幅或补偿来避免漂移和噪声放大。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ v_o=-\frac{1}{RC}\int v_i\,dt \]</div>
+          <div class="formula">\[ v_o=-RC\frac{dv_i}{dt} \]</div>
+          <div class="formula">\[ v_i=V_I\quad \Rightarrow\quad v_o=-\frac{V_I}{RC}t \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_054.png" alt="积分电路">
+        <figcaption>PPT 第 54 页：积分电路</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>14. 功率放大：关注输出功率、效率和管耗</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">乙类互补输出最常考</span>
+        <div class="explain">
+          功率放大电路追求把足够大的功率送到负载。乙类互补功放两只管各导通半周，理想最大效率约为 \(78.5\%\)。实际电路常引入甲乙类偏置来减小交越失真。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ P_o=\frac{V_{om}^2}{2R_L} \]</div>
+          <div class="formula">\[ P_V=\frac{2V_{CC}V_{om}}{\pi R_L} \]</div>
+          <div class="formula">\[ \eta=\frac{P_o}{P_V} \]</div>
+          <div class="formula">\[ \eta_{\max}=\frac{\pi}{4}\approx 78.5\% \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_059.png" alt="乙类功放">
+        <figcaption>PPT 第 59 页：OCL 乙类功率放大电路</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>15. 正弦波振荡：相位条件 + 幅值条件</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">本质：带正反馈的放大器</span>
+        <div class="explain">
+          振荡电路由放大器、反馈网络、选频网络和稳幅环节组成。起振时环路增益略大于 1，稳定后幅值条件趋近于 1。RC 振荡常用于低频正弦波。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ \varphi_A(\omega)+\varphi_F(\omega)=2n\pi \]</div>
+          <div class="formula">\[ A(\omega)F(\omega)=1 \]</div>
+          <div class="formula">\[ f_0=\frac{1}{2\pi RC}\quad (\text{RC 桥式振荡常用式}) \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_066.png" alt="RC 振荡电路">
+        <figcaption>PPT 第 66 页：RC 振荡电路</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>16. 比较器与方波/锯齿波发生器</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">比较器工作在非线性区</span>
+        <div class="explain">
+          比较器输出只有高、低两个饱和值，不能按线性运放的虚短来算。迟滞比较器引入正反馈，形成两个阈值，能提高抗干扰能力。方波和锯齿波发生器常由迟滞比较器加积分电路构成。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ v_o=+V_{OM}\quad (v_P\gt v_N) \]</div>
+          <div class="formula">\[ v_o=-V_{OM}\quad (v_P\lt v_N) \]</div>
+          <div class="formula">\[ T=4R_1C\frac{R_2}{R_3},\qquad f=\frac{1}{T}=\frac{R_3}{4R_1R_2C} \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_071.png" alt="锯齿波发生电路">
+        <figcaption>PPT 第 71 页：迟滞比较器与积分电路产生锯齿波</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>17. 直流稳压电源：整流、滤波、稳压</h2>
+    <div class="panel grid">
+      <div>
+        <span class="tag">把交流变成稳定直流</span>
+        <div class="explain">
+          直流稳压电源通常包括变压、整流、滤波和稳压。整流把交流变成脉动直流，滤波减小纹波，稳压环节进一步稳定输出。串联反馈式稳压电路可用反馈网络设定输出电压。
+        </div>
+        <div class="formula-block">
+          <div class="formula">\[ V_L\approx (1.1\sim 1.2)V_2\quad (\text{单相桥式整流电容滤波常用估算}) \]</div>
+          <div class="formula">\[ V_o=V_{\mathrm{REF}}\left(1+\frac{R_1}{R_2}\right) \]</div>
+          <div class="formula">\[ r_d\ge (3\sim 5)\frac{T}{2} \quad \text{时滤波效果较好} \]</div>
+        </div>
+      </div>
+      <figure class="figure">
+        <img src="../../tmp/pdfs/review_pages/page_075.png" alt="整流滤波与稳压">
+        <figcaption>PPT 第 75 页：整流滤波和串联反馈稳压公式</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="source">源文件：ppt/复习串讲.pdf；插图为对应 PPT 页面渲染。生成文件：output/pdf/review_formula_notes_with_figures.pdf</div>
+</main>
+</body>
+</html>
