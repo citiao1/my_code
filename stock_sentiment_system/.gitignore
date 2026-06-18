@@ -7,6 +7,11 @@ launcher-test.err.log
 exe-test.log
 exe-test.out.log
 exe-test.err.log
+exe-*.log
+exe-*.out.log
+exe-*.err.log
+streamlit-*.log
+streamlit-*.err.log
 build/
 dist/
 *.spec

@@ -18,6 +18,7 @@ from src.market_data import (
     profile_for,
     summarize_market,
 )
+from src.ml_predictor import predict_next_move
 from src.risk_model import comprehensive_score
 from src.sentiment import daily_sentiment, fetch_stock_news, sentiment_summary
 
@@ -157,6 +158,45 @@ def inject_style() -> None:
             font-size: 12px;
             margin-right: 6px;
         }
+        .ml-box {
+            border: 1px solid #d7dde8;
+            border-radius: 8px;
+            padding: 16px;
+            background: #ffffff;
+            color: #172033;
+        }
+        .ml-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .ml-direction {
+            font-size: 30px;
+            line-height: 1.1;
+            font-weight: 800;
+            margin: 4px 0 10px;
+        }
+        .prob-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+            margin: 8px 0;
+        }
+        .prob-track {
+            height: 9px;
+            border-radius: 999px;
+            background: #e8edf4;
+            overflow: hidden;
+        }
+        .prob-fill-up {
+            height: 100%;
+            background: #c43d3d;
+        }
+        .prob-fill-down {
+            height: 100%;
+            background: #1b8a5a;
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -195,8 +235,10 @@ def candlestick_chart(data: pd.DataFrame, symbol: str, name: str) -> go.Figure:
             low=data["low"],
             close=data["close"],
             name="价格K线",
-            increasing_line_color="#1b8a5a",
-            decreasing_line_color="#c43d3d",
+            increasing_line_color="#c43d3d",
+            decreasing_line_color="#1b8a5a",
+            increasing_fillcolor="#c43d3d",
+            decreasing_fillcolor="#1b8a5a",
         )
     )
     fig.add_trace(go.Scatter(x=data["date"], y=data["ma5"], name="5日均线", line=dict(color="#3366cc", width=1.8)))
@@ -213,7 +255,7 @@ def candlestick_chart(data: pd.DataFrame, symbol: str, name: str) -> go.Figure:
 
 
 def volume_chart(data: pd.DataFrame) -> go.Figure:
-    colors = ["#1b8a5a" if row.close >= row.open else "#c43d3d" for row in data.itertuples()]
+    colors = ["#c43d3d" if row.close >= row.open else "#1b8a5a" for row in data.itertuples()]
     fig = go.Figure()
     fig.add_trace(go.Bar(x=data["date"], y=data["volume"], name="成交量", marker_color=colors))
     fig.add_trace(go.Scatter(x=data["date"], y=data["vol_ma5"], name="5日均量", line=dict(color="#5b6c8f")))
@@ -292,6 +334,51 @@ def render_news(news: pd.DataFrame) -> None:
         )
 
 
+def render_prediction_card(prediction: dict[str, object]) -> None:
+    if prediction.get("status") != "已训练":
+        message = html.escape(str(prediction.get("message", "样本不足，暂时无法训练机器学习模型。")))
+        st.markdown(
+            f"""
+            <div class="ml-box">
+                <div class="ml-title">机器学习预测</div>
+                <p class="small-muted">{message}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        return
+
+    direction = html.escape(str(prediction["direction"]))
+    probability_up = float(prediction["probability_up"])
+    probability_down = float(prediction["probability_down"])
+    accuracy = float(prediction["accuracy"])
+    confidence = float(prediction["confidence"])
+    st.markdown(
+        f"""
+        <div class="ml-box">
+            <div class="ml-title">机器学习预测</div>
+            <div class="ml-direction">{direction}</div>
+            <div class="prob-row">
+                <div>
+                    <div class="small-muted">上涨概率</div>
+                    <div class="prob-track"><div class="prob-fill-up" style="width:{probability_up:.1f}%;"></div></div>
+                </div>
+                <strong>{probability_up:.1f}%</strong>
+            </div>
+            <div class="prob-row">
+                <div>
+                    <div class="small-muted">下跌概率</div>
+                    <div class="prob-track"><div class="prob-fill-down" style="width:{probability_down:.1f}%;"></div></div>
+                </div>
+                <strong>{probability_down:.1f}%</strong>
+            </div>
+            <p class="small-muted">回测准确率 {accuracy:.1f}% · 信心强度 {confidence:.1f}%</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 inject_style()
 
 st.title("A股行情与舆情分析可视化系统")
@@ -314,6 +401,7 @@ news, news_source = fetch_stock_news(symbol, profile.name, days=news_days)
 market = summarize_market(prices)
 sentiment = sentiment_summary(news)
 risk = comprehensive_score(prices, news)
+prediction = predict_next_move(prices)
 
 top_left, top_right = st.columns([2.4, 1])
 with top_left:
@@ -329,12 +417,16 @@ with top_left:
 with top_right:
     render_score_card(float(risk["final_score"]))
 
-metric_cols = st.columns(5)
+metric_cols = st.columns(6)
 metric_cols[0].metric("最新收盘价", money(market["latest_close"], profile.currency), pct(market["daily_change"]))
 metric_cols[1].metric("周期涨跌幅", pct(market["period_change"]))
 metric_cols[2].metric("舆情指数", f"{sentiment['sentiment_index']:.1f}", sentiment["dominant_label"])
 metric_cols[3].metric("20日波动率", f"{market['volatility20'] * 100:.1f}%")
 metric_cols[4].metric("相对强弱指标", f"{market['rsi14']:.1f}")
+if prediction.get("status") == "已训练":
+    metric_cols[5].metric("机器学习预测", str(prediction["direction"]), f"上涨概率 {prediction['probability_up']}%")
+else:
+    metric_cols[5].metric("机器学习预测", "样本不足", "切换更长周期")
 
 chart_left, chart_right = st.columns([1.7, 1])
 with chart_left:
@@ -354,9 +446,11 @@ with chart_right:
     st.write("")
     for reason in risk["reasons"]:
         st.info(reason)
+    render_prediction_card(prediction)
+    st.write("")
     st.plotly_chart(sentiment_chart(news), width="stretch")
 
-tab_news, tab_data, tab_model = st.tabs(["新闻舆情", "行情数据", "模型说明"])
+tab_news, tab_data, tab_ml, tab_model = st.tabs(["新闻舆情", "行情数据", "机器学习预测", "模型说明"])
 with tab_news:
     left, right = st.columns([1.4, 1])
     with left:
@@ -389,12 +483,43 @@ with tab_data:
         hide_index=True,
     )
 
+with tab_ml:
+    render_prediction_card(prediction)
+    if prediction.get("status") == "已训练":
+        st.write("")
+        st.subheader("主要影响因素")
+        drivers = pd.DataFrame(prediction["drivers"])
+        if not drivers.empty:
+            drivers = drivers.rename(columns={"name": "特征", "effect": "影响方向", "value": "贡献值"})
+            st.dataframe(drivers, width="stretch", hide_index=True)
+
+        st.subheader("训练与验证")
+        st.markdown(
+            f"""
+            - 模型类型：`{prediction['model']}`
+            - 有效样本数：`{prediction['sample_count']}` 个交易日
+            - 训练集：`{prediction['train_count']}` 条，测试集：`{prediction['test_count']}` 条
+            - 测试集准确率：`{prediction['accuracy']}%`
+            - 简单基准准确率：`{prediction['baseline_accuracy']}%`
+
+            这里的标签定义为：如果下一交易日收盘价高于当前交易日收盘价，则记为“上涨”，否则记为“下跌”。
+            """
+        )
+
 with tab_model:
     st.markdown(
         """
-        综合评分采用加权模型：
+        本系统包含两个模型层：
+
+        1. 综合评分模型
 
         `综合评分 = 舆情指数 × 40% + 技术趋势分 × 35% + 成交量活跃度 × 25%`
+
+        2. 机器学习方向预测模型
+
+        系统会从历史 K 线中自动生成训练样本。每一天的特征包括 1 日/3 日/5 日收益率、均线偏离、成交量活跃度、20 日波动率、RSI、日内振幅等；标签是“下一交易日是否上涨”。
+
+        模型采用轻量级逻辑回归，通过历史样本训练后，用最新交易日的特征预测下一交易日上涨概率。页面展示的“上涨概率”“下跌概率”“回测准确率”和“主要影响因素”都来自这个模型。
 
         行情数据优先来自东方财富接口，失败时自动切换到新浪财经真实行情接口；新闻数据优先来自东方财富个股新闻。
         舆情指数来自新闻标题关键词情感得分，技术趋势分参考 5 日均线、20 日均线和近期收益率，成交量活跃度参考当前成交量与 5 日均量的关系。
