@@ -18,7 +18,7 @@ from src.market_data import (
     profile_for,
     summarize_market,
 )
-from src.ml_predictor import predict_next_move
+from src.ml_predictor import build_fused_prediction, predict_next_move
 from src.risk_model import comprehensive_score
 from src.sentiment import daily_sentiment, fetch_stock_news, sentiment_summary
 
@@ -348,15 +348,18 @@ def render_prediction_card(prediction: dict[str, object]) -> None:
         )
         return
 
+    title = html.escape(str(prediction.get("prediction_type", "机器学习预测")))
     direction = html.escape(str(prediction["direction"]))
     probability_up = float(prediction["probability_up"])
     probability_down = float(prediction["probability_down"])
     accuracy = float(prediction["accuracy"])
     confidence = float(prediction["confidence"])
+    adjustment = float(prediction.get("fusion_adjustment", 0))
+    adjustment_text = f"融合调整 {adjustment:+.1f}%" if "fusion_adjustment" in prediction else "纯技术面模型"
     st.markdown(
         f"""
         <div class="ml-box">
-            <div class="ml-title">机器学习预测</div>
+            <div class="ml-title">{title}</div>
             <div class="ml-direction">{direction}</div>
             <div class="prob-row">
                 <div>
@@ -372,7 +375,7 @@ def render_prediction_card(prediction: dict[str, object]) -> None:
                 </div>
                 <strong>{probability_down:.1f}%</strong>
             </div>
-            <p class="small-muted">回测准确率 {accuracy:.1f}% · 信心强度 {confidence:.1f}%</p>
+            <p class="small-muted">技术面回测准确率 {accuracy:.1f}% · 信心强度 {confidence:.1f}% · {adjustment_text}</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -397,11 +400,17 @@ symbol = normalize_symbol(custom_symbol or selected)
 profile = profile_for(symbol)
 
 prices, price_source = fetch_price_history(symbol, period)
+training_prices, training_price_source = fetch_price_history(symbol, "2y")
 news, news_source = fetch_stock_news(symbol, profile.name, days=news_days)
 market = summarize_market(prices)
 sentiment = sentiment_summary(news)
 risk = comprehensive_score(prices, news)
-prediction = predict_next_move(prices)
+technical_prediction = predict_next_move(training_prices)
+prediction = build_fused_prediction(
+    technical_prediction,
+    float(sentiment["sentiment_index"]),
+    float(risk["final_score"]),
+)
 
 top_left, top_right = st.columns([2.4, 1])
 with top_left:
@@ -410,6 +419,7 @@ with top_left:
     st.markdown(
         f"""
         <span class="source-pill">行情：{html.escape(price_source)}</span>
+        <span class="source-pill">模型训练：{html.escape(training_price_source)} · 近2年</span>
         <span class="source-pill">新闻：{html.escape(news_source)}</span>
         """,
         unsafe_allow_html=True,
@@ -424,9 +434,9 @@ metric_cols[2].metric("舆情指数", f"{sentiment['sentiment_index']:.1f}", sen
 metric_cols[3].metric("20日波动率", f"{market['volatility20'] * 100:.1f}%")
 metric_cols[4].metric("相对强弱指标", f"{market['rsi14']:.1f}")
 if prediction.get("status") == "已训练":
-    metric_cols[5].metric("机器学习预测", str(prediction["direction"]), f"上涨概率 {prediction['probability_up']}%")
+    metric_cols[5].metric("融合预测", str(prediction["direction"]), f"上涨概率 {prediction['probability_up']}%")
 else:
-    metric_cols[5].metric("机器学习预测", "样本不足", "切换更长周期")
+    metric_cols[5].metric("融合预测", "样本不足", "训练数据不足")
 
 chart_left, chart_right = st.columns([1.7, 1])
 with chart_left:
@@ -450,7 +460,7 @@ with chart_right:
     st.write("")
     st.plotly_chart(sentiment_chart(news), width="stretch")
 
-tab_news, tab_data, tab_ml, tab_model = st.tabs(["新闻舆情", "行情数据", "机器学习预测", "模型说明"])
+tab_news, tab_data, tab_ml, tab_model = st.tabs(["新闻舆情", "行情数据", "融合预测", "模型说明"])
 with tab_news:
     left, right = st.columns([1.4, 1])
     with left:
@@ -487,6 +497,12 @@ with tab_ml:
     render_prediction_card(prediction)
     if prediction.get("status") == "已训练":
         st.write("")
+        st.subheader("融合构成")
+        components = pd.DataFrame(prediction["fusion_components"])
+        components = components.rename(columns={"name": "来源", "weight": "权重", "probability": "上涨概率"})
+        st.dataframe(components, width="stretch", hide_index=True)
+
+        st.write("")
         st.subheader("主要影响因素")
         drivers = pd.DataFrame(prediction["drivers"])
         if not drivers.empty:
@@ -497,10 +513,15 @@ with tab_ml:
         st.markdown(
             f"""
             - 模型类型：`{prediction['model']}`
+            - 训练数据周期：`近2年`
             - 有效样本数：`{prediction['sample_count']}` 个交易日
             - 训练集：`{prediction['train_count']}` 条，测试集：`{prediction['test_count']}` 条
             - 测试集准确率：`{prediction['accuracy']}%`
             - 简单基准准确率：`{prediction['baseline_accuracy']}%`
+            - 技术面机器学习上涨概率：`{prediction['technical_probability_up']}%`
+            - 新闻舆情折算上涨概率：`{prediction['sentiment_probability_up']}%`
+            - 综合评分折算上涨概率：`{prediction['score_probability_up']}%`
+            - 最终融合上涨概率：`{prediction['probability_up']}%`
 
             这里的标签定义为：如果下一交易日收盘价高于当前交易日收盘价，则记为“上涨”，否则记为“下跌”。
             """
@@ -509,17 +530,23 @@ with tab_ml:
 with tab_model:
     st.markdown(
         """
-        本系统包含两个模型层：
+        本系统包含三个模型层：
 
         1. 综合评分模型
 
         `综合评分 = 舆情指数 × 40% + 技术趋势分 × 35% + 成交量活跃度 × 25%`
 
-        2. 机器学习方向预测模型
+        2. 技术面机器学习方向预测模型
 
-        系统会从历史 K 线中自动生成训练样本。每一天的特征包括 1 日/3 日/5 日收益率、均线偏离、成交量活跃度、20 日波动率、RSI、日内振幅等；标签是“下一交易日是否上涨”。
+        系统会单独拉取近 2 年历史 K 线生成训练样本，不受页面展示周期影响。每一天的特征包括 1 日/3 日/5 日收益率、均线偏离、成交量活跃度、20 日波动率、RSI、日内振幅等；标签是“下一交易日是否上涨”。
 
-        模型采用轻量级逻辑回归，通过历史样本训练后，用最新交易日的特征预测下一交易日上涨概率。页面展示的“上涨概率”“下跌概率”“回测准确率”和“主要影响因素”都来自这个模型。
+        模型采用轻量级逻辑回归，通过历史样本训练后，用最新交易日的特征预测技术面上涨概率。
+
+        3. 融合预测模型
+
+        `最终上涨概率 = 技术面机器学习概率 × 70% + 新闻舆情指数 × 20% + 综合评分 × 10%`
+
+        这样新闻和综合评分会影响最终预测，但不会污染技术面模型的回测准确率。页面展示的“主要影响因素”来自技术面机器学习模型，“融合构成”展示新闻舆情和综合评分对最终概率的修正。
 
         行情数据优先来自东方财富接口，失败时自动切换到新浪财经真实行情接口；新闻数据优先来自东方财富个股新闻。
         舆情指数来自新闻标题关键词情感得分，技术趋势分参考 5 日均线、20 日均线和近期收益率，成交量活跃度参考当前成交量与 5 日均量的关系。

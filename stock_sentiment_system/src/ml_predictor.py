@@ -21,6 +21,12 @@ FEATURE_LABELS = {
     "high_low_range": "日内振幅",
 }
 
+FUSION_WEIGHTS = {
+    "technical": 0.70,
+    "sentiment": 0.20,
+    "score": 0.10,
+}
+
 
 def predict_next_move(price_data: pd.DataFrame) -> dict[str, object]:
     dataset, latest_features = _build_training_set(price_data)
@@ -87,6 +93,63 @@ def predict_next_move(price_data: pd.DataFrame) -> dict[str, object]:
     }
 
 
+def build_fused_prediction(
+    technical_prediction: dict[str, object],
+    sentiment_index: float,
+    comprehensive_score: float,
+) -> dict[str, object]:
+    if technical_prediction.get("status") != "已训练":
+        return technical_prediction
+
+    technical_probability = float(technical_prediction["probability_up"])
+    sentiment_probability = _bounded_probability(sentiment_index)
+    score_probability = _bounded_probability(comprehensive_score)
+    fused_probability = (
+        technical_probability * FUSION_WEIGHTS["technical"]
+        + sentiment_probability * FUSION_WEIGHTS["sentiment"]
+        + score_probability * FUSION_WEIGHTS["score"]
+    )
+    adjustment = fused_probability - technical_probability
+
+    result = dict(technical_prediction)
+    result.update(
+        {
+            "prediction_type": "融合预测",
+            "technical_probability_up": round(technical_probability, 1),
+            "sentiment_probability_up": round(sentiment_probability, 1),
+            "score_probability_up": round(score_probability, 1),
+            "probability_up": round(fused_probability, 1),
+            "probability_down": round(100 - fused_probability, 1),
+            "direction": _direction_label(fused_probability / 100),
+            "confidence": round(abs(fused_probability - 50) * 2, 1),
+            "fusion_adjustment": round(adjustment, 1),
+            "fusion_weights": {
+                "技术面机器学习": int(FUSION_WEIGHTS["technical"] * 100),
+                "新闻舆情": int(FUSION_WEIGHTS["sentiment"] * 100),
+                "综合评分": int(FUSION_WEIGHTS["score"] * 100),
+            },
+            "fusion_components": [
+                {
+                    "name": "技术面机器学习",
+                    "weight": "70%",
+                    "probability": round(technical_probability, 1),
+                },
+                {
+                    "name": "新闻舆情指数",
+                    "weight": "20%",
+                    "probability": round(sentiment_probability, 1),
+                },
+                {
+                    "name": "综合评分",
+                    "weight": "10%",
+                    "probability": round(score_probability, 1),
+                },
+            ],
+        }
+    )
+    return result
+
+
 def _build_training_set(price_data: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
     data = price_data.copy().sort_values("date").reset_index(drop=True)
     data["return_1d"] = data["close"].pct_change()
@@ -137,3 +200,7 @@ def _direction_label(probability_up: float) -> str:
     if probability_up <= 0.42:
         return "偏下跌"
     return "震荡不确定"
+
+
+def _bounded_probability(value: float) -> float:
+    return float(max(0, min(100, value)))
