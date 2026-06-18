@@ -21,10 +21,10 @@ FEATURE_LABELS = {
     "high_low_range": "日内振幅",
 }
 
-FUSION_WEIGHTS = {
-    "technical": 0.70,
-    "sentiment": 0.20,
-    "score": 0.10,
+FUSION_SIGNAL_GAINS = {
+    "technical": 1.35,
+    "sentiment": 0.35,
+    "score": 0.25,
 }
 
 
@@ -63,7 +63,7 @@ def predict_next_move(price_data: pd.DataFrame) -> dict[str, object]:
     probability_up = float(_sigmoid(latest_scaled @ weights + bias))
     probability_down = 1 - probability_up
     direction = _direction_label(probability_up)
-    confidence = abs(probability_up - 0.5) * 2
+    confidence = _confidence_score(probability_up * 100)
 
     contributions = latest_scaled * weights
     top_indices = np.argsort(np.abs(contributions))[::-1][:4]
@@ -88,7 +88,7 @@ def predict_next_move(price_data: pd.DataFrame) -> dict[str, object]:
         "probability_up": round(probability_up * 100, 1),
         "probability_down": round(probability_down * 100, 1),
         "direction": direction,
-        "confidence": round(confidence * 100, 1),
+        "confidence": round(confidence, 1),
         "drivers": drivers,
     }
 
@@ -104,11 +104,15 @@ def build_fused_prediction(
     technical_probability = float(technical_prediction["probability_up"])
     sentiment_probability = _bounded_probability(sentiment_index)
     score_probability = _bounded_probability(comprehensive_score)
-    fused_probability = (
-        technical_probability * FUSION_WEIGHTS["technical"]
-        + sentiment_probability * FUSION_WEIGHTS["sentiment"]
-        + score_probability * FUSION_WEIGHTS["score"]
+    technical_signal = technical_probability - 50
+    sentiment_signal = sentiment_probability - 50
+    score_signal = score_probability - 50
+    fused_probability = 50 + (
+        technical_signal * FUSION_SIGNAL_GAINS["technical"]
+        + sentiment_signal * FUSION_SIGNAL_GAINS["sentiment"]
+        + score_signal * FUSION_SIGNAL_GAINS["score"]
     )
+    fused_probability = _bounded_probability(fused_probability)
     adjustment = fused_probability - technical_probability
 
     result = dict(technical_prediction)
@@ -121,28 +125,32 @@ def build_fused_prediction(
             "probability_up": round(fused_probability, 1),
             "probability_down": round(100 - fused_probability, 1),
             "direction": _direction_label(fused_probability / 100),
-            "confidence": round(abs(fused_probability - 50) * 2, 1),
+            "confidence": round(_confidence_score(fused_probability), 1),
             "fusion_adjustment": round(adjustment, 1),
-            "fusion_weights": {
-                "技术面机器学习": int(FUSION_WEIGHTS["technical"] * 100),
-                "新闻舆情": int(FUSION_WEIGHTS["sentiment"] * 100),
-                "综合评分": int(FUSION_WEIGHTS["score"] * 100),
+            "fusion_formula": "50 + 技术偏离×1.35 + 舆情偏离×0.35 + 综合评分偏离×0.25",
+            "fusion_gains": {
+                "技术面机器学习": FUSION_SIGNAL_GAINS["technical"],
+                "新闻舆情": FUSION_SIGNAL_GAINS["sentiment"],
+                "综合评分": FUSION_SIGNAL_GAINS["score"],
             },
             "fusion_components": [
                 {
                     "name": "技术面机器学习",
-                    "weight": "70%",
+                    "weight": "偏离×1.35",
                     "probability": round(technical_probability, 1),
+                    "signal": round(technical_signal * FUSION_SIGNAL_GAINS["technical"], 1),
                 },
                 {
                     "name": "新闻舆情指数",
-                    "weight": "20%",
+                    "weight": "偏离×0.35",
                     "probability": round(sentiment_probability, 1),
+                    "signal": round(sentiment_signal * FUSION_SIGNAL_GAINS["sentiment"], 1),
                 },
                 {
                     "name": "综合评分",
-                    "weight": "10%",
+                    "weight": "偏离×0.25",
                     "probability": round(score_probability, 1),
+                    "signal": round(score_signal * FUSION_SIGNAL_GAINS["score"], 1),
                 },
             ],
         }
@@ -195,12 +203,32 @@ def _sigmoid(value: np.ndarray | float) -> np.ndarray | float:
 
 
 def _direction_label(probability_up: float) -> str:
-    if probability_up >= 0.58:
+    probability = probability_up * 100
+    if probability >= 65:
+        return "明显偏上涨"
+    if probability >= 56:
         return "偏上涨"
-    if probability_up <= 0.42:
+    if probability >= 52:
+        return "小幅偏上涨"
+    if probability > 48:
+        return "震荡不确定"
+    if probability > 44:
+        return "小幅偏下跌"
+    if probability > 35:
         return "偏下跌"
-    return "震荡不确定"
+    return "明显偏下跌"
 
 
 def _bounded_probability(value: float) -> float:
     return float(max(0, min(100, value)))
+
+
+def _confidence_score(probability_up: float) -> float:
+    distance = abs(probability_up - 50)
+    if distance <= 2:
+        return distance * 8
+    if distance <= 6:
+        return 16 + (distance - 2) * 9
+    if distance <= 15:
+        return 52 + (distance - 6) * 4
+    return min(100.0, 88 + (distance - 15) * 0.8)

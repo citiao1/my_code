@@ -499,7 +499,9 @@ with tab_ml:
         st.write("")
         st.subheader("融合构成")
         components = pd.DataFrame(prediction["fusion_components"])
-        components = components.rename(columns={"name": "来源", "weight": "权重", "probability": "上涨概率"})
+        components = components.rename(
+            columns={"name": "来源", "weight": "信号系数", "probability": "原始概率", "signal": "对最终概率贡献"}
+        )
         st.dataframe(components, width="stretch", hide_index=True)
 
         st.write("")
@@ -521,6 +523,7 @@ with tab_ml:
             - 技术面机器学习上涨概率：`{prediction['technical_probability_up']}%`
             - 新闻舆情折算上涨概率：`{prediction['sentiment_probability_up']}%`
             - 综合评分折算上涨概率：`{prediction['score_probability_up']}%`
+            - 融合公式：`{prediction['fusion_formula']}`
             - 最终融合上涨概率：`{prediction['probability_up']}%`
 
             这里的标签定义为：如果下一交易日收盘价高于当前交易日收盘价，则记为“上涨”，否则记为“下跌”。
@@ -544,9 +547,11 @@ with tab_model:
 
         3. 融合预测模型
 
-        `最终上涨概率 = 技术面机器学习概率 × 70% + 新闻舆情指数 × 20% + 综合评分 × 10%`
+        `最终上涨概率 = 50 + 技术面偏离 × 1.35 + 新闻舆情偏离 × 0.35 + 综合评分偏离 × 0.25`
 
-        这样新闻和综合评分会影响最终预测，但不会污染技术面模型的回测准确率。页面展示的“主要影响因素”来自技术面机器学习模型，“融合构成”展示新闻舆情和综合评分对最终概率的修正。
+        其中“偏离”指某项概率相对 50% 中性线的差值。例如技术面上涨概率是 60%，技术面偏离就是 +10。这样可以让强技术信号拉开上涨/下跌概率，同时新闻和综合评分仍然作为修正项参与最终判断。
+
+        新闻和综合评分会影响最终预测，但不会污染技术面模型的回测准确率。页面展示的“主要影响因素”来自技术面机器学习模型，“融合构成”展示三类信号对最终概率的贡献。
 
         行情数据优先来自东方财富接口，失败时自动切换到新浪财经真实行情接口；新闻数据优先来自东方财富个股新闻。
         舆情指数来自新闻标题关键词情感得分，技术趋势分参考 5 日均线、20 日均线和近期收益率，成交量活跃度参考当前成交量与 5 日均量的关系。
