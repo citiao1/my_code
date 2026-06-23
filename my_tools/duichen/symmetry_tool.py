@@ -89,14 +89,23 @@ def save_animated_image(image: Image.Image, output_path: Path, axis: str, source
         raise ValueError("No frames found in animated image.")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    frames[0].save(
-        output_path,
-        save_all=True,
-        append_images=frames[1:],
-        duration=durations,
-        loop=int(image.info.get("loop", 0)),
-        disposal=2,
-    )
+    save_kwargs = {
+        "save_all": True,
+        "append_images": frames[1:],
+        "duration": durations,
+        "loop": int(image.info.get("loop", 0)),
+    }
+
+    try:
+        frames[0].save(output_path, **save_kwargs)
+    except ValueError as exc:
+        if "palette" not in str(exc).lower():
+            raise
+
+        # Some GIFs hit Pillow's palette handling edge cases after RGBA edits.
+        # Flattening to RGB loses GIF transparency, but keeps the animation usable.
+        rgb_frames = [frame.convert("RGB") for frame in frames]
+        rgb_frames[0].save(output_path, append_images=rgb_frames[1:], **save_kwargs)
 
 
 def process_image(input_path: Path, output_path: Path, axis: str, source: str) -> Path:
