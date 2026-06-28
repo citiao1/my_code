@@ -1,0 +1,213 @@
+
+--- Page 1 ---
+微机原理期末题 答案与详细解析
+说明：本答案按题目顺序给出。涉及公式的位置使用上下结构分式、右上角/右下角角标和完整根号绘制
+；汇编题给出编程思路与逐行注释。
+一、填空题
+题号 答案 解析
+1 10110100B；01100100B； 8 位补码：正数直接写原码，负数用 28-|x|。-76:
+10000000B 256-76=180=B4H=10110100B；100 为 01100100B；-128 为 10000000B。
+2 字；先进后出；减 2 8086 栈以字为单位操作，遵循 LIFO。PUSH 时 SP 先减 2，再写入
+SS:SP。
+3 Cache；主存；辅存 层次化存储利用局部性原理，在速度、容量、成本之间折中。
+4 CS；IP 取指时逻辑地址为 CS:IP，物理地址由段基址加偏移得到。
+5 158DEH；103FH；54EEH 物理地址 = 103FH×10H+54EEH=103F0H+54EEH=158DEH。
+6 总线周期；4；指令周期 8086/8088 的基本总线周期通常由 T1-T4 四个时钟周期组成。
+7(1) 寄存器相对寻址；1A80AH 源操作数 [SI+1F00H] 默认 DS，偏移=590AH+1F00H=780AH，物理地址=
+13000H+780AH=1A80AH。注意这里加的是 780AH，不是 0780H。
+7(2) 题目指令非法；若只算目的 MOV BYTE PTR [BP],1234H 中，BYTE PTR 指明目的操作数为字节，而
+地址为 2CCFEH 1234H 是 16 位立即数，8086 汇编会报类型不匹配。若改成 WORD PTR
+[BP] 或把立即数改成 8 位数，目的地址按 SS:BP 计算，为
+2BB00H+11FEH=2CCFEH。
+8 字位同时扩展；16 片 容量从 16K 到 128K 需 8 倍字扩展；位宽从 4 到 8 需 2 倍位扩展，共
+8×2=16 片。
+9 38 压缩 BCD 每 4 位表示一位十进制数，0011 为 3，1000 为 8。
+常用地址公式：
+物理地址 = 段地址 × 10H + 偏移地址
+20位
+二、选择题
+题号 答案 解析
+1 C 机器中带符号整数通常采用补码，便于加减统一。
+2 D IP 由取指流程自动维护，编程人员不能直接用 MOV 等指令读写。
+3 B IF=0 屏蔽可屏蔽中断 INTR；NMI、内部中断、INT n 不受 IF 屏蔽。
+4 A 16K=214，需要 14 根地址线。
+5 C 1 ms 周期性采集适合中断方式，既及时又不必 CPU 一直查询。
+6 C 计算机与外设之间通常通过设备总线/接口总线传送信息。
+7 B T1 状态先输出地址信息，随后复用线才传数据。
+答案解析 · 第 1 页
+
+--- Page 2 ---
+题号 答案 解析
+8 B 标号和变量常见属性有段属性、偏移属性、类型属性，不含“地址属性”这一项。
+9 D DMA 方式由 DMA 控制器 DMAC 接管总线完成数据传送。
+10 B 完整中断过程：中断请求、中断响应、中断服务、中断返回。
+三、分析题
+1. 指令执行结果
+指令 结果 解析
+ADD AL,[BX] (AX)=13CEH，OF=0 DS:BX = 10AAH:5DE0H，物理地址=16880H，内存字节 D0H。AL=
+FEH+D0H=CEH，有进位但两个负数相加结果仍为负，OF=0。
+MOV AX,BX AL=E0H AX 变为 5DE0H，因此低 8 位 AL=E0H。
+LEA DX,[BX] DX=5DE0H LEA 只取有效地址，不访问内存，故 DX=BX。
+SHL BL,CL AL=FEH，CF=1 CL=02H，BL=E0H=11100000B，左移两位得到
+80H，最后移出的位为 1。该指令不改 AL，因此 AL 仍为 FEH。
+2. 程序执行结果与功能
+循环把 BUF 中 1 到 10 每个数乘 2 后累加，结果为 2×(1+2+...+10)=110=006EH。随后用 LEN=10
+除该和，商为 11，余数为 0。DIV CL 后 AL=0BH、AH=00H，但程序为了使用 DOS 6 号调用执行 MOV
+AH,6，这一步把 AH 中的余数 00H 覆盖成 06H。于是第一次输出
+DL=0BH+30H=3BH，即分号；第二次执行 MOV DL,AH 得到 06H，再加 30H 变成 36H，输出字符
+'6'。所以实际屏幕输出为 ;6，而不是 ;0。
+2×(1+2+...+10)
+数学上商 = = 11，余数 = 0；程序实际输出 ;6
+10
+项目 结果
+(BX) 006EH
+(CX) 0000H（LOOP 结束后 CX=0，随后 MOV CL,LEN 使 CL=0AH；DIV 后 CX 不变，为
+000AH。若填最终寄存器值，应写 000AH）
+LEN 000AH
+(AX) 060BH（DIV 后为 000BH；随后 MOV AH,6 覆盖余数，最终 AH=06H、AL=0BH）
+程序功能 设计意图是求数组 BUF 中各元素乘 2 后的平均值及余数并输出；实际程序存在覆盖 AH
+的缺陷，屏幕输出为 ;6。
+3. 编程：找 6 个字数据中的最小值及其偏移地址
+编程思路：数据是字数据，逐个用有符号比较更合理，因为 0FFFDH 表示
+-3。先把第一个数设为当前最小值和地址，然后从第二个字开始循环 5 次；若发现更小值，就同时更新
+MIN 和 MINADDR。
+DATA SEGMENT
+ORG 1000H
+答案解析 · 第 2 页
+
+--- Page 3 ---
+ARY DW 102AH,3840H,0FFFDH,137EH,0,835DH
+MIN DW ?
+MINADDR DW ?
+DATA ENDS
+CODE SEGMENT
+ASSUME CS:CODE,DS:DATA
+START:
+MOV AX,DATA ; 初始化数据段寄存器 DS
+MOV DS,AX
+LEA SI,ARY ; SI 指向当前被检查的数据
+MOV AX,[SI] ; 先假定第 1 个字是最小值
+MOV MIN,AX
+MOV MINADDR,SI ; 保存最小值所在偏移地址
+ADD SI,2 ; 转到第 2 个字
+MOV CX,5 ; 剩余 5 个字待比较
+NEXT:
+MOV AX,[SI] ; 取当前字数据
+CMP AX,MIN ; 按有符号数比较当前值和最小值
+JGE SKIP ; 当前值 >= MIN，则不更新
+MOV MIN,AX ; 当前值更小，更新最小值
+MOV MINADDR,SI ; 同步保存其偏移地址
+SKIP:
+ADD SI,2 ; 指向下一个字
+LOOP NEXT
+MOV AH,4CH
+INT 21H
+CODE ENDS
+END START
+执行结果：最小值为 0FFFDH（有符号数为 -3），最小值偏移地址为 1004H。
+答案解析 · 第 3 页
+
+--- Page 4 ---
+四、综合题
+1. 128K×1 RAM 组成 512K×8 存储器
+（1）容量与地址线：512K×8 需要 8 位数据宽度，128K×1 每片只提供 1 位，因此每组要 8
+17
+片并联扩展位宽；512K/128K=4 组，共需 4×8=32 片。片内容量 128K=2 ，故片内地址线需 17 根；4
+组片选至少需要 2 根高位地址线进入 2-4 译码器。
+17
+128K = 2 ，因此片内地址线为 A0-A16。
+512K×8
+芯片片数 = = 32 片
+128K×1
+（2）连接示意图：
+2-4 译码器
+输入 A17,A18; 输出 CS0-CS3
+CPU
+A0-A16 片内地址线接所有芯片 A0-A16
+A17-A18 A17-A18 经 2-4 译码器产生 CS0-CS3
+D0-D7 数据线按位连接到每组 8 片芯片
+RD, WR 读写控制线并联到各芯片 OE/WE
+第1组 第2组 第3组 第4组
+8片 128K×1 8片 128K×1 8片 128K×1 8片 128K×1
+CS0 CS1 CS2 CS3
+D0-D7 各接一片 D0-D7 各接一片 D0-D7 各接一片 D0-D7 各接一片
+（3）若用 A17、A18 作片选，A0-A16 作片内地址，而 CPU 有 20 根地址线，则 A19
+未参与译码，存在地址覆盖。第一组芯片在 A18A17=00 时被选中，A19 可为 0 或
+1，因此第一组有两个地址范围：00000H-1FFFFH 和 80000H-9FFFFH。
+2. 8259 的 IR2 中断服务程序与中断向量设置
+IR0 类型号为 60H，所以 IR2 类型号为 62H。普通 EOI 需要向 8259 命令端口 20H 输出
+20H。显示字符串建议以 '$' 结束，题面给出的 STRING DB 'IR2 Interrupt' 应补为 STRING DB 'IR2
+Interrupt$'。
+DATA SEGMENT
+STRING DB 'IR2 Interrupt$'
+DATA ENDS
+CODE SEGMENT
+ASSUME CS:CODE,DS:DATA
+IR2PROC PROC FAR
+PUSH AX ; 保护中断服务程序会用到的寄存器
+PUSH DX
+PUSH DS
+答案解析 · 第 4 页
+
+--- Page 5 ---
+MOV AX,DATA ; DOS 9 号调用要求 DS:DX 指向字符串
+MOV DS,AX
+LEA DX,STRING
+MOV AH,09H
+INT 21H ; 显示 IR2 Interrupt
+MOV AL,20H
+OUT 20H,AL ; 普通 EOI，通知 8259 中断服务结束
+POP DS ; 恢复现场
+POP DX
+POP AX
+IRET ; 中断返回
+IR2PROC ENDP
+START:
+MOV AX,DATA
+MOV DS,AX
+PUSH DS ; 设置中断向量时 DS 要临时指向服务程序段
+MOV AX,SEG IR2PROC
+MOV DS,AX
+MOV DX,OFFSET IR2PROC
+MOV AH,25H
+MOV AL,62H ; IR2 对应中断类型号 60H+2
+INT 21H ; 写入中断向量表
+POP DS
+; 如需开放 IR2，还应对 8259 屏蔽寄存器清 IR2 对应位。
+MOV AH,4CH
+INT 21H
+CODE ENDS
+END START
+3. 8255 连接 ADC0809 程序填空
+根据题意，8255 端口地址为 A 口 180H、B 口 181H、C 口 182H、控制口 183H。原题文字写“B 口方式 1
+输出，C 口方式 1 输出”，但 8255 的 C 口没有独立的“方式 1
+输出”；且下面程序是普通查询流程，没有方式 1 握手协议。因此应按代码注释和硬件需求理解为方式
+0：A 口输入、B 口输出、PC2 输入。对应方式控制字为 91H。硬件连接图标的是 IN4，虽然程序注释写
+IN3 且预填了 0BH，但应以连接图为准。IN4 的通道地址为 ADDC ADDB
+ADDA=100B，PB3=ALE，所以锁存通道时 PB3=1、PB2PB1PB0=100，写入 0CH；启动时 PB4=1，写入
+1CH；撤销 START 后回到 0CH；检测 EOC 在 PC2，测试掩码为 04H。
+START: MOV AL,91H ; 方式0：A口输入，B口输出，PC2所在的C口低4位输入
+MOV DX,183H ; 8255 控制字端口地址
+OUT DX,AL ; 送 8255 方式控制字
+MOV AL,0CH ; IN4: ADDC ADDB ADDA=100，且 PB3(ALE)=1 锁存地址
+MOV DX,181H ; 8255 的 B 口地址
+OUT DX,AL ; 送 IN4 通道地址并锁存
+MOV AL,1CH ; PB4=1，产生 START=1，启动 A/D 转换
+OUT DX,AL
+MOV CX,1000H
+DELAY: LOOP DELAY ; 延时，保证启动脉冲宽度
+MOV AL,0CH ; PB4=0，撤销 START 信号，保持 IN4 地址
+OUT DX,AL
+答案解析 · 第 5 页
+
+--- Page 6 ---
+MOV DX,182H ; 8255 的 C 口地址
+TEST1: IN AL,DX ; 读 C 口状态
+TEST AL,04H ; 检测 EOC，即 PC2
+JZ TEST1 ; EOC 未有效则继续等待
+MOV DX,180H ; 8255 的 A 口地址
+IN AL,DX ; 读取 ADC0809 转换结果
+MOV [1000H],AL ; 保存到偏移地址 1000H 的内存单元
+注：ADC0809 通常在转换期间 EOC=0、转换结束 EOC=1，因此 TEST AL,04H 后用 JZ TEST1
+等待是合理的。若某实验箱另行规定 EOC 低有效，则需把 JZ TEST1 改为 JNZ TEST1。
+答案解析 · 第 6 页

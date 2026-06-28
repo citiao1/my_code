@@ -1,0 +1,159 @@
+《微机原理及应用》2015 秋期期末试卷答案解析
+适用于 CSE22500E 电科试卷；包含解析、完整程序和连接图
+一、填空题
+二、选择题
+三、编程和读程题
+1. 33H - 4FH = E4H。AL=E4H；无符号减法发生借位，CF=1；两个正数相减结果在有符号范围内，OF=0。
+2. CNT 从 STR1 到当前位置，包含 STR1 两字节和 STR2 十字节，所以 CX=000CH。STR1 DW 'AB' 按小端存储为 41H、42H，MOV AX,STR1 后 AX=4241H。STR0+2 为 56H，所以 BL=56H。
+3. 内存示意图：ORG 3H 后从 DS:0003 开始分配。
+4. 完整程序如下：
+; 比较 AL、BL、CL 中无符号数，将最小值存入 DS:0100H
+MOV AL,81H
+MOV BL,22H
+MOV CL,33H
+MOV SI,0100H
+CMP AL,BL
+JB  LOW1
+XCHG AL,BL
+LOW1:
+CMP AL,CL
+JB  LOW2
+XCHG AL,CL
+LOW2:
+MOV [SI],AL
+四、综合题
+1. 存储器扩展：128Kx8 / 16Kx1 = 64 片；每 8 片构成一组 16Kx8，共 8 组。16K 深度需要 14 根片内地址线；8 组至少需要 3 根片选地址线。
+存储器连接图（128Kx8，由 16Kx1 芯片构成）
+地址范围：若高位 A17-A19 未参与译码，则存在地址覆盖。第一组（A16-A14=000）对应 00000H-03FFFH、20000H-23FFFH、40000H-43FFFH、60000H-63FFFH、80000H-83FFFH、A0000H-A3FFFH、C0000H-C3FFFH、E0000H-E3FFFH。
+2. 8255 查询输入完整程序：
+; 8255: PA 输入，PC3 状态输入，方式 0；端口 80H-83H
+MOV AL,91H          ; PA 输入，PC 高 4 位输入，PB/PC 低 4 位输出
+OUT 83H,AL          ; 写控制口
+MOV CX,20
+MOV DI,1000H
+XML:
+    IN  AL,82H      ; 读 PC 口状态
+    TEST AL,08H     ; 检查 PC3
+    JZ  XML         ; READY=0 继续等待
+    IN  AL,80H      ; READY=1，从 PA 读数据
+    MOV [DI],AL
+    INC DI
+    LOOP XML
+3. 秒表系统连接和完整参考程序：
+秒表电路连接图与程序结构
+DATA SEGMENT
+TAB    DB 3FH,06H,5BH,4FH,66H,6DH,7DH,07H,7FH,6FH
+Second DB 0
+Tick   DB 0
+DATA ENDS
+
+CODE SEGMENT
+ASSUME DS:DATA,CS:CODE
+
+INT3 PROC FAR
+    PUSH AX
+    PUSH DS
+    MOV AX,DATA
+    MOV DS,AX
+    INC Tick
+    CMP Tick,100
+    JB  INT_DONE
+    MOV Tick,0
+    INC Second
+    CMP Second,10
+    JB  INT_DONE
+    MOV Second,0
+INT_DONE:
+    MOV AL,20H
+    OUT 80H,AL      ; 给 8259 发普通 EOI
+    POP DS
+    POP AX
+    IRET
+INT3 ENDP
+
+DISP PROC FAR
+    PUSH AX
+    PUSH BX
+    PUSH DX
+    MOV BL,Second
+    MOV BH,0
+    MOV AL,TAB[BX]
+    MOV DX,280H
+    OUT DX,AL       ; PA 输出段码
+    MOV AL,0FEH
+    MOV DX,282H
+    OUT DX,AL       ; PC0=0 点亮
+    POP DX
+    POP BX
+    POP AX
+    RET
+DISP ENDP
+
+START:
+    MOV AX,DATA
+    MOV DS,AX
+    CLI
+    MOV AL,80H      ; 8255: A 口、C 口方式 0 输出
+    MOV DX,283H
+    OUT DX,AL
+
+    MOV AX,0
+    MOV ES,AX
+    MOV DI,13H*4
+    MOV AX,OFFSET INT3
+    MOV ES:[DI],AX
+    MOV AX,SEG INT3
+    MOV ES:[DI+2],AX
+
+    ; 按题目给出的端口补全 8259 初始化/屏蔽字
+    MOV AL,13H
+    MOV DX,80H
+    OUT DX,AL
+    MOV AL,10H
+    MOV DX,81H
+    OUT DX,AL
+    MOV AL,09H      ; 普通 EOI 方式
+    OUT DX,AL
+    MOV AL,0F7H     ; 允许 IR3，屏蔽其它位
+    OUT DX,AL
+    STI
+BEGIN:
+    CALL DISP
+    JMP BEGIN
+CODE ENDS
+END START
+题号 | 答案与解析
+1 | CPU、存储器、I/O 接口
+2 | [x+y]补 = 11101111B；[y-x]补 = 11000011B。解析：22 + (-39) = -17，8 位补码 EFH；-39 - 22 = -61，8 位补码 C3H。
+3 | 非屏蔽中断；INTR。
+4 | 控制总线。
+5 | 中断服务程序入口地址；00000H；003FFH；00028H。解析：每个向量 4 字节，n=10 时 4n=28H。
+6 | 总线周期。
+7 | 总线接口部件；执行部件；指令。
+8 | DRAM。
+9 | 地址锁存允许信号。
+10 | 无条件传送、查询传送、中断传送、DMA 传送。
+10(1) | ADD BYTE PTR[BP+SI],10H：基址变址寻址，默认段 SS。物理地址 = 1000H*10H + 00A0H + 0050H = 100F0H。
+10(2) | MOV [BX],AX：寄存器间接寻址，默认段 DS。物理地址 = 1500H*10H + 0500H = 15500H。
+11 | 清 D3、D8：AND BX,0FEF7H。低 2 位取反：XOR BYTE PTR [100H],03H。
+题号 | 选项
+答案 | 1 C；2 D；3 A；4 B；5 B；6 G、F；7 B、F；8 D；9 D；10 B；11 C；12 B；13 C；14 C。
+地址 | 内容
+DS:0003 | A DB 10H -> 10H
+DS:0004-0005 | B DW 'EF' -> 45H,46H
+DS:0006-0007 | B DW 'CD' -> 43H,44H
+DS:0008-0009 | C DB 2 DUP(3) -> 03H,03H
+DS:000A-000D | SUM DD 80906050H -> 50H,60H,90H,80H
+部件 | 信号 | 连接关系
+CPU | A0-A13 | 接所有 RAM 芯片的片内地址线，共 14 根
+CPU | A14-A16 | 接 74LS138 的 A、B、C 输入，产生 8 组选通信号
+CPU | D0-D7 | 每组 8 片 16Kx1 分别接 D0-D7，位扩展成 16Kx8
+CPU | RD/WR | 分别接各芯片 OE/WE 或读写控制端
+74LS138 | Y0-Y7 | 分别接第 0-7 组 RAM 的 CS，地址从低到高排列
+模块 | 信号/端口 | 说明
+8259A | IR3 | 接 100Hz 脉冲输入，产生类型号 13H 的中断请求
+8259A | INT/INTA | 与 CPU 的 INTR/INTA 相连，命令端口 80H，数据端口 81H
+8255A | PA0-PA7 | 接数码管段码 a-g,dp，输出共阴极段码
+8255A | PC0 | 接数码管位码，PC0=0 点亮
+8255A | 控制口 | 地址 283H，方式 0，A 口和 C 口输出，控制字 80H
+程序 | 向量表 | 0000:004C 写 INT3 的 IP，0000:004E 写 INT3 的 CS
