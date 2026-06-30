@@ -1,0 +1,194 @@
+﻿  deleteGoodsByID.c
+  dis_all.c
+  establish.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“deleteGoodsByID.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\deleteGoodsByID.c(8,5): warning C4013: “system”未定义；假设外部返回 int
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\deleteGoodsByID.c(10,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“dis_all.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\dis_all.c(12,7): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\dis_all.c(41,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“establish.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.c(12,13): warning C4013: “strcmp”未定义；假设外部返回 int
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.c(82,5): warning C4013: “system”未定义；假设外部返回 int
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.c(32,10): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.c(41,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.c(52,13): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.c(64,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.c(68,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.c(72,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  main.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“main.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.h(10,2): warning C4091: “extern ”: 没有声明变量时忽略“item_node”的左侧
+  (编译源文件“main.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\main.c(25,28): warning C4013: “getConsoleWidth”未定义；假设外部返回 int
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\main.c(28,9): warning C4013: “setCursorPosition”未定义；假设外部返回 int
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\main.c(30,9): warning C4013: “drawOptionBox”未定义；假设外部返回 int
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\main.c(34,15): warning C4013: “_getch”未定义；假设外部返回 int
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\main.c(39,17): warning C4013: “playMP3”未定义；假设外部返回 int
+  member_card.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“member_card.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.h(10,2): warning C4091: “extern ”: 没有声明变量时忽略“item_node”的左侧
+  (编译源文件“member_card.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\member_card.c(72,27): warning C4146: 一元负运算符应用于无符号类型，结果仍为无符号类型
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\member_card.c(40,13): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\member_card.c(143,23): warning C4146: 一元负运算符应用于无符号类型，结果仍为无符号类型
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\member_card.c(173,5): warning C4013: “generateOrderId”未定义；假设外部返回 int
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\member_card.c(167,15): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\member_card.c(174,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\member_card.c(187,9): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\member_card.c(188,9): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\member_card.c(239,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  menu_utils.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\menu_utils.c(15,19): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\menu_utils.c(49,58): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\menu_utils.c(100,33): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\menu_utils.c(131,5): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  modifyGoodsByID.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“modifyGoodsByID.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(13,9): warning C4013: “system”未定义；假设外部返回 int
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(17,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(55,21): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(67,25): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(72,25): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(76,25): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(85,25): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(88,25): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(91,25): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(103,21): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(104,21): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(117,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\modifyGoodsByID.c(118,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  order_view.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“order_view.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\order_view.c(52,55): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\order_view.c(50,21): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\order_view.c(132,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  profit_analysis.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“profit_analysis.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(16,5): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(45,16): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(147,9): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(215,35): warning C4133: “函数”: 从“CategoryProfit *”到“CategoryProfit *”的类型不兼容
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(217,21): warning C4133: “函数”: 从“CategoryProfit *”到“CategoryProfit *”的类型不兼容
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(222,28): warning C4133: “函数”: 从“CategoryProfit *”到“CategoryProfit *”的类型不兼容
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(195,17): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(210,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(214,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(220,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(256,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(275,17): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(288,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(292,13): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(297,13): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(358,13): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(384,17): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_analysis.c(403,21): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  profit_chart_gdi.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“profit_chart_gdi.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(112,64): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(120,51): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(107,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(116,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(150,22): warning C4133: “=”: 从“const char *”到“LPCWSTR”的类型不兼容
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(175,21): warning C4133: “函数”: 从“const char *”到“LPCWSTR”的类型不兼容
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(146,17): warning C4133: “初始化”: 从“unsigned short [17]”到“const char *”的类型不兼容
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(262,64): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(269,51): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(259,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(266,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(429,64): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(436,50): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(426,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(433,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(587,76): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(576,28): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(582,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(723,69): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(730,56): warning C4267: “函数”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\profit_chart_gdi.c(727,13): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  shop_cart.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“shop_cart.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.h(10,2): warning C4091: “extern ”: 没有声明变量时忽略“item_node”的左侧
+  (编译源文件“shop_cart.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(46,13): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(57,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(63,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(64,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(98,3): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(99,3): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(40,14): warning C4101: “tempGoods”: 未引用的局部变量
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(226,2): warning C4013: “generateOrderId”未定义；假设外部返回 int
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(151,12): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(198,2): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(210,2): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(217,12): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(227,2): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(242,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(243,3): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.c(287,2): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  stock_warning.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“stock_warning.c”)
+  
+  user.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(31,23): warning C4146: 一元负运算符应用于无符号类型，结果仍为无符号类型
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(56,5): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(258,9): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(268,13): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(274,19): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(300,10): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(314,10): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(328,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(344,13): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(351,13): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(360,14): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user.c(379,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  user_consumption.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“user_consumption.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_consumption.c(58,13): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_consumption.c(88,9): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  user_menu.c
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\establish.h(11,2): warning C4091: “extern ”: 没有声明变量时忽略“item”的左侧
+  (编译源文件“user_menu.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\shop_cart.h(10,2): warning C4091: “extern ”: 没有声明变量时忽略“item_node”的左侧
+  (编译源文件“user_menu.c”)
+  
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(22,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(31,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(33,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(51,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(60,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(62,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(64,5): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(166,17): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(172,21): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(174,21): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\user_menu.c(181,31): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+  正在生成代码...
+  Project1.vcxproj -> C:\Users\28097\Desktop\编译一遍过小组_第三次汇报\Project1\x64\Debug\Project1.exe
