@@ -1,0 +1,50 @@
+{
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/**"
+      ],
+      "defines": [
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "cStandard": "c17",
+      "cppStandard": "gnu++14",
+      "intelliSenseMode": "windows-gcc-x86",
+      "configurationProvider": "ms-vscode.makefile-tools"
+    },
+    {
+      "name": "STM32",
+      "includePath": [
+        "BSP",
+        "BSP/can",
+        "BSP/ecoder",
+        "Core/Inc",
+        "Drivers/CMSIS/Device/ST/STM32F4xx/Include",
+        "Drivers/CMSIS/Include",
+        "Drivers/STM32F4xx_HAL_Driver/Inc",
+        "Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
+        "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS",
+        "Middlewares/Third_Party/FreeRTOS/Source/include",
+        "Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
+        "application/chassic",
+        "application/contor",
+        "application/gimbal",
+        "application/shoot",
+        "application/watching", 
+        "module/algorithm",
+        "module/motor",
+        "module/C_board",
+        "module/remote"
+      ],
+      "defines": [
+        "STM32F407xx",
+        "USE_HAL_DRIVER"
+      ],
+      "compilerPath": "D:\\MSYS64\\MINGW64\\BIN\\arm-none-eabi-gcc.EXE"
+    }
+  ],
+  "version": 4
+}
