@@ -1,0 +1,77 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.mytools.transferapp"
+4    android:versionCode="5"
+5    android:versionName="1.0.4" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="23"
+9        android:targetSdkVersion="35" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:2:5-67
+11-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:2:22-64
+12    <uses-permission android:name="android.permission.CAMERA" />
+12-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:3:5-65
+12-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:3:22-62
+13    <uses-permission
+13-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:4:5-107
+14        android:name="android.permission.READ_EXTERNAL_STORAGE"
+14-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:4:22-77
+15        android:maxSdkVersion="32" />
+15-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:4:78-104
+16    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+16-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:5:5-76
+16-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:5:22-73
+17
+18    <uses-feature
+18-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:7:5-85
+19        android:name="android.hardware.camera"
+19-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:7:19-57
+20        android:required="false" />
+20-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:7:58-82
+21
+22    <application
+22-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:9:5-27:19
+23        android:allowBackup="true"
+23-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:10:9-35
+24        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+24-->[androidx.core:core:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\d809abe9f0cfcccdff56b59b929d67fa\transformed\core-1.1.0\AndroidManifest.xml:24:18-86
+25        android:debuggable="true"
+26        android:extractNativeLibs="false"
+27        android:hardwareAccelerated="true"
+27-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:11:9-43
+28        android:icon="@drawable/ic_launcher"
+28-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:12:9-45
+29        android:label="@string/app_name"
+29-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:13:9-41
+30        android:roundIcon="@drawable/ic_launcher"
+30-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:14:9-50
+31        android:supportsRtl="true"
+31-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:15:9-35
+32        android:theme="@style/AppTheme"
+32-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:16:9-40
+33        android:usesCleartextTraffic="true" >
+33-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:17:9-44
+34        <activity
+34-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:18:9-26:20
+35            android:name="com.mytools.transferapp.MainActivity"
+35-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:19:13-41
+36            android:configChanges="keyboardHidden|orientation|screenSize"
+36-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:20:13-74
+37            android:exported="true" >
+37-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:21:13-36
+38            <intent-filter>
+38-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:22:13-25:29
+39                <action android:name="android.intent.action.MAIN" />
+39-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:23:17-69
+39-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:23:25-66
+40
+41                <category android:name="android.intent.category.LAUNCHER" />
+41-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:24:17-77
+41-->D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:24:27-74
+42            </intent-filter>
+43        </activity>
+44    </application>
+45
+46</manifest>

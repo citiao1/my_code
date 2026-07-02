@@ -1,0 +1,106 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:1:1-28:12
+INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:1:1-28:12
+INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:1:1-28:12
+INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:1:1-28:12
+MERGED from [androidx.webkit:webkit:1.12.1] C:\Users\28097\.gradle\caches\8.10.2\transforms\9f3103e15b1350f63c246a34ad13830b\transformed\webkit-1.12.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.core:core:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\d809abe9f0cfcccdff56b59b929d67fa\transformed\core-1.1.0\AndroidManifest.xml:17:1-26:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\62c87565bb3d6d87151528fb69cbe460\transformed\versionedparcelable-1.1.0\AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\28097\.gradle\caches\8.10.2\transforms\caf6231dbc57ad75909e3b02c3716fb1\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.0.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\399843c2ee77a9ccce0ec414045984a3\transformed\lifecycle-runtime-2.0.0\AndroidManifest.xml:17:1-22:12
+	package
+		INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:1:11-69
+uses-permission#android.permission.INTERNET
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:2:5-67
+	android:name
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:2:22-64
+uses-permission#android.permission.CAMERA
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:3:5-65
+	android:name
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:3:22-62
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:4:5-107
+	android:maxSdkVersion
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:4:78-104
+	android:name
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:4:22-77
+uses-permission#android.permission.READ_MEDIA_IMAGES
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:5:5-76
+	android:name
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:5:22-73
+uses-feature#android.hardware.camera
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:7:5-85
+	android:required
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:7:58-82
+	android:name
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:7:19-57
+application
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:9:5-27:19
+INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:9:5-27:19
+MERGED from [androidx.core:core:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\d809abe9f0cfcccdff56b59b929d67fa\transformed\core-1.1.0\AndroidManifest.xml:24:5-89
+MERGED from [androidx.core:core:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\d809abe9f0cfcccdff56b59b929d67fa\transformed\core-1.1.0\AndroidManifest.xml:24:5-89
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\62c87565bb3d6d87151528fb69cbe460\transformed\versionedparcelable-1.1.0\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\62c87565bb3d6d87151528fb69cbe460\transformed\versionedparcelable-1.1.0\AndroidManifest.xml:24:5-25:19
+	android:extractNativeLibs
+		INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\d809abe9f0cfcccdff56b59b929d67fa\transformed\core-1.1.0\AndroidManifest.xml:24:18-86
+	android:supportsRtl
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:15:9-35
+	android:label
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:13:9-41
+	android:hardwareAccelerated
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:11:9-43
+	android:roundIcon
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:14:9-50
+	android:icon
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:12:9-45
+	android:allowBackup
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:10:9-35
+	android:theme
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:16:9-40
+	android:usesCleartextTraffic
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:17:9-44
+activity#com.mytools.transferapp.MainActivity
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:18:9-26:20
+	android:exported
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:21:13-36
+	android:configChanges
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:20:13-74
+	android:name
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:19:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:22:13-25:29
+action#android.intent.action.MAIN
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:23:17-69
+	android:name
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:23:25-66
+category#android.intent.category.LAUNCHER
+ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:24:17-77
+	android:name
+		ADDED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml:24:27-74
+uses-sdk
+INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml
+INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml
+MERGED from [androidx.webkit:webkit:1.12.1] C:\Users\28097\.gradle\caches\8.10.2\transforms\9f3103e15b1350f63c246a34ad13830b\transformed\webkit-1.12.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.webkit:webkit:1.12.1] C:\Users\28097\.gradle\caches\8.10.2\transforms\9f3103e15b1350f63c246a34ad13830b\transformed\webkit-1.12.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\d809abe9f0cfcccdff56b59b929d67fa\transformed\core-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\d809abe9f0cfcccdff56b59b929d67fa\transformed\core-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\62c87565bb3d6d87151528fb69cbe460\transformed\versionedparcelable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\62c87565bb3d6d87151528fb69cbe460\transformed\versionedparcelable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\28097\.gradle\caches\8.10.2\transforms\caf6231dbc57ad75909e3b02c3716fb1\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\28097\.gradle\caches\8.10.2\transforms\caf6231dbc57ad75909e3b02c3716fb1\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.0.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\399843c2ee77a9ccce0ec414045984a3\transformed\lifecycle-runtime-2.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.0.0] C:\Users\28097\.gradle\caches\8.10.2\transforms\399843c2ee77a9ccce0ec414045984a3\transformed\lifecycle-runtime-2.0.0\AndroidManifest.xml:20:5-44
+	android:targetSdkVersion
+		INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\my_code\my_code\my_tools\transfer-app\android-webview\app\src\main\AndroidManifest.xml
