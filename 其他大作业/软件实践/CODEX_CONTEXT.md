@@ -1,6 +1,6 @@
 # 应用软件实践文件夹说明
 
-生成时间：2026-07-05
+生成时间：2026-07-06
 
 本目录是《应用软件实践》课程资料集合，位置通常为：
 
@@ -30,6 +30,11 @@ D:\my_code\其他大作业\软件实践
 │  ├─ 第一部分-T0-说明.ppt
 │  ├─ 第二部分-T1-程序设计基本方法.ppt
 │  ├─ 第三部分-T2-Python程序实例解析.ppt
+│  ├─ 第四部分-tensorflow安装.pptx
+│  └─ 第五部分-库安装与tf导入.pptx
+├─ 环境/
+│  ├─ pycharm使用(1).pptx
+│  ├─ PyTorch-6.29(1).pptx
 │  ├─ 第四部分-tensorflow安装.pptx
 │  └─ 第五部分-库安装与tf导入.pptx
 ├─ python PPT/
@@ -74,6 +79,15 @@ D:\my_code\其他大作业\软件实践
 - `T9`：numpy、图像数组处理、matplotlib、科学计算可视化、雷达图。
 - `TA`：requests、BeautifulSoup、网络爬虫和自动化。
 
+### 环境
+
+这是 2026-07-06 新增的环境配置课件目录，主要讲开发工具和深度学习环境。
+
+- `pycharm使用(1).pptx`：PyCharm Community/Professional 区别、PyCharm 下载和安装、Python 解释器安装、创建工程、配置解释器、运行 `test.py`、在 PyCharm 中安装第三方库。
+- `PyTorch-6.29(1).pptx`：PyTorch 核心概念、安装流程、张量运算、自动微分、GPU 加速、模型结构、训练流程和评估方法。
+- `第四部分-tensorflow安装.pptx`：Anaconda3、TensorFlow CPU/GPU 安装、NVIDIA 驱动、CUDA/cuDNN 和环境变量。
+- `第五部分-库安装与tf导入.pptx`：pip 安装库、Spyder 解释器路径配置、`spyder_kernels` 和 TensorFlow 导入验证。
+
 ## 示例程序分组
 
 `教材行文代码` 是教材配套代码库，可以按能力线索快速定位：
@@ -90,15 +104,23 @@ D:\my_code\其他大作业\软件实践
 
 ## 本机环境状态
 
-在本机 `C:\Users\123\AppData\Local\Programs\Python\Python311\python.exe` 下已验证：
+不要把课程重型库直接装进系统 Python 的 C 盘 `site-packages`。本机现在采用 D 盘虚拟环境：
 
-- Python 3.11.9 可用。
-- pip 可用。
+```text
+D:\python_envs\software_practice_py311
+```
+
+已验证状态：
+
+- 系统 Python 3.11.9 可用，位置是 `C:\Users\123\AppData\Local\Programs\Python\Python311\python.exe`，只作为创建虚拟环境的基础解释器。
+- 课程虚拟环境 Python 可用，位置是 `D:\python_envs\software_practice_py311\Scripts\python.exe`。
+- PyCharm Community Edition 2025.2.6.1 已安装到 D 盘：`D:\Applications\JetBrains\PyCharm Community`。
 - Git 可用。
 - CodeGraph CLI 可用。
-- 未检测到 `conda` 命令；如果老师强制要求 Anaconda/Spyder，需要另装 Anaconda 或 Miniconda。
+- NVIDIA RTX 4060 和 `nvidia-smi` 可用；未检测到 `nvcc`。
+- 未检测到 `conda` 命令；当前用 `venv + pip` 管理课程环境。如果老师强制要求 Anaconda/Spyder，再另装 Anaconda 或 Miniconda，安装路径也应放 D 盘。
 
-已安装并 import 验证通过的课程常用库：
+在 D 盘虚拟环境中已安装并 import 验证通过的课程常用库：
 
 - `numpy`
 - `Pillow`，导入名为 `PIL`
@@ -108,26 +130,35 @@ D:\my_code\其他大作业\软件实践
 - `beautifulsoup4`，导入名为 `bs4`
 - `scikit-learn`，导入名为 `sklearn`
 - `tensorflow`
+- `torch`
+- `torchvision`
+- `torchaudio`
 - `opencv-python`，导入名为 `cv2`
 - `pydicom`
 - `SimpleITK`
 
+当前关键版本：
+
+- TensorFlow：`2.21.0`
+- PyTorch：`torch 2.11.0+cpu`
+- torchvision：`0.26.0+cpu`
+- torchaudio：`2.11.0+cpu`
+
+注意：这台 Windows 机器虽然有 NVIDIA GPU，但 TensorFlow 2.21 在 Windows 原生环境下不会使用 GPU。PyTorch 当前安装 CPU 版，足够完成课件里的张量、模型结构、调试和基础训练练习。曾尝试安装 PyTorch CUDA 12.8 版，但官方 `torch-2.11.0+cu128` wheel 约 2.7GB，下载超时，未完成安装。
+
 验证命令：
-
-```powershell
-python - <<'PY'
-import numpy, PIL, matplotlib, jieba, requests, bs4, sklearn, tensorflow, cv2, pydicom, SimpleITK
-print("course env ok")
-PY
-```
-
-PowerShell 中更稳妥的写法：
 
 ```powershell
 @'
 import numpy, PIL, matplotlib, jieba, requests, bs4, sklearn, tensorflow, cv2, pydicom, SimpleITK
+import torch, torchvision, torchaudio
+print("tensorflow:", tensorflow.__version__)
+print("torch:", torch.__version__)
+print("torchvision:", torchvision.__version__)
+print("torchaudio:", torchaudio.__version__)
+print("torch cuda available:", torch.cuda.is_available())
 print("course env ok")
-'@ | python -
+'@ | D:\python_envs\software_practice_py311\Scripts\python.exe -
 ```
 
 ## 建议答辩项目方向
@@ -161,10 +192,42 @@ codegraph sync D:\my_code
 codegraph node -p D:\my_code -f "其他大作业/软件实践/CODEX_CONTEXT.md" --limit 220
 ```
 
-如果要补环境：
+如果要补环境，优先在 D 盘创建虚拟环境，不要直接装进 C 盘系统 Python：
 
 ```powershell
-python -m pip install numpy matplotlib jieba scikit-learn opencv-python pydicom SimpleITK tensorflow pillow requests beautifulsoup4
+New-Item -ItemType Directory -Force -Path D:\python_envs | Out-Null
+python -m venv D:\python_envs\software_practice_py311
+D:\python_envs\software_practice_py311\Scripts\python.exe -m pip install --upgrade pip
+
+New-Item -ItemType Directory -Force -Path D:\pip-tmp | Out-Null
+$env:TEMP = "D:\pip-tmp"
+$env:TMP = "D:\pip-tmp"
+D:\python_envs\software_practice_py311\Scripts\python.exe -m pip install --no-cache-dir numpy matplotlib jieba scikit-learn opencv-python pydicom SimpleITK tensorflow pillow requests beautifulsoup4 torch==2.11.0 torchvision==0.26.0 torchaudio==2.11.0
+Remove-Item -LiteralPath D:\pip-tmp -Recurse -Force -ErrorAction SilentlyContinue
+```
+
+如果要安装 PyCharm Community，也指定 D 盘路径：
+
+```powershell
+winget install --id JetBrains.PyCharm.Community -e --location "D:\Applications\JetBrains\PyCharm Community" --accept-package-agreements --accept-source-agreements
+```
+
+环境检查命令：
+
+```powershell
+Get-Command python,pip,conda,pycharm,winget,nvidia-smi,nvcc -ErrorAction SilentlyContinue
+
+@'
+import tensorflow as tf
+import torch, torchvision, torchaudio
+print("tensorflow:", tf.__version__)
+print("tensorflow gpus:", tf.config.list_physical_devices("GPU"))
+print("torch:", torch.__version__)
+print("torchvision:", torchvision.__version__)
+print("torchaudio:", torchaudio.__version__)
+print("torch cuda available:", torch.cuda.is_available())
+print("torch cuda version:", torch.version.cuda)
+'@ | D:\python_envs\software_practice_py311\Scripts\python.exe -
 ```
 
 如果要快速理解课程，优先读：
@@ -172,5 +235,7 @@ python -m pip install numpy matplotlib jieba scikit-learn opencv-python pydicom 
 1. `CODEX_CONTEXT.md`
 2. `应用软件实践/第二部分-T1-程序设计基本方法.ppt`
 3. `应用软件实践/第三部分-T2-Python程序实例解析.ppt`
-4. `应用软件实践/第四部分-tensorflow安装.pptx`
-5. `教材行文代码/P245-e17.1HandDrawPic.py`
+4. `环境/pycharm使用(1).pptx`
+5. `环境/PyTorch-6.29(1).pptx`
+6. `应用软件实践/第四部分-tensorflow安装.pptx`
+7. `教材行文代码/P245-e17.1HandDrawPic.py`
