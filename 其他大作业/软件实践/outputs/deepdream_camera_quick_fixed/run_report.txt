@@ -3,36 +3,24 @@ TensorFlow DeepDream Camera Run Report
 TensorFlow version: 2.21.0
 Keras home: D:\keras-cache
 Input image: D:\my_code\my_code\其他大作业\软件实践\教材行文代码\birdnest.jpg
-Working image size: 256x170
+Working image size: 512x340
 Output directory: D:\my_code\my_code\其他大作业\软件实践\outputs\deepdream_camera_quick_fixed
-Preset argument: all
-Iterations per octave: 2
-Octaves: 1
+Preset argument: wild
+Iterations per octave: 20
+Octaves: 3
 Octave scale: 1.4
-Step size: 0.01
-Elapsed seconds: 3.60
+Step size: 0.03
+Elapsed seconds: 27.64
 
 Devices:
 - CPU: /physical_device:CPU:0
 
 Preset results:
-- soft:
-  description: Light texture enhancement with gentle low-level patterns.
-  layers: {'mixed2': 0.7, 'mixed3': 0.3}
-  first loss: 0.5907
-  final loss: 0.6558
-  output: dream_soft.png
-- classic:
-  description: Balanced DeepDream look with recognizable neural patterns.
-  layers: {'mixed3': 0.4, 'mixed5': 0.9, 'mixed7': 1.2}
-  first loss: 0.6797
-  final loss: 0.8118
-  output: dream_classic.png
 - wild:
   description: Stronger hallucination effect from deeper Inception features.
   layers: {'mixed5': 0.8, 'mixed7': 1.2, 'mixed9': 1.8}
-  first loss: 0.4684
-  final loss: 0.6432
+  first loss: 0.4586
+  final loss: 2.1289
   output: dream_wild.png
 
 Explanation for presentation:

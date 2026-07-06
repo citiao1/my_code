@@ -48,7 +48,7 @@ tf_deepdream_camera.py
       └─ run_report.txt
 ```
 
-`outputs/deepdream_camera_quick_fixed/` 是已经验证过的快速运行结果。正式展示时可以重新运行脚本生成更高清的结果。
+`outputs/deepdream_camera_quick_fixed/` 是已经验证过的强效果展示结果。它使用 `wild` 风格和更大的步长，视觉差异会比快速冒烟测试明显很多。
 
 ## 运行环境
 
@@ -80,16 +80,16 @@ D:\python_envs\software_practice_py311\Scripts\python.exe -m pip install tensorf
 
 ## 推荐运行命令
 
-快速验证：
+快速验证程序是否能跑：
 
 ```powershell
-D:\python_envs\software_practice_py311\Scripts\python.exe tf_deepdream_camera.py --iterations 2 --octaves 1 --max-size 256 --output-dir outputs/deepdream_camera_quick_fixed
+D:\python_envs\software_practice_py311\Scripts\python.exe tf_deepdream_camera.py --preset classic --iterations 2 --octaves 1 --max-size 256 --output-dir outputs/deepdream_camera_smoke
 ```
 
-课堂展示推荐：
+课堂展示推荐，效果更明显：
 
 ```powershell
-D:\python_envs\software_practice_py311\Scripts\python.exe tf_deepdream_camera.py --preset all --iterations 20 --octaves 3 --max-size 768
+D:\python_envs\software_practice_py311\Scripts\python.exe tf_deepdream_camera.py --preset wild --iterations 20 --octaves 3 --max-size 512 --step 0.03 --output-dir outputs/deepdream_camera_quick_fixed
 ```
 
 如果电脑较慢，可以运行中等参数：
@@ -151,10 +151,10 @@ D:\python_envs\software_practice_py311\Scripts\python.exe tf_deepdream_camera.py
 
 ## 已验证结果
 
-已经在当前电脑上完成快速测试：
+已经在当前电脑上完成强效果展示测试：
 
 ```powershell
-D:\python_envs\software_practice_py311\Scripts\python.exe tf_deepdream_camera.py --iterations 2 --octaves 1 --max-size 256 --output-dir outputs/deepdream_camera_quick_fixed
+D:\python_envs\software_practice_py311\Scripts\python.exe tf_deepdream_camera.py --preset wild --iterations 20 --octaves 3 --max-size 512 --step 0.03 --output-dir outputs/deepdream_camera_quick_fixed
 ```
 
 验证结果：
@@ -162,7 +162,9 @@ D:\python_envs\software_practice_py311\Scripts\python.exe tf_deepdream_camera.py
 - 脚本可以正常运行。
 - TensorFlow 版本：`2.21.0`。
 - InceptionV3 权重已下载到 `D:\keras-cache`。
-- 已生成 `dream_soft.png`、`dream_classic.png`、`dream_wild.png`。
+- 已生成 `dream_wild.png`。
 - 已生成 `comparison_grid.png` 和 `run_report.txt`。
+
+如果只使用 `--iterations 2 --octaves 1 --max-size 256`，图像变化会很轻微，那只是用来确认程序能运行的冒烟测试，不适合作为最终展示图。
 
 注意：TensorFlow 2.11 以后在原生 Windows 上通常不直接使用 CUDA GPU。当前项目即使使用 CPU 也能运行，显卡不是必须条件。
