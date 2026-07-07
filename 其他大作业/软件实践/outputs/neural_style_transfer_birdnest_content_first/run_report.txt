@@ -1,0 +1,38 @@
+TensorFlow Neural Style Transfer Run Report
+============================================
+TensorFlow version: 2.21.0
+Keras home: D:\keras-cache
+Content image: D:\my_code\其他大作业\软件实践\教材行文代码\birdnest.jpg
+Style image: D:\my_code\其他大作业\软件实践\outputs\neural_style_transfer_birdnest_content_first\style_reference_kandinsky.jpg
+Output directory: D:\my_code\其他大作业\软件实践\outputs\neural_style_transfer_birdnest_content_first
+Preset: balanced
+Preset description: Keeps the content recognizable while adding clear brush texture.
+Iterations: 180
+Max size: 384
+Initialization: content
+Learning rate: 45.0
+Content weight: 5e-07
+Style weight: 8e-07
+Total variation weight: 2e-06
+Elapsed seconds: 68.85
+
+Devices:
+- CPU: /physical_device:CPU:0
+
+Final losses:
+- total: 7.0619
+- content: 5979.5493
+- style: 515045.5625
+- total variation: 3323415.2500
+
+Generated files:
+- content.png
+- style_reference.png
+- stylized_result.png
+- comparison_grid.png
+- run_report.txt
+
+Presentation summary:
+Neural style transfer freezes a pretrained VGG19 network. It does not train the model weights.
+Instead, it optimizes the output image so deep features stay close to the content photo,
+while Gram matrices of several convolution layers match the texture statistics of the style image.

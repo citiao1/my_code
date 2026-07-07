@@ -1,0 +1,27 @@
+TensorFlow Hub Neural Style Transfer Run Report
+================================================
+TensorFlow version: 2.21.0
+Keras home: D:\keras-cache
+TensorFlow Hub cache: C:/Users/123/tfhub_cache
+Content image: D:\my_code\其他大作业\软件实践\outputs\neural_style_transfer_demo_labrador\content_demo_labrador.jpg
+Style image: D:\my_code\其他大作业\软件实践\outputs\neural_style_transfer_hub_final\style_reference_kandinsky.jpg
+Hub model: https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2
+Output directory: D:\my_code\其他大作业\软件实践\outputs\neural_style_transfer_hub_final
+Max size: 512
+Elapsed seconds: 10.55
+
+Devices:
+- CPU: /physical_device:CPU:0
+
+Generated files:
+- content.png
+- style_reference.png
+- stylized_result.png
+- comparison_grid.png
+- run_report.txt
+
+Presentation summary:
+This mode uses a pretrained TensorFlow Hub arbitrary image stylization network.
+The model has already learned how to transfer visual texture from a style image.
+At runtime the program only performs inference: one content image plus one style image produces a stylized output image.
+The same file also contains an optimize mode that shows the VGG19 content/style loss idea step by step.

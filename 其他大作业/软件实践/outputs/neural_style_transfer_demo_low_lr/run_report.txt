@@ -1,0 +1,38 @@
+TensorFlow Neural Style Transfer Run Report
+============================================
+TensorFlow version: 2.21.0
+Keras home: D:\keras-cache
+Content image: D:\my_code\其他大作业\软件实践\outputs\neural_style_transfer_demo_labrador\content_demo_labrador.jpg
+Style image: D:\my_code\其他大作业\软件实践\outputs\neural_style_transfer_demo_low_lr\style_reference_kandinsky.jpg
+Output directory: D:\my_code\其他大作业\软件实践\outputs\neural_style_transfer_demo_low_lr
+Preset: balanced
+Preset description: Keeps the content recognizable while adding clear brush texture.
+Iterations: 320
+Max size: 384
+Initialization: content
+Learning rate: 8.0
+Content weight: 1e-05
+Style weight: 1.5e-06
+Total variation weight: 4e-07
+Elapsed seconds: 149.73
+
+Devices:
+- CPU: /physical_device:CPU:0
+
+Final losses:
+- total: 0.8728
+- content: 3887.2812
+- style: 141523.1094
+- total variation: 1554060.3750
+
+Generated files:
+- content.png
+- style_reference.png
+- stylized_result.png
+- comparison_grid.png
+- run_report.txt
+
+Presentation summary:
+Neural style transfer freezes a pretrained VGG19 network. It does not train the model weights.
+Instead, it optimizes the output image so deep features stay close to the content photo,
+while Gram matrices of several convolution layers match the texture statistics of the style image.
