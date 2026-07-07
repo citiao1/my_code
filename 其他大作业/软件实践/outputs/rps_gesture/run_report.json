@@ -1,0 +1,48 @@
+{
+  "time": "2026-07-07T20:56:31",
+  "data_dir": "D:\\my_code\\my_code\\\u5176\u4ed6\u5927\u4f5c\u4e1a\\\u8f6f\u4ef6\u5b9e\u8df5\\gesture_data",
+  "counts": {
+    "rock": 500,
+    "paper": 500,
+    "scissors": 500
+  },
+  "train_counts": {
+    "rock": 400,
+    "paper": 400,
+    "scissors": 400
+  },
+  "validation_counts": {
+    "rock": 100,
+    "paper": 100,
+    "scissors": 100
+  },
+  "classes": [
+    "rock",
+    "paper",
+    "scissors"
+  ],
+  "image_size": 128,
+  "epochs_ran": 28,
+  "validation_loss": 0.012577595189213753,
+  "validation_accuracy": 0.996666669845581,
+  "confusion_matrix_rows_true_columns_pred": [
+    [
+      100,
+      0,
+      0
+    ],
+    [
+      0,
+      100,
+      0
+    ],
+    [
+      0,
+      1,
+      99
+    ]
+  ],
+  "hand_preprocess": true,
+  "pretrained_model": false,
+  "framework": "TensorFlow 2.21.0"
+}

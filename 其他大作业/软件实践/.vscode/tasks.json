@@ -1,0 +1,60 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Neural Style: choose pictures",
+      "type": "process",
+      "command": "python",
+      "args": [
+        "tf_neural_style_transfer.py",
+        "--method",
+        "hub",
+        "--content-image",
+        "${input:contentImage}",
+        "--style-image",
+        "${input:styleImage}",
+        "--max-size",
+        "512",
+        "--output-dir",
+        "outputs/neural_style_transfer_vscode"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Neural Style: demo content",
+      "type": "process",
+      "command": "python",
+      "args": [
+        "tf_neural_style_transfer.py",
+        "--method",
+        "hub",
+        "--demo-content",
+        "--max-size",
+        "512",
+        "--output-dir",
+        "outputs/neural_style_transfer_vscode_demo"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "contentImage",
+      "type": "promptString",
+      "description": "Content image path, relative to the project folder",
+      "default": "picture/content.jpg"
+    },
+    {
+      "id": "styleImage",
+      "type": "promptString",
+      "description": "Style image path, relative to the project folder",
+      "default": "picture/style.jpg"
+    }
+  ]
+}

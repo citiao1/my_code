@@ -1,0 +1,16 @@
+{
+  "time": "2026-07-07T20:58:34",
+  "label": "rock",
+  "display_label": "石头",
+  "response": "paper",
+  "display_response": "布",
+  "confidence": 0.9999984502792358,
+  "random_result": false,
+  "probabilities": {
+    "rock": 0.9999984502792358,
+    "paper": 6.275916319964381e-08,
+    "scissors": 1.3990696743348963e-06
+  },
+  "sampled_frames": 20,
+  "capture_duration": 0.8
+}

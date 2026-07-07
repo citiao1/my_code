@@ -1,12 +1,29 @@
 import argparse
 import os
 import random
+import tempfile
 import urllib.request
 from pathlib import Path
 from time import perf_counter
 
-# Keep Keras model downloads and caches away from the system drive.
-os.environ.setdefault("KERAS_HOME", r"D:\keras-cache")
+PROJECT_DIR = Path(__file__).resolve().parent
+
+
+def default_model_cache_dir() -> Path:
+    for candidate in [
+        PROJECT_DIR / ".model-cache",
+        Path.home() / ".software_practice_model_cache",
+        Path(tempfile.gettempdir()) / "software_practice_model_cache",
+    ]:
+        if candidate.as_posix().isascii():
+            return candidate
+    return PROJECT_DIR / ".model-cache"
+
+
+# Keep model downloads out of machine-specific hard-coded drives. TensorFlow Hub
+# is happier when the cache path is ASCII, so non-ASCII project paths fall back.
+MODEL_CACHE_DIR = default_model_cache_dir()
+os.environ.setdefault("KERAS_HOME", str(MODEL_CACHE_DIR / "keras"))
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "1")
 
 import numpy as np
@@ -450,7 +467,7 @@ def run_hub_style_transfer(
             "python -m pip install tensorflow-hub"
         ) from exc
 
-    cache_dir = (Path.home() / "tfhub_cache").as_posix()
+    cache_dir = (MODEL_CACHE_DIR / "tfhub").as_posix()
     os.environ.setdefault("TFHUB_CACHE_DIR", cache_dir)
     Path(cache_dir).mkdir(parents=True, exist_ok=True)
 
