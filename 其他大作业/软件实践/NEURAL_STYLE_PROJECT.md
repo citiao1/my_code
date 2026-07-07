@@ -28,10 +28,18 @@ tf_neural_style_transfer.py
 
 ## 运行环境
 
-当前虚拟环境：
+本机已验证过的虚拟环境：
 
 ```powershell
 D:\python_envs\software_practice_py311\Scripts\python.exe
+```
+
+换到新电脑时不需要照抄这个路径。进入项目目录后，使用新电脑自己的 Python 或已激活的虚拟环境即可：
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install tensorflow tensorflow-hub numpy pillow
 ```
 
 已验证依赖：
@@ -52,30 +60,69 @@ python -m pip install tensorflow tensorflow-hub numpy pillow
 
 注意：当前原生 Windows 环境下 TensorFlow 2.21.0 没有使用 NVIDIA GPU。4060 要用于 TensorFlow GPU，建议后续走 WSL2/Linux 环境。
 
+## 另一台电脑同步和运行
+
+在另一台电脑上同步时，推荐按下面顺序操作：
+
+```powershell
+git clone https://github.com/citiao1/my_code.git
+cd "my_code\其他大作业\软件实践"
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install tensorflow tensorflow-hub numpy pillow
+```
+
+如果仓库已经 clone 过，只需要进入仓库后拉取最新内容：
+
+```powershell
+git pull
+cd "其他大作业\软件实践"
+```
+
+本项目已经把常用演示输出同步到仓库中，例如：
+
+```text
+outputs/neural_style_transfer_vscode/
+outputs/neural_style_transfer_hub_fcity_astro/
+outputs/neural_style_transfer_default_python_smoke/
+```
+
+因此另一台电脑即使暂时不重新运行程序，也可以直接打开这些目录里的 `comparison_grid.png` 查看效果。
+
+需要注意的是，TensorFlow Hub 下载的模型缓存不会提交到仓库。第一次在新电脑运行 `hub` 模式时，程序会自动下载模型，可能需要等待一会儿；下载完成后后续运行会快很多。脚本会优先使用项目下的 `.model-cache`，如果当前路径包含中文导致缓存路径不合适，会自动退到用户目录或系统临时目录。
+
+同步后建议先运行一次轻量验证：
+
+```powershell
+.\.venv\Scripts\python.exe tf_neural_style_transfer.py --method hub --demo-content --max-size 256 --output-dir outputs/neural_style_transfer_sync_test
+```
+
+如果这个命令能生成 `comparison_grid.png`，就说明新电脑的环境和依赖已经可用。
+
 ## 推荐展示命令
 
 使用 TensorFlow 官方示例照片和 Kandinsky 风格图，效果最好：
 
 ```powershell
-D:\python_envs\software_practice_py311\Scripts\python.exe tf_neural_style_transfer.py --method hub --demo-content --max-size 512 --output-dir outputs/neural_style_transfer_hub_demo
+python tf_neural_style_transfer.py --method hub --demo-content --max-size 512 --output-dir outputs/neural_style_transfer_hub_demo
 ```
 
 使用已经下载好的本地 demo 内容图：
 
 ```powershell
-D:\python_envs\software_practice_py311\Scripts\python.exe tf_neural_style_transfer.py --method hub --content-image outputs/neural_style_transfer_demo_labrador/content_demo_labrador.jpg --max-size 512 --output-dir outputs/neural_style_transfer_hub_final
+python tf_neural_style_transfer.py --method hub --content-image outputs/neural_style_transfer_demo_labrador/content_demo_labrador.jpg --max-size 512 --output-dir outputs/neural_style_transfer_hub_final
 ```
 
 使用本课程素材鸟巢图也能跑，但夜景太暗，展示效果一般：
 
 ```powershell
-D:\python_envs\software_practice_py311\Scripts\python.exe tf_neural_style_transfer.py --method hub --content-image 教材行文代码/birdnest.jpg --max-size 512 --output-dir outputs/neural_style_transfer_birdnest_hub
+python tf_neural_style_transfer.py --method hub --content-image 教材行文代码/birdnest.jpg --max-size 512 --output-dir outputs/neural_style_transfer_birdnest_hub
 ```
 
 讲原理时可运行手写优化版：
 
 ```powershell
-D:\python_envs\software_practice_py311\Scripts\python.exe tf_neural_style_transfer.py --method optimize --demo-content --iterations 120 --max-size 384 --preset balanced --output-dir outputs/neural_style_transfer_optimize_demo
+python tf_neural_style_transfer.py --method optimize --demo-content --iterations 120 --max-size 384 --preset balanced --output-dir outputs/neural_style_transfer_optimize_demo
 ```
 
 ## 已验证输出

@@ -1,0 +1,149 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "手势比赛：启动界面",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/tf_rps_gesture_classifier.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "python": "D:\\python_envs\\software_practice_py311\\Scripts\\python.exe",
+      "args": [
+        "ui"
+      ]
+    },
+    {
+      "name": "手势比赛：重新训练模型",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/tf_rps_gesture_classifier.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "python": "D:\\python_envs\\software_practice_py311\\Scripts\\python.exe",
+      "args": [
+        "train"
+      ]
+    },
+    {
+      "name": "手势比赛：补采到每类500张",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/tf_rps_gesture_classifier.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "python": "D:\\python_envs\\software_practice_py311\\Scripts\\python.exe",
+      "args": [
+        "collect",
+        "--class-name",
+        "all",
+        "--target-count",
+        "500"
+      ]
+    },
+    {
+      "name": "手势比赛：重采剪刀到500张",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/tf_rps_gesture_classifier.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "python": "D:\\python_envs\\software_practice_py311\\Scripts\\python.exe",
+      "args": [
+        "collect",
+        "--class-name",
+        "scissors",
+        "--target-count",
+        "500",
+        "--replace-existing"
+      ]
+    },
+    {
+      "name": "手势比赛：查看状态",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/tf_rps_gesture_classifier.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "python": "D:\\python_envs\\software_practice_py311\\Scripts\\python.exe",
+      "args": [
+        "status"
+      ]
+    },
+    {
+      "name": "Neural Style: choose pictures",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/tf_neural_style_transfer.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "args": [
+        "--method",
+        "hub",
+        "--content-image",
+        "${input:contentImage}",
+        "--style-image",
+        "${input:styleImage}",
+        "--max-size",
+        "512",
+        "--output-dir",
+        "outputs/neural_style_transfer_vscode"
+      ]
+    },
+    {
+      "name": "Neural Style: demo content",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/tf_neural_style_transfer.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "args": [
+        "--method",
+        "hub",
+        "--demo-content",
+        "--max-size",
+        "512",
+        "--output-dir",
+        "outputs/neural_style_transfer_vscode_demo"
+      ]
+    },
+    {
+      "name": "Neural Style: explain optimize mode",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/tf_neural_style_transfer.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "args": [
+        "--method",
+        "optimize",
+        "--content-image",
+        "${input:contentImage}",
+        "--style-image",
+        "${input:styleImage}",
+        "--iterations",
+        "120",
+        "--max-size",
+        "384",
+        "--preset",
+        "balanced",
+        "--output-dir",
+        "outputs/neural_style_transfer_vscode_optimize"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "contentImage",
+      "type": "promptString",
+      "description": "Content image path, relative to the project folder",
+      "default": "picture/content.jpg"
+    },
+    {
+      "id": "styleImage",
+      "type": "promptString",
+      "description": "Style image path, relative to the project folder",
+      "default": "picture/style.jpg"
+    }
+  ]
+}
