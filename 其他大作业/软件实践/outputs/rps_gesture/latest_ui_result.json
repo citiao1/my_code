@@ -1,16 +1,16 @@
 {
-  "time": "2026-07-07T20:58:34",
-  "label": "rock",
-  "display_label": "石头",
-  "response": "paper",
-  "display_response": "布",
-  "confidence": 0.9999984502792358,
+  "time": "2026-07-07T22:49:38",
+  "label": "scissors",
+  "display_label": "剪刀",
+  "response": "rock",
+  "display_response": "石头",
+  "confidence": 0.9452250003814697,
   "random_result": false,
   "probabilities": {
-    "rock": 0.9999984502792358,
-    "paper": 6.275916319964381e-08,
-    "scissors": 1.3990696743348963e-06
+    "rock": 0.0018541178433224559,
+    "paper": 0.05292091518640518,
+    "scissors": 0.9452250003814697
   },
-  "sampled_frames": 20,
+  "sampled_frames": 22,
   "capture_duration": 0.8
 }

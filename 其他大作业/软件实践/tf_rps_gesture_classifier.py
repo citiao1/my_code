@@ -257,27 +257,23 @@ def hand_mask(roi, cv2):
     # 使用 YCrCb 肤色阈值提取手部候选区域，目的是减少背景对模型的干扰。
     # 对图像做高斯模糊，减少噪声。
     blurred = cv2.GaussianBlur(roi, (5, 5), 0)
-    # 转换图像颜色空间。
+    # 转换图像颜色空间。肤色在 YCrCb 里通常更容易分离
     ycrcb = cv2.cvtColor(blurred, cv2.COLOR_BGR2YCrCb)
-    # 按阈值生成二值掩码。
+    # 保留颜色值落在指定范围内的像素。
     ycrcb_mask = cv2.inRange(
-        # 继续填写上一行开始的多行参数或数据结构。
         ycrcb,
-        # 同时计算并保存 `np.array([35, 132, 78], dtype` 这些值。
         np.array([35, 132, 78], dtype=np.uint8),
-        # 同时计算并保存 `np.array([245, 180, 135], dtype` 这些值。
         np.array([245, 180, 135], dtype=np.uint8),
-    # 结束上面的多行结构。
     )
-    # 计算并保存 `kernel`，供后续逻辑使用。
+    #创建形态学操作用的卷积核
     kernel = np.ones((5, 5), np.uint8)
-    # 用形态学操作清理掩码噪声。
+    #做开运算，用于去掉小的白色噪点
     mask = cv2.morphologyEx(ycrcb_mask, cv2.MORPH_OPEN, kernel, iterations=1)
-    # 用形态学操作清理掩码噪声。
+    #做闭运算，填补白色区域里的小黑洞
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=2)
-    # 对掩码做中值滤波，进一步平滑边缘。
+    #中值滤波
     mask = cv2.medianBlur(mask, 5)
-    # 返回 `mask`，把结果交给调用者。
+
     return mask
 
 
@@ -566,21 +562,22 @@ def split_image_paths(data_dir: Path, validation_split: float, seed: int):
     for label, name in enumerate(CLASSES):
         # 计算并保存 `files`，供后续逻辑使用。
         files = image_files(data_dir / name)
-        # 执行“把图片路径按训练集和验证集拆分”中的这一行操作。
+        # 把当前类别下的图片顺序随机打乱
         rng.shuffle(files)
         # 计算并保存 `val_count`，供后续逻辑使用。
         val_count = max(1, int(round(len(files) * validation_split)))
-        # 计算并保存 `val_files`，供后续逻辑使用。
+        # 把打乱后的图片列表切开：
+        #前 val_count 张作为验证集
+        #剩下的作为训练集
         val_files = files[:val_count]
-        # 计算并保存 `train_files`，供后续逻辑使用。
         train_files = files[val_count:]
-        # 执行“把图片路径按训练集和验证集拆分”中的这一行操作。
+        #把训练图片路径加入 train_paths，并为这些图片加入对应的数字标签。
         train_paths.extend(str(path) for path in train_files)
-        # 执行“把图片路径按训练集和验证集拆分”中的这一行操作。
+        
         train_labels.extend([label] * len(train_files))
-        # 执行“把图片路径按训练集和验证集拆分”中的这一行操作。
+        
         val_paths.extend(str(path) for path in val_files)
-        # 执行“把图片路径按训练集和验证集拆分”中的这一行操作。
+        
         val_labels.extend([label] * len(val_files))
     # 返回 `train_paths, train_labels, val_paths, val_labels`，把结果交给调用者。
     return train_paths, train_labels, val_paths, val_labels
@@ -724,76 +721,70 @@ def build_model(image_size: int, learning_rate: float):
 
 # 定义 plot_history 函数：保存训练过程中的准确率和损失曲线。
 def plot_history(history, out_path: Path):
-    # 保存训练曲线，答辩时可以展示准确率和损失如何变化。
     # 使用 matplotlib 绘制或保存训练图表。
+    #创建一张大小为 8 x 4 的图
     plt.figure(figsize=(8, 4))
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 把整张图分成 1 行 2 列，当前操作第 1 个子图。
     plt.subplot(1, 2, 1)
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 训练集准确率曲线
     plt.plot(history.history["accuracy"], label="train")
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 验证集准确率曲线
     plt.plot(history.history["val_accuracy"], label="val")
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 标题
     plt.title("Accuracy")
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 横轴
     plt.xlabel("Epoch")
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 图例
     plt.legend()
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 2图
     plt.subplot(1, 2, 2)
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 训练集损失曲线
     plt.plot(history.history["loss"], label="train")
-    # 使用 matplotlib 绘制或保存训练图表。
+    #验证集损失曲线
     plt.plot(history.history["val_loss"], label="val")
-    # 使用 matplotlib 绘制或保存训练图表。
     plt.title("Loss")
-    # 使用 matplotlib 绘制或保存训练图表。
     plt.xlabel("Epoch")
-    # 使用 matplotlib 绘制或保存训练图表。
     plt.legend()
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 自动调整子图间距，避免标题、坐标轴、图例重叠
     plt.tight_layout()
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 把图保存到 out_path，dpi=160 表示图片清晰度
     plt.savefig(out_path, dpi=160)
-    # 使用 matplotlib 绘制或保存训练图表。
+    # 关闭图像
     plt.close()
 
 
 # 定义 save_keras_model 函数：保存 Keras 模型，同时兼容不同版本接口。
 def save_keras_model(model, target_path: Path):
     # 先保存到临时目录再复制到目标路径，减少 Windows 中文路径导致的保存问题。
-    # 计算并保存 `target_path`，供后续逻辑使用。
+    #确保 target_path 是 Path 类型
     target_path = Path(target_path)
     # 创建目录；如果已经存在就直接复用。
     target_path.parent.mkdir(parents=True, exist_ok=True)
-    # 进入上下文管理代码块，结束时会自动清理资源。
+    #创建一个临时目录。with 结束后，这个临时目录会自动删除，解决中文不友好
     with tempfile.TemporaryDirectory(prefix="rps_keras_save_") as tmp_dir:
-        # 计算并保存 `tmp_path`，供后续逻辑使用。
         tmp_path = Path(tmp_dir) / target_path.name
-        # 把训练好的模型保存到磁盘。
+        # 把模型保存到临时路径。
         model.save(str(tmp_path))
-        # 执行“保存 Keras 模型，同时兼容不同版本接口”中的这一行操作。
+        #把临时保存好的模型文件复制到最终目标路径。
         shutil.copy2(tmp_path, target_path)
 
 
 # 定义 compute_confusion_matrix 函数：计算验证集上的混淆矩阵。
 def compute_confusion_matrix(model, dataset):
     # 混淆矩阵用于观察每个真实类别被预测成了什么类别。
-    # 计算并保存 `matrix`，供后续逻辑使用。
+    #创建一个全 0 矩阵
     matrix = np.zeros((len(CLASSES), len(CLASSES)), dtype=int)
-    # 遍历 `images, labels`，逐项执行下面的逻辑。
+
     for images, labels in dataset:
         # 让模型输出当前图片属于各类别的概率。
         predictions = model.predict(images, verbose=0)
-        # 计算并保存 `true_ids`，供后续逻辑使用。
+        #得到真实类别编号
         true_ids = np.argmax(labels.numpy(), axis=1)
-        # 计算并保存 `pred_ids`，供后续逻辑使用。
+        # 模型预测概率中取最大概率对应的类别编号
         pred_ids = np.argmax(predictions, axis=1)
-        # 遍历 `true_id, pred_id`，逐项执行下面的逻辑。
+        #计算矩阵
         for true_id, pred_id in zip(true_ids, pred_ids):
-            # 同时计算并保存 `matrix[int(true_id), int(pred_id)] +` 这些值。
             matrix[int(true_id), int(pred_id)] += 1
-    # 返回 `matrix`，把结果交给调用者。
     return matrix
 
 
@@ -802,65 +793,56 @@ def train_model(args):
     # 完整训练流程：加载数据、构建模型、训练、评估并保存模型和报告。
     # 执行“训练模型并保存模型、标签和报告”中的这一行操作。
     require_tf()
-    # 执行“训练模型并保存模型、标签和报告”中的这一行操作。
+    #自带的随机
     random.seed(args.seed)
-    # 执行“训练模型并保存模型、标签和报告”中的这一行操作。
+    # numpy随机
     np.random.seed(args.seed)
-    # 执行“训练模型并保存模型、标签和报告”中的这一行操作。
+    # tensorflow随机
     tf.random.set_seed(args.seed)
-    # 计算并保存 `data_dir`，供后续逻辑使用。
     data_dir = Path(args.data_dir)
-    # 计算并保存 `output_dir`，供后续逻辑使用。
     output_dir = Path(args.output_dir)
     # 创建目录；如果已经存在就直接复用。
     output_dir.mkdir(parents=True, exist_ok=True)
-    # 计算并保存 `counts`，供后续逻辑使用。
     counts = class_counts(data_dir)
-    # 判断条件 `min(counts.values(), default=0) < 10` 是否成立。
     if min(counts.values(), default=0) < 10:
-        # 主动抛出错误，让调用者知道程序无法继续。
         raise SystemExit(
-            # 执行“训练模型并保存模型、标签和报告”中的这一行操作。
             f"Not enough images in {data_dir}. Collect at least 30 per class first. Counts: {counts}"
-        # 结束上面的多行结构。
         )
-
-    # 同时计算并保存 `train_ds, val_ds, train_counts, val_counts` 这些值。
+    # 创建训练集和验证集
     train_ds, val_ds, train_counts, val_counts = make_datasets(
-        # 执行“训练模型并保存模型、标签和报告”中的这一行操作。
-        data_dir, args.image_size, args.batch_size, args.seed, args.validation_split, args.hand_preprocess
-    # 结束上面的多行结构。
+        data_dir, args.image_size, 
+        args.batch_size, args.seed, 
+        args.validation_split, 
+        args.hand_preprocess
     )
-    # 计算并保存 `model`，供后续逻辑使用。
+    #构建 CNN 模型
     model = build_model(args.image_size, args.learning_rate)
-    # 计算并保存 `callbacks`，供后续逻辑使用。
+  
     callbacks = [
         # 验证准确率长时间不提升时提前停止，避免过拟合。
-        # 调用 Keras 接口搭建、训练或加载模型。
         tf.keras.callbacks.EarlyStopping(monitor="val_accuracy", mode="max", patience=8, restore_best_weights=True),
         # 验证损失不下降时降低学习率，让后期训练更稳定。
-        # 调用 Keras 接口搭建、训练或加载模型。
         tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=4),
-    # 结束上面的多行结构。
+
     ]
     # 开始训练神经网络模型。
     history = model.fit(train_ds, validation_data=val_ds, epochs=args.epochs, callbacks=callbacks)
     # 在验证集上评估模型效果。
     loss, acc = model.evaluate(val_ds, verbose=0)
-    # 计算并保存 `confusion`，供后续逻辑使用。
+    #计算混淆矩阵
     confusion = compute_confusion_matrix(model, val_ds)
-    # 执行“训练模型并保存模型、标签和报告”中的这一行操作。
+    # 保存模型
     save_keras_model(model, output_dir / "model.keras")
-    # 执行“训练模型并保存模型、标签和报告”中的这一行操作。
+    # 复制一份最佳模型
     shutil.copy2(output_dir / "model.keras", output_dir / "best_model.keras")
-    # 把文本内容写入文件。
+    # 保存标签
     (output_dir / "labels.txt").write_text("\n".join(CLASSES), encoding="utf-8")
-    # 执行“训练模型并保存模型、标签和报告”中的这一行操作。
+    # 画训练曲线
     plot_history(history, output_dir / "training_curve.png")
 
-    # 计算并保存 `report`，供后续逻辑使用。
+
     report = {
-        # 训练报告记录数据量、准确率、混淆矩阵和是否使用预训练模型，方便答辩说明。
+        
         # 配置字典中 `time` 对应的显示或规则值。
         "time": datetime.now().isoformat(timespec="seconds"),
         # 配置字典中 `data_dir` 对应的显示或规则值。
@@ -902,13 +884,9 @@ def train_model(args):
 # 定义 load_labels 函数：读取训练时保存的类别标签。
 def load_labels(output_dir: Path):
     # 读取训练时保存的类别标签；如果文件不存在，则使用默认类别顺序。
-    # 计算并保存 `label_file`，供后续逻辑使用。
     label_file = output_dir / "labels.txt"
-    # 判断条件 `label_file.exists()` 是否成立。
     if label_file.exists():
-        # 返回 `[line.strip() for line in label_file.read_text(encoding="utf-8").splitlines() if line.strip()]`，把结果交给调用者。
         return [line.strip() for line in label_file.read_text(encoding="utf-8").splitlines() if line.strip()]
-    # 返回 `CLASSES`，把结果交给调用者。
     return CLASSES
 
 
@@ -1758,7 +1736,6 @@ def parse_args():
     parser.add_argument("--model", default="")
     # 解析命令行参数并返回参数对象。
     return parser.parse_args()
-
 
 # 定义 main 函数：根据命令行模式调用对应功能。
 def main():
