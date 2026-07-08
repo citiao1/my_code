@@ -18,7 +18,6 @@ from datetime import datetime
 from pathlib import Path
 # 从 time 导入 perf_counter，用高精度计时控制倒计时。
 from time import perf_counter
-
 # 设置 TensorFlow 日志等级，减少无关提示输出。
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "1")
 
@@ -36,64 +35,40 @@ import numpy as np
 tf = None
 
 
-# 默认目录配置：让数据、模型和输出报告都保存在项目文件夹中，方便演示和提交。
-# 计算并保存 `PROJECT_DIR`，供后续逻辑使用。
+#示当前 Python 文件所在的目录
 PROJECT_DIR = Path(__file__).resolve().parent
-# 计算并保存 `DEFAULT_DATA_DIR`，供后续逻辑使用。
+#默认数据集目录
 DEFAULT_DATA_DIR = PROJECT_DIR / "gesture_data"
-# 计算并保存 `DEFAULT_OUTPUT_DIR`，供后续逻辑使用。
+#默认输出目录
 DEFAULT_OUTPUT_DIR = PROJECT_DIR / "outputs" / "rps_gesture"
 
-# 三个手势类别，模型最后一层 softmax 的输出顺序也和这里一致。
-# 计算并保存 `CLASSES`，供后续逻辑使用。
 CLASSES = ["rock", "paper", "scissors"]
-# 计算并保存 `DISPLAY_NAMES`，供后续逻辑使用。
+
 DISPLAY_NAMES = {
-    # 配置字典中 `rock` 对应的显示或规则值。
     "rock": "石头",
-    # 配置字典中 `paper` 对应的显示或规则值。
     "paper": "布",
-    # 配置字典中 `scissors` 对应的显示或规则值。
     "scissors": "剪刀",
-    # 配置字典中 `uncertain` 对应的显示或规则值。
     "uncertain": "未识别",
-    # 配置字典中 `waiting` 对应的显示或规则值。
     "waiting": "等待",
-# 结束上面的多行结构。
 }
-# 计算并保存 `GESTURE_EMOJI`，供后续逻辑使用。
+
 GESTURE_EMOJI = {
-    # 配置字典中 `rock` 对应的显示或规则值。
     "rock": "✊",
-    # 配置字典中 `paper` 对应的显示或规则值。
     "paper": "✋",
-    # 配置字典中 `scissors` 对应的显示或规则值。
     "scissors": "✌",
-    # 配置字典中 `uncertain` 对应的显示或规则值。
     "uncertain": "❔",
-    # 配置字典中 `waiting` 对应的显示或规则值。
     "waiting": "⏳",
-# 结束上面的多行结构。
 }
 
-# 猜拳胜负规则：识别出用户手势后，电脑选择能赢它的手势。
-# 计算并保存 `WINNING_MOVE`，供后续逻辑使用。
 WINNING_MOVE = {"rock": "paper", "paper": "scissors", "scissors": "rock"}
-
 
 # 定义 require_tf 函数：按需加载 TensorFlow，避免程序启动时立刻变慢。
 def require_tf():
     # TensorFlow 启动较慢，所以只在训练或预测真正需要时再导入。
-    # 声明这里要修改全局变量 `tf`。
     global tf
-    # 判断条件 `tf is None` 是否成立。
     if tf is None:
-        # 导入 TensorFlow，并先放到临时变量中。
         import tensorflow as loaded_tf
-
-        # 计算并保存 `tf`，供后续逻辑使用。
         tf = loaded_tf
-    # 返回 `tf`，把结果交给调用者。
     return tf
 
 
@@ -112,7 +87,6 @@ def import_cv2():
 # 定义 ensure_dirs 函数：确保三类手势的数据文件夹都存在。
 def ensure_dirs(data_dir: Path):
     # 创建 rock、paper、scissors 三个数据目录。
-    # 遍历 `name`，逐项执行下面的逻辑。
     for name in CLASSES:
         # 创建目录；如果已经存在就直接复用。
         (data_dir / name).mkdir(parents=True, exist_ok=True)
@@ -136,7 +110,6 @@ def class_counts(data_dir: Path) -> dict[str, int]:
 # 定义 archive_class_images 函数：把旧图片移到备份目录，方便重新采集。
 def archive_class_images(data_dir: Path, class_name: str):
     # 重新采集某类手势时，先把旧图片备份，避免直接丢失数据。
-    # 计算并保存 `folder`，供后续逻辑使用。
     folder = data_dir / class_name
     # 计算并保存 `files`，供后续逻辑使用。
     files = image_files(folder) if folder.exists() else []
@@ -147,9 +120,7 @@ def archive_class_images(data_dir: Path, class_name: str):
         # 返回 `None`，把结果交给调用者。
         return None
 
-    # 计算并保存 `timestamp`，供后续逻辑使用。
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    # 计算并保存 `backup_dir`，供后续逻辑使用。
     backup_dir = data_dir.parent / "gesture_data_backups" / f"{class_name}_{timestamp}"
     # 创建目录；如果已经存在就直接复用。
     backup_dir.mkdir(parents=True, exist_ok=True)
@@ -159,31 +130,26 @@ def archive_class_images(data_dir: Path, class_name: str):
         shutil.move(str(path), str(backup_dir / path.name))
     # 在控制台输出当前进度或状态信息。
     print(f"Archived {len(files)} old {class_name} images to {backup_dir}")
-    # 返回 `backup_dir`，把结果交给调用者。
     return backup_dir
-
 
 # 定义 image_files 函数：列出目录中的图片样本文件。
 def image_files(folder: Path):
     # 只读取常见图片格式，避免把其他文件误当成训练样本。
     # 计算并保存 `suffixes`，供后续逻辑使用。
     suffixes = {".jpg", ".jpeg", ".png", ".bmp"}
-    # 返回 `sorted([path for path in folder.iterdir() if path.suffix.lower() in suffixes])`，把结果交给调用者。
+
     return sorted([path for path in folder.iterdir() if path.suffix.lower() in suffixes])
 
 
 # 定义 center_square 函数：计算画面中心的正方形采集区域。
 def center_square(frame, size_ratio: float):
     # 计算画面中心的正方形 ROI，用户把手势放进这个绿色框。
-    # 同时计算并保存 `h, w` 这些值。
     h, w = frame.shape[:2]
-    # 计算并保存 `side`，供后续逻辑使用。
+    # 计算正方形边长
     side = int(min(h, w) * size_ratio)
-    # 计算并保存 `x1`，供后续逻辑使用。
+    #计算左上角坐标
     x1 = (w - side) // 2
-    # 计算并保存 `y1`，供后续逻辑使用。
     y1 = (h - side) // 2
-    # 返回 `x1, y1, x1 + side, y1 + side`，把结果交给调用者。
     return x1, y1, x1 + side, y1 + side
 
 
@@ -256,13 +222,12 @@ def preprocess_hand_roi(roi, cv2, image_size: int):
     # 训练和预测共用同一套预处理：找手部、去背景、裁成正方形、缩放到模型输入尺寸。
     # 把图像缩放到指定尺寸。
     resized_fallback = cv2.resize(roi, (image_size, image_size))
-    # 计算并保存 `mask`，供后续逻辑使用。
     mask = hand_mask(roi, cv2)
     # 从掩码中找出候选手部轮廓。
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    # 计算并保存 `min_area`，供后续逻辑使用。
+    # 计算最小区域
     min_area = roi.shape[0] * roi.shape[1] * 0.015
-    # 计算轮廓面积。
+    # 计算轮廓面积，大于最小面积的才算。
     contours = [contour for contour in contours if cv2.contourArea(contour) >= min_area]
     if not contours:
         return resized_fallback
@@ -309,132 +274,98 @@ def prepare_roi_for_model(roi, cv2, args):
 # 定义 load_image_for_training 函数：读取训练图片并转换成模型训练数组。
 def load_image_for_training(path_value, image_size: int, hand_preprocess: bool):
     # TensorFlow 数据管道中调用 OpenCV 读取中文路径图片，并执行和 UI 相同的预处理。
-    # 计算并保存 `cv2`，供后续逻辑使用。
     cv2 = import_cv2()
-    # 判断条件 `hasattr(path_value, "item")` 是否成立。
+    # 通过 .item() 取出其中真正保存的 Python 值。
     if hasattr(path_value, "item"):
-        # 计算并保存 `path_value`，供后续逻辑使用。
         path_value = path_value.item()
-    # 计算并保存 `path`，供后续逻辑使用。
+    #将路径统一转换为 Python 字符串。
     path = path_value.decode("utf-8") if isinstance(path_value, bytes) else str(path_value)
-    # 从文件读取原始字节，兼容中文路径。
+    #使用 np.fromfile 读取图片原始字节
     data = np.fromfile(path, dtype=np.uint8)
     # 把图片字节解码成 OpenCV 图像。
     image = cv2.imdecode(data, cv2.IMREAD_COLOR)
-    # 判断条件 `image is None` 是否成立。
     if image is None:
-        # 主动抛出错误，让调用者知道程序无法继续。
         raise ValueError(f"Could not read image: {path}")
-    # 判断条件 `hand_preprocess` 是否成立。
     if hand_preprocess:
-        # 计算并保存 `image`，供后续逻辑使用。
         image = preprocess_hand_roi(image, cv2, image_size)
-    # 处理前面条件都不满足时的情况。
     else:
-        # 把图像缩放到指定尺寸。
         image = cv2.resize(image, (image_size, image_size))
     # 转换图像颜色空间。
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    # 返回 `rgb.astype("float32")`，把结果交给调用者。
     return rgb.astype("float32")
 
 
 # 定义 collect_one_class 函数：打开摄像头采集某一个类别的手势图片。
 def collect_one_class(args, class_name: str):
     # 采集某一个类别的手势图片，例如 rock、paper 或 scissors。
-    # 计算并保存 `cv2`，供后续逻辑使用。
     cv2 = import_cv2()
-    # 计算并保存 `data_dir`，供后续逻辑使用。
     data_dir = Path(args.data_dir)
-    # 执行“打开摄像头采集某一个类别的手势图片”中的这一行操作。
     ensure_dirs(data_dir)
-    # 计算并保存 `save_dir`，供后续逻辑使用。
     save_dir = data_dir / class_name
-    # 打开指定编号的摄像头。
+    #打开摄像头
     cap = cv2.VideoCapture(args.camera)
-    # 判断条件 `not cap.isOpened()` 是否成立。
     if not cap.isOpened():
-        # 主动抛出错误，让调用者知道程序无法继续。
         raise SystemExit(f"Could not open camera {args.camera}.")
 
-    # 计算并保存 `existing`，供后续逻辑使用。
+    # 统计当前类别目录里已经有多少张图片
     existing = len(image_files(save_dir))
     # 计算并保存 `saved`，供后续逻辑使用。
     saved = 0
-    # 计算并保存 `frame_count`，供后续逻辑使用。
+    # 本次运行已经保存了多少张图片
     frame_count = 0
-    # 计算并保存 `paused`，供后续逻辑使用。
     paused = True
-    # 在控制台输出当前进度或状态信息。
     print(f"Collecting '{class_name}' into {save_dir}")
-    # 在控制台输出当前进度或状态信息。
     print("Put your hand in the green square. Press SPACE to start/pause, q to quit.")
 
     # 只要 `saved < args.samples` 成立，就持续循环执行。
     while saved < args.samples:
         # 从摄像头读取一帧画面。
         ok, frame = cap.read()
-        # 判断条件 `not ok` 是否成立。
         if not ok:
-            # 跳出当前循环。
             break
         # 水平翻转画面，让摄像头预览像照镜子一样。
-        frame = cv2.flip(frame, 1)  # 水平翻转后像照镜子，采集时更自然。
-        # 同时计算并保存 `x1, y1, x2, y2` 这些值。
+        frame = cv2.flip(frame, 1)  
+        #根据 roi_ratio 在画面中心计算一个正方形区域
         x1, y1, x2, y2 = center_square(frame, args.roi_ratio)
-        # 计算并保存 `roi`，供后续逻辑使用。
+        #从整帧画面中截取绿色框内部的 ROI。
         roi = frame[y1:y2, x1:x2]
         # 在画面上画出绿色手势采集框。
         cv2.rectangle(frame, (x1, y1), (x2, y2), (40, 220, 80), 2)
-        # 计算并保存 `status`，供后续逻辑使用。
+        #根据当前是否暂停，显示 PAUSED 或 SAVING。
         status = "PAUSED" if paused else "SAVING"
-        # 计算并保存 `text`，供后续逻辑使用。
         text = f"{class_name} {saved}/{args.samples} {status}"
-        # 把提示文字绘制到摄像头画面上。
         cv2.putText(frame, text, (20, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (30, 240, 80), 2)
-        # 显示 OpenCV 预览窗口。
+        #显示窗口
         cv2.imshow("gesture collector", frame)
 
         # 读取键盘按键，用来暂停、继续或退出。
         key = cv2.waitKey(1) & 0xFF
-        # 判断条件 `key == ord("q")` 是否成立。
         if key == ord("q"):
-            # 跳出当前循环。
             break
-        # 判断条件 `key == 32` 是否成立。
         if key == 32:
-            # 计算并保存 `paused`，供后续逻辑使用。
             paused = not paused
-        # 判断条件 `paused` 是否成立。
         if paused:
-            # 跳过本轮循环剩余代码，进入下一轮。
             continue
-
-        # 计算并保存 `frame_count +`，供后续逻辑使用。
+        #累计帧数
         frame_count += 1
-        # 判断条件 `frame_count % args.every == 0` 是否成立。
         if frame_count % args.every == 0:
             # 每隔几帧保存一张图片，避免连续样本完全重复。
             # 把图像缩放到指定尺寸。
             img = cv2.resize(roi, (args.image_size, args.image_size))
-            # 计算并保存 `out`，供后续逻辑使用。
+            # 构造输出文件名。
             out = save_dir / f"{class_name}_{existing + saved:04d}.jpg"
             # 把图像编码成 JPG 数据。
             ok, encoded = cv2.imencode(".jpg", img)
-            # 判断条件 `not ok` 是否成立。
             if not ok:
-                # 主动抛出错误，让调用者知道程序无法继续。
                 raise SystemExit(f"Could not encode image for {out}.")
             # 把编码后的图片写入磁盘，兼容中文路径。
             encoded.tofile(str(out))
-            # 计算并保存 `saved +`，供后续逻辑使用。
             saved += 1
 
     # 释放摄像头资源。
     cap.release()
     # 关闭 OpenCV 创建的所有窗口。
     cv2.destroyAllWindows()
-    # 在控制台输出当前进度或状态信息。
     print(f"Saved {saved} images for '{class_name}'.")
 
 
@@ -454,76 +385,55 @@ def save_jpg(path: Path, image, cv2):
 # 定义 collect_data 函数：组织完整的数据采集流程。
 def collect_data(args):
     # 数据采集总入口：可以采集全部类别，也可以只重采某一个类别。
-    # 计算并保存 `original_samples`，供后续逻辑使用。
+    #保存用户最初设置的采样数量
     original_samples = args.samples
-    # 判断条件 `args.replace_existing` 是否成立。
+    #先把已有图片归档备份，避免新旧数据混在一起。
     if args.replace_existing:
-        # 计算并保存 `selected_classes`，供后续逻辑使用。
         selected_classes = CLASSES if args.class_name == "all" else [args.class_name]
-        # 遍历 `name`，逐项执行下面的逻辑。
         for name in selected_classes:
-            # 执行“组织完整的数据采集流程”中的这一行操作。
+            #备份旧图片
             archive_class_images(Path(args.data_dir), name)
 
-    # 判断条件 `args.target_count > 0` 是否成立。
     if args.target_count > 0:
-        # 计算并保存 `counts`，供后续逻辑使用。
+        # 统计当前数据集中每个类别已有多少张图片。
         counts = class_counts(Path(args.data_dir))
-        # 计算并保存 `selected_classes`，供后续逻辑使用。
         selected_classes = CLASSES if args.class_name == "all" else [args.class_name]
-        # 遍历 `name`，逐项执行下面的逻辑。
         for name in selected_classes:
-            # 计算并保存 `remaining`，供后续逻辑使用。
+            #计算剩余需要的数量
             remaining = max(0, args.target_count - counts.get(name, 0))
             # 判断条件 `remaining <= 0` 是否成立。
             if remaining <= 0:
-                # 在控制台输出当前进度或状态信息。
                 print(f"{name} already has {counts.get(name, 0)} images, target reached.")
-                # 跳过本轮循环剩余代码，进入下一轮。
                 continue
-            # 执行“组织完整的数据采集流程”中的这一行操作。
+            # 提示用户准备好当前类别的手势，再按 Enter 开始采集。
             input(f"\nPrepare gesture '{name}', need {remaining} more images, then press Enter.")
-            # 计算并保存 `args.samples`，供后续逻辑使用。
+            # 把本轮采集数量改成 remaining
             args.samples = remaining
-            # 执行“组织完整的数据采集流程”中的这一行操作。
+            #开始采集一轮
             collect_one_class(args, name)
-        # 计算并保存 `args.samples`，供后续逻辑使用。
+        #恢复原始 samples 参数
         args.samples = original_samples
-        # 在控制台输出当前进度或状态信息。
         print("Current dataset counts:", class_counts(Path(args.data_dir)))
-        # 返回函数计算出的结果。
         return
 
-    # 判断条件 `args.class_name == "all"` 是否成立。
     if args.class_name == "all":
-        # 遍历 `name`，逐项执行下面的逻辑。
         for name in CLASSES:
-            # 执行“组织完整的数据采集流程”中的这一行操作。
             input(f"\nPrepare gesture '{name}', then press Enter.")
-            # 执行“组织完整的数据采集流程”中的这一行操作。
             collect_one_class(args, name)
-    # 处理前面条件都不满足时的情况。
     else:
-        # 执行“组织完整的数据采集流程”中的这一行操作。
         collect_one_class(args, args.class_name)
-    # 在控制台输出当前进度或状态信息。
     print("Current dataset counts:", class_counts(Path(args.data_dir)))
 
 
 # 定义 split_image_paths 函数：把图片路径按训练集和验证集拆分。
 def split_image_paths(data_dir: Path, validation_split: float, seed: int):
     # 分层划分数据集：每个类别都按相同比例拆成训练集和验证集，避免类别不均衡。
-    # 计算并保存 `rng`，供后续逻辑使用。
     rng = random.Random(seed)
-    # 同时计算并保存 `train_paths, train_labels, val_paths, val_labels` 这些值。
     train_paths, train_labels, val_paths, val_labels = [], [], [], []
-    # 遍历 `label, name`，逐项执行下面的逻辑。
     for label, name in enumerate(CLASSES):
-        # 计算并保存 `files`，供后续逻辑使用。
         files = image_files(data_dir / name)
         # 把当前类别下的图片顺序随机打乱
         rng.shuffle(files)
-        # 计算并保存 `val_count`，供后续逻辑使用。
         val_count = max(1, int(round(len(files) * validation_split)))
         # 把打乱后的图片列表切开：
         #前 val_count 张作为验证集
@@ -532,84 +442,67 @@ def split_image_paths(data_dir: Path, validation_split: float, seed: int):
         train_files = files[val_count:]
         #把训练图片路径加入 train_paths，并为这些图片加入对应的数字标签。
         train_paths.extend(str(path) for path in train_files)
-        
         train_labels.extend([label] * len(train_files))
-        
         val_paths.extend(str(path) for path in val_files)
-        
         val_labels.extend([label] * len(val_files))
-    # 返回 `train_paths, train_labels, val_paths, val_labels`，把结果交给调用者。
+   
     return train_paths, train_labels, val_paths, val_labels
 
 
 # 定义 decode_image 函数：在 TensorFlow 数据管道中解码单张图片。
 def decode_image(path, label, image_size: int, hand_preprocess: bool):
     # 读取图片并转换为 TensorFlow 训练需要的图像张量和 one-hot 标签。
-    # 判断条件 `hand_preprocess` 是否成立。
     if hand_preprocess:
-        # 计算并保存 `image`，供后续逻辑使用。
+        #把普通 Python/NumPy 函数接入 TensorFlow 数据管道。
         image = tf.numpy_function(
-            # 继续填写上一行开始的多行参数或数据结构。
             lambda p: load_image_for_training(p, image_size, True),
-            # 继续填写上一行开始的多行参数或数据结构。
             [path],
-            # 继续填写上一行开始的多行参数或数据结构。
             tf.float32,
-        # 结束上面的多行结构。
         )
-        # 执行“在 TensorFlow 数据管道中解码单张图片”中的这一行操作。
+        #手动指定图片形状，方便后续 batch 和模型输入。
         image.set_shape([image_size, image_size, 3])
-    # 处理前面条件都不满足时的情况。
     else:
-        # 计算并保存 `data`，供后续逻辑使用。
+        #使用 TensorFlow 原生接口读取图片文件
         data = tf.io.read_file(path)
-        # 计算并保存 `image`，供后续逻辑使用。
+        #将图片二进制数据解码成三通道 RGB 图像。
         image = tf.io.decode_image(data, channels=3, expand_animations=False)
-        # 执行“在 TensorFlow 数据管道中解码单张图片”中的这一行操作。
+        #固定位3通道
         image.set_shape([None, None, 3])
-        # 计算并保存 `image`，供后续逻辑使用。
+        #统一缩放
         image = tf.image.resize(image, [image_size, image_size])
-    # 计算并保存 `label`，供后续逻辑使用。
+    #将数字标签转换为 one-hot 标签
     label = tf.one_hot(label, depth=len(CLASSES))
-    # 返回 `image, label`，把结果交给调用者。
     return image, label
 
 
 # 定义 make_dataset 函数：把路径和标签封装成可训练的数据集。
 def make_dataset(paths, labels, image_size: int, batch_size: int, seed: int, training: bool, hand_preprocess: bool):
     # 构建 tf.data 数据管道；训练集打乱顺序，验证集保持固定。
-    # 调用 TensorFlow 数据集接口组织训练数据。
     ds = tf.data.Dataset.from_tensor_slices((paths, labels))
-    # 判断条件 `training` 是否成立。
+    #如果是训练集，就打乱样本顺序。
     if training:
-        # 计算并保存 `ds`，供后续逻辑使用。
         ds = ds.shuffle(len(paths), seed=seed, reshuffle_each_iteration=True)
-    # 调用 TensorFlow 数据集接口组织训练数据。
+    #对数据集中的每一项执行 decode_image。
     ds = ds.map(lambda p, y: decode_image(p, y, image_size, hand_preprocess), num_parallel_calls=tf.data.AUTOTUNE)
-    # 返回 `ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)`，把结果交给调用者。
     return ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)
 
 
 # 定义 make_datasets 函数：创建训练集、验证集和标签列表。
 def make_datasets(data_dir: Path, image_size: int, batch_size: int, seed: int, validation_split: float, hand_preprocess: bool):
     # 同时创建训练集和验证集，并打印各类别样本数量，便于检查数据是否均衡。
-    # 执行“创建训练集、验证集和标签列表”中的这一行操作。
     require_tf()
-    # 同时计算并保存 `train_paths, train_labels, val_paths, val_labels` 这些值。
+    # 按类别（训练集、验证集）划分图片路径。
     train_paths, train_labels, val_paths, val_labels = split_image_paths(data_dir, validation_split, seed)
-    # 计算并保存 `train_counts`，供后续逻辑使用。
+    # 统计训练集中每个类别的样本数量。
     train_counts = {name: train_labels.count(i) for i, name in enumerate(CLASSES)}
-    # 计算并保存 `val_counts`，供后续逻辑使用。
+    # 统计验证集中每个类别的样本数量。
     val_counts = {name: val_labels.count(i) for i, name in enumerate(CLASSES)}
-    # 在控制台输出当前进度或状态信息。
     print(f"Training split: {train_counts}")
-    # 在控制台输出当前进度或状态信息。
     print(f"Validation split: {val_counts}")
-    # 更新 Tk 变量，从而刷新界面文字。
+    # 根据训练图片路径和标签创建训练数据集。
     train_ds = make_dataset(train_paths, train_labels, image_size, batch_size, seed, training=True, hand_preprocess=hand_preprocess)
-    # 更新 Tk 变量，从而刷新界面文字。
+    # 根据验证图片路径和标签创建验证数据集。
     val_ds = make_dataset(val_paths, val_labels, image_size, batch_size, seed, training=False, hand_preprocess=hand_preprocess)
-    # 返回 `train_ds, val_ds, train_counts, val_counts`，把结果交给调用者。
     return train_ds, val_ds, train_counts, val_counts
 
 
@@ -801,42 +694,24 @@ def train_model(args):
 
 
     report = {
-        
-        # 配置字典中 `time` 对应的显示或规则值。
         "time": datetime.now().isoformat(timespec="seconds"),
-        # 配置字典中 `data_dir` 对应的显示或规则值。
         "data_dir": str(data_dir),
-        # 配置字典中 `counts` 对应的显示或规则值。
         "counts": counts,
-        # 配置字典中 `train_counts` 对应的显示或规则值。
         "train_counts": train_counts,
-        # 配置字典中 `validation_counts` 对应的显示或规则值。
         "validation_counts": val_counts,
-        # 配置字典中 `classes` 对应的显示或规则值。
         "classes": CLASSES,
-        # 配置字典中 `image_size` 对应的显示或规则值。
         "image_size": args.image_size,
-        # 配置字典中 `epochs_ran` 对应的显示或规则值。
         "epochs_ran": len(history.history["loss"]),
-        # 配置字典中 `validation_loss` 对应的显示或规则值。
         "validation_loss": float(loss),
-        # 配置字典中 `validation_accuracy` 对应的显示或规则值。
         "validation_accuracy": float(acc),
-        # 配置字典中 `confusion_matrix_rows_true_columns_pred` 对应的显示或规则值。
         "confusion_matrix_rows_true_columns_pred": confusion.tolist(),
-        # 配置字典中 `hand_preprocess` 对应的显示或规则值。
         "hand_preprocess": bool(args.hand_preprocess),
-        # 配置字典中 `pretrained_model` 对应的显示或规则值。
         "pretrained_model": False,
-        # 配置字典中 `framework` 对应的显示或规则值。
         "framework": f"TensorFlow {tf.__version__}",
-    # 结束上面的多行结构。
     }
     # 把结果字典转换成格式化 JSON 文本。
     (output_dir / "run_report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-    # 在控制台输出当前进度或状态信息。
     print(f"Saved model to {output_dir / 'model.keras'}")
-    # 在控制台输出当前进度或状态信息。
     print(f"Validation accuracy: {acc:.3f}")
 
 
@@ -845,6 +720,7 @@ def load_labels(output_dir: Path):
     # 读取训练时保存的类别标签；如果文件不存在，则使用默认类别顺序。
     label_file = output_dir / "labels.txt"
     if label_file.exists():
+        #从 labels.txt 里读取类别名，去掉空行和首尾空格，最后返回一个类别列表
         return [line.strip() for line in label_file.read_text(encoding="utf-8").splitlines() if line.strip()]
     return CLASSES
 
@@ -889,7 +765,7 @@ def skin_fraction(roi, cv2):
     return cv2.countNonZero(mask) / float(mask.shape[0] * mask.shape[1])
 
 
-# 定义 predict_roi_probs 函数：对单个 ROI 输出模型概率。
+# 定义 predict_roi_probs 函数：对单个 ROI 输出模型概率。弃用
 def predict_roi_probs(model, roi, cv2, args):
     # 对单张 ROI 图像进行预处理，并输出 rock/paper/scissors 三类概率。
 
@@ -903,21 +779,20 @@ def predict_roi_probs(model, roi, cv2, args):
 # 定义 predict_rois_probs 函数：批量预测多个 ROI 的概率。
 def predict_rois_probs(model, rois, cv2, args):
     # 对多帧 ROI 批量预测，UI 最终锁定结果时会对这些概率取平均。
-    # 计算并保存 `batch`，供后续逻辑使用。
     batch = []
-    # 遍历 `roi`，逐项执行下面的逻辑。
+    # 逐个处理 ROI。
     for roi in rois:
-        # 计算并保存 `img`，供后续逻辑使用。
+        #完成裁剪、缩放、补边、
         img = prepare_roi_for_model(roi, cv2, args)
-        # 转换图像颜色空间。
+        #转换图像颜色空间。
         rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        # 执行“批量预测多个 ROI 的概率”中的这一行操作。
+        #将图像转换为 float32 类型后加入 batch。
         batch.append(rgb.astype("float32"))
-    # 判断条件 `not batch` 是否成立。
+
     if not batch:
-        # 返回 `np.zeros((1, len(CLASSES)), dtype=np.float32)`，把结果交给调用者。
+        #返回一个形状为 (1, 类别数) 的全零概率数组。
         return np.zeros((1, len(CLASSES)), dtype=np.float32)
-    # 返回 `model.predict(np.stack(batch, axis=0), verbose=0)`，把结果交给调用者。
+    # model.predict 会一次性对所有 ROI 做前向推理，返回每个 ROI 对应各个类别的预测概率。
     return model.predict(np.stack(batch, axis=0), verbose=0)
 
 
@@ -952,7 +827,7 @@ def choose_label(labels, probs, roi, cv2, args):
     return label, confidence, probs
 
 
-# 定义 classify_roi 函数：把单帧 ROI 转成平滑后的分类结果。
+# 定义 classify_roi 函数：把单帧 ROI 转成平滑后的分类结果。弃用
 def classify_roi(model, labels, roi, cv2, args, recent_probs):
     # 实时预测时使用最近多帧平均概率，让结果更平滑。
     # 计算并保存 `probs`，供后续逻辑使用。
@@ -967,73 +842,41 @@ def classify_roi(model, labels, roi, cv2, args, recent_probs):
     return label, confidence, smooth_probs
 
 
-# 定义 predict_camera 函数：使用 OpenCV 窗口进行实时预测。
+# 定义 predict_camera 函数：使用 OpenCV 窗口进行实时预测。弃用
 def predict_camera(args):
-    # 调试用的实时摄像头预测窗口；最终展示主要使用 run_ui。
-    # 执行“使用 OpenCV 窗口进行实时预测”中的这一行操作。
     require_tf()
-    # 计算并保存 `cv2`，供后续逻辑使用。
     cv2 = import_cv2()
-    # 同时计算并保存 `model, labels` 这些值。
     model, labels = load_predictor(args)
-    # 打开指定编号的摄像头。
     cap = cv2.VideoCapture(args.camera)
-    # 判断条件 `not cap.isOpened()` 是否成立。
     if not cap.isOpened():
-        # 主动抛出错误，让调用者知道程序无法继续。
         raise SystemExit(f"Could not open camera {args.camera}.")
-    # 在控制台输出当前进度或状态信息。
     print("Running camera prediction. Press q to quit.")
-    # 计算并保存 `recent_probs`，供后续逻辑使用。
+    #创建一个固定长度的队列，用来保存最近几帧的预测概率
     recent_probs = deque(maxlen=max(1, args.smooth))
 
-    # 只要 `True` 成立，就持续循环执行。
     while True:
-        # 从摄像头读取一帧画面。
         ok, frame = cap.read()
-        # 判断条件 `not ok` 是否成立。
         if not ok:
-            # 跳出当前循环。
             break
-        # 水平翻转画面，让摄像头预览像照镜子一样。
         frame = cv2.flip(frame, 1)
-        # 同时计算并保存 `x1, y1, x2, y2` 这些值。
         x1, y1, x2, y2 = center_square(frame, args.roi_ratio)
-        # 计算并保存 `roi`，供后续逻辑使用。
         roi = frame[y1:y2, x1:x2]
-        # 同时计算并保存 `label, confidence, probs` 这些值。
         label, confidence, probs = classify_roi(model, labels, roi, cv2, args, recent_probs)
-        # 同时计算并保存 `response, reason` 这些值。
         response, reason = winning_response(label)
 
-        # 在画面上画出绿色手势采集框。
         cv2.rectangle(frame, (x1, y1), (x2, y2), (40, 220, 80), 2)
-        # 计算并保存 `text`，供后续逻辑使用。
         text = f"You: {label} {confidence:.2f}"
-        # 把提示文字绘制到摄像头画面上。
         cv2.putText(frame, text, (20, 38), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (30, 240, 80), 2)
-        # 把提示文字绘制到摄像头画面上。
         cv2.putText(frame, f"Win with: {response}", (20, 72), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (80, 220, 255), 2)
-        # 把提示文字绘制到摄像头画面上。
         cv2.putText(frame, reason, (20, 104), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (240, 240, 240), 2)
-        # 计算并保存 `y`，供后续逻辑使用。
         y = 138
-        # 遍历 `name, p`，逐项执行下面的逻辑。
         for name, p in zip(labels, probs):
-            # 把提示文字绘制到摄像头画面上。
             cv2.putText(frame, f"{name:<8} {p:.2f}", (20, y), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (240, 240, 240), 2)
-            # 计算并保存 `y +`，供后续逻辑使用。
             y += 28
-        # 显示 OpenCV 预览窗口。
         cv2.imshow("gesture predictor", frame)
-        # 判断条件 `cv2.waitKey(1) & 0xFF == ord("q")` 是否成立。
         if cv2.waitKey(1) & 0xFF == ord("q"):
-            # 跳出当前循环。
             break
-
-    # 释放摄像头资源。
     cap.release()
-    # 关闭 OpenCV 创建的所有窗口。
     cv2.destroyAllWindows()
 
 
@@ -1061,7 +904,6 @@ def draw_probability_bars(canvas, labels, probs):
         #在右侧画百分比文字。
         canvas.create_text(width - 16, top + 13, anchor="e", text=f"{prob:.0%}", fill="#e5e7eb", font=("Microsoft YaHei UI", 10))
 
-
 # 定义 run_ui 函数：启动带倒计时和比赛结果的图形界面。
 def run_ui(args):
     # 图形化比赛界面：倒计时、采样、锁定识别结果，并显示电脑获胜手势。
@@ -1075,6 +917,7 @@ def run_ui(args):
         from PIL import Image, ImageTk
     except ImportError as exc:
         raise SystemExit("Tkinter and Pillow are required for UI mode.") from exc
+    #加载模型
     model, labels = load_predictor(args)
     output_dir = Path(args.output_dir)
     # 创建目录；如果已经存在就直接复用。
@@ -1091,12 +934,10 @@ def run_ui(args):
     root.configure(bg="#0f172a")
     # 限制窗口最小大小，防止控件挤在一起。
     root.minsize(980, 620)
-
     # 创建左侧摄像头画面区域。它本质是一个 Label，但里面会不断更新图片。
     video_panel = tk.Label(root, bg="#020617")
     # 把摄像头区域放到窗口左边，并让它尽量占据剩余空间
     video_panel.pack(side="left", fill="both", expand=True, padx=(18, 10), pady=18)
-
     # 创建右侧控制面板，宽度 330。
     side = tk.Frame(root, bg="#0f172a", width=330)
     # 把右侧面板放到窗口右边，竖向填满。
@@ -1127,7 +968,7 @@ def run_ui(args):
         command=lambda: start_round(),
         bg="#2563eb",
         fg="#ffffff",
-        activebackground="#1d4ed8",
+        activebackground="#414654",
         activeforeground="#ffffff",
         bd=0,
         padx=18,
@@ -1166,7 +1007,7 @@ def run_ui(args):
     tk.Label(side, textvariable=confidence_var, fg="#a7f3d0", bg="#0f172a", font=("Microsoft YaHei UI", 12, "bold")).pack(anchor="w", pady=(0, 8))
     bars = tk.Canvas(side, width=300, height=160, bg="#0f172a", highlightthickness=0)
     bars.pack(anchor="w", pady=(0, 22))
-
+    #右侧面板底部的提示文字。
     tk.Label(
         side,
         text="提示：出拳后保持约 1 秒，不要马上收手；尽量保持和采集数据时相同的距离、角度和光照。",
@@ -1282,7 +1123,7 @@ def run_ui(args):
         else:
             #构造一个全 0 概率数组
             final_probs = np.zeros(len(labels), dtype=np.float32)
-        # 同时计算并保存 `label, confidence, final_probs` 这些值。
+        # 选择最有可能的选项，对剪刀进行优化识别
         label, confidence, final_probs = choose_label(labels, final_probs, state["last_roi"], cv2, args)
         #判断是否识别失败
         random_result = label == "uncertain"
@@ -1296,7 +1137,7 @@ def run_ui(args):
             final_probs[labels.index(label)] = 1.0
         # 获取获胜的手势
         response, reason = winning_response(label)
-        # 显示最终结果
+        # 显示最终结果UI界面
         set_result_visuals(label, confidence, final_probs, random_result=random_result)
         #组织本局结果数据
         result = {
@@ -1343,174 +1184,130 @@ def run_ui(args):
     # 定义 start_capture 函数：进入短暂采样阶段以获得稳定画面。
     def start_capture():
         # 倒计时结束后短暂采样，避免用户最后一秒出手造成单帧模糊。
-        # 执行“进入短暂采样阶段以获得稳定画面”中的这一行操作。
+        # 清空本轮已经采集到的 ROI 图像。
         round_rois.clear()
-        # 计算并保存 `state["phase"]`，供后续逻辑使用。
         state["phase"] = "capture"
-        # 计算并保存 `state["capture_deadline"]`，供后续逻辑使用。
+        #设置采集截止时间
         state["capture_deadline"] = perf_counter() + max(0.05, float(args.capture_duration))
-        # 更新 Tk 变量，从而刷新界面文字。
+        # 更新界面文字
         countdown_var.set("出拳！")
-        # 更新 Tk 变量，从而刷新界面文字。
         gesture_emoji_var.set(GESTURE_EMOJI["waiting"])
-        # 更新 Tk 变量，从而刷新界面文字。
         gesture_var.set("正在锁定")
-        # 更新 Tk 变量，从而刷新界面文字。
         response_emoji_var.set(GESTURE_EMOJI["waiting"])
-        # 更新 Tk 变量，从而刷新界面文字。
         response_var.set("正在锁定")
-        # 更新 Tk 变量，从而刷新界面文字。
         reason_var.set("请保持刚出的手势不动，正在采集稳定画面。")
-        # 更新 Tk 变量，从而刷新界面文字。
         confidence_var.set("置信度：隐藏")
-        # 执行“进入短暂采样阶段以获得稳定画面”中的这一行操作。
+        #把概率条清零。
         draw_probability_bars(bars, labels, np.zeros(len(labels)))
 
     # 定义 on_close 函数：关闭窗口并释放摄像头资源。
     def on_close():
-        # 关闭窗口时释放摄像头资源。
-        # 计算并保存 `running["value"]`，供后续逻辑使用。
         running["value"] = False
         # 释放摄像头资源。
         cap.release()
-        # 执行“关闭窗口并释放摄像头资源”中的这一行操作。
         root.destroy()
 
     # 定义 update_frame 函数：持续读取摄像头并驱动 UI 状态更新。
     def update_frame():
         # UI 主循环：持续读取摄像头画面，并根据阶段更新界面状态。
-        # 判断条件 `not running["value"]` 是否成立。
+        # 如果程序已经停止运行，就直接退出，不再刷新画面
         if not running["value"]:
-            # 返回函数计算出的结果。
             return
-        # 判断条件 `state["phase"] == "locked"` 是否成立。
+        # 不继续读取和更新摄像头预测，只是每隔 80ms 再检查一次
         if state["phase"] == "locked":
-            # 安排 Tk 在短暂延迟后继续刷新画面。
             root.after(80, update_frame)
-            # 返回函数计算出的结果。
             return
         # 从摄像头读取一帧画面。
         ok, frame = cap.read()
-        # 判断条件 `ok` 是否成立。
         if ok:
             # 水平翻转画面，让摄像头预览像照镜子一样。
             frame = cv2.flip(frame, 1)
-            # 同时计算并保存 `x1, y1, x2, y2` 这些值。
+            #后计算中央正方形 ROI
             x1, y1, x2, y2 = center_square(frame, args.roi_ratio)
-            # 计算并保存 `roi`，供后续逻辑使用。
             roi = frame[y1:y2, x1:x2]
             # 在画面上画出绿色手势采集框。
             cv2.rectangle(frame, (x1, y1), (x2, y2), (40, 220, 80), 3)
 
-            # 判断条件 `state["phase"] == "countdown"` 是否成立。
             if state["phase"] == "countdown":
-                # 计算并保存 `remaining`，供后续逻辑使用。
+                #计算距离倒计时结束还剩多少秒
                 remaining = state["deadline"] - perf_counter()
-                # 判断条件 `remaining <= 0` 是否成立。
+                #进入采集阶段
                 if remaining <= 0:
-                    # 执行“持续读取摄像头并驱动 UI 状态更新”中的这一行操作。
+                    #锁定画面，开始识别
                     start_capture()
                     # 把提示文字绘制到摄像头画面上。
                     cv2.putText(frame, "!", (42, 112), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (80, 220, 255), 7)
-                    # 执行“持续读取摄像头并驱动 UI 状态更新”中的这一行操作。
+                    #显示当前帧
                     show_frame(frame)
-                    # 安排 Tk 在短暂延迟后继续刷新画面。
+                    # 80ms 后继续更新
                     root.after(80, update_frame)
-                    # 返回函数计算出的结果。
                     return
-                # 计算并保存 `count`，供后续逻辑使用。
+                #计算并显示剩余秒数和其余UI
                 count = int(np.ceil(remaining))
-                # 更新 Tk 变量，从而刷新界面文字。
                 countdown_var.set(str(count))
-                # 更新 Tk 变量，从而刷新界面文字。
                 gesture_emoji_var.set(GESTURE_EMOJI["waiting"])
-                # 更新 Tk 变量，从而刷新界面文字。
                 gesture_var.set("结果锁定后显示")
-                # 更新 Tk 变量，从而刷新界面文字。
                 response_emoji_var.set(GESTURE_EMOJI["waiting"])
-                # 更新 Tk 变量，从而刷新界面文字。
                 response_var.set("结果锁定后显示")
-                # 更新 Tk 变量，从而刷新界面文字。
                 reason_var.set("请保持手势，锁定前不显示预测结果。")
-                # 更新 Tk 变量，从而刷新界面文字。
                 confidence_var.set("置信度：隐藏")
-                # 执行“持续读取摄像头并驱动 UI 状态更新”中的这一行操作。
                 draw_probability_bars(bars, labels, np.zeros(len(labels)))
-                # 把提示文字绘制到摄像头画面上。
                 cv2.putText(frame, str(count), (42, 112), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (80, 220, 255), 7)
-            # 当前一个条件不成立时，继续判断 `state["phase"] == "capture"`。
+            
             elif state["phase"] == "capture":
                 # 采样阶段只收集图像，不提前把预测结果显示出来。
-                # 执行“持续读取摄像头并驱动 UI 状态更新”中的这一行操作。
+                # 把当前 ROI 保存下来
                 round_rois.append(roi.copy())
-                # 计算并保存 `state["last_roi"]`，供后续逻辑使用。
                 state["last_roi"] = roi.copy()
-                # 更新 Tk 变量，从而刷新界面文字。
                 countdown_var.set("出拳！")
-                # 更新 Tk 变量，从而刷新界面文字。
                 gesture_emoji_var.set(GESTURE_EMOJI["waiting"])
-                # 更新 Tk 变量，从而刷新界面文字。
                 gesture_var.set("正在锁定")
-                # 更新 Tk 变量，从而刷新界面文字。
                 response_emoji_var.set(GESTURE_EMOJI["waiting"])
-                # 更新 Tk 变量，从而刷新界面文字。
                 response_var.set("正在锁定")
-                # 更新 Tk 变量，从而刷新界面文字。
                 reason_var.set("正在采集出拳后的稳定画面。")
-                # 更新 Tk 变量，从而刷新界面文字。
                 confidence_var.set("置信度：隐藏")
-                # 执行“持续读取摄像头并驱动 UI 状态更新”中的这一行操作。
                 draw_probability_bars(bars, labels, np.zeros(len(labels)))
-                # 把提示文字绘制到摄像头画面上。
                 cv2.putText(frame, "!", (42, 112), cv2.FONT_HERSHEY_SIMPLEX, 3.0, (80, 220, 255), 7)
-                # 判断条件 `perf_counter() >= state["capture_deadline"]` 是否成立。
+                #判断采样时间是否结束
                 if perf_counter() >= state["capture_deadline"]:
-                    # 执行“持续读取摄像头并驱动 UI 状态更新”中的这一行操作。
+                    #锁定结果
                     lock_round(frame)
-                    # 安排 Tk 在短暂延迟后继续刷新画面。
                     root.after(80, update_frame)
-                    # 返回函数计算出的结果。
                     return
-            # 处理前面条件都不满足时的情况。
             else:
-                # 执行“持续读取摄像头并驱动 UI 状态更新”中的这一行操作。
+                #空闲状态
                 set_waiting_visuals()
 
-            # 执行“持续读取摄像头并驱动 UI 状态更新”中的这一行操作。
             show_frame(frame)
-        # 安排 Tk 在短暂延迟后继续刷新画面。
         root.after(20, update_frame)
 
-    # 绑定窗口关闭事件。
+    # 点关闭按钮时，执行 on_close
     root.protocol("WM_DELETE_WINDOW", on_close)
-    # 绑定键盘快捷键。
+    # 按空格开始一轮游戏/识别。
     root.bind("<space>", lambda _event: start_round())
-    # 执行“当前流程”中的这一行操作。
+    #初始化界面为等待状态。
     set_waiting_visuals()
-    # 执行“当前流程”中的这一行操作。
+    #启动摄像头刷新循环。
     update_frame()
-    # 进入 Tk 事件循环，保持窗口运行。
-    root.mainloop()
+    #进入 Tkinter 主事件循环，窗口开始运行。
+    root.mainloop() 
 
 
 # 定义 show_status 函数：打印数据集和模型的当前状态。
 def show_status(args):
     # 输出当前项目状态：数据集数量、模型路径和是否存在模型。
-    # 计算并保存 `data_dir`，供后续逻辑使用。
     data_dir = Path(args.data_dir)
-    # 计算并保存 `output_dir`，供后续逻辑使用。
     output_dir = Path(args.output_dir)
-    # 在控制台输出当前进度或状态信息。
+    #打印项目说明
     print("Project: self-trained rock-paper-scissors gesture classifier")
-    # 在控制台输出当前进度或状态信息。
+    # 打印数据集路径
     print(f"Data dir: {data_dir}")
-    # 在控制台输出当前进度或状态信息。
+    # 打印每类图片数量
     print(f"Counts: {class_counts(data_dir)}")
-    # 在控制台输出当前进度或状态信息。
+    # 打印模型输出目录
     print(f"Output dir: {output_dir}")
-    # 在控制台输出当前进度或状态信息。
+    # 打印模型文件是否存在
     print(f"Model exists: {(output_dir / 'model.keras').exists()}")
-    # 在控制台输出当前进度或状态信息。
     print("No pretrained model is used. The CNN starts from random weights.")
 
 
@@ -1580,32 +1377,19 @@ def parse_args():
 
 # 定义 main 函数：根据命令行模式调用对应功能。
 def main():
-    # 程序入口：根据 mode 分发到采集、训练、预测、UI 或状态查看功能。
-    # 计算并保存 `args`，供后续逻辑使用。
     args = parse_args()
-    # 判断条件 `args.mode == "collect"` 是否成立。
     if args.mode == "collect":
-        # 执行“根据命令行模式调用对应功能”中的这一行操作。
         collect_data(args)
-    # 当前一个条件不成立时，继续判断 `args.mode == "train"`。
     elif args.mode == "train":
-        # 执行“根据命令行模式调用对应功能”中的这一行操作。
         train_model(args)
-    # 当前一个条件不成立时，继续判断 `args.mode == "predict"`。
     elif args.mode == "predict":
-        # 执行“根据命令行模式调用对应功能”中的这一行操作。
+        #弃用
         predict_camera(args)
-    # 当前一个条件不成立时，继续判断 `args.mode == "ui"`。
     elif args.mode == "ui":
-        # 执行“根据命令行模式调用对应功能”中的这一行操作。
         run_ui(args)
-    # 处理前面条件都不满足时的情况。
     else:
-        # 执行“根据命令行模式调用对应功能”中的这一行操作。
         show_status(args)
 
 
-# 判断当前文件是否作为主程序直接运行。
 if __name__ == "__main__":
-    # 执行“当前流程”中的这一行操作。
     main()
