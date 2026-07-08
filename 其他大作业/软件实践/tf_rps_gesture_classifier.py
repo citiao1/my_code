@@ -99,23 +99,13 @@ def require_tf():
 
 # 定义 import_cv2 函数：安全导入 OpenCV，摄像头和图像处理都依赖它。
 def import_cv2():
-    # OpenCV 负责摄像头读取、画框、裁剪和基础图像处理。
-    # 开始执行可能失败的代码，并准备捕获异常。
     try:
-        # 导入 OpenCV，用来读取摄像头、裁剪和处理图像。
         import cv2
-
-        # 返回 `cv2`，把结果交给调用者。
         return cv2
-    # 捕获指定异常，给出更友好的处理方式。
     except ImportError as exc:
-        # 主动抛出错误，让调用者知道程序无法继续。
         raise SystemExit(
-            # 执行“安全导入 OpenCV，摄像头和图像处理都依赖它”中的这一行操作。
             "OpenCV is required for camera collection/prediction.\n"
-            # 执行“安全导入 OpenCV，摄像头和图像处理都依赖它”中的这一行操作。
             "Install it with: python -m pip install opencv-python"
-        # 执行“安全导入 OpenCV，摄像头和图像处理都依赖它”中的这一行操作。
         ) from exc
 
 
@@ -200,55 +190,39 @@ def center_square(frame, size_ratio: float):
 # 定义 square_crop_with_margin 函数：按手部轮廓裁出带边缘的正方形图片。
 def square_crop_with_margin(image, x, y, w, h, margin_ratio=0.28):
     # 根据手部轮廓重新裁剪成正方形，并留出少量边缘，避免切掉手指。
-    # 同时计算并保存 `height, width` 这些值。
     height, width = image.shape[:2]
-    # 计算并保存 `cx`，供后续逻辑使用。
+    #算出手部矩形的中心点。
     cx = x + w / 2
-    # 计算并保存 `cy`，供后续逻辑使用。
     cy = y + h / 2
-    # 计算并保存 `side`，供后续逻辑使用。
+    # 决定最终裁剪框的边长。
     side = int(max(w, h) * (1.0 + margin_ratio))
-    # 计算并保存 `side`，供后续逻辑使用。
     side = max(side, 24)
-    # 计算并保存 `x1`，供后续逻辑使用。
+    #算出正方形裁剪框的左上角和右下角
     x1 = int(round(cx - side / 2))
-    # 计算并保存 `y1`，供后续逻辑使用。
     y1 = int(round(cy - side / 2))
-    # 计算并保存 `x2`，供后续逻辑使用。
     x2 = x1 + side
-    # 计算并保存 `y2`，供后续逻辑使用。
     y2 = y1 + side
 
-    # 计算并保存 `pad_left`，供后续逻辑使用。
+    #处理越界。
     pad_left = max(0, -x1)
-    # 计算并保存 `pad_top`，供后续逻辑使用。
     pad_top = max(0, -y1)
-    # 计算并保存 `pad_right`，供后续逻辑使用。
     pad_right = max(0, x2 - width)
-    # 计算并保存 `pad_bottom`，供后续逻辑使用。
     pad_bottom = max(0, y2 - height)
-    # 判断条件 `pad_left or pad_top or pad_right or pad_bottom` 是否成立。
+    #如果任何方向越界，就给图像补边。
     if pad_left or pad_top or pad_right or pad_bottom:
-        # 计算并保存 `image`，供后续逻辑使用。
         image = cv2_copy_border(image, pad_top, pad_bottom, pad_left, pad_right)
-        # 计算并保存 `x1 +`，供后续逻辑使用。
         x1 += pad_left
-        # 计算并保存 `y1 +`，供后续逻辑使用。
         y1 += pad_top
-        # 计算并保存 `x2 +`，供后续逻辑使用。
         x2 += pad_left
-        # 计算并保存 `y2 +`，供后续逻辑使用。
         y2 += pad_top
-    # 返回 `image[y1:y2, x1:x2]`，把结果交给调用者。
     return image[y1:y2, x1:x2]
 
 
 # 定义 cv2_copy_border 函数：给超出边界的裁剪区域补黑边。
 def cv2_copy_border(image, top, bottom, left, right):
     # 裁剪框超出图像边界时，用黑色像素补齐边缘。
-    # 计算并保存 `cv2`，供后续逻辑使用。
     cv2 = import_cv2()
-    # 返回 `cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(0, 0, 0))`，把结果交给调用者。
+    #用固定颜色补边。
     return cv2.copyMakeBorder(image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(0, 0, 0))
 
 
@@ -290,12 +264,8 @@ def preprocess_hand_roi(roi, cv2, image_size: int):
     min_area = roi.shape[0] * roi.shape[1] * 0.015
     # 计算轮廓面积。
     contours = [contour for contour in contours if cv2.contourArea(contour) >= min_area]
-    # 判断条件 `not contours` 是否成立。
     if not contours:
-        # 返回 `resized_fallback`，把结果交给调用者。
         return resized_fallback
-
-    # 同时计算并保存 `height, width` 这些值。
     height, width = roi.shape[:2]
 
     # 定义 contour_score 函数：给每个候选轮廓打分，帮助选出真正的手。
@@ -305,45 +275,34 @@ def preprocess_hand_roi(roi, cv2, image_size: int):
         area = cv2.contourArea(contour)
         # 计算轮廓外接矩形。
         x, y, w, h = cv2.boundingRect(contour)
-        # 计算并保存 `center_y`，供后续逻辑使用。
         center_y = (y + h / 2) / max(1, height)
-        # 计算并保存 `center_x`，供后续逻辑使用。
         center_x = (x + w / 2) / max(1, width)
-        # 计算并保存 `center_bonus`，供后续逻辑使用。
         center_bonus = 1.0 - min(1.0, abs(center_x - 0.5) * 1.2)
-        # 计算并保存 `lower_bonus`，供后续逻辑使用。
         lower_bonus = 0.65 + center_y
-        # 返回 `area * lower_bonus * (0.75 + 0.25 * center_bonus)`，把结果交给调用者。
         return area * lower_bonus * (0.75 + 0.25 * center_bonus)
 
-    # 计算并保存 `contour`，供后续逻辑使用。
     contour = max(contours, key=contour_score)
     # 计算轮廓外接矩形。
     x, y, w, h = cv2.boundingRect(contour)
-    # 计算并保存 `clean_mask`，供后续逻辑使用。
     clean_mask = np.zeros(mask.shape, dtype=np.uint8)
     # 把选中的手部轮廓画到干净掩码上。
     cv2.drawContours(clean_mask, [contour], -1, 255, thickness=cv2.FILLED)
     # 膨胀掩码，保留更多手部边缘。
     clean_mask = cv2.dilate(clean_mask, np.ones((7, 7), np.uint8), iterations=1)
-    # 计算并保存 `foreground`，供后续逻辑使用。
+    #创建一张和 roi 一样大小、一样通道数的全黑图片
     foreground = np.zeros_like(roi)
-    # 计算并保存 `foreground[clean_mask > 0]`，供后续逻辑使用。
+    #根据掩码把手部区域从原图复制到黑图上。
     foreground[clean_mask > 0] = roi[clean_mask > 0]
-    # 计算并保存 `cropped`，供后续逻辑使用。
+    #从 foreground 里裁剪出手部区域
     cropped = square_crop_with_margin(foreground, x, y, w, h)
-    # 返回 `cv2.resize(cropped, (image_size, image_size))`，把结果交给调用者。
     return cv2.resize(cropped, (image_size, image_size))
 
 
 # 定义 prepare_roi_for_model 函数：根据参数决定是否做手部前景预处理。
 def prepare_roi_for_model(roi, cv2, args):
     # 默认启用手部前景提取；如需对比原图训练，可通过 --no-hand-preprocess 关闭。
-    # 判断条件 `getattr(args, "hand_preprocess", True)` 是否成立。
     if getattr(args, "hand_preprocess", True):
-        # 返回 `preprocess_hand_roi(roi, cv2, args.image_size)`，把结果交给调用者。
         return preprocess_hand_roi(roi, cv2, args.image_size)
-    # 返回 `cv2.resize(roi, (args.image_size, args.image_size))`，把结果交给调用者。
     return cv2.resize(roi, (args.image_size, args.image_size))
 
 
@@ -893,34 +852,23 @@ def load_labels(output_dir: Path):
 # 定义 winning_response 函数：根据猜拳规则生成电脑获胜手势。
 def winning_response(label: str):
     # 根据识别结果返回电脑应该出的获胜手势。
-    # 判断条件 `label not in WINNING_MOVE` 是否成立。
     if label not in WINNING_MOVE:
-        # 返回 `"waiting", "请把清晰手势放在绿色方框内。"`，把结果交给调用者。
         return "waiting", "请把清晰手势放在绿色方框内。"
-    # 计算并保存 `response`，供后续逻辑使用。
     response = WINNING_MOVE[label]
-    # 返回 `response, f"{DISPLAY_NAMES[response]} 可以赢 {DISPLAY_NAMES[label]}。"`，把结果交给调用者。
     return response, f"{DISPLAY_NAMES[response]} 可以赢 {DISPLAY_NAMES[label]}。"
 
 
 # 定义 load_predictor 函数：加载预测阶段需要的模型和标签。
 def load_predictor(args):
     # 加载已经训练好的 Keras 模型和标签文件。
-    # 执行“加载预测阶段需要的模型和标签”中的这一行操作。
     require_tf()
-    # 计算并保存 `output_dir`，供后续逻辑使用。
     output_dir = Path(args.output_dir)
-    # 计算并保存 `model_path`，供后续逻辑使用。
     model_path = Path(args.model) if args.model else output_dir / "model.keras"
-    # 判断条件 `not model_path.exists()` 是否成立。
     if not model_path.exists():
-        # 主动抛出错误，让调用者知道程序无法继续。
         raise SystemExit(f"Model not found: {model_path}. Train first.")
-    # 计算并保存 `labels`，供后续逻辑使用。
     labels = load_labels(output_dir)
     # 调用 Keras 接口搭建、训练或加载模型。
     model = tf.keras.models.load_model(model_path)
-    # 返回 `model, labels`，把结果交给调用者。
     return model, labels
 
 
@@ -944,11 +892,11 @@ def skin_fraction(roi, cv2):
 # 定义 predict_roi_probs 函数：对单个 ROI 输出模型概率。
 def predict_roi_probs(model, roi, cv2, args):
     # 对单张 ROI 图像进行预处理，并输出 rock/paper/scissors 三类概率。
-    # 计算并保存 `img`，供后续逻辑使用。
+
     img = prepare_roi_for_model(roi, cv2, args)
     # 转换图像颜色空间。
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    # 返回 `model.predict(np.expand_dims(rgb.astype("float32"), axis=0), verbose=0)[0]`，把结果交给调用者。
+
     return model.predict(np.expand_dims(rgb.astype("float32"), axis=0), verbose=0)[0]
 
 
@@ -976,40 +924,31 @@ def predict_rois_probs(model, rois, cv2, args):
 # 定义 choose_label 函数：根据概率、阈值和剪刀修正规则选择最终标签。
 def choose_label(labels, probs, roi, cv2, args):
     # 从概率中选择最终类别；置信度太低时返回 uncertain。
-    # 计算并保存 `idx`，供后续逻辑使用。
+    #找概率最大的类别
     idx = int(np.argmax(probs))
-    # 计算并保存 `confidence`，供后续逻辑使用。
     confidence = float(probs[idx])
-    # 计算并保存 `label`，供后续逻辑使用。
     label = labels[idx]
-    # 计算并保存 `corrected`，供后续逻辑使用。
+    #记录有没有做过修正
     corrected = False
 
-    # 判断条件 `getattr(args, "scissors_correction", True) and label == "paper" and "scissors" in labels and roi is not None` 是否成立。
+    # 判断是否需要做“剪刀修正”
     if getattr(args, "scissors_correction", True) and label == "paper" and "scissors" in labels and roi is not None:
         # 剪刀和布都属于张开手指的形态，容易混淆；这里做一个保守的剪刀修正。
-        # 计算并保存 `scissors_index`，供后续逻辑使用。
+        # 取出剪刀的概率
         scissors_index = labels.index("scissors")
-        # 计算并保存 `scissors_prob`，供后续逻辑使用。
         scissors_prob = float(probs[scissors_index])
-        # 计算并保存 `skin_threshold`，供后续逻辑使用。
+        # 读取两个修正阈值
         skin_threshold = getattr(args, "scissors_skin_threshold", 0.04)
-        # 计算并保存 `min_prob`，供后续逻辑使用。
         min_prob = getattr(args, "scissors_min_prob", 0.24)
-        # 判断条件 `skin_fraction(roi, cv2) >= skin_threshold and scissors_prob >= min_prob` 是否成立。
+        # 执行剪刀修正
         if skin_fraction(roi, cv2) >= skin_threshold and scissors_prob >= min_prob:
-            # 计算并保存 `label`，供后续逻辑使用。
             label = "scissors"
-            # 计算并保存 `confidence`，供后续逻辑使用。
             confidence = scissors_prob
-            # 计算并保存 `corrected`，供后续逻辑使用。
             corrected = True
 
-    # 判断条件 `confidence < getattr(args, "min_confidence", 0.55) and not corrected` 是否成立。
+    # 如果置信度太低，就标记为未识别
     if confidence < getattr(args, "min_confidence", 0.55) and not corrected:
-        # 计算并保存 `label`，供后续逻辑使用。
         label = "uncertain"
-    # 返回 `label, confidence, probs`，把结果交给调用者。
     return label, confidence, probs
 
 
@@ -1101,213 +1040,150 @@ def predict_camera(args):
 # 定义 draw_probability_bars 函数：在 Tk 画布上绘制三类概率条。
 def draw_probability_bars(canvas, labels, probs):
     # 在 Tkinter 侧边栏绘制三类概率条。
-    # 执行“在 Tk 画布上绘制三类概率条”中的这一行操作。
+    #清空画布上原来的内容
     canvas.delete("all")
-    # 计算并保存 `width`，供后续逻辑使用。
+    #获取画布宽度。
     width = int(canvas["width"])
-    # 计算并保存 `colors`，供后续逻辑使用。
+    # 定义三种手势的颜色。
     colors = {"rock": "#7dd3fc", "paper": "#86efac", "scissors": "#fca5a5"}
-    # 遍历 `index, (name, prob)`，逐项执行下面的逻辑。
+    # 遍历类别和概率
     for index, (name, prob) in enumerate(zip(labels, probs)):
-        # 计算并保存 `top`，供后续逻辑使用。
+        # 计算这一行概率条的顶部 y 坐标。
         top = 12 + index * 48
-        # 计算并保存 `bar_width`，供后续逻辑使用。
+        # 根据概率计算彩色条长度。
         bar_width = int((width - 130) * float(prob))
-        # 同时计算并保存 `canvas.create_text(10, top + 13, anchor` 这些值。
+        # 画左侧类别文字。
         canvas.create_text(10, top + 13, anchor="w", text=DISPLAY_NAMES.get(name, name), fill="#dbeafe", font=("Microsoft YaHei UI", 11, "bold"))
-        # 同时计算并保存 `canvas.create_rectangle(96, top, width - 20, top + 26, fill` 这些值。
+        #画概率条的背景框。
         canvas.create_rectangle(96, top, width - 20, top + 26, fill="#1f2937", outline="#334155")
-        # 同时计算并保存 `canvas.create_rectangle(96, top, 96 + bar_width, top + 26, fill` 这些值。
+        # 画真正的彩色概率条。
         canvas.create_rectangle(96, top, 96 + bar_width, top + 26, fill=colors.get(name, "#93c5fd"), outline="")
-        # 同时计算并保存 `canvas.create_text(width - 16, top + 13, anchor` 这些值。
+        #在右侧画百分比文字。
         canvas.create_text(width - 16, top + 13, anchor="e", text=f"{prob:.0%}", fill="#e5e7eb", font=("Microsoft YaHei UI", 10))
 
 
 # 定义 run_ui 函数：启动带倒计时和比赛结果的图形界面。
 def run_ui(args):
     # 图形化比赛界面：倒计时、采样、锁定识别结果，并显示电脑获胜手势。
-    # 执行“启动带倒计时和比赛结果的图形界面”中的这一行操作。
     require_tf()
-    # 计算并保存 `cv2`，供后续逻辑使用。
     cv2 = import_cv2()
-    # 开始执行可能失败的代码，并准备捕获异常。
     try:
         # 导入 tkinter，用来构建桌面图形界面。
         import tkinter as tk
         # 导入 Pillow 的图像桥接工具，把 OpenCV 画面显示到 Tk。
+        #Tkinter 负责窗口界面，Pillow 负责把 OpenCV 图像转成 Tkinter 能显示的图片。
         from PIL import Image, ImageTk
-    # 捕获指定异常，给出更友好的处理方式。
     except ImportError as exc:
-        # 主动抛出错误，让调用者知道程序无法继续。
         raise SystemExit("Tkinter and Pillow are required for UI mode.") from exc
-
-    # 同时计算并保存 `model, labels` 这些值。
     model, labels = load_predictor(args)
-    # 计算并保存 `output_dir`，供后续逻辑使用。
     output_dir = Path(args.output_dir)
     # 创建目录；如果已经存在就直接复用。
     output_dir.mkdir(parents=True, exist_ok=True)
     # 打开指定编号的摄像头。
     cap = cv2.VideoCapture(args.camera)
-    # 判断条件 `not cap.isOpened()` 是否成立。
     if not cap.isOpened():
-        # 主动抛出错误，让调用者知道程序无法继续。
         raise SystemExit(f"Could not open camera {args.camera}.")
-
-    # 计算并保存 `root`，供后续逻辑使用。
+    # 创建界面
     root = tk.Tk()
-    # 执行“启动带倒计时和比赛结果的图形界面”中的这一行操作。
+    #设置窗口标题。
     root.title("石头剪刀布手势比赛")
-    # 更新界面控件的显示状态。
+    # 设置窗口背景色。
     root.configure(bg="#0f172a")
-    # 执行“启动带倒计时和比赛结果的图形界面”中的这一行操作。
+    # 限制窗口最小大小，防止控件挤在一起。
     root.minsize(980, 620)
 
-    # 创建文本或图片标签控件。
+    # 创建左侧摄像头画面区域。它本质是一个 Label，但里面会不断更新图片。
     video_panel = tk.Label(root, bg="#020617")
-    # 把 Tk 控件放入窗口布局中。
+    # 把摄像头区域放到窗口左边，并让它尽量占据剩余空间
     video_panel.pack(side="left", fill="both", expand=True, padx=(18, 10), pady=18)
 
-    # 创建容器控件，用来组织界面布局。
+    # 创建右侧控制面板，宽度 330。
     side = tk.Frame(root, bg="#0f172a", width=330)
-    # 把 Tk 控件放入窗口布局中。
+    # 把右侧面板放到窗口右边，竖向填满。
     side.pack(side="right", fill="y", padx=(8, 18), pady=18)
-    # 执行“启动带倒计时和比赛结果的图形界面”中的这一行操作。
+    #禁止右侧面板被内部控件撑大或缩小，保持固定宽度。
     side.pack_propagate(False)
 
-    # 把 Tk 控件放入窗口布局中。
+    # 创建右侧 UI 控件
     tk.Label(side, text="石头剪刀布比赛", fg="#f8fafc", bg="#0f172a", font=("Microsoft YaHei UI", 24, "bold")).pack(anchor="w")
-    # 创建文本或图片标签控件。
     tk.Label(
-        # 继续填写上一行开始的多行参数或数据结构。
         side,
-        # 计算并保存 `text`，供后续逻辑使用。
         text="点击开始，把手势放进绿色方框。出现“出拳！”后保持一下，随后锁定结果。",
-        # 计算并保存 `fg`，供后续逻辑使用。
         fg="#94a3b8",
-        # 计算并保存 `bg`，供后续逻辑使用。
         bg="#0f172a",
-        # 计算并保存 `wraplength`，供后续逻辑使用。
         wraplength=300,
-        # 计算并保存 `justify`，供后续逻辑使用。
         justify="left",
-        # 计算并保存 `font`，供后续逻辑使用。
         font=("Microsoft YaHei UI", 11),
-    # 把 Tk 控件放入窗口布局中。
     ).pack(anchor="w", pady=(4, 22))
 
-    # 计算并保存 `countdown_var`，供后续逻辑使用。
+    # 倒计时文字变量
     countdown_var = tk.StringVar(value="准备")
-    # 把 Tk 控件放入窗口布局中。
     tk.Label(side, textvariable=countdown_var, fg="#fef3c7", bg="#0f172a", font=("Microsoft YaHei UI", 40, "bold")).pack(anchor="center", pady=(0, 12))
 
-    # 创建按钮控件。
+    # 创建“开始比赛”按钮。点击按钮后调用内部函数 start_round()
     start_button = tk.Button(
-        # 继续填写上一行开始的多行参数或数据结构。
         side,
-        # 计算并保存 `text`，供后续逻辑使用。
         text="开始比赛",
-        # 计算并保存 `command`，供后续逻辑使用。
         command=lambda: start_round(),
-        # 计算并保存 `bg`，供后续逻辑使用。
         bg="#2563eb",
-        # 计算并保存 `fg`，供后续逻辑使用。
         fg="#ffffff",
-        # 计算并保存 `activebackground`，供后续逻辑使用。
         activebackground="#1d4ed8",
-        # 计算并保存 `activeforeground`，供后续逻辑使用。
         activeforeground="#ffffff",
-        # 计算并保存 `bd`，供后续逻辑使用。
         bd=0,
-        # 计算并保存 `padx`，供后续逻辑使用。
         padx=18,
-        # 计算并保存 `pady`，供后续逻辑使用。
         pady=10,
-        # 计算并保存 `font`，供后续逻辑使用。
         font=("Microsoft YaHei UI", 13, "bold"),
-    # 结束上面的多行结构。
     )
-    # 把 Tk 控件放入窗口布局中。
     start_button.pack(fill="x", pady=(0, 22))
-
-    # 把 Tk 控件放入窗口布局中。
+    #保存“你的手势”的图标和文字
     tk.Label(side, text="你的手势", fg="#93c5fd", bg="#0f172a", font=("Microsoft YaHei UI", 12, "bold")).pack(anchor="w")
-    # 计算并保存 `gesture_emoji_var`，供后续逻辑使用。
     gesture_emoji_var = tk.StringVar(value=GESTURE_EMOJI["waiting"])
-    # 把 Tk 控件放入窗口布局中。
     tk.Label(side, textvariable=gesture_emoji_var, fg="#f8fafc", bg="#0f172a", font=("Segoe UI Emoji", 78)).pack(anchor="center")
-    # 计算并保存 `gesture_var`，供后续逻辑使用。
     gesture_var = tk.StringVar(value="等待")
-    # 把 Tk 控件放入窗口布局中。
     tk.Label(side, textvariable=gesture_var, fg="#f8fafc", bg="#0f172a", font=("Microsoft YaHei UI", 18, "bold")).pack(anchor="center", pady=(0, 12))
 
-    # 把 Tk 控件放入窗口布局中。
+    # 保存“电脑出招”的图标和文字。
     tk.Label(side, text="电脑出招", fg="#fbbf24", bg="#0f172a", font=("Microsoft YaHei UI", 12, "bold")).pack(anchor="w")
-    # 计算并保存 `response_emoji_var`，供后续逻辑使用。
     response_emoji_var = tk.StringVar(value=GESTURE_EMOJI["waiting"])
-    # 把 Tk 控件放入窗口布局中。
     tk.Label(side, textvariable=response_emoji_var, fg="#fde68a", bg="#0f172a", font=("Segoe UI Emoji", 78)).pack(anchor="center")
-    # 计算并保存 `response_var`，供后续逻辑使用。
     response_var = tk.StringVar(value="等待")
-    # 把 Tk 控件放入窗口布局中。
     tk.Label(side, textvariable=response_var, fg="#fde68a", bg="#0f172a", font=("Microsoft YaHei UI", 18, "bold")).pack(anchor="center", pady=(0, 10))
 
-    # 计算并保存 `reason_var`，供后续逻辑使用。
+    # 保存解释文字
     reason_var = tk.StringVar(value="点击开始比赛。")
-    # 创建文本或图片标签控件。
     tk.Label(
-        # 继续填写上一行开始的多行参数或数据结构。
         side,
-        # 计算并保存 `textvariable`，供后续逻辑使用。
         textvariable=reason_var,
-        # 计算并保存 `fg`，供后续逻辑使用。
         fg="#cbd5e1",
-        # 计算并保存 `bg`，供后续逻辑使用。
         bg="#0f172a",
-        # 计算并保存 `wraplength`，供后续逻辑使用。
         wraplength=300,
-        # 计算并保存 `justify`，供后续逻辑使用。
         justify="left",
-        # 计算并保存 `font`，供后续逻辑使用。
         font=("Microsoft YaHei UI", 12),
-    # 把 Tk 控件放入窗口布局中。
     ).pack(anchor="w", pady=(0, 22))
-
-    # 计算并保存 `confidence_var`，供后续逻辑使用。
+    #保存置信度文字
     confidence_var = tk.StringVar(value="置信度：--")
-    # 把 Tk 控件放入窗口布局中。
+    #创建概率条画布
     tk.Label(side, textvariable=confidence_var, fg="#a7f3d0", bg="#0f172a", font=("Microsoft YaHei UI", 12, "bold")).pack(anchor="w", pady=(0, 8))
-    # 创建画布，用来绘制图像或概率条。
     bars = tk.Canvas(side, width=300, height=160, bg="#0f172a", highlightthickness=0)
-    # 把 Tk 控件放入窗口布局中。
     bars.pack(anchor="w", pady=(0, 22))
 
-    # 创建文本或图片标签控件。
     tk.Label(
-        # 继续填写上一行开始的多行参数或数据结构。
         side,
-        # 计算并保存 `text`，供后续逻辑使用。
         text="提示：出拳后保持约 1 秒，不要马上收手；尽量保持和采集数据时相同的距离、角度和光照。",
-        # 计算并保存 `fg`，供后续逻辑使用。
         fg="#64748b",
-        # 计算并保存 `bg`，供后续逻辑使用。
         bg="#0f172a",
-        # 计算并保存 `wraplength`，供后续逻辑使用。
         wraplength=300,
-        # 计算并保存 `justify`，供后续逻辑使用。
         justify="left",
-        # 计算并保存 `font`，供后续逻辑使用。
         font=("Microsoft YaHei UI", 10),
-    # 把 Tk 控件放入窗口布局中。
     ).pack(anchor="w", side="bottom")
 
-    # 计算并保存 `recent_probs`，供后续逻辑使用。
+    #实时预测平滑缓存
     recent_probs = deque(maxlen=max(1, args.smooth))
-    # 计算并保存 `round_rois`，供后续逻辑使用。
+    #保存本局倒计时结束后采集到的多帧 ROI
     round_rois = deque(maxlen=max(1, args.final_window))
-    # 计算并保存 `running`，供后续逻辑使用。
+    # 保存窗口是否还在运行。
     running = {"value": True}
-    # 计算并保存 `state`，供后续逻辑使用。
+    #核心状态机
     state = {"phase": "ready", "deadline": 0.0, "capture_deadline": 0.0, "last_roi": None}
 
     # 定义 show_frame 函数：把 OpenCV 图像刷新到 Tk 窗口中。
@@ -1315,188 +1191,153 @@ def run_ui(args):
         # OpenCV 图像是 BGR，Tkinter 显示前需要转为 RGB。
         # 转换图像颜色空间。
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        # 计算并保存 `image`，供后续逻辑使用。
+        #把 NumPy 图像数组转成 Pillow 图片
         image = Image.fromarray(rgb_frame)
-        # 执行“把 OpenCV 图像刷新到 Tk 窗口中”中的这一行操作。
+        # 把图片缩放到适合 UI 显示的大小
         image.thumbnail((720, 560), Image.Resampling.LANCZOS)
-        # 计算并保存 `photo`，供后续逻辑使用。
+        #把 Pillow 图片转成 Tkinter 可显示的图片对象
         photo = ImageTk.PhotoImage(image=image)
-        # 更新界面控件的显示状态。
+        #更新左侧摄像头画面。
         video_panel.configure(image=photo)
-        # 计算并保存 `video_panel.image`，供后续逻辑使用。
+        #保存引用，防止图片被 Python 垃圾回收
         video_panel.image = photo
 
     # 定义 set_waiting_visuals 函数：把界面重置为等待开局状态。
     def set_waiting_visuals():
         # 空闲状态：不显示预测结果，等待用户点击开始。
-        # 更新 Tk 变量，从而刷新界面文字。
+        #把界面恢复成等待状态
         countdown_var.set("准备")
-        # 更新 Tk 变量，从而刷新界面文字。
         gesture_emoji_var.set(GESTURE_EMOJI["waiting"])
-        # 更新 Tk 变量，从而刷新界面文字。
         gesture_var.set("等待")
-        # 更新 Tk 变量，从而刷新界面文字。
         response_emoji_var.set(GESTURE_EMOJI["waiting"])
-        # 更新 Tk 变量，从而刷新界面文字。
         response_var.set("等待")
-        # 更新 Tk 变量，从而刷新界面文字。
         reason_var.set("点击开始比赛。")
-        # 更新 Tk 变量，从而刷新界面文字。
         confidence_var.set("置信度：--")
-        # 执行“把界面重置为等待开局状态”中的这一行操作。
         draw_probability_bars(bars, labels, np.zeros(len(labels)))
 
-    # 定义 set_result_visuals 函数：把识别结果和电脑回应显示到界面上。
+    # 定义 set_result_visuals 函数：把最终识别结果显示到界面上
     def set_result_visuals(label, confidence, probs, random_result=False):
         # 锁定结果后，更新用户手势、电脑出拳、置信度和概率条。
-        # 同时计算并保存 `response, reason` 这些值。
+        # 根据你的手势计算电脑应该出什么
         response, reason = winning_response(label)
-        # 更新 Tk 变量，从而刷新界面文字。
+        #设置“你的手势”的图
         gesture_emoji_var.set(GESTURE_EMOJI.get(label, GESTURE_EMOJI["uncertain"]))
-        # 判断条件 `random_result` 是否成立。
         if random_result:
-            # 更新 Tk 变量，从而刷新界面文字。
             gesture_var.set(f"随机：{DISPLAY_NAMES.get(label, label)}")
-        # 处理前面条件都不满足时的情况。
         else:
-            # 更新 Tk 变量，从而刷新界面文字。
             gesture_var.set(f"{DISPLAY_NAMES.get(label, label)}  {confidence:.0%}")
-        # 更新 Tk 变量，从而刷新界面文字。
+        #设置“电脑出招”的图标。
         response_emoji_var.set(GESTURE_EMOJI.get(response, GESTURE_EMOJI["waiting"]))
-        # 更新 Tk 变量，从而刷新界面文字。
+        #设置“电脑出招”的文字。
         response_var.set(DISPLAY_NAMES.get(response, response))
-        # 更新 Tk 变量，从而刷新界面文字。
+        #解释文字
         reason_var.set("未能稳定识别，已随机选择一个结果。" if random_result else reason)
-        # 更新 Tk 变量，从而刷新界面文字。
         confidence_var.set("置信度：随机结果" if random_result else f"置信度：{confidence:.1%}")
-        # 执行“把识别结果和电脑回应显示到界面上”中的这一行操作。
         draw_probability_bars(bars, labels, probs)
 
     # 定义 start_round 函数：开始一局新的倒计时比赛。
     def start_round():
         # 开始新一局：清空上一局缓存，进入倒计时阶段。
-        # 执行“开始一局新的倒计时比赛”中的这一行操作。
+        # 清空实时预测的平滑缓存
         recent_probs.clear()
-        # 执行“开始一局新的倒计时比赛”中的这一行操作。
+        # 清空本局采样图片缓存
         round_rois.clear()
-        # 计算并保存 `state["phase"]`，供后续逻辑使用。
+        # 把当前阶段改成倒计时
         state["phase"] = "countdown"
-        # 计算并保存 `state["deadline"]`，供后续逻辑使用。
+        #计算倒计时结束的时间点。
+        #perf_counter() 是当前时间，args.countdown 是倒计时秒数，默认大概是 3 秒
         state["deadline"] = perf_counter() + max(0.5, float(args.countdown))
-        # 计算并保存 `state["capture_deadline"]`，供后续逻辑使用。
+        #剩余时间小于等于 0，就进入采样阶段
         state["capture_deadline"] = 0.0
-        # 计算并保存 `state["last_roi"]`，供后续逻辑使用。
+        #清空上一局最后一张 ROI 图片
         state["last_roi"] = None
-        # 更新 Tk 变量，从而刷新界面文字。
+        #更新界面上的倒计时数字
         countdown_var.set(str(int(np.ceil(args.countdown))))
-        # 更新 Tk 变量，从而刷新界面文字。
+        # 把“你的手势”图标设成等待图标
         gesture_emoji_var.set(GESTURE_EMOJI["waiting"])
-        # 更新 Tk 变量，从而刷新界面文字。
+        # “你的手势”文字
         gesture_var.set("结果锁定后显示")
-        # 更新 Tk 变量，从而刷新界面文字。
+        # “电脑出招”图标设成等待图标
         response_emoji_var.set(GESTURE_EMOJI["waiting"])
-        # 更新 Tk 变量，从而刷新界面文字。
+        # 电脑出招文字
         response_var.set("结果锁定后显示")
-        # 更新 Tk 变量，从而刷新界面文字。
+        #更新提示文字
         reason_var.set("请把手势保持在绿色方框内，倒计时结束后才显示结果。")
-        # 更新 Tk 变量，从而刷新界面文字。
+        #隐藏置信度。
         confidence_var.set("置信度：隐藏")
-        # 执行“开始一局新的倒计时比赛”中的这一行操作。
+        # 把概率条清零
         draw_probability_bars(bars, labels, np.zeros(len(labels)))
-        # 更新界面控件的显示状态。
+        #修改开始按钮状态
         start_button.configure(text="倒计时中", state="disabled", bg="#475569")
 
     # 定义 lock_round 函数：倒计时结束后锁定并保存本局结果。
     def lock_round(frame):
         # 倒计时结束后锁定结果：对采样到的多帧预测概率取平均。
-        # 判断条件 `round_rois` 是否成立。
+        #判断有没有采集到 ROI
         if round_rois:
-            # 计算并保存 `predictions`，供后续逻辑使用。
+            # 对多帧 ROI 做预测
             predictions = predict_rois_probs(model, list(round_rois), cv2, args)
-            # 计算并保存 `final_probs`，供后续逻辑使用。
+            #多帧概率取平均
             final_probs = np.mean(predictions, axis=0)
-        # 处理前面条件都不满足时的情况。
         else:
-            # 计算并保存 `final_probs`，供后续逻辑使用。
+            #构造一个全 0 概率数组
             final_probs = np.zeros(len(labels), dtype=np.float32)
         # 同时计算并保存 `label, confidence, final_probs` 这些值。
         label, confidence, final_probs = choose_label(labels, final_probs, state["last_roi"], cv2, args)
-        # 计算并保存 `random_result`，供后续逻辑使用。
+        #判断是否识别失败
         random_result = label == "uncertain"
-        # 判断条件 `random_result` 是否成立。
         if random_result:
             # 如果没有稳定识别出来，就随机给出一个手势，保证比赛流程有结果。
-            # 计算并保存 `label`，供后续逻辑使用。
+            #随机选一个
             label = random.choice(list(labels))
-            # 计算并保存 `confidence`，供后续逻辑使用。
+            #新创建一个全 0 概率数组，把随机选中的那个类别概率设为 1
             confidence = 0.0
-            # 计算并保存 `final_probs`，供后续逻辑使用。
             final_probs = np.zeros(len(labels), dtype=np.float32)
-            # 计算并保存 `final_probs[labels.index(label)]`，供后续逻辑使用。
             final_probs[labels.index(label)] = 1.0
-        # 同时计算并保存 `response, reason` 这些值。
+        # 获取获胜的手势
         response, reason = winning_response(label)
-        # 同时计算并保存 `set_result_visuals(label, confidence, final_probs, random_result` 这些值。
+        # 显示最终结果
         set_result_visuals(label, confidence, final_probs, random_result=random_result)
-        # 计算并保存 `result`，供后续逻辑使用。
+        #组织本局结果数据
         result = {
-            # 配置字典中 `time` 对应的显示或规则值。
             "time": datetime.now().isoformat(timespec="seconds"),
-            # 配置字典中 `label` 对应的显示或规则值。
             "label": label,
-            # 配置字典中 `display_label` 对应的显示或规则值。
             "display_label": DISPLAY_NAMES.get(label, label),
-            # 配置字典中 `response` 对应的显示或规则值。
             "response": response,
-            # 配置字典中 `display_response` 对应的显示或规则值。
             "display_response": DISPLAY_NAMES.get(response, response),
-            # 配置字典中 `confidence` 对应的显示或规则值。
             "confidence": float(confidence),
-            # 配置字典中 `random_result` 对应的显示或规则值。
             "random_result": bool(random_result),
-            # 配置字典中 `probabilities` 对应的显示或规则值。
             "probabilities": {name: float(prob) for name, prob in zip(labels, final_probs)},
-            # 配置字典中 `sampled_frames` 对应的显示或规则值。
             "sampled_frames": len(round_rois),
-            # 配置字典中 `capture_duration` 对应的显示或规则值。
             "capture_duration": float(args.capture_duration),
-        # 结束上面的多行结构。
         }
-        # 开始执行可能失败的代码，并准备捕获异常。
         try:
             # 把文本内容写入文件。
             (output_dir / "latest_ui_result.json").write_text(
                 # 把结果字典转换成格式化 JSON 文本。
                 json.dumps(result, ensure_ascii=False, indent=2),
-                # 计算并保存 `encoding`，供后续逻辑使用。
                 encoding="utf-8",
-            # 结束上面的多行结构。
             )
-            # 判断条件 `state["last_roi"] is not None` 是否成立。
+            #.如果有最后一帧 ROI，就保存 ROI 调试图
             if state["last_roi"] is not None:
                 # 保存调试图：原始 ROI 和模型真正看到的预处理后输入。
-                # 执行“倒计时结束后锁定并保存本局结果”中的这一行操作。
                 save_jpg(output_dir / "latest_ui_roi.jpg", state["last_roi"], cv2)
-                # 执行“倒计时结束后锁定并保存本局结果”中的这一行操作。
+                #保存模型真正看到的图像。
                 save_jpg(output_dir / "latest_ui_model_input.jpg", prepare_roi_for_model(state["last_roi"], cv2, args), cv2)
-            # 执行“倒计时结束后锁定并保存本局结果”中的这一行操作。
+            #保存整张锁定画面
             save_jpg(output_dir / "latest_ui_frame.jpg", frame, cv2)
-        # 捕获指定异常，给出更友好的处理方式。
         except OSError as exc:
             # 在控制台输出当前进度或状态信息。
             print(f"保存本局调试图片失败：{exc}")
-        # 更新 Tk 变量，从而刷新界面文字。
+        # 更新倒计时文字
         countdown_var.set("已锁定")
-        # 判断条件 `not random_result` 是否成立。
         if not random_result:
-            # 更新 Tk 变量，从而刷新界面文字。
             reason_var.set(reason)
-        # 更新界面控件的显示状态。
+        # 恢复按钮
         start_button.configure(text="下一局", state="normal", bg="#2563eb")
-        # 计算并保存 `state["phase"]`，供后续逻辑使用。
         state["phase"] = "locked"
 
-        # 执行“倒计时结束后锁定并保存本局结果”中的这一行操作。
+        #显示锁定那一帧画面
         show_frame(frame)
 
     # 定义 start_capture 函数：进入短暂采样阶段以获得稳定画面。
