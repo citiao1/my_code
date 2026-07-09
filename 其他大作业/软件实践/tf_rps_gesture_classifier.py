@@ -20,10 +20,8 @@ from pathlib import Path
 from time import perf_counter
 # 设置 TensorFlow 日志等级，减少无关提示输出。
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "1")
-
 # 导入 matplotlib，用来保存训练曲线图。
 import matplotlib
-
 # 切换到 Agg 后端，让程序可以在无窗口环境保存图片。
 matplotlib.use("Agg")
 # 导入 pyplot，用来绘制准确率和损失曲线。
@@ -33,7 +31,6 @@ import numpy as np
 
 # 先把 TensorFlow 占位为空，后面需要时再真正导入。
 tf = None
-
 
 #示当前 Python 文件所在的目录
 PROJECT_DIR = Path(__file__).resolve().parent
@@ -520,54 +517,44 @@ def build_model(image_size: int, learning_rate: float):
             # 调用 Keras 接口搭建、训练或加载模型。
             tf.keras.layers.Rescaling(1.0 / 255),  # 将像素值从 0-255 归一化到 0-1。
             # 数据增强：模拟手势的轻微翻转、旋转、移动、缩放和光照变化，提升泛化能力。
-            # 调用 Keras 接口搭建、训练或加载模型。
+            #  随机水平翻转
             tf.keras.layers.RandomFlip("horizontal"),
-            # 调用 Keras 接口搭建、训练或加载模型。
+            # 随机旋转
             tf.keras.layers.RandomRotation(0.03),
-            # 调用 Keras 接口搭建、训练或加载模型。
+            # 随机平移
             tf.keras.layers.RandomTranslation(0.04, 0.04),
-            # 调用 Keras 接口搭建、训练或加载模型。
+            # 随机缩放
             tf.keras.layers.RandomZoom(0.06),
-            # 调用 Keras 接口搭建、训练或加载模型。
+            # 随机亮度变化
             tf.keras.layers.RandomBrightness(0.16, value_range=(0, 1)),
-            # 调用 Keras 接口搭建、训练或加载模型。
+            # 随机对比度变化
             tf.keras.layers.RandomContrast(0.18),
             # 三组卷积层和池化层用于提取手指边缘、掌心轮廓等局部视觉特征。
-            # 调用 Keras 接口搭建、训练或加载模型。
-            tf.keras.layers.Conv2D(32, 3, padding="same", activation="relu"),
-            # 调用 Keras 接口搭建、训练或加载模型。
+            #卷积，提取图片特征
+            tf.keras.layers.Conv2D(32, 3, padding="same", activation="relu"),#边缘信息
+            #池化，缩小特征图，保留信息
             tf.keras.layers.MaxPooling2D(),
-            # 调用 Keras 接口搭建、训练或加载模型。
-            tf.keras.layers.Conv2D(64, 3, padding="same", activation="relu"),
-            # 调用 Keras 接口搭建、训练或加载模型。
+            tf.keras.layers.Conv2D(64, 3, padding="same", activation="relu"),#局部形状
             tf.keras.layers.MaxPooling2D(),
-            # 调用 Keras 接口搭建、训练或加载模型。
-            tf.keras.layers.Conv2D(128, 3, padding="same", activation="relu"),
-            # 调用 Keras 接口搭建、训练或加载模型。
+            tf.keras.layers.Conv2D(128, 3, padding="same", activation="relu"),#完整手势特征
             tf.keras.layers.MaxPooling2D(),
-            # 调用 Keras 接口搭建、训练或加载模型。
             tf.keras.layers.Flatten(),  # 将二维特征图展平成一维向量。
-            # 调用 Keras 接口搭建、训练或加载模型。
             tf.keras.layers.Dropout(0.35),  # 防止模型只记住训练集，降低过拟合风险。
-            # 调用 Keras 接口搭建、训练或加载模型。
+            #全连接层
             tf.keras.layers.Dense(128, activation="relu"),
-            # 调用 Keras 接口搭建、训练或加载模型。
+            #输出
             tf.keras.layers.Dense(len(CLASSES), activation="softmax"),  # 输出三类手势的概率。
-        # 结束上面的多行结构。
         ]
-    # 结束上面的多行结构。
     )
-    # 执行“搭建并编译从零训练的 CNN 模型”中的这一行操作。
+    #配置模型的训练方式
     model.compile(
-        # 调用 Keras 接口搭建、训练或加载模型。
+        #根据模型的错误来调整模型参数
         optimizer=tf.keras.optimizers.Adam(learning_rate),
-        # 计算并保存 `loss`，供后续逻辑使用。
+        #损失函数，预测和真实答案的差距
         loss="categorical_crossentropy",
-        # 计算并保存 `metrics`，供后续逻辑使用。
+        #评估指标，准确率
         metrics=["accuracy"],
-    # 结束上面的多行结构。
     )
-    # 返回 `model`，把结果交给调用者。
     return model
 
 
@@ -678,7 +665,11 @@ def train_model(args):
 
     ]
     # 开始训练神经网络模型。
-    history = model.fit(train_ds, validation_data=val_ds, epochs=args.epochs, callbacks=callbacks)
+    history = model.fit(train_ds, 
+                        validation_data=val_ds, 
+                        epochs=args.epochs, #训练轮数
+                        callbacks=callbacks
+                        )
     # 在验证集上评估模型效果。
     loss, acc = model.evaluate(val_ds, verbose=0)
     #计算混淆矩阵
@@ -761,7 +752,7 @@ def skin_fraction(roi, cv2):
     mask = cv2.inRange(ycrcb, lower, upper)
     # 对掩码做中值滤波，进一步平滑边缘。
     mask = cv2.medianBlur(mask, 5)
-    # 返回 `cv2.countNonZero(mask) / float(mask.shape[0] * mask.shape[1])`，把结果交给调用者。
+    #非零像素比例
     return cv2.countNonZero(mask) / float(mask.shape[0] * mask.shape[1])
 
 
