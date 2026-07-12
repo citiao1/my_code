@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "E:\\SmartCarCempetation\\2026ZNC_ZCR\\UserCode",
+                "E:\\SmartCarCempetation\\2026ZNC_ZCR\\UserCode\\APP",
+                "E:\\SmartCarCempetation\\2026ZNC_ZCR\\UserCode\\BSP",
+                "E:\\SmartCarCempetation\\2026ZNC_ZCR\\UserCode\\MIDDLE",
+                "E:\\SmartCarCempetation\\2026ZNC_ZCR\\User",
+                "E:\\SmartCarCempetation\\2026ZNC_ZCR\\LQ_LIB\\Inc",
+                "E:\\SmartCarCempetation\\2026ZNC_ZCR\\Driver\\Inc"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ]
+        }
+    ],
+    "version": 4
+}

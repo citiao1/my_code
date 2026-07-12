@@ -1,0 +1,731 @@
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_PWM
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_PWM.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_PWM.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_PWM.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\AI8051U_PWM.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_PWM.h"
+    6          
+    7          //========================================================================
+    8          // º¯Êý: PWM_Configuration
+    9          // ÃèÊö: PWM³õÊ¼»¯³ÌÐò.
+   10          // ²ÎÊý: PWMx: ½á¹¹²ÎÊý,Çë²Î¿¼PWM.hÀïµÄ¶¨Òå.
+   11          // ·µ»Ø: ³É¹¦·µ»Ø SUCCESS, ´íÎó·µ»Ø FAIL.
+   12          // °æ±¾: V1.0, 2012-10-22
+   13          //========================================================================
+   14          u8 PWM_Configuration(u8 PWM, PWMx_InitDefine *PWMx)
+   15          {
+   16   1        if (PWM == PWM1)
+   17   1        {
+   18   2          PWMA_CC1E_Disable();        // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+   19   2          PWMA_CC1NE_Disable();       // ¹Ø±Õ±È½ÏÊä³ö
+   20   2          PWMA_CC1S_Direction(CCAS_OUTPUT); // CCnS½öÔÚÍ¨µÀ¹Ø±ÕÊ±²ÅÊÇ¿ÉÐ´µÄ
+   21   2          PWMA_OC1ModeSet(PWMx->PWM_Mode);  // ÉèÖÃÊä³ö±È½ÏÄ£Ê½
+   22   2      
+   23   2          if (PWMx->PWM_EnoSelect & ENO1P)
+   24   2          {
+   25   3            PWMA_CC1E_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+   26   3            PWMA_ENO |= ENO1P;
+   27   3          }
+   28   2          else
+   29   2          {
+   30   3            PWMA_CC1E_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+   31   3            PWMA_ENO &= ~ENO1P;
+   32   3          }
+   33   2          if (PWMx->PWM_EnoSelect & ENO1N)
+   34   2          {
+   35   3            PWMA_CC1NE_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+   36   3            PWMA_ENO |= ENO1N;
+   37   3          }
+   38   2          else
+   39   2          {
+   40   3            PWMA_CC1NE_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+   41   3            PWMA_ENO &= ~ENO1N;
+   42   3          }
+   43   2      
+   44   2          PWMA_Duty1(PWMx->PWM_Duty);
+   45   2          return SUCCESS;
+   46   2        }
+   47   1      
+   48   1        if (PWM == PWM2)
+   49   1        {
+   50   2          PWMA_CC2E_Disable();        // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+   51   2          PWMA_CC2NE_Disable();       // ¹Ø±Õ±È½ÏÊä³ö
+   52   2          PWMA_CC2S_Direction(CCAS_OUTPUT); // CCnS½öÔÚÍ¨µÀ¹Ø±ÕÊ±²ÅÊÇ¿ÉÐ´µÄ
+   53   2          PWMA_OC2ModeSet(PWMx->PWM_Mode);  // ÉèÖÃÊä³ö±È½ÏÄ£Ê½
+   54   2      
+   55   2          if (PWMx->PWM_EnoSelect & ENO2P)
+   56   2          {
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 2   
+
+   57   3            PWMA_CC2E_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+   58   3            PWMA_ENO |= ENO2P;
+   59   3          }
+   60   2          else
+   61   2          {
+   62   3            PWMA_CC2E_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+   63   3            PWMA_ENO &= ~ENO2P;
+   64   3          }
+   65   2          if (PWMx->PWM_EnoSelect & ENO2N)
+   66   2          {
+   67   3            PWMA_CC2NE_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+   68   3            PWMA_ENO |= ENO2N;
+   69   3          }
+   70   2          else
+   71   2          {
+   72   3            PWMA_CC2NE_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+   73   3            PWMA_ENO &= ~ENO2N;
+   74   3          }
+   75   2      
+   76   2          PWMA_Duty2(PWMx->PWM_Duty);
+   77   2          return SUCCESS;
+   78   2        }
+   79   1      
+   80   1        if (PWM == PWM3)
+   81   1        {
+   82   2          PWMA_CC3E_Disable();        // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+   83   2          PWMA_CC3NE_Disable();       // ¹Ø±Õ±È½ÏÊä³ö
+   84   2          PWMA_CC3S_Direction(CCAS_OUTPUT); // CCnS½öÔÚÍ¨µÀ¹Ø±ÕÊ±²ÅÊÇ¿ÉÐ´µÄ
+   85   2          PWMA_OC3ModeSet(PWMx->PWM_Mode);  // ÉèÖÃÊä³ö±È½ÏÄ£Ê½
+   86   2      
+   87   2          if (PWMx->PWM_EnoSelect & ENO3P)
+   88   2          {
+   89   3            PWMA_CC3E_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+   90   3            PWMA_ENO |= ENO3P;
+   91   3          }
+   92   2          else
+   93   2          {
+   94   3            PWMA_CC3E_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+   95   3            PWMA_ENO &= ~ENO3P;
+   96   3          }
+   97   2          if (PWMx->PWM_EnoSelect & ENO3N)
+   98   2          {
+   99   3            PWMA_CC3NE_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+  100   3            PWMA_ENO |= ENO3N;
+  101   3          }
+  102   2          else
+  103   2          {
+  104   3            PWMA_CC3NE_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  105   3            PWMA_ENO &= ~ENO3N;
+  106   3          }
+  107   2      
+  108   2          PWMA_Duty3(PWMx->PWM_Duty);
+  109   2          return SUCCESS;
+  110   2        }
+  111   1      
+  112   1        if (PWM == PWM4)
+  113   1        {
+  114   2          PWMA_CC4E_Disable();        // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  115   2          PWMA_CC4NE_Disable();       // ¹Ø±Õ±È½ÏÊä³ö
+  116   2          PWMA_CC4S_Direction(CCAS_OUTPUT); // CCnS½öÔÚÍ¨µÀ¹Ø±ÕÊ±²ÅÊÇ¿ÉÐ´µÄ
+  117   2          PWMA_OC4ModeSet(PWMx->PWM_Mode);  // ÉèÖÃÊä³ö±È½ÏÄ£Ê½
+  118   2      
+  119   2          if (PWMx->PWM_EnoSelect & ENO4P)
+  120   2          {
+  121   3            PWMA_CC4E_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+  122   3            PWMA_ENO |= ENO4P;
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 3   
+
+  123   3          }
+  124   2          else
+  125   2          {
+  126   3            PWMA_CC4E_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  127   3            PWMA_ENO &= ~ENO4P;
+  128   3          }
+  129   2          if (PWMx->PWM_EnoSelect & ENO4N)
+  130   2          {
+  131   3            PWMA_CC4NE_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+  132   3            PWMA_ENO |= ENO4N;
+  133   3          }
+  134   2          else
+  135   2          {
+  136   3            PWMA_CC4NE_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  137   3            PWMA_ENO &= ~ENO4N;
+  138   3          }
+  139   2      
+  140   2          PWMA_Duty4(PWMx->PWM_Duty);
+  141   2          return SUCCESS;
+  142   2        }
+  143   1      
+  144   1        if (PWM == PWMA)
+  145   1        {
+  146   2          //    PWMA_OC1_ReloadEnable(PWMx->PWM_Reload);  //Êä³ö±È½ÏµÄÔ¤×°ÔØÊ¹ÄÜ
+  147   2          //    PWMA_OC1_FastEnable(PWMx->PWM_Fast);    //Êä³ö±È½Ï¿ìËÙ¹¦ÄÜÊ¹ÄÜ
+  148   2          //    PWMA_CCPCAPreloaded(PWMx->PWM_PreLoad);     //²¶»ñ/±È½ÏÔ¤×°ÔØ¿ØÖÆÎ»(¸ÃÎ»Ö»¶Ô¾ßÓÐ»¥²¹Êä³öµÄÍ¨µÀÆð×÷Ó
+             -Ã)
+  149   2          //    PWMA_BrakeEnable(PWMx->PWM_BrakeEnable);  //¿ªÆô/½ûÖ¹É²³µÊäÈë
+  150   2      
+  151   2          PWMA_DeadTime(PWMx->PWM_DeadTime);         // ËÀÇø·¢ÉúÆ÷ÉèÖÃ
+  152   2          PWMA_AutoReload(PWMx->PWM_Period);         // ÖÜÆÚÉèÖÃ
+  153   2          PWMA_BrakeOutputEnable(PWMx->PWM_MainOutEnable); // Ö÷Êä³öÊ¹ÄÜ
+  154   2          PWMA_CEN_Enable(PWMx->PWM_CEN_Enable);       // Ê¹ÄÜ¼ÆÊýÆ÷
+  155   2          return SUCCESS;
+  156   2        }
+  157   1      
+  158   1        if (PWM == PWM5)
+  159   1        {
+  160   2          PWMB_CC5E_Disable();        // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  161   2          PWMB_CC5S_Direction(CCAS_OUTPUT); // CCnS½öÔÚÍ¨µÀ¹Ø±ÕÊ±²ÅÊÇ¿ÉÐ´µÄ
+  162   2          PWMB_OC5ModeSet(PWMx->PWM_Mode);  // ÉèÖÃÊä³ö±È½ÏÄ£Ê½
+  163   2      
+  164   2          if (PWMx->PWM_EnoSelect & ENO5P)
+  165   2          {
+  166   3            PWMB_CC5E_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+  167   3            PWMB_ENO |= ENO5P;
+  168   3          }
+  169   2          else
+  170   2          {
+  171   3            PWMB_CC5E_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  172   3            PWMB_ENO &= ~ENO5P;
+  173   3          }
+  174   2      
+  175   2          PWMB_Duty5(PWMx->PWM_Duty);
+  176   2          return SUCCESS;
+  177   2        }
+  178   1      
+  179   1        if (PWM == PWM6)
+  180   1        {
+  181   2          PWMB_CC6E_Disable();        // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  182   2          PWMB_CC6S_Direction(CCAS_OUTPUT); // CCnS½öÔÚÍ¨µÀ¹Ø±ÕÊ±²ÅÊÇ¿ÉÐ´µÄ
+  183   2          PWMB_OC6ModeSet(PWMx->PWM_Mode);  // ÉèÖÃÊä³ö±È½ÏÄ£Ê½
+  184   2      
+  185   2          if (PWMx->PWM_EnoSelect & ENO6P)
+  186   2          {
+  187   3            PWMB_CC6E_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 4   
+
+  188   3            PWMB_ENO |= ENO6P;
+  189   3          }
+  190   2          else
+  191   2          {
+  192   3            PWMB_CC6E_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  193   3            PWMB_ENO &= ~ENO6P;
+  194   3          }
+  195   2      
+  196   2          PWMB_Duty6(PWMx->PWM_Duty);
+  197   2          return SUCCESS;
+  198   2        }
+  199   1      
+  200   1        if (PWM == PWM7)
+  201   1        {
+  202   2          PWMB_CC7E_Disable();        // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  203   2          PWMB_CC7S_Direction(CCAS_OUTPUT); // CCnS½öÔÚÍ¨µÀ¹Ø±ÕÊ±²ÅÊÇ¿ÉÐ´µÄ
+  204   2          PWMB_OC7ModeSet(PWMx->PWM_Mode);  // ÉèÖÃÊä³ö±È½ÏÄ£Ê½
+  205   2      
+  206   2          if (PWMx->PWM_EnoSelect & ENO7P)
+  207   2          {
+  208   3            PWMB_CC7E_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+  209   3            PWMB_ENO |= ENO7P;
+  210   3          }
+  211   2          else
+  212   2          {
+  213   3            PWMB_CC7E_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  214   3            PWMB_ENO &= ~ENO7P;
+  215   3          }
+  216   2      
+  217   2          PWMB_Duty7(PWMx->PWM_Duty);
+  218   2          return SUCCESS;
+  219   2        }
+  220   1      
+  221   1        if (PWM == PWM8)
+  222   1        {
+  223   2          PWMB_CC8E_Disable();        // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  224   2          PWMB_CC8S_Direction(CCAS_OUTPUT); // CCnS½öÔÚÍ¨µÀ¹Ø±ÕÊ±²ÅÊÇ¿ÉÐ´µÄ
+  225   2          PWMB_OC8ModeSet(PWMx->PWM_Mode);  // ÉèÖÃÊä³ö±È½ÏÄ£Ê½
+  226   2      
+  227   2          if (PWMx->PWM_EnoSelect & ENO8P)
+  228   2          {
+  229   3            PWMB_CC8E_Enable(); // ¿ªÆôÊäÈë²¶»ñ/±È½ÏÊä³ö
+  230   3            PWMB_ENO |= ENO8P;
+  231   3          }
+  232   2          else
+  233   2          {
+  234   3            PWMB_CC8E_Disable(); // ¹Ø±ÕÊäÈë²¶»ñ/±È½ÏÊä³ö
+  235   3            PWMB_ENO &= ~ENO8P;
+  236   3          }
+  237   2      
+  238   2          PWMB_Duty8(PWMx->PWM_Duty);
+  239   2          return SUCCESS;
+  240   2        }
+  241   1      
+  242   1        if (PWM == PWMB)
+  243   1        {
+  244   2          //    PWMB_OC5_ReloadEnable(PWMx->PWM_Reload);  //Êä³ö±È½ÏµÄÔ¤×°ÔØÊ¹ÄÜ
+  245   2          //    PWMB_OC5_FastEnable(PWMx->PWM_Fast);    //Êä³ö±È½Ï¿ìËÙ¹¦ÄÜÊ¹ÄÜ
+  246   2          //    PWMB_CCPCBPreloaded(PWMx->PWM_PreLoad);     //²¶»ñ/±È½ÏÔ¤×°ÔØ¿ØÖÆÎ»(¸ÃÎ»Ö»¶Ô¾ßÓÐ»¥²¹Êä³öµÄÍ¨µÀÆð×÷Ó
+             -Ã)
+  247   2          //    PWMB_BrakeEnable(PWMx->PWM_BrakeEnable);  //¿ªÆô/½ûÖ¹É²³µÊäÈë
+  248   2      
+  249   2          PWMB_DeadTime(PWMx->PWM_DeadTime);         // ËÀÇø·¢ÉúÆ÷ÉèÖÃ
+  250   2          PWMB_AutoReload(PWMx->PWM_Period);         // ÖÜÆÚÉèÖÃ
+  251   2          PWMB_BrakeOutputEnable(PWMx->PWM_MainOutEnable); // Ö÷Êä³öÊ¹ÄÜ
+  252   2          PWMB_CEN_Enable(PWMx->PWM_CEN_Enable);       // Ê¹ÄÜ¼ÆÊýÆ÷
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 5   
+
+  253   2          return SUCCESS;
+  254   2        }
+  255   1      
+  256   1        return FAIL; // ´íÎó
+  257   1      }
+  258          
+  259          //========================================================================
+  260          // º¯Êý: UpdatePwm
+  261          // ÃèÊö: PWMÕ¼¿Õ±È¸üÐÂ³ÌÐò.
+  262          // ²ÎÊý: PWM: PWMÍ¨µÀ/×éºÅ, PWMx½á¹¹²ÎÊý,Çë²Î¿¼PWM.hÀïµÄ¶¨Òå.
+  263          // ·µ»Ø: none.
+  264          // °æ±¾: V1.0, 2012-10-22
+  265          //========================================================================
+  266          void UpdatePwm(u8 PWM, PWMx_Duty *PWMx)
+  267          {
+  268   1        switch (PWM)
+  269   1        {
+  270   2        case PWM1:    PWMA_Duty1(PWMx->PWM1_Duty);    break;
+  271   2        case PWM2:    PWMA_Duty2(PWMx->PWM2_Duty);    break;
+  272   2        case PWM3:    PWMA_Duty3(PWMx->PWM3_Duty);    break;
+  273   2        case PWM4:    PWMA_Duty4(PWMx->PWM4_Duty);    break;
+  274   2        case PWM5:    PWMB_Duty5(PWMx->PWM5_Duty);    break;
+  275   2        case PWM6:    PWMB_Duty6(PWMx->PWM6_Duty);    break;
+  276   2        case PWM7:    PWMB_Duty7(PWMx->PWM7_Duty);    break;
+  277   2        case PWM8:    PWMB_Duty8(PWMx->PWM8_Duty);    break;
+  278   2        case PWMA:
+  279   2          PWMA_Duty1(PWMx->PWM1_Duty);
+  280   2          PWMA_Duty2(PWMx->PWM2_Duty);
+  281   2          PWMA_Duty3(PWMx->PWM3_Duty);
+  282   2          PWMA_Duty4(PWMx->PWM4_Duty);
+  283   2          break;
+  284   2      
+  285   2        case PWMB:
+  286   2          PWMB_Duty5(PWMx->PWM5_Duty);
+  287   2          PWMB_Duty6(PWMx->PWM6_Duty);
+  288   2          PWMB_Duty7(PWMx->PWM7_Duty);
+  289   2          PWMB_Duty8(PWMx->PWM8_Duty);
+  290   2          break;
+  291   2        }
+  292   1      }
+  293          
+  294          //========================================================================
+  295          // º¯Êý: UpdatePwm
+  296          // ÃèÊö: PWMÕ¼¿Õ±È¸üÐÂ³ÌÐò.
+  297          // ²ÎÊý: PWM: PWMÍ¨µÀ/Õ¼¿Õ±ÈÊ±¼ä
+  298          // ·µ»Ø: none.
+  299          // °æ±¾: V1.0, 2024-11-17
+  300          //========================================================================
+  301          void UpdatePwmCh(u8 PWM_CH, u16 Duty)
+  302          {
+  303   1        switch (PWM_CH)
+  304   1        {
+  305   2        case PWM1:    PWMA_Duty1(Duty);   break;
+  306   2        case PWM2:    PWMA_Duty2(Duty);   break;
+  307   2        case PWM3:    PWMA_Duty3(Duty);   break;
+  308   2        case PWM4:    PWMA_Duty4(Duty);   break;
+  309   2        case PWM5:    PWMB_Duty5(Duty);   break;
+  310   2        case PWM6:    PWMB_Duty6(Duty);   break;
+  311   2        case PWM7:    PWMB_Duty7(Duty);   break;
+  312   2        case PWM8:    PWMB_Duty8(Duty);   break;
+  313   2        case PWMA:
+  314   2          PWMA_Duty1(Duty);
+  315   2          PWMA_Duty2(Duty);
+  316   2          PWMA_Duty3(Duty);
+  317   2          PWMA_Duty4(Duty);
+  318   2          break;
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 6   
+
+  319   2      
+  320   2        case PWMB:
+  321   2          PWMB_Duty5(Duty);
+  322   2          PWMB_Duty6(Duty);
+  323   2          PWMB_Duty7(Duty);
+  324   2          PWMB_Duty8(Duty);
+  325   2          break;
+  326   2        }
+  327   1      }
+  328          
+  329          //========================================================================
+  330          // º¯Êý: ReadPWMA(void)
+  331          // ÃèÊö: Òì²½¶ÁÈ¡PWMAÌØÊâ¹¦ÄÜ¼Ä´æÆ÷º¯Êý.
+  332          // ²ÎÊý: addr: ¶ÁÈ¡ÌØÊâ¹¦ÄÜ¼Ä´æÆ÷µØÖ·.
+  333          // ·µ»Ø: dat:  ¶ÁÈ¡ÌØÊâ¹¦ÄÜ¼Ä´æÆ÷ÄÚÈÝ.
+  334          // °æ±¾: V1.0, 2022-03-16
+  335          //========================================================================
+  336          u8 ReadPWMA(u8 addr)
+  337          {
+  338   1        u8 dat;
+  339   1      
+  340   1        while (HSPWMA_ADR & 0x80)
+  341   1          ;           // µÈ´ýÇ°Ò»¸öÒì²½¶ÁÐ´Íê³É
+  342   1        HSPWMA_ADR = addr | 0x80; // ÉèÖÃ¼ä½Ó·ÃÎÊµØÖ·,Ö»ÐèÒªÉèÖÃÔ­XFRµØÖ·µÄµÍ7Î»
+  343   1                      // HSPWMA_ADDR¼Ä´æÆ÷µÄ×î¸ßÎ»Ð´1,±íÊ¾¶ÁÊý¾Ý
+  344   1        while (HSPWMA_ADR & 0x80)
+  345   1          ;       // µÈ´ýµ±Ç°Òì²½¶ÁÈ¡Íê³É
+  346   1        dat = HSPWMA_DAT; // ¶ÁÈ¡Òì²½Êý¾Ý
+  347   1      
+  348   1        return dat;
+  349   1      }
+  350          
+  351          //========================================================================
+  352          // º¯Êý: ReadPWMB(void)
+  353          // ÃèÊö: Òì²½¶ÁÈ¡PWMBÌØÊâ¹¦ÄÜ¼Ä´æÆ÷º¯Êý.
+  354          // ²ÎÊý: addr: ¶ÁÈ¡ÌØÊâ¹¦ÄÜ¼Ä´æÆ÷µØÖ·.
+  355          // ·µ»Ø: dat:  ¶ÁÈ¡ÌØÊâ¹¦ÄÜ¼Ä´æÆ÷ÄÚÈÝ.
+  356          // °æ±¾: V1.0, 2022-03-16
+  357          //========================================================================
+  358          u8 ReadPWMB(u8 addr)
+  359          {
+  360   1        u8 dat;
+  361   1      
+  362   1        while (HSPWMB_ADR & 0x80)
+  363   1          ;           // µÈ´ýÇ°Ò»¸öÒì²½¶ÁÐ´Íê³É
+  364   1        HSPWMB_ADR = addr | 0x80; // ÉèÖÃ¼ä½Ó·ÃÎÊµØÖ·,Ö»ÐèÒªÉèÖÃÔ­XFRµØÖ·µÄµÍ7Î»
+  365   1                      // HSPWMB_ADDR¼Ä´æÆ÷µÄ×î¸ßÎ»Ð´1,±íÊ¾¶ÁÊý¾Ý
+  366   1        while (HSPWMB_ADR & 0x80)
+  367   1          ;       // µÈ´ýµ±Ç°Òì²½¶ÁÈ¡Íê³É
+  368   1        dat = HSPWMB_DAT; // ¶ÁÈ¡Òì²½Êý¾Ý
+  369   1      
+  370   1        return dat;
+  371   1      }
+  372          
+  373          //========================================================================
+  374          // º¯Êý: WritePWMA(void)
+  375          // ÃèÊö: Òì²½¶ÁÈ¡PWMAÌØÊâ¹¦ÄÜ¼Ä´æÆ÷º¯Êý.
+  376          // ²ÎÊý: addr: Ð´ÈëÌØÊâ¹¦ÄÜ¼Ä´æÆ÷µØÖ·.
+  377          // ²ÎÊý: dat:  Ð´ÈëÌØÊâ¹¦ÄÜ¼Ä´æÆ÷ÄÚÈÝ.
+  378          // ·µ»Ø: none.
+  379          // °æ±¾: V1.0, 2022-03-16
+  380          //========================================================================
+  381          void WritePWMA(u8 addr, u8 dat)
+  382          {
+  383   1        while (HSPWMA_ADR & 0x80)
+  384   1          ;           // µÈ´ýÇ°Ò»¸öÒì²½¶ÁÐ´Íê³É
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 7   
+
+  385   1        HSPWMA_DAT = dat;     // ×¼±¸ÐèÒªÐ´ÈëµÄÊý¾Ý
+  386   1        HSPWMA_ADR = addr & 0x7f; // ÉèÖÃ¼ä½Ó·ÃÎÊµØÖ·,Ö»ÐèÒªÉèÖÃÔ­XFRµØÖ·µÄµÍ7Î»
+  387   1                      // HSPWMA_ADDR¼Ä´æÆ÷µÄ×î¸ßÎ»Ð´0,±íÊ¾Ð´Êý¾Ý
+  388   1      }
+  389          
+  390          //========================================================================
+  391          // º¯Êý: WritePWMB(void)
+  392          // ÃèÊö: Òì²½¶ÁÈ¡PWMBÌØÊâ¹¦ÄÜ¼Ä´æÆ÷º¯Êý.
+  393          // ²ÎÊý: addr: Ð´ÈëÌØÊâ¹¦ÄÜ¼Ä´æÆ÷µØÖ·.
+  394          // ²ÎÊý: dat:  Ð´ÈëÌØÊâ¹¦ÄÜ¼Ä´æÆ÷ÄÚÈÝ.
+  395          // ·µ»Ø: none.
+  396          // °æ±¾: V1.0, 2022-03-16
+  397          //========================================================================
+  398          void WritePWMB(u8 addr, u8 dat)
+  399          {
+  400   1        while (HSPWMB_ADR & 0x80)
+  401   1          ;           // µÈ´ýÇ°Ò»¸öÒì²½¶ÁÐ´Íê³É
+  402   1        HSPWMB_DAT = dat;     // ×¼±¸ÐèÒªÐ´ÈëµÄÊý¾Ý
+  403   1        HSPWMB_ADR = addr & 0x7f; // ÉèÖÃ¼ä½Ó·ÃÎÊµØÖ·,Ö»ÐèÒªÉèÖÃÔ­XFRµØÖ·µÄµÍ7Î»
+  404   1                      // HSPWMB_ADDR¼Ä´æÆ÷µÄ×î¸ßÎ»Ð´0,±íÊ¾Ð´Êý¾Ý
+  405   1      }
+  406          
+  407          //========================================================================
+  408          // º¯Êý: HSPWM_Configuration
+  409          // ÃèÊö: HSPWM³õÊ¼»¯³ÌÐò.
+  410          // ²ÎÊý: PWMx: ½á¹¹²ÎÊý,Çë²Î¿¼PWM.hÀïµÄ¶¨Òå.
+  411          // ·µ»Ø: ³É¹¦·µ»Ø SUCCESS, ´íÎó·µ»Ø FAIL.
+  412          // °æ±¾: V1.0, 2022-04-05
+  413          //========================================================================
+  414          void HSPWM_Configuration(u8 PWM, HSPWMx_InitDefine *PWMx, PWMx_Duty *DUTYx)
+  415          {
+  416   1        u8 tmpENO, tmpCCER1, tmpCCER2;
+  417   1      
+  418   1        if (PWM == PWMA)
+  419   1        {
+  420   2          HSPWMA_CFG = 0x03; // Ê¹ÄÜPWMAÏà¹Ø¼Ä´æÆ÷Òì²½·ÃÎÊ¹¦ÄÜ
+  421   2      
+  422   2          if (PWMx->PWM_EnoSelect & ENO1P)
+  423   2          {
+  424   3            tmpENO |= ENO1P;
+  425   3            tmpCCER1 |= 0x01;
+  426   3          }
+  427   2          else
+  428   2          {
+  429   3            tmpENO &= ~ENO1P;
+  430   3            tmpCCER1 &= ~0x01;
+  431   3          }
+  432   2          if (PWMx->PWM_EnoSelect & ENO1N)
+  433   2          {
+  434   3            tmpENO |= ENO1N;
+  435   3            tmpCCER1 |= 0x04;
+  436   3          }
+  437   2          else
+  438   2          {
+  439   3            tmpENO &= ~ENO1N;
+  440   3            tmpCCER1 &= ~0x04;
+  441   3          }
+  442   2          if (PWMx->PWM_EnoSelect & ENO2P)
+  443   2          {
+  444   3            tmpENO |= ENO2P;
+  445   3            tmpCCER1 |= 0x10;
+  446   3          }
+  447   2          else
+  448   2          {
+  449   3            tmpENO &= ~ENO2P;
+  450   3            tmpCCER1 &= ~0x10;
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 8   
+
+  451   3          }
+  452   2          if (PWMx->PWM_EnoSelect & ENO2N)
+  453   2          {
+  454   3            tmpENO |= ENO2N;
+  455   3            tmpCCER1 |= 0x40;
+  456   3          }
+  457   2          else
+  458   2          {
+  459   3            tmpENO &= ~ENO2N;
+  460   3            tmpCCER1 &= ~0x40;
+  461   3          }
+  462   2          if (PWMx->PWM_EnoSelect & ENO3P)
+  463   2          {
+  464   3            tmpENO |= ENO3P;
+  465   3            tmpCCER2 |= 0x01;
+  466   3          }
+  467   2          else
+  468   2          {
+  469   3            tmpENO &= ~ENO3P;
+  470   3            tmpCCER2 &= ~0x01;
+  471   3          }
+  472   2          if (PWMx->PWM_EnoSelect & ENO3N)
+  473   2          {
+  474   3            tmpENO |= ENO3N;
+  475   3            tmpCCER2 |= 0x04;
+  476   3          }
+  477   2          else
+  478   2          {
+  479   3            tmpENO &= ~ENO3N;
+  480   3            tmpCCER2 &= ~0x04;
+  481   3          }
+  482   2          if (PWMx->PWM_EnoSelect & ENO4P)
+  483   2          {
+  484   3            tmpENO |= ENO4P;
+  485   3            tmpCCER2 |= 0x10;
+  486   3          }
+  487   2          else
+  488   2          {
+  489   3            tmpENO &= ~ENO4P;
+  490   3            tmpCCER2 &= ~0x10;
+  491   3          }
+  492   2          if (PWMx->PWM_EnoSelect & ENO4N)
+  493   2          {
+  494   3            tmpENO |= ENO4N;
+  495   3            tmpCCER2 |= 0x40;
+  496   3          }
+  497   2          else
+  498   2          {
+  499   3            tmpENO &= ~ENO4N;
+  500   3            tmpCCER2 &= ~0x40;
+  501   3          }
+  502   2      
+  503   2          // Í¨¹ýÒì²½·½Ê½ÉèÖÃPWMAµÄÏà¹Ø¼Ä´æÆ÷
+  504   2          WritePWMA((u8)&PWMA_CCER1, 0x00);
+  505   2          WritePWMA((u8)&PWMA_CCER2, 0x00);
+  506   2          WritePWMA((u8)&PWMA_CCMR1, CCMRn_PWM_MODE1); // Í¨µÀÄ£Ê½ÅäÖÃ
+  507   2          WritePWMA((u8)&PWMA_CCMR2, CCMRn_PWM_MODE1);
+  508   2          WritePWMA((u8)&PWMA_CCMR3, CCMRn_PWM_MODE1);
+  509   2          WritePWMA((u8)&PWMA_CCMR4, CCMRn_PWM_MODE1);
+  510   2          WritePWMA((u8)&PWMA_CCER1, tmpCCER1); // ÅäÖÃÍ¨µÀÊä³öÊ¹ÄÜºÍ¼«ÐÔ
+  511   2          WritePWMA((u8)&PWMA_CCER2, tmpCCER2);
+  512   2          WritePWMA((u8)&PWMA_ENO, tmpENO);            // Ê¹ÄÜPWMÐÅºÅÊä³ö¶Ë¿Ú
+  513   2          WritePWMA((u8)&PWMA_CCR1H, (u8)(DUTYx->PWM1_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  514   2          WritePWMA((u8)&PWMA_CCR1L, (u8)DUTYx->PWM1_Duty);
+  515   2          WritePWMA((u8)&PWMA_CCR2H, (u8)(DUTYx->PWM2_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  516   2          WritePWMA((u8)&PWMA_CCR2L, (u8)DUTYx->PWM2_Duty);
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 9   
+
+  517   2          WritePWMA((u8)&PWMA_CCR3H, (u8)(DUTYx->PWM3_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  518   2          WritePWMA((u8)&PWMA_CCR3L, (u8)DUTYx->PWM3_Duty);
+  519   2          WritePWMA((u8)&PWMA_CCR4H, (u8)(DUTYx->PWM4_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  520   2          WritePWMA((u8)&PWMA_CCR4L, (u8)DUTYx->PWM4_Duty);
+  521   2          WritePWMA((u8)&PWMA_ARRH, (u8)(PWMx->PWM_Period >> 8)); // ÉèÖÃÊä³öPWMµÄÖÜÆÚ
+  522   2          WritePWMA((u8)&PWMA_ARRL, (u8)(PWMx->PWM_Period));
+  523   2          WritePWMA((u8)&PWMA_DTR, PWMx->PWM_DeadTime);     // ÉèÖÃ»¥²¹¶Ô³ÆÊä³öPWMµÄËÀÇø
+  524   2          WritePWMA((u8)&PWMA_BKR, PWMx->PWM_MainOutEnable << 7); // Ê¹ÄÜÖ÷Êä³ö
+  525   2          WritePWMA((u8)&PWMA_CR1, PWMx->PWM_CEN_Enable);     // ¿ªÊ¼PWM¼ÆÊý
+  526   2        }
+  527   1        else if (PWM == PWMB)
+  528   1        {
+  529   2          HSPWMB_CFG = 0x03; // Ê¹ÄÜPWMBÏà¹Ø¼Ä´æÆ÷Òì²½·ÃÎÊ¹¦ÄÜ
+  530   2      
+  531   2          if (PWMx->PWM_EnoSelect & ENO5P)
+  532   2          {
+  533   3            tmpENO |= ENO5P;
+  534   3            tmpCCER1 |= 0x01;
+  535   3          }
+  536   2          else
+  537   2          {
+  538   3            tmpENO &= ~ENO5P;
+  539   3            tmpCCER1 &= ~0x01;
+  540   3          }
+  541   2          if (PWMx->PWM_EnoSelect & ENO6P)
+  542   2          {
+  543   3            tmpENO |= ENO6P;
+  544   3            tmpCCER1 |= 0x10;
+  545   3          }
+  546   2          else
+  547   2          {
+  548   3            tmpENO &= ~ENO6P;
+  549   3            tmpCCER1 &= ~0x10;
+  550   3          }
+  551   2          if (PWMx->PWM_EnoSelect & ENO7P)
+  552   2          {
+  553   3            tmpENO |= ENO7P;
+  554   3            tmpCCER2 |= 0x01;
+  555   3          }
+  556   2          else
+  557   2          {
+  558   3            tmpENO &= ~ENO7P;
+  559   3            tmpCCER2 &= ~0x01;
+  560   3          }
+  561   2          if (PWMx->PWM_EnoSelect & ENO8P)
+  562   2          {
+  563   3            tmpENO |= ENO8P;
+  564   3            tmpCCER2 |= 0x10;
+  565   3          }
+  566   2          else
+  567   2          {
+  568   3            tmpENO &= ~ENO8P;
+  569   3            tmpCCER2 &= ~0x10;
+  570   3          }
+  571   2      
+  572   2          // Í¨¹ýÒì²½·½Ê½ÉèÖÃPWMBµÄÏà¹Ø¼Ä´æÆ÷
+  573   2          WritePWMB((u8)&PWMB_CCER1, 0x00);
+  574   2          WritePWMB((u8)&PWMB_CCER2, 0x00);
+  575   2          WritePWMB((u8)&PWMB_CCMR1, CCMRn_PWM_MODE1); // Í¨µÀÄ£Ê½ÅäÖÃ
+  576   2          WritePWMB((u8)&PWMB_CCMR2, CCMRn_PWM_MODE1);
+  577   2          WritePWMB((u8)&PWMB_CCMR3, CCMRn_PWM_MODE1);
+  578   2          WritePWMB((u8)&PWMB_CCMR4, CCMRn_PWM_MODE1);
+  579   2          WritePWMB((u8)&PWMB_CCER1, tmpCCER1); // ÅäÖÃÍ¨µÀÊä³öÊ¹ÄÜºÍ¼«ÐÔ
+  580   2          WritePWMB((u8)&PWMB_CCER2, tmpCCER2);
+  581   2          WritePWMB((u8)&PWMB_ENO, tmpENO);            // Ê¹ÄÜPWMÐÅºÅÊä³ö¶Ë¿Ú
+  582   2          WritePWMB((u8)&PWMB_CCR5H, (u8)(DUTYx->PWM5_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 10  
+
+  583   2          WritePWMB((u8)&PWMB_CCR5L, (u8)DUTYx->PWM5_Duty);
+  584   2          WritePWMB((u8)&PWMB_CCR6H, (u8)(DUTYx->PWM6_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  585   2          WritePWMB((u8)&PWMB_CCR6L, (u8)DUTYx->PWM6_Duty);
+  586   2          WritePWMB((u8)&PWMB_CCR7H, (u8)(DUTYx->PWM7_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  587   2          WritePWMB((u8)&PWMB_CCR7L, (u8)DUTYx->PWM7_Duty);
+  588   2          WritePWMB((u8)&PWMB_CCR8H, (u8)(DUTYx->PWM8_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  589   2          WritePWMB((u8)&PWMB_CCR8L, (u8)DUTYx->PWM8_Duty);
+  590   2          WritePWMB((u8)&PWMB_ARRH, (u8)(PWMx->PWM_Period >> 8)); // ÉèÖÃÊä³öPWMµÄÖÜÆÚ
+  591   2          WritePWMB((u8)&PWMB_ARRL, (u8)(PWMx->PWM_Period));
+  592   2          WritePWMB((u8)&PWMB_DTR, PWMx->PWM_DeadTime);     // ÉèÖÃ»¥²¹¶Ô³ÆÊä³öPWMµÄËÀÇø
+  593   2          WritePWMB((u8)&PWMB_BKR, PWMx->PWM_MainOutEnable << 7); // Ê¹ÄÜÖ÷Êä³ö
+  594   2          WritePWMB((u8)&PWMB_CR1, PWMx->PWM_CEN_Enable);     // ¿ªÊ¼PWM¼ÆÊý
+  595   2        }
+  596   1      }
+  597          
+  598          //========================================================================
+  599          // º¯Êý: UpdateHSPwm
+  600          // ÃèÊö: HSPWMÕ¼¿Õ±È¸üÐÂ³ÌÐò.
+  601          // ²ÎÊý: PWM: PWMÍ¨µÀ/×éºÅ, PWMx½á¹¹²ÎÊý,Çë²Î¿¼PWM.hÀïµÄ¶¨Òå.
+  602          // ·µ»Ø: none.
+  603          // °æ±¾: V1.0, 2022-04-05
+  604          //========================================================================
+  605          void UpdateHSPwm(u8 PWM, PWMx_Duty *PWMx)
+  606          {
+  607   1        switch (PWM)
+  608   1        {
+  609   2        case PWM1:
+  610   2          WritePWMA((u8)&PWMA_CCR1H, (u8)(PWMx->PWM1_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  611   2          WritePWMA((u8)&PWMA_CCR1L, (u8)PWMx->PWM1_Duty);
+  612   2          break;
+  613   2      
+  614   2        case PWM2:
+  615   2          WritePWMA((u8)&PWMA_CCR2H, (u8)(PWMx->PWM2_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  616   2          WritePWMA((u8)&PWMA_CCR2L, (u8)PWMx->PWM2_Duty);
+  617   2          break;
+  618   2      
+  619   2        case PWM3:
+  620   2          WritePWMA((u8)&PWMA_CCR3H, (u8)(PWMx->PWM3_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  621   2          WritePWMA((u8)&PWMA_CCR3L, (u8)PWMx->PWM3_Duty);
+  622   2          break;
+  623   2      
+  624   2        case PWM4:
+  625   2          WritePWMA((u8)&PWMA_CCR4H, (u8)(PWMx->PWM4_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  626   2          WritePWMA((u8)&PWMA_CCR4L, (u8)PWMx->PWM4_Duty);
+  627   2          break;
+  628   2      
+  629   2        case PWM5:
+  630   2          WritePWMB((u8)&PWMB_CCR5H, (u8)(PWMx->PWM5_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  631   2          WritePWMB((u8)&PWMB_CCR5L, (u8)PWMx->PWM5_Duty);
+  632   2          break;
+  633   2      
+  634   2        case PWM6:
+  635   2          WritePWMB((u8)&PWMB_CCR6H, (u8)(PWMx->PWM6_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  636   2          WritePWMB((u8)&PWMB_CCR6L, (u8)PWMx->PWM6_Duty);
+  637   2          break;
+  638   2      
+  639   2        case PWM7:
+  640   2          WritePWMB((u8)&PWMB_CCR7H, (u8)(PWMx->PWM7_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  641   2          WritePWMB((u8)&PWMB_CCR7L, (u8)PWMx->PWM7_Duty);
+  642   2          break;
+  643   2      
+  644   2        case PWM8:
+  645   2          WritePWMB((u8)&PWMB_CCR8H, (u8)(PWMx->PWM8_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  646   2          WritePWMB((u8)&PWMB_CCR8L, (u8)PWMx->PWM8_Duty);
+  647   2          break;
+  648   2      
+C251 COMPILER V5.60.0,  AI8051U_PWM                                                        21/06/26  23:16:00  PAGE 11  
+
+  649   2        case PWMA:
+  650   2          WritePWMA((u8)&PWMA_CCR1H, (u8)(PWMx->PWM1_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  651   2          WritePWMA((u8)&PWMA_CCR1L, (u8)PWMx->PWM1_Duty);
+  652   2          WritePWMA((u8)&PWMA_CCR2H, (u8)(PWMx->PWM2_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  653   2          WritePWMA((u8)&PWMA_CCR2L, (u8)PWMx->PWM2_Duty);
+  654   2          WritePWMA((u8)&PWMA_CCR3H, (u8)(PWMx->PWM3_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  655   2          WritePWMA((u8)&PWMA_CCR3L, (u8)PWMx->PWM3_Duty);
+  656   2          WritePWMA((u8)&PWMA_CCR4H, (u8)(PWMx->PWM4_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  657   2          WritePWMA((u8)&PWMA_CCR4L, (u8)PWMx->PWM4_Duty);
+  658   2          break;
+  659   2      
+  660   2        case PWMB:
+  661   2          WritePWMB((u8)&PWMB_CCR5H, (u8)(PWMx->PWM5_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  662   2          WritePWMB((u8)&PWMB_CCR5L, (u8)PWMx->PWM5_Duty);
+  663   2          WritePWMB((u8)&PWMB_CCR6H, (u8)(PWMx->PWM6_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  664   2          WritePWMB((u8)&PWMB_CCR6L, (u8)PWMx->PWM6_Duty);
+  665   2          WritePWMB((u8)&PWMB_CCR7H, (u8)(PWMx->PWM7_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  666   2          WritePWMB((u8)&PWMB_CCR7L, (u8)PWMx->PWM7_Duty);
+  667   2          WritePWMB((u8)&PWMB_CCR8H, (u8)(PWMx->PWM8_Duty >> 8)); // ÉèÖÃÊä³öPWMµÄÕ¼¿Õ±È
+  668   2          WritePWMB((u8)&PWMB_CCR8L, (u8)PWMx->PWM8_Duty);
+  669   2          break;
+  670   2        }
+  671   1      }
+  672          
+  673          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      4036     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------          7
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

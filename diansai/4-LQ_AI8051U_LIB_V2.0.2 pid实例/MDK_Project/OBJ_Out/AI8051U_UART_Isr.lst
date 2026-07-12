@@ -1,0 +1,335 @@
+C251 COMPILER V5.60.0,  AI8051U_UART_Isr                                                   21/06/26  23:15:58  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_UART_Isr
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_UART_Isr.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\isr\AI8051U_UART_Isr.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWS
+                    -E INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;.
+                    -.\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_UART_Isr.lst) TAB
+                    -S(2) OBJECT(.\OBJ_Out\AI8051U_UART_Isr.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_UART.h"
+    6          #include "include.h"
+    7          #include <stdlib.h> // 必须包含这个头文件，因为要用到 atof 字符串转浮点数函数
+    8          #include "pid.h"    // 包含你的 PID 头文件
+    9          bit B_ULinRX1_Flag;
+   10          bit B_ULinRX2_Flag;
+   11          
+   12          
+   13          char vofa_rx_buf[20]; // 接收缓冲区
+   14          u8 vofa_rx_cnt = 0;   // 缓冲区指针
+   15          //========================================================================
+   16          // 函数: UART1_ISR_Handler
+   17          // 描述: UART1中断函数.
+   18          // 参数: none.
+   19          // 返回: none.
+   20          // 版本: V1.0, 2020-09-23
+   21          //========================================================================
+   22          #ifdef UART1
+   23          void UART1_ISR_Handler (void) interrupt UART1_VECTOR
+   24          {
+   25   1        u8 Status;
+   26   1      
+   27   1        if(RI)
+   28   1          {
+   29   2              char c; // 定义一个局部变量，用来暂存串口接收到的这个字节
+   30   2              RI = 0;
+   31   2              
+   32   2              c = SBUF; // 核心原则：整个中断里只读一次 SBUF！防丢失！
+   33   2      
+   34   2              //-------- 原有 USART LIN 逻辑 (完全不动) ---------------
+   35   2              Status = USARTCR5;
+   36   2              if(Status & 0x02)     //if LIN header is detected
+   37   2              {
+   38   3                  B_ULinRX1_Flag = 1;
+   39   3              }
+   40   2      
+   41   2              if(Status & 0xc0)     //if LIN break is detected / LIN header error is detected
+   42   2              {
+   43   3                  COM1.RX_Cnt = 0;
+   44   3              }
+   45   2              USARTCR5 &= ~0xcb;    //Clear flag
+   46   2              //-----------------------------------------------------
+   47   2      
+   48   2              //-------- 原有环形队列逻辑 (把 SBUF 替换为 c) ---------
+   49   2              if(COM1.RX_Cnt >= COM_RX1_Lenth) COM1.RX_Cnt = 0;
+   50   2              RX1_Buffer[COM1.RX_Cnt++] = c; 
+   51   2              COM1.RX_TimeOut = TimeOutSet1;
+   52   2              //-----------------------------------------------------
+   53   2      
+   54   2              //++++++++ 新增：VOFA+ 调参嗅探器 (并行处理，互不干扰) ++++++++
+   55   2              if (vofa_rx_cnt < 19) {
+   56   3                  vofa_rx_buf[vofa_rx_cnt++] = c; // 把暂存的字符喂给 VOFA 缓存
+C251 COMPILER V5.60.0,  AI8051U_UART_Isr                                                   21/06/26  23:15:58  PAGE 2   
+
+   57   3              }
+   58   2      
+   59   2              // 识别到感叹号，说明一条指令发送完毕，开始解析
+   60   2              if (c == '!') 
+   61   2              {
+   62   3                  vofa_rx_buf[vofa_rx_cnt] = '\0'; // 补充结束符
+   63   3      
+   64   3                  // 解析 Kp: 例如收到 "P2.50!"
+   65   3                  if (vofa_rx_buf[0] == 'P') 
+   66   3                  {
+   67   4                      float new_kp = atof(&vofa_rx_buf[1]);
+   68   4                      PID_SetKp(PID_LEFT, new_kp);
+   69   4                      PID_SetKp(PID_RIGHT, new_kp);
+   70   4                  }
+   71   3                  // 解析 Ki: 例如收到 "I0.25!"
+   72   3                  else if (vofa_rx_buf[0] == 'I') 
+   73   3                  {
+   74   4                      float new_ki = atof(&vofa_rx_buf[1]);
+   75   4                      PID_SetKi(PID_LEFT, new_ki);
+   76   4                      PID_SetKi(PID_RIGHT, new_ki);
+   77   4                  }
+   78   3      
+   79   3                  vofa_rx_cnt = 0; // 命令处理完，清零指针迎接下一条指令
+   80   3              }
+   81   2              //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   82   2          }
+   83   1      
+   84   1        if(TI)
+   85   1        {
+   86   2          TI = 0;
+   87   2      
+   88   2              #if(UART_QUEUE_MODE == 1)   //判断是否使用队列模式
+                   if(COM1.TX_send != COM1.TX_write)
+                   {
+                     SBUF = TX1_Buffer[COM1.TX_send];
+                     if(++COM1.TX_send >= COM_TX1_Lenth)   COM1.TX_send = 0;
+                   }
+                   else  COM1.B_TX_busy = 0;
+                       #else
+   96   2              COM1.B_TX_busy = 0;     //使用阻塞方式发送直接清除繁忙标志
+   97   2              #endif
+   98   2        }
+   99   1      }
+  100          #endif
+  101          
+  102          //========================================================================
+  103          // 函数: UART2_ISR_Handler
+  104          // 描述: UART2中断函数.
+  105          // 参数: none.
+  106          // 返回: none.
+  107          // 版本: V1.0, 2020-09-23
+  108          //========================================================================
+  109          #ifdef UART2
+               void UART2_ISR_Handler (void) interrupt UART2_VECTOR
+               {
+                 u8 Status;
+               
+                 if(S2RI)
+                 {
+                   CLR_RI2();
+               
+                   //--------USART LIN---------------
+                   Status = USART2CR5;
+                   if(Status & 0x02)     //if LIN header is detected
+                   {
+                     B_ULinRX2_Flag = 1;
+C251 COMPILER V5.60.0,  AI8051U_UART_Isr                                                   21/06/26  23:15:58  PAGE 3   
+
+                   }
+               
+                   if(Status & 0xc0)     //if LIN break is detected / LIN header error is detected
+                   {
+                     COM2.RX_Cnt = 0;
+                   }
+                   USART2CR5 &= ~0xcb;   //Clear flag
+                   //--------------------------------
+               
+                       if(COM2.RX_Cnt >= COM_RX2_Lenth)  COM2.RX_Cnt = 0;
+                       RX2_Buffer[COM2.RX_Cnt++] = S2BUF;
+                       COM2.RX_TimeOut = TimeOutSet2;
+                 }
+               
+                 if(S2TI)
+                 {
+                   CLR_TI2();
+               
+                       #if(UART_QUEUE_MODE == 1)   //判断是否使用队列模式
+                   if(COM2.TX_send != COM2.TX_write)
+                   {
+                     S2BUF = TX2_Buffer[COM2.TX_send];
+                     if(++COM2.TX_send >= COM_TX2_Lenth)   COM2.TX_send = 0;
+                   }
+                   else  COM2.B_TX_busy = 0;
+                       #else
+                       COM2.B_TX_busy = 0;     //使用阻塞方式发送直接清除繁忙标志
+                       #endif
+                 }
+               }
+               #endif
+  154          
+  155          //========================================================================
+  156          // 函数: UART3_ISR_Handler
+  157          // 描述: UART3中断函数.
+  158          // 参数: none.
+  159          // 返回: none.
+  160          // 版本: V1.0, 2020-09-23
+  161          //========================================================================
+  162          #ifdef UART3
+  163          
+  164          #if (1 == ENABLE_SBUS)
+  165          
+  166          #include "LQ_SBUS.h"
+  167          unsigned char sbuff;  //SBUS缓冲
+  168          unsigned char num3;
+  169          extern unsigned char SReadBuff[64];
+  170          #endif
+  171          void UART3_ISR_Handler (void) interrupt UART3_VECTOR
+  172          {
+  173   1        if(S3RI)
+  174   1        {
+  175   2          CLR_RI3();
+  176   2      
+  177   2              if(COM3.RX_Cnt >= COM_RX3_Lenth)  COM3.RX_Cnt = 0;
+  178   2      //        RX3_Buffer[COM3.RX_Cnt++] = S3BUF;
+  179   2      #if (1 == ENABLE_SBUS)
+  180   2              /* SBUS START 用户代码 */
+  181   2              sbuff = (u8)S3BUF;
+  182   2              if(sbus_Rec_Fini_Flag == 1)       //可以接收
+  183   2              {
+  184   3                  if (num3 == 0 && sbuff == 0x0F)   //帧头
+  185   3                  {
+  186   4                      SReadBuff[num3] = sbuff;
+  187   4                      num3++;
+  188   4                  }
+C251 COMPILER V5.60.0,  AI8051U_UART_Isr                                                   21/06/26  23:15:58  PAGE 4   
+
+  189   3                  else if(num3 != 0)
+  190   3                  {
+  191   4      //                LED_Ctrl(LED0, RVS);        // LED闪烁 指示程序运行状态
+  192   4                      SReadBuff[num3] = sbuff;
+  193   4                      num3++;
+  194   4                      if (num3 > 24)              //接收数据超过24，表示一帧接收完成
+  195   4                      {
+  196   5                          sbus_Rec_Fini_Flag = 0;   //停止接收
+  197   5      
+  198   5                          if (SReadBuff[0] == 0x0F && SReadBuff[24] == 0x00 && num3 == 25)    //接受完一帧数据
+  199   5                          {
+  200   6                              UpDate_SBUS();      //数据解析
+  201   6      //                        LED_Ctrl(LED0, RVS);
+  202   6                          }
+  203   5                          num3 = 0;               //清空
+  204   5                      }
+  205   4      
+  206   4                  }
+  207   3              }
+  208   2              /* SBUS END*/
+  209   2        #endif
+  210   2              COM3.RX_TimeOut = TimeOutSet3;
+  211   2        }
+  212   1      
+  213   1        if(S3TI)
+  214   1        {
+  215   2          CLR_TI3();
+  216   2      
+  217   2              #if(UART_QUEUE_MODE == 1)   //判断是否使用队列模式
+                   if(COM3.TX_send != COM3.TX_write)
+                   {
+                     S3BUF = TX3_Buffer[COM3.TX_send];
+                     if(++COM3.TX_send >= COM_TX3_Lenth)   COM3.TX_send = 0;
+                   }
+                   else  COM3.B_TX_busy = 0;
+                       #else
+  225   2              COM3.B_TX_busy = 0;     //使用阻塞方式发送直接清除繁忙标志
+  226   2              #endif
+  227   2        }
+  228   1      }
+  229          #endif
+  230          
+  231          //========================================================================
+  232          // 函数: UART4_ISR_Handler
+  233          // 描述: UART4中断函数.
+  234          // 参数: none.
+  235          // 返回: none.
+  236          // 版本: V1.0, 2020-09-23
+  237          //========================================================================
+  238          #ifdef UART4
+  239          
+  240          #if (1 == ENABLE_GPS)
+               #include "LQ_BDGPS.h"       //北斗数据接收，简单处理 Save_Data在 LQ_BDGPS.c开头定义
+               unsigned char GPS_buf;    //接收数据缓字符缓存
+               unsigned char GPS_ReadBuff[128];
+               #endif
+  245          void UART4_ISR_Handler (void) interrupt UART4_VECTOR
+  246          {
+  247   1        if(S4RI)
+  248   1        {
+  249   2              static u8 num1;
+  250   2          CLR_RI4();
+  251   2      
+  252   2              if(COM4.RX_Cnt >= COM_RX4_Lenth)  COM4.RX_Cnt = 0;
+  253   2      //        RX4_Buffer[COM4.RX_Cnt++] = S4BUF;
+  254   2      #if (1 == ENABLE_GPS)
+C251 COMPILER V5.60.0,  AI8051U_UART_Isr                                                   21/06/26  23:15:58  PAGE 5   
+
+                       /* GPS_BD串口接收部分start */
+               
+                       GPS_buf = (u8)S4BUF;
+                       if(GPS_buf == '\n' || GPS_buf == '\r')   //完成一帧数据接收
+                       {
+                           strcpy((char*)Save_Data.GPS_Buffer,(const char*)GPS_ReadBuff);
+                           Save_Data.isGetData=1;
+                           num1 = 0;
+               //            LED_Ctrl(LED1,RVS);// LED翻转闪烁
+                       }
+                       else
+                       {
+               //            LED_Ctrl(LED0,RVS);// LED翻转闪烁
+                           GPS_ReadBuff[num1++] = GPS_buf;
+                       }
+                       /* GPS_BD串口接收部分end */
+               #endif
+  272   2              COM4.RX_TimeOut = TimeOutSet4;
+  273   2        }
+  274   1      
+  275   1        if(S4TI)
+  276   1        {
+  277   2          CLR_TI4();
+  278   2      
+  279   2              #if(UART_QUEUE_MODE == 1)   //判断是否使用队列模式
+                   if(COM4.TX_send != COM4.TX_write)
+                   {
+                     S4BUF = TX4_Buffer[COM4.TX_send];
+                     if(++COM4.TX_send >= COM_TX4_Lenth)   COM4.TX_send = 0;
+                   }
+                   else  COM4.B_TX_busy = 0;
+                       #else
+  287   2              COM4.B_TX_busy = 0;     //使用阻塞方式发送直接清除繁忙标志
+  288   2              #endif
+  289   2        }
+  290   1      }
+  291          #endif
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       570     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        24     ------
+  bit size             =         2     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =         5     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

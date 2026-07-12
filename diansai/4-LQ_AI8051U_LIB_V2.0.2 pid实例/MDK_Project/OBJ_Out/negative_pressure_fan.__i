@@ -1,0 +1,1 @@
+"..\UserCode\MIDDLE\negative_pressure_fan.c" XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE (AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\negative_pressure_fan.lst) TABS (2) OBJECT(.\OBJ_Out\negative_pressure_fan.obj)

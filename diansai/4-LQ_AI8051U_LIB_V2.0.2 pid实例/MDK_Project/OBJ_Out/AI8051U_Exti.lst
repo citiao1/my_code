@@ -1,0 +1,91 @@
+C251 COMPILER V5.60.0,  AI8051U_Exti                                                       21/06/26  23:15:59  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Exti
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Exti.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_Exti.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE IN
+                    -CDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Us
+                    -erCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Exti.lst) TABS(2) OBJ
+                    -ECT(.\OBJ_Out\AI8051U_Exti.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_Exti.h"
+    6          
+    7          //========================================================================
+    8          // 函数: u8 Ext_Inilize(u8 EXT, EXTI_InitTypeDef *INTx)
+    9          // 描述: 外部中断初始化程序.
+   10          // 参数: EXT: 外部中断号, INTx: 结构参数,请参考Exti.h里的定义.
+   11          // 返回: 成功返回 SUCCESS, 错误返回 FAIL.
+   12          // 版本: V1.0, 2012-10-22
+   13          //========================================================================
+   14          u8 Ext_Inilize(u8 EXT, EXTI_InitTypeDef *INTx)
+   15          {
+   16   1        if (EXT > EXT_INT4_P30)   return FAIL; // 空操作
+   17   1      
+   18   1        if (EXT == EXT_INT0_P32) // 外中断0
+   19   1        {
+   20   2          IE0 = 0; // 外中断0标志位
+   21   2          INT0_Mode(INTx->EXTI_Mode);
+   22   2          return SUCCESS; // 成功
+   23   2        }
+   24   1      
+   25   1        if (EXT == EXT_INT1_P33) // 外中断1
+   26   1        {
+   27   2          IE1 = 0; // 外中断1标志位
+   28   2          INT1_Mode(INTx->EXTI_Mode);
+   29   2          return SUCCESS; // 成功
+   30   2        }
+   31   1        //---------------------------- 以下中断没有模式可配置 默认即下降沿触发 ------------------------------
+   32   1        if (EXT == EXT_INT2_P36) // 外中断2
+   33   1        {
+   34   2          INT2IF = 0;   // 外中断2标志位
+   35   2          EX2 = 1;    // 使能 INT2 下降沿中断
+   36   2          return SUCCESS; // 成功
+   37   2        }
+   38   1      
+   39   1        if (EXT == EXT_INT3_P37) // 外中断3
+   40   1        {
+   41   2          INT3IF = 0;   // 外中断3标志位
+   42   2          EX3 = 1;    // 使能 INT3 下降沿中断
+   43   2          return SUCCESS; // 成功
+   44   2        }
+   45   1      
+   46   1        if (EXT == EXT_INT4_P30) // 外中断3
+   47   1        {
+   48   2          INT4IF = 0;   // 外中断4标志位
+   49   2          EX4 = 1;    // 使能 INT4 下降沿中断
+   50   2          return SUCCESS; // 成功
+   51   2        }
+   52   1        return FAIL; // 失败
+   53   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+C251 COMPILER V5.60.0,  AI8051U_Exti                                                       21/06/26  23:15:59  PAGE 2   
+
+  code size            =       123     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

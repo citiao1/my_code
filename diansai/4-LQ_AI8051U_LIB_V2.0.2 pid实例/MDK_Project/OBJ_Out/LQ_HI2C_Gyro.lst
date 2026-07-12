@@ -1,0 +1,236 @@
+C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       21/06/26  23:15:56  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_HI2C_Gyro
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_HI2C_Gyro.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_HI2C_Gyro.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE IN
+                    -CDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Us
+                    -erCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_HI2C_Gyro.lst) TABS(2) OBJ
+                    -ECT(.\OBJ_Out\LQ_HI2C_Gyro.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           ¡¾Æ½    Ì¨¡¿±±¾©ÁúÇñÖÇÄÜ¿Æ¼¼STC32Î»ºËÐÄ°å
+    3           ¡¾±à    Ð´¡¿ÁúÇñ¿Æ¼¼
+    4           ¡¾E-mail  ¡¿chiusir@163.com
+    5           ¡¾Èí¼þ°æ±¾¡¿V1.0 °æÈ¨ËùÓÐ£¬µ¥Î»Ê¹ÓÃÇëÏÈÁªÏµÊÚÈ¨
+    6           ¡¾Ïà¹ØÐÅÏ¢²Î¿¼ÏÂÁÐµØÖ·¡¿
+    7           ¡¾Íø    Õ¾¡¿http://www.lqist.cn
+    8           ¡¾ÌÔ±¦µêÆÌ¡¿http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           ¡¾  IDE  ¡¿ keil C251 V5.60
+   11           ¡¾Target ¡¿ STC32G/STC8051U/AI8051U 32Î»Ä£Ê½
+   12           ¡¾SYS CLK¡¿ 42 MHzÊ¹ÓÃÄÚ²¿¾§Õñ
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          
+   15          #include "LQ_HI2C_Gyro.h"
+   16          
+   17          
+   18          //extern signed short  aacx,aacy,aacz;            //¼ÓËÙ¶È´«¸ÐÆ÷Ô­Ê¼Êý¾Ý
+   19          //extern signed short  gyrox,gyroy,gyroz;         //ÍÓÂÝÒÇÔ­Ê¼Êý¾Ý
+   20          //extern short magx, magy, magz;
+   21          
+   22          
+   23          #define Dev_add 0xD0
+   24          Dev dev_Name;
+   25          
+   26          
+   27          /**************************************************************************
+   28            * @brief   ¶ÁÈ¡ÍÓÂÝÒÇµÄÉè±¸ID
+   29            * @param   void
+   30            * @retur   ID
+   31            * @see      Get_Slave_ID();
+   32            * @date     2024/05/21 ÐÇÆÚ¶þ
+   33          **************************************************************************/
+   34          unsigned char Get_Slave_ID(void)
+   35          {
+   36   1        unsigned char ID;
+   37   1      
+   38   1        //¶ÁÈ¡Éè±¸ID£¬ËùÓÐÍÓÂÝÒÇµÄID¶¼ÊÇ0xD0,²¢ÇÒ´æ·ÅIDµÄ¼Ä´æÆ÷¶¼ÊÇ0X7F
+   39   1        ID = Hard_IIC_Read_MPU_Byte(Dev_add,WHO_AM_I);
+   40   1        switch(ID)
+   41   1        {
+   42   2          case 0x09:dev_Name = ICM20602;break;
+   43   2          case 0x38:dev_Name = MPU9250 ;break;
+   44   2          case 0x4C:dev_Name = ICM20689;break;
+   45   2          case 0x21:dev_Name = ICM42605;break;
+   46   2          case 0x34:dev_Name = MPU6050 ;break;
+   47   2          default :dev_Name = errorid ;return 0;
+   48   2        }
+   49   1        return ID;
+   50   1      }
+   51          
+   52          
+   53          /**************************************************************************
+   54            * @brief    ³õÊ¼»¯ÍÓÂÝÒÇ
+   55            * @param    ÎÞ
+   56            * @return   0£º³õÊ¼»¯³É¹¦   1£ºÊ§°Ü
+C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       21/06/26  23:15:56  PAGE 2   
+
+   57            * @note     Ê¹ÓÃÇ°ÏÈ³õÊ¼»¯IIC½Ó¿Ú
+   58            * @see      MPU6050_Init();
+   59            * @date     2019/6/12 ÐÇÆÚÈý
+   60            *************************************************************************/
+   61          unsigned char Gyro_Init(void)
+   62          {
+   63   1        unsigned char res;
+   64   1        unsigned char  dat, Accel_Fsr = 1, Gyro_Fsr = 3;
+   65   1        int rate = 1000;
+   66   1        switch(dev_Name)
+   67   1        {
+   68   2          case ICM42605:
+   69   2              {
+   70   3                  OLED_P8x16Str(0,3,"ICM42605 NO CARE");
+   71   3      //            while(1);
+   72   3              }break;
+   73   2          case MPU9250:
+   74   2              {
+   75   3                  Hard_IIC_Write_MPU_Byte(Dev_add,MPU_FIFO_EN_REG,0X00);  //¹Ø±ÕFIFO
+   76   3                  Hard_IIC_Write_MPU_Byte(Dev_add,MPU_INTBP_CFG_REG,0X82);//INTÒý½ÅµÍµçÆ½ÓÐÐ§£¬¿ªÆôbypassÄ£Ê½
+   77   3                  res = Hard_IIC_Read_MPU_Byte(AK8963_ADDR,MPU_MAG_WIA);   //¶ÁÈ¡MPU9250µÄID
+   78   3                  if(res == AK8963_ID)                                //Æ÷¼þIDÕýÈ·
+   79   3                  {
+   80   4                      Hard_IIC_Write_MPU_Byte(AK8963_ADDR,MPU_MAG_CNTL2_REG,0X01);//Èí¼þÖØÖÃ
+   81   4                      delay_ms(100);
+   82   4                      Hard_IIC_Write_MPU_Byte(AK8963_ADDR,MPU_MAG_CNTL1_REG,0X16);//ÉèÖÃÎªµ¥´ÎÄ£Ê½£¬Êä³ö16bit
+   83   4                  }
+   84   3              }break;
+   85   2          case ICM20602:
+   86   2              {}break;
+   87   2          case ICM20689:
+   88   2              {}break;
+   89   2          case MPU6050:
+   90   2              {
+   91   3                  res = 0;
+   92   3                  res += Hard_IIC_Write_MPU_Byte(Dev_add,MPU_PWR_MGMT1_REG,0X80);//¸´Î»MPU6050
+   93   3                  delay_ms(100);  //ÑÓÊ±100ms
+   94   3                  res += Hard_IIC_Write_MPU_Byte(Dev_add,MPU_PWR_MGMT1_REG,0X00);//»½ÐÑMPU6050
+   95   3                  res += Hard_IIC_Write_MPU_Byte(Dev_add,MPU_GYRO_CFG_REG,Gyro_Fsr<<3);                      //ÍÓÂÝÒ
+             -Ç´«¸ÐÆ÷,¡À2000dps
+   96   3                  res += Hard_IIC_Write_MPU_Byte(Dev_add,MPU_ACCEL_CFG_REG,Accel_Fsr<<3);                    //¼ÓËÙ
+             -¶È´«¸ÐÆ÷,¡À4g
+   97   3                  if(rate>1000) rate = 1000;
+   98   3                  if(rate<4) rate=4;
+   99   3                  dat = 1000/rate-1;
+  100   3                  res += Hard_IIC_Write_MPU_Byte(Dev_add,MPU_SAMPLE_RATE_REG,dat);      //ÉèÖÃÊý×ÖµÍÍ¨ÂË²¨Æ÷  Éè
+             -ÖÃ²ÉÑùÂÊ1000Hz
+  101   3                  res += Hard_IIC_Write_MPU_Byte(Dev_add,MPU_CFG_REG,0x02);      //ÉèÖÃÊý×ÖµÍÍ¨ÂË²¨Æ÷   98hz
+  102   3                  res += Hard_IIC_Write_MPU_Byte(Dev_add,MPU_INT_EN_REG,0X00);   //¹Ø±ÕËùÓÐÖÐ¶Ï
+  103   3                  res += Hard_IIC_Write_MPU_Byte(Dev_add,MPU_USER_CTRL_REG,0X00);//I2CÖ÷Ä£Ê½¹Ø±Õ
+  104   3                  res += Hard_IIC_Write_MPU_Byte(Dev_add,MPU_PWR_MGMT1_REG,0X01);//ÉèÖÃCLKSEL,PLL XÖáÎª²Î¿¼
+  105   3                  res += Hard_IIC_Write_MPU_Byte(Dev_add,MPU_PWR_MGMT2_REG,0X00);//¼ÓËÙ¶ÈÓëÍÓÂÝÒÇ¶¼¹¤×÷
+  106   3      
+  107   3              }break;
+  108   2              case errorid: break;
+  109   2      
+  110   2        }
+  111   1        return 0;
+  112   1      }
+  113          
+  114          
+  115          ////////////////////////////////////Çý¶¯³ÌÐò////////////////////////////////////////////////
+  116          
+  117          
+  118          /**************************************************************************
+  119            * @brief    ÍÓÂÝÒÇ ¶ÁÒ»¸ö¼Ä´æÆ÷
+C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       21/06/26  23:15:56  PAGE 3   
+
+  120            *
+  121            * @param    addr  :Æ÷¼þµØÖ·
+  122            * @param    reg   :¼Ä´æÆ÷µØÖ·
+  123            *
+  124            * @return   ¶ÁÈ¡µÄÖµ
+  125            *
+  126            * @note     µ×²ãÇý¶¯ ÒÆÖ²Ê±ÐèÒªÐÞ¸Ä
+  127            *
+  128            * @see      Hard_IIC_Read_MPU_Byte(Dev_add,WHO_AM_I);
+  129            *
+  130            * @date     2019/6/12 ÐÇÆÚÈý
+  131          **************************************************************************/
+  132          unsigned char Hard_IIC_Read_MPU_Byte(unsigned char addr,unsigned char reg)
+  133          {
+  134   1        unsigned char res, Read_addr;
+  135   1        Read_addr = addr+1;
+  136   1        Hard_IIC_Start();             //ÆðÊ¼ÐÅºÅ
+  137   1        Hard_IIC_SendData(addr);      //·¢ËÍÉè±¸µØÖ·
+  138   1        Hard_IIC_RecvACK();           //µÈ´ý»Ø¸´
+  139   1        Hard_IIC_SendData(reg);       //·¢ËÍ¼Ä´æÆ÷µØÖ·
+  140   1        Hard_IIC_RecvACK();           //µÈ´ý»Ø¸´
+  141   1      
+  142   1        Hard_IIC_Start();             //·¢ËÍÆðÊ¼ÐÅºÅ
+  143   1        Hard_IIC_SendData(Read_addr); //·¢ËÍÉè±¸µØÖ·+1 £¨Îª¶ÁÈ¡¸ÃµØÖ·µÄÐÅºÅ£©
+  144   1        res = Hard_IIC_RecvData();    //¶ÁÈ¡Êý¾Ý
+  145   1        Hard_IIC_SendNAK();           //·´À¡ÐÅºÅ
+  146   1        Hard_IIC_Stop();              //Í£Ö¹ÐÅºÅ
+  147   1      
+  148   1        return res;
+  149   1      }
+  150          
+  151          
+  152          
+  153          /**************************************************************************
+  154            * @brief    ÍÓÂÝÒÇ Ð´Ò»¸ö¼Ä´æÆ÷
+  155            *
+  156            * @param    addr  :Æ÷¼þµØÖ·
+  157            * @param    reg   :¼Ä´æÆ÷µØÖ·
+  158            * @param    value :ÒªÐ´ÈëµÄÖµ
+  159            *
+  160            * @return   0£ºÐ´³É¹¦
+  161            *
+  162            * @note     µ×²ãÇý¶¯ ÒÆÖ²Ê±ÐèÒªÐÞ¸Ä
+  163            *
+  164            * @see      Hard_IIC_Write_MPU_Byte(Dev_add,MPU_PWR_MGMT2_REG,0X00);
+  165            *
+  166            * @date     2019/6/12 ÐÇÆÚÈý
+  167          **************************************************************************/
+  168          unsigned char Hard_IIC_Write_MPU_Byte(unsigned char addr,unsigned char reg, unsigned char value)
+  169          {
+  170   1        Hard_IIC_Start();             //ÆðÊ¼ÐÅºÅ
+  171   1        Hard_IIC_SendData(addr);      //·¢ËÍÉè±¸µØÖ·
+  172   1        Hard_IIC_RecvACK();           //µÈ´ý»Ø¸´
+  173   1        Hard_IIC_SendData(reg);       //·¢ËÍ¼Ä´æÆ÷µØÖ·
+  174   1        Hard_IIC_RecvACK();           //µÈ´ý»Ø¸´
+  175   1        Hard_IIC_SendData(value);       //·¢ËÍ¼Ä´æÆ÷µØÖ·
+  176   1        Hard_IIC_RecvACK();           //µÈ´ý»Ø¸´
+  177   1        Hard_IIC_Stop();              //Í£Ö¹ÐÅºÅ
+  178   1      
+  179   1        return 0;
+  180   1      }
+  181          
+  182          
+  183          
+  184          
+  185          
+C251 COMPILER V5.60.0,  LQ_HI2C_Gyro                                                       21/06/26  23:15:56  PAGE 4   
+
+  186          
+  187          
+  188          
+  189          
+  190          
+  191          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       418     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         2     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        17     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

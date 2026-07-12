@@ -1,0 +1,192 @@
+C251 COMPILER V5.60.0,  LQ_TIMER                                                           21/06/26  23:15:52  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_TIMER
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_TIMER.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_TIMER.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR
+                    -(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCo
+                    -de\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_TIMER.lst) TABS(2) OBJECT(.\OB
+                    -J_Out\LQ_TIMER.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           【平    台】北京龙邱智能科技STC32位核心板
+    3           【编    写】龙邱科技
+    4           【E-mail  】chiusir@163.com
+    5           【软件版本】V1.0 版权所有，单位使用请先联系授权
+    6           【相关信息参考下列地址】
+    7           【网    站】http://www.lqist.cn
+    8           【淘宝店铺】http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           【  IDE  】 keil C251 V5.60
+   11           【Target 】 STC32G/STC8051U/AI8051U 32位模式
+   12           【SYS CLK】 42 MHz使用内部晶振
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          #include "include.h"
+   15          
+   16          
+   17          
+   18          /********************************************************************************
+   19           * 函数名：void TIM_Init_ms(u8 Tim,u16 time_ms)
+   20           * 描  述：定时器 毫秒定时 初始化配置
+   21           * 参  数：TIM_e tim,u16 ms 定时器，定时时间ms  1~950ms
+   22           * 返回值：无
+   23           * 备  注：AI8051U 6个定时器均为24位，分为8位预分频寄存器和16位定时计数装载寄存器
+   24           * 中断优先级：
+   25           *         (0->3--低->高) Priority_0,Priority_1,Priority_2,Priority_3
+   26           *-----------------------------------------------------------------------------
+   27           *******************************************************************************/
+   28          void TIM_Init(u8 Tim,u32 temp)
+   29          {
+   30   1          u8 freq_ps =0,tim_clockT=0;
+   31   1          u16 Period=0;
+   32   1      //    u32 temp =0;
+   33   1      //    temp = (times * (MAIN_Fosc / 1000));
+   34   1      
+   35   1          if( temp*255> 65535)
+   36   1          {
+   37   2              tim_clockT = TIM_CLOCK_12T;
+   38   2              temp = temp / 12;
+   39   2          }
+   40   1          else tim_clockT = TIM_CLOCK_1T;
+   41   1      
+   42   1      
+   43   1          freq_ps = (u8)((temp) >> 16);                  //获取8位 分频值
+   44   1          Period = (u16)(65535 -(temp / (freq_ps+1)));   //获取16位 装载值
+   45   1      
+   46   1         {
+   47   2          switch(Tim)
+   48   2          {
+   49   3              TIM_InitTypeDef  TIMx_InitStructure;
+   50   3      
+   51   3           case Timer0:
+   52   3           {
+   53   4              TIMx_InitStructure.TIM_Mode      = TIM_16BitAutoReload; //指定工作模式,   16位自动重装载模式
+   54   4              TIMx_InitStructure.TIM_ClkSource = tim_clockT;        //指定时钟源,     指定时钟源为12T模式,TIM_CLO
+             -CK_Ext外部时钟
+   55   4              TIMx_InitStructure.TIM_ClkOut    = DISABLE;       //是否输出高速脉冲, ENABLE或DISABLE
+C251 COMPILER V5.60.0,  LQ_TIMER                                                           21/06/26  23:15:52  PAGE 2   
+
+   56   4              TIMx_InitStructure.TIM_Value     = Period;              //初值,装载值
+   57   4              TIMx_InitStructure.TIM_PS        = freq_ps;           //8位预分频器(n+1), 0~255
+   58   4              TIMx_InitStructure.TIM_Run       = ENABLE;        //是否初始化后启动定时器, ENABLE或DISABLE
+   59   4              Timer_Inilize(Timer0,&TIMx_InitStructure);        //初始化Timer0
+   60   4              NVIC_Timer0_Init(ENABLE,Priority_1);                //中断使能,中断优先级设置(空)  ENABLE/DISABLE;
+   61   4           }break;
+   62   3      
+   63   3           case Timer1:
+   64   3           {
+   65   4              TIMx_InitStructure.TIM_Mode      = TIM_16BitAutoReload; //指定工作模式,   16位自动重装载模式
+   66   4              TIMx_InitStructure.TIM_ClkSource = tim_clockT;        //指定时钟源,     指定时钟源为12T模式
+   67   4              TIMx_InitStructure.TIM_ClkOut    = DISABLE;       //是否输出高速脉冲, ENABLE或DISABLE
+   68   4              TIMx_InitStructure.TIM_Value     = Period;              //初值,装载值
+   69   4              TIMx_InitStructure.TIM_PS        = freq_ps;           //8位预分频器(n+1), 0~255
+   70   4              TIMx_InitStructure.TIM_Run       = ENABLE;        //是否初始化后启动定时器, ENABLE或DISABLE
+   71   4              Timer_Inilize(Timer1,&TIMx_InitStructure);        //初始化Timer1
+   72   4              NVIC_Timer1_Init(ENABLE,Priority_1);                //中断使能,中断优先级设置(空)  ENABLE/DISABLE;
+   73   4           }break;
+   74   3      
+   75   3           case Timer3:
+   76   3           {
+   77   4              TIMx_InitStructure.TIM_Mode      = TIM_16BitAutoReload; //指定工作模式,   16位自动重装载模式
+   78   4              TIMx_InitStructure.TIM_ClkSource = tim_clockT;        //指定时钟源,     指定时钟源为12T模式
+   79   4              TIMx_InitStructure.TIM_ClkOut    = DISABLE;       //是否输出高速脉冲, ENABLE或DISABLE
+   80   4              TIMx_InitStructure.TIM_Value     = Period;              //初值,装载值
+   81   4              TIMx_InitStructure.TIM_PS        = freq_ps;           //8位预分频器(n+1), 0~255
+   82   4              TIMx_InitStructure.TIM_Run       = ENABLE;        //是否初始化后启动定时器, ENABLE或DISABLE
+   83   4              Timer_Inilize(Timer3,&TIMx_InitStructure);        //初始化Timer0
+   84   4              NVIC_Timer3_Init(ENABLE,Priority_1);                //中断使能,中断优先级设置(空)  ENABLE/DISABLE;
+   85   4           }break;
+   86   3      
+   87   3           case Timer4:
+   88   3           {
+   89   4              TIMx_InitStructure.TIM_Mode      = TIM_16BitAutoReload; //指定工作模式,   16位自动重装载模式
+   90   4              TIMx_InitStructure.TIM_ClkSource = tim_clockT;        //指定时钟源,     指定时钟源为12T模式
+   91   4              TIMx_InitStructure.TIM_ClkOut    = DISABLE;       //是否输出高速脉冲, ENABLE或DISABLE
+   92   4              TIMx_InitStructure.TIM_Value     = Period;              //初值,装载值
+   93   4              TIMx_InitStructure.TIM_PS        = freq_ps;           //8位预分频器(n+1), 0~255
+   94   4              TIMx_InitStructure.TIM_Run       = ENABLE;        //是否初始化后启动定时器, ENABLE或DISABLE
+   95   4              Timer_Inilize(Timer4,&TIMx_InitStructure);        //初始化Timer1
+   96   4              NVIC_Timer4_Init(ENABLE,Priority_1);                //中断使能,中断优先级设置(空)  ENABLE/DISABLE;
+   97   4           }break;
+   98   3      
+   99   3           /*
+  100   3           定时器11可选择时钟源（定时器0-4默认使用sys系统时钟1T或12T作为时钟源）：
+  101   3           0：内部SYS时钟；
+  102   3           1：内部高速IRC时钟；
+  103   3           2：外部高速晶振；//龙邱核心板因管脚资源有限暂无设计外部晶振
+  104   3           3：内部低速IRC时钟
+  105   3           */
+  106   3           case Timer11:
+  107   3           {
+  108   4              TIMx_InitStructure.TIM_Mode      = TIM_16BitAutoReload; //指定工作模式,   16位自动重装载模式
+  109   4              TIMx_InitStructure.TIM_ClkSource = tim_clockT;        //指定时钟源系统时钟,     指定时钟源为12T模式
+             -，Timer11这里默认使用系统时钟
+  110   4              TIMx_InitStructure.TIM_ClkOut    = DISABLE;       //是否输出高速脉冲, ENABLE或DISABLE
+  111   4              TIMx_InitStructure.TIM_Value     = Period;              //初值,装载值
+  112   4              TIMx_InitStructure.TIM_PS        = freq_ps;           //8位预分频器(n+1), 0~255
+  113   4              TIMx_InitStructure.TIM_Run       = ENABLE;        //是否初始化后启动定时器, ENABLE或DISABLE
+  114   4              Timer_Inilize(Timer11,&TIMx_InitStructure);       //初始化Timer11
+  115   4              NVIC_Timer11_Init(ENABLE,Priority_1);               //中断使能,中断优先级设置(空)  ENABLE/DISABLE;
+  116   4           }break;
+  117   3      
+  118   3           default:
+  119   3              /*  */
+  120   3              break;
+C251 COMPILER V5.60.0,  LQ_TIMER                                                           21/06/26  23:15:52  PAGE 3   
+
+  121   3          }
+  122   2      
+  123   2         }
+  124   1      }
+  125          
+  126          
+  127          
+  128          /********************************************************************************
+  129           * 函数名：void TIM_Init_ms(u8 Tim_x,u16 time_ms)
+  130           * 描  述：定时器 毫秒定时 初始化配置
+  131           * 参  数：TIM_e tim,u16 ms 定时器，定时时间ms
+  132           * 返回值：无
+  133           * 备  注：AI8051U 6个定时器均为24位，分为8位预分频寄存器和16位定时计数装载寄存器
+  134           *******************************************************************************/
+  135          void TIM_Init_ms(u8 Tim_x,u16 time_ms)
+  136          {
+  137   1          TIM_Init(Tim_x,(time_ms * (MAIN_Fosc / 1000)));
+  138   1      }
+  139          /********************************************************************************
+  140           * 函数名：void TIM_Init_us(u8 Tim_x,u32 time_us)
+  141           * 描  述：定时器 微秒定时 初始化配置
+  142           * 参  数：TIM_e tim,u16 us 定时器，定时单位us
+  143           * 返回值：无
+  144           * 备  注：AI8051U 6个定时器均为24位，分为8位预分频寄存器和16位定时计数装载寄存器
+  145           *******************************************************************************/
+  146          void TIM_Init_us(u8 Tim_x,u32 time_us)
+  147          {
+  148   1          TIM_Init(Tim_x,(time_us * (MAIN_Fosc / 1000000)));
+  149   1      }
+  150          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       392     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------          9
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

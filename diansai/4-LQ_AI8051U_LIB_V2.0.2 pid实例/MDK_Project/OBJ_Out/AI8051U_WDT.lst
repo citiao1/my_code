@@ -1,0 +1,64 @@
+C251 COMPILER V5.60.0,  AI8051U_WDT                                                        21/06/26  23:16:01  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_WDT
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_WDT.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_WDT.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_WDT.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\AI8051U_WDT.obj) 
+
+stmt  level    source
+
+    1          
+    2          #include "AI8051U_WDT.h"
+    3          
+    4          //========================================================================
+    5          // 函数: void WDT_Inilize(WDT_InitTypeDef *WDT)
+    6          // 描述: 看门狗初始化程序.
+    7          // 参数: WDT: 结构参数,请参考WDT.h里的定义.
+    8          // 返回: none.
+    9          // 版本: V1.0, 2020-09-16
+   10          //========================================================================
+   11          void WDT_Inilize(WDT_InitTypeDef *WDT)
+   12          {
+   13   1        if (WDT->WDT_Enable == ENABLE)
+   14   1          EN_WDT = 1;                 // 使能看门狗
+   15   1      
+   16   1        WDT_PS_Set(WDT->WDT_PS);        // 看门狗定时器时钟分频系数
+   17   1        if (WDT->WDT_IDLE_Mode == WDT_IDLE_STOP)
+   18   1          IDL_WDT = 0;                // IDLE模式停止计数
+   19   1        else
+   20   1          IDL_WDT = 1;                // IDLE模式继续计数
+   21   1      }
+   22          
+   23          /********************* 清除看门狗函数 *************************/
+   24          void Feeding_Dog(void)
+   25          {
+   26   1        CLR_WDT = 1; // 喂狗
+   27   1      }
+   28          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        50     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

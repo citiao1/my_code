@@ -1,0 +1,158 @@
+C251 COMPILER V5.60.0,  LQ_ADC                                                             21/06/26  23:15:52  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_ADC
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_ADC.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_ADC.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(.
+                    -.\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCode
+                    -\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_ADC.lst) TABS(2) OBJECT(.\OBJ_Ou
+                    -t\LQ_ADC.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           ¡¾Æ½    Ì¨¡¿±±¾©ÁúÇñÖÇÄÜ¿Æ¼¼STC32Î»ºËÐÄ°å
+    3           ¡¾±à    Ð´¡¿ÁúÇñ¿Æ¼¼
+    4           ¡¾E-mail  ¡¿chiusir@163.com
+    5           ¡¾Èí¼þ°æ±¾¡¿V1.0 °æÈ¨ËùÓÐ£¬µ¥Î»Ê¹ÓÃÇëÏÈÁªÏµÊÚÈ¨
+    6           ¡¾Ïà¹ØÐÅÏ¢²Î¿¼ÏÂÁÐµØÖ·¡¿
+    7           ¡¾Íø    Õ¾¡¿http://www.lqist.cn
+    8           ¡¾ÌÔ±¦µêÆÌ¡¿http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           ¡¾  IDE  ¡¿ keil C251 V5.60
+   11           ¡¾Target ¡¿ STC32G/STC8051U/AI8051U 32Î»Ä£Ê½
+   12           ¡¾SYS CLK¡¿ 40 MHzÊ¹ÓÃÄÚ²¿¾§Õñ
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          
+   15          #include "include.h"
+   16          #include "LQ_ADC.h"
+   17          
+   18          /***********************************************************************************
+   19           * º¯ Êý Ãû£ºvoid ADC_Init(void)
+   20           * ¹¦    ÄÜ£ºADC³õÊ¼»¯£¬¹Ü½Å³õÊ¼»¯ºÍÖÐ¶ÏÄ£Ê½¡¢Ê¹ÄÜµÈÉèÖÃ
+   21           * ²Î    Êý£ºÎÞ
+   22           * ·µ »Ø Öµ£ºÎÞ
+   23           * Ëµ    Ã÷£º    //ADC ¶Ë¿ÚIOÅäÖÃ£¬Ïê¼ûADC_CHx_Pin
+   24           **********************************************************************************/
+   25          void ADC_Init(void)
+   26          {
+   27   1          ADC_InitTypeDef ADC_InitStructure; // ½á¹¹¶¨Òå
+   28   1      
+   29   1      //    ADC_GPIO_Init(ADC_CH8_P00); // ADC ¶Ë¿ÚIOÅäÖÃ£¬Òª³õÊ¼»¯µÄADCÍ¨µÀºÍ¹Ü½Å£¬Ïê¼ûADC_CHx_Pin
+   30   1          ADC_GPIO_Init(ADC_CH9_P01); //  miniÇý¿ØÒ»Ìå°åµÄ µçÔ´ADC¼ì²â£¬
+   31   1          ADC_GPIO_Init(ADC_CH0_P10);
+   32   1          ADC_GPIO_Init(ADC_CH1_P11);
+   33   1          ADC_GPIO_Init(ADC_CH2_P12);
+   34   1          ADC_GPIO_Init(ADC_CH3_P13);
+   35   1          ADC_GPIO_Init(ADC_CH4_P14);
+   36   1          ADC_GPIO_Init(ADC_CH5_P15);
+   37   1      
+   38   1          // ADCÅäÖÃ
+   39   1          ADC_InitStructure.ADC_SMPduty = 31;                    // ADC Ä£ÄâÐÅºÅ²ÉÑùÊ±¼ä¿ØÖÆ, 0~31£¨×¢Òâ£º SMPD
+             -UTY Ò»¶¨²»ÄÜÉèÖÃÐ¡ÓÚ 10£©
+   40   1          ADC_InitStructure.ADC_CsSetup = 0;                     // ADC Í¨µÀÑ¡ÔñÊ±¼ä¿ØÖÆ 0(Ä¬ÈÏ),1
+   41   1          ADC_InitStructure.ADC_CsHold = 1;                      // ADC Í¨µÀÑ¡Ôñ±£³ÖÊ±¼ä¿ØÖÆ 0,1(Ä¬ÈÏ),2,3
+   42   1          ADC_InitStructure.ADC_Speed = ADC_SPEED_2X16T;         // ÉèÖÃ ADC ¹¤×÷Ê±ÖÓÆµÂÊ ADC_SPEED_2X1T~ADC_SP
+             -EED_2X16T
+   43   1          ADC_InitStructure.ADC_AdjResult = ADC_RIGHT_JUSTIFIED; // ADC½á¹ûd¶ÔÆë·½Ê½, ADC_LEFT_JUSTIFIED,ADC_RI
+             -GHT_JUSTIFIED
+   44   1          ADC_Inilize(&ADC_InitStructure);                       // ³õÊ¼»¯
+   45   1          ADC_PowerControl(ENABLE);                              // ADCµçÔ´¿ª¹Ø, ENABLE»òDISABLE
+   46   1          NVIC_ADC_Init(DISABLE, Priority_0);                    // ¶ÏÊ¹ÄÜ, ENABLE/DISABLE; ÓÅÏÈ¼¶(µÍµ½¸ß)--> P
+             -riority_0~Priority_3
+   47   1      }
+   48          
+   49          /**
+   50           * @brief ADC²âÊÔº¯Êý
+   51           * ¸Ãº¯ÊýÓÃÓÚ³õÊ¼»¯ADCºÍOLEDÏÔÊ¾ÆÁ£¬²¢ÔÚOLEDÉÏÏÔÊ¾¶à¸öADCÍ¨µÀµÄ²ÉÑùÖµ
+   52           */
+C251 COMPILER V5.60.0,  LQ_ADC                                                             21/06/26  23:15:52  PAGE 2   
+
+   53          
+   54          //#define USE_OLED  // Ê¹ÓÃUSE_OLED
+   55          #define USE_IPS_LCD  // Ê¹ÓÃIPS_LCD
+   56          
+   57          void Test_ADC()
+   58          {
+   59   1          char txt[20];        // ÓÃÓÚ´æ´¢¸ñÊ½»¯×Ö·û´®µÄ×Ö·ûÊý×é
+   60   1          ADC_Init();          // ADC³õÊ¼»¯, ¹Ü½Å³õÊ¼»¯ºÍÖÐ¶ÏÄ£Ê½¡¢Ê¹ÄÜµÈÉèÖÃ
+   61   1          Global_IRQ_Enable(); // ±»×¢ÊÍµÄÈ«¾ÖÖÐ¶ÏÊ¹ÄÜº¯Êý
+   62   1      #ifdef USE_OLED
+                   OLED_Init();                              // OLED³õÊ¼»¯
+                   OLED_CLS();                               // ¼ÓÈëOLEDÏÔÊ¾
+                   OLED_P6x8Str(10, 0, "LQ ADC_All Test");   // ÔÚOLEDÉÏÏÔÊ¾±êÌâ
+               #elif defined(USE_IPS_LCD)
+   67   1          IPS_LCD_Init();        //LCD³õÊ¼»¯  0:ºáÆÁ  1£ºÊúÆÁ
+   68   1          LCD_CLS(u16_BLACK);
+   69   1          LCD_ShowStr_16(0,0,"LQ ADC_All Test",u16_RED_IPS,u16_BLACK);     //ÏÔÊ¾ºº×Ö16*8
+   70   1      #endif  
+   71   1          printf("AD to UART Test Programme!\r\n"); // UART·¢ËÍÒ»¸ö×Ö·û´®£¬±íÊ¾³ÌÐò¿ªÊ¼
+   72   1      
+   73   1          while (1)
+   74   1          {
+   75   2      #ifdef USE_OLED
+               //        sprintf(txt, "ADV:%05d ", Get_ADCResult(ADC_CH8_P00)); // ADC_CH8-P00×öµçÔ´µçÑ¹ 11.0V->1700×óÓÒ
+             -£¬12.6V->1970×óÓÒ
+                       sprintf(txt, "ADV:%05d ", Get_ADCResult(ADC_CH10_P02)); // ADC_CH8-P00×öµçÔ´µçÑ¹ 11.0V->1700×óÓÒ£
+             -¬12.6V->1970×óÓÒ
+                       printf(txt);
+                       OLED_P6x8Str(10, 1, txt);                              // ÏÔÊ¾µçÔ´µçÑ¹Öµ
+                       sprintf(txt, "L:%05d ", Get_ADCResult(ADC_CH0_P15)); // ADC0-P10
+                       printf(txt);
+                       OLED_P6x8Str(10, 2, txt);                              // ÏÔÊ¾
+                       sprintf(txt, "L1:%05d ", Get_ADCResult(ADC_CH1_P11)); // ADC1P11
+                       OLED_P6x8Str(10, 3, txt);                              // ÏÔÊ¾
+                       sprintf(txt, "M:%05d ", Get_ADCResult(ADC_CH2_P12)); // ADC2-P12
+                       OLED_P6x8Str(10, 4, txt);                              // ÏÔÊ¾Í¨µÀ5µÄADCÖµ
+                       sprintf(txt, "R:%05d ", Get_ADCResult(ADC_CH3_P13)); // ADC3-P13
+                       OLED_P6x8Str(10, 5, txt);                              // ÏÔÊ¾Í¨µÀ7µÄADCÖµ
+                       sprintf(txt, "R1:%05d ", Get_ADCResult(ADC_CH4_P14)); // ADC4-P14
+                       OLED_P6x8Str(10, 6, txt);                              // ÏÔÊ¾Í¨µÀ7µÄADCÖµ
+               #elif defined(USE_IPS_LCD)
+   92   2              sprintf(txt, "ADV:%05d ", Get_ADCResult(ADC_CH10_P02)); // ADC_CH8-P00×öµçÔ´µçÑ¹ 11.0V->1700×óÓÒ£
+             -¬12.6V->1970×óÓÒ
+   93   2              printf(txt);
+   94   2              LCD_ShowStr_16(0,1,txt,u16_RED_IPS,u16_BLACK);         // ÏÔÊ¾µçÔ´µçÑ¹Öµ
+   95   2              sprintf(txt, "L1:%05d ", Get_ADCResult(ADC_CH5_P15)); // ADC5-P15
+   96   2              printf(txt);
+   97   2              LCD_ShowStr_16(0,2,txt,u16_RED_IPS,u16_BLACK); 
+   98   2              sprintf(txt, "L2:%05d ", Get_ADCResult(ADC_CH1_P11)); // ADC1P11
+   99   2              LCD_ShowStr_16(0,3,txt,u16_RED_IPS,u16_BLACK);      
+  100   2              sprintf(txt, "M:%05d ", Get_ADCResult(ADC_CH2_P12)); // ADC2-P12
+  101   2              LCD_ShowStr_16(0,4,txt,u16_RED_IPS,u16_BLACK);                     // ÏÔÊ¾Í¨µÀ5µÄADCÖµ
+  102   2              sprintf(txt, "R1:%05d ", Get_ADCResult(ADC_CH3_P13)); // ADC3-P13
+  103   2              LCD_ShowStr_16(0,5,txt,u16_RED_IPS,u16_BLACK);                    // ÏÔÊ¾Í¨µÀ7µÄADCÖµ
+  104   2              sprintf(txt, "R2:%05d ", Get_ADCResult(ADC_CH4_P14)); // ADC4-P14
+  105   2              LCD_ShowStr_16(0,6,txt,u16_RED_IPS,u16_BLACK);                              // ÏÔÊ¾Í¨µÀ7µÄADCÖµ
+  106   2              
+  107   2      #endif       
+  108   2              delay_ms(100);                                         // ÑÓÊ±100ms£¬¿ØÖÆË¢ÐÂÆµÂÊ
+  109   2          }
+  110   1      }
+  111          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       487     ------
+C251 COMPILER V5.60.0,  LQ_ADC                                                             21/06/26  23:15:52  PAGE 3   
+
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------         25
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        99     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

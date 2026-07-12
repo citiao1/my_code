@@ -1,0 +1,147 @@
+C251 COMPILER V5.60.0,  AI8051U_Timer                                                      21/06/26  23:16:01  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Timer
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Timer.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_Timer.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE I
+                    -NCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\U
+                    -serCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Timer.lst) TABS(2) O
+                    -BJECT(.\OBJ_Out\AI8051U_Timer.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "config.h"
+    6          #include "AI8051U_Timer.h"
+    7          
+    8          
+    9          //========================================================================
+   10          // º¯Êý: u8 Timer_Inilize(u8 TIM, TIM_InitTypeDef *TIMx)
+   11          // ÃèÊö: ¶¨Ê±Æ÷³õÊ¼»¯³ÌÐò.
+   12          // ²ÎÊý: TIMx: ½á¹¹²ÎÊý,Çë²Î¿¼timer.hÀïµÄ¶¨Òå.
+   13          // ·µ»Ø: ³É¹¦·µ»Ø SUCCESS, ´íÎó·µ»Ø FAIL.
+   14          // °æ±¾: V1.0, 2012-10-22
+   15          //========================================================================
+   16          u8 Timer_Inilize(u8 TIM, TIM_InitTypeDef *TIMx)
+   17          {
+   18   1        if (TIM == Timer0)
+   19   1        {
+   20   2          Timer0_Stop(); // Í£Ö¹¼ÆÊý
+   21   2          if (TIMx->TIM_Mode > TIM_16BitAutoReloadNoMask)
+   22   2            return FAIL;            // ´íÎó
+   23   2          TMOD = (TMOD & ~0x03) | TIMx->TIM_Mode; // ¹¤×÷Ä£Ê½,0: 16Î»×Ô¶¯ÖØ×°, 1: 16Î»¶¨Ê±/¼ÆÊý, 2: 8Î»×Ô¶¯ÖØ×°, 
+             -3: ²»¿ÉÆÁ±Î16Î»×Ô¶¯ÖØ×°
+   24   2          if (TIMx->TIM_ClkSource > TIM_CLOCK_Ext)
+   25   2            return FAIL;
+   26   2          Timer0_CLK_Select(TIMx->TIM_ClkSource); // ¶ÔÍâ¼ÆÊý»ò·ÖÆµ, ¶¨Ê±12T/1T
+   27   2          Timer0_CLK_Output(TIMx->TIM_ClkOut);  // Êä³öÊ±ÖÓÊ¹ÄÜ
+   28   2          T0_Load(TIMx->TIM_Value);
+   29   2          TM0PS = TIMx->TIM_PS;
+   30   2          Timer0_Run(TIMx->TIM_Run);
+   31   2          return SUCCESS; // ³É¹¦
+   32   2        }
+   33   1      
+   34   1        if (TIM == Timer1)
+   35   1        {
+   36   2          Timer1_Stop(); // Í£Ö¹¼ÆÊý
+   37   2          if (TIMx->TIM_Mode > TIM_16BitAutoReloadNoMask)
+   38   2            return FAIL;                 // ´íÎó
+   39   2          TMOD = (TMOD & ~0x30) | (TIMx->TIM_Mode << 4); // ¹¤×÷Ä£Ê½,0: 16Î»×Ô¶¯ÖØ×°, 1: 16Î»¶¨Ê±/¼ÆÊý, 2: 8Î»×Ô¶
+             -¯ÖØ×°, 3: Í£Ö¹¹¤×÷
+   40   2          if (TIMx->TIM_ClkSource > TIM_CLOCK_Ext)
+   41   2            return FAIL;
+   42   2          Timer1_CLK_Select(TIMx->TIM_ClkSource); // ¶ÔÍâ¼ÆÊý»ò·ÖÆµ, ¶¨Ê±12T/1T
+   43   2          Timer1_CLK_Output(TIMx->TIM_ClkOut);  // Êä³öÊ±ÖÓÊ¹ÄÜ
+   44   2          T1_Load(TIMx->TIM_Value);
+   45   2          TM1PS = TIMx->TIM_PS;
+   46   2          Timer1_Run(TIMx->TIM_Run);
+   47   2          return SUCCESS; // ³É¹¦
+   48   2        }
+   49   1      
+   50   1        if (TIM == Timer2) // Timer2,¹Ì¶¨Îª16Î»×Ô¶¯ÖØ×°, ÖÐ¶ÏÎÞÓÅÏÈ¼¶
+   51   1        {
+   52   2          Timer2_Stop();              // Í£Ö¹¼ÆÊý
+   53   2          Timer2_CLK_Select(TIMx->TIM_ClkSource); // ¶ÔÍâ¼ÆÊý»ò·ÖÆµ, ¶¨Ê±12T/1T
+   54   2          Timer2_CLK_Output(TIMx->TIM_ClkOut);  // Êä³öÊ±ÖÓÊ¹ÄÜ
+C251 COMPILER V5.60.0,  AI8051U_Timer                                                      21/06/26  23:16:01  PAGE 2   
+
+   55   2      
+   56   2          T2_Load(TIMx->TIM_Value);
+   57   2          TM2PS = TIMx->TIM_PS;
+   58   2          Timer2_Run(TIMx->TIM_Run);
+   59   2          return SUCCESS; // ³É¹¦
+   60   2        }
+   61   1      
+   62   1        if (TIM == Timer3) // Timer3,¹Ì¶¨Îª16Î»×Ô¶¯ÖØ×°, ÖÐ¶ÏÎÞÓÅÏÈ¼¶
+   63   1        {
+   64   2          Timer3_Stop(); // Í£Ö¹¼ÆÊý
+   65   2          if (TIMx->TIM_ClkSource > TIM_CLOCK_Ext)
+   66   2            return FAIL;
+   67   2          Timer3_CLK_Select(TIMx->TIM_ClkSource); // ¶ÔÍâ¼ÆÊý»ò·ÖÆµ, ¶¨Ê±12T/1T
+   68   2          Timer3_CLK_Output(TIMx->TIM_ClkOut);  // Êä³öÊ±ÖÓÊ¹ÄÜ
+   69   2      
+   70   2          T3_Load(TIMx->TIM_Value);
+   71   2          TM3PS = TIMx->TIM_PS;
+   72   2          Timer3_Run(TIMx->TIM_Run);
+   73   2          return SUCCESS; // ³É¹¦
+   74   2        }
+   75   1      
+   76   1        if (TIM == Timer4) // Timer4,¹Ì¶¨Îª16Î»×Ô¶¯ÖØ×°, ÖÐ¶ÏÎÞÓÅÏÈ¼¶
+   77   1        {
+   78   2          Timer4_Stop(); // Í£Ö¹¼ÆÊý
+   79   2          if (TIMx->TIM_ClkSource > TIM_CLOCK_Ext)
+   80   2            return FAIL;
+   81   2          Timer4_CLK_Select(TIMx->TIM_ClkSource); // ¶ÔÍâ¼ÆÊý»ò·ÖÆµ, ¶¨Ê±12T/1T
+   82   2          Timer4_CLK_Output(TIMx->TIM_ClkOut);  // Êä³öÊ±ÖÓÊ¹ÄÜ
+   83   2      
+   84   2          T4_Load(TIMx->TIM_Value);
+   85   2          TM4PS = TIMx->TIM_PS;
+   86   2          Timer4_Run(TIMx->TIM_Run);
+   87   2          return SUCCESS; // ³É¹¦
+   88   2        }
+   89   1      
+   90   1        if (TIM == Timer11)   // Timer11,¹Ì¶¨Îª16Î»×Ô¶¯ÖØ×°, AI8051UÖ§³Ö
+   91   1        {
+   92   2          Timer11_Stop();   // Í£Ö¹¼ÆÊý
+   93   2              if (TIMx->TIM_ClkSource > TIM_CLOCK_Ext)
+   94   2            return FAIL;
+   95   2          Timer11_CLK_Select(TIMx->TIM_ClkSource);  // ¶ÔÍâ¼ÆÊý»ò·ÖÆµ, ¶¨Ê±12T/1T
+   96   2          Timer11_CLK_Output(TIMx->TIM_ClkOut);    // Êä³öÊ±ÖÓÊ¹ÄÜ
+   97   2      
+   98   2          T11_Load(TIMx->TIM_Value);
+   99   2          T11PS = TIMx->TIM_PS;
+  100   2          Timer11_Run(TIMx->TIM_Run);
+  101   2              
+  102   2          return SUCCESS; // ³É¹¦
+  103   2        }
+  104   1        return FAIL; // ´íÎó
+  105   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       853     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+C251 COMPILER V5.60.0,  AI8051U_Timer                                                      21/06/26  23:16:01  PAGE 3   
+
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

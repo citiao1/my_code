@@ -1,0 +1,278 @@
+C251 COMPILER V5.60.0,  LQ_CCD                                                             21/06/26  23:15:55  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_CCD
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_CCD.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_CCD.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(.
+                    -.\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCode
+                    -\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_CCD.lst) TABS(2) OBJECT(.\OBJ_Ou
+                    -t\LQ_CCD.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           ¡¾Æ½    Ì¨¡¿±±¾©ÁúÇñÖÇÄÜ¿Æ¼¼STC32Î»ºËÐÄ°å
+    3           ¡¾±à    Ð´¡¿ÁúÇñ¿Æ¼¼
+    4           ¡¾E-mail  ¡¿chiusir@163.com
+    5           ¡¾Èí¼þ°æ±¾¡¿V1.1 °æÈ¨ËùÓÐ£¬µ¥Î»Ê¹ÓÃÇëÏÈÁªÏµÊÚÈ¨
+    6           ¡¾Ïà¹ØÐÅÏ¢²Î¿¼ÏÂÁÐµØÖ·¡¿
+    7           ¡¾Íø    Õ¾¡¿http://www.lqist.cn
+    8           ¡¾ÌÔ±¦µêÆÌ¡¿http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           ¡¾  IDE  ¡¿ keil C251 V5.60
+   11           ¡¾Target ¡¿ STC32G/STC8051U/AI8051U 32Î»Ä£Ê½
+   12           ¡¾SYS CLK¡¿ 42 MHzÊ¹ÓÃÄÚ²¿¾§Õñ
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          
+   15          #include "include.h"
+   16          //#include "LQ_CCD.h"
+   17          
+   18          
+   19          u8 xdata CCD1_Bin[128];   //¶þÖµ»¯ÂË²¨ºóµÄ£¨ÂË²¨¸²¸Ç¶þÖµ»¯µÄÊý×é£©
+   20          /**
+   21            * @brief    CCD¹Ü½Å³õÊ¼»¯
+   22            * @return   ÎÞ
+   23            * @note     
+   24            * @example  
+   25            * @date     2023/11/24
+   26          */
+   27          void CCD1_Init() 
+   28          {
+   29   1        ADC_InitTypeDef   ADC_InitStructure;    //½á¹¹¶¨Òå
+   30   1      
+   31   1          gpio_init_pin(P1_7, GPIO_Mode_IN_FLOATING);     //ADC¹Ü½Å P17£¬¸ß×èÌ¬ ¸¡¿ÕÊäÈë
+   32   1      
+   33   1          //ADCÅäÖÃ
+   34   1        ADC_InitStructure.ADC_SMPduty   = 12;   //ADC Ä£ÄâÐÅºÅ²ÉÑùÊ±¼ä¿ØÖÆ, 0~31£¨×¢Òâ£º SMPDUTY Ò»¶¨²»ÄÜÉèÖÃÐ¡ÓÚ
+             - 10£©
+   35   1        ADC_InitStructure.ADC_CsSetup   = 0;    //ADC Í¨µÀÑ¡ÔñÊ±¼ä¿ØÖÆ 0(Ä¬ÈÏ),1
+   36   1        ADC_InitStructure.ADC_CsHold    = 1;    //ADC Í¨µÀÑ¡Ôñ±£³ÖÊ±¼ä¿ØÖÆ 0,1(Ä¬ÈÏ),2,3
+   37   1        ADC_InitStructure.ADC_Speed     = ADC_SPEED_2X12T;    //ÉèÖÃ ADC ¹¤×÷Ê±ÖÓÆµÂÊ ADC_SPEED_2X1T~ADC_SPEED_2X1
+             -6T
+   38   1        ADC_InitStructure.ADC_AdjResult = ADC_RIGHT_JUSTIFIED;  //ADC½á¹ûµ÷Õû,  ADC_LEFT_JUSTIFIED,ADC_RIGHT_JUSTI
+             -FIED
+   39   1        ADC_Inilize(&ADC_InitStructure);    //³õÊ¼»¯
+   40   1        ADC_PowerControl(ENABLE);       //ADCµçÔ´¿ª¹Ø, ENABLE»òDISABLE
+   41   1        NVIC_ADC_Init(DISABLE,Priority_0);    //ÖÐ¶ÏÊ¹ÄÜ, ENABLE/DISABLE; ÓÅÏÈ¼¶(µÍµ½¸ß) Priority_0,Priority_1,Pri
+             -ority_2,Priority_3
+   42   1      
+   43   1          GPIO_Init(GPIO_P1,GPIO_Pin_3|GPIO_Pin_5,GPIO_Mode_Out_PP);  // P13,P15 ÍÆÍìÊä³ö
+   44   1      }
+   45          
+   46          void CCD_Delayus(uint16_t us)
+   47          {
+   48   1          delay_us(us);
+   49   1      }
+   50          
+   51          /**
+   52            * @brief    CCD²É¼¯º¯Êý
+C251 COMPILER V5.60.0,  LQ_CCD                                                             21/06/26  23:15:55  PAGE 2   
+
+   53            *
+   54            * @param    p  £º  ´æ·Å²É¼¯Êý¾ÝµÄÊ×µØÖ·
+   55            *
+   56            * @return   ÎÞ
+   57            *
+   58            * @note     
+   59            *
+   60            * @example  uint16_t ccd_buf[128];
+   61            *           CCD_Collect(ccd_buf); 
+   62            *
+   63          */
+   64          void CCD_Collect(uint16_t *p)
+   65          {
+   66   1        unsigned char i;
+   67   1        unsigned int  temp = 0;
+   68   1          {
+   69   2              CCD1_SI_H;              // SI  = 1 
+   70   2              CCD_Delayus(1);
+   71   2              CCD1_CLK_H;             // CLK = 1 
+   72   2              CCD_Delayus(1);
+   73   2              CCD1_SI_L;              // SI  = 0 
+   74   2              CCD_Delayus(1);
+   75   2      
+   76   2              for(i=0; i<128; i++) 
+   77   2              {
+   78   3                  CCD_Delayus(1);
+   79   3                  CCD1_CLK_H;         // CLK = 1 
+   80   3                  CCD_Delayus(1);
+   81   3                  temp = CCD1_AO_GET();       
+   82   3                  *p++ = temp;     
+   83   3                  CCD1_CLK_L;        // CLK = 0 
+   84   3              }
+   85   2              CCD_Delayus(1);
+   86   2              CCD1_CLK_H;            // CLK = 1 
+   87   2              CCD_Delayus(1);
+   88   2              CCD1_CLK_L;            // CLK = 0 
+   89   2          }
+   90   1      
+   91   1      }
+   92          
+   93          
+   94          /*******************************************************************
+   95           * º¯ÊýÃû£ºvoid ccd_binaryzation(uint16_t threshold, uint16_t *ccd_data, uint8_t *bin_ccd)
+   96           * ¹¦  ÄÜ£ºCCD¶þÖµ»¯´¦Àí,²¢ÂË²¨
+   97           * ²Î  Êý£ºÎÞ
+   98           * ·µ»ØÖµ: ÎÞ
+   99           ******************************************************************/
+  100          void ccd_binaryzation(uint16_t threshold, uint16_t *ccd_data, uint8_t *bin_ccd)
+  101          {
+  102   1          u8 i = 0;
+  103   1          for (i = 0; i < 128; i++)  //¶þÖµ»¯
+  104   1          {
+  105   2              if (*ccd_data++ >= threshold)
+  106   2              {
+  107   3                  *bin_ccd++ = 1;
+  108   3              }
+  109   2              else
+  110   2              {
+  111   3                  *bin_ccd++ = 0;
+  112   3              }
+  113   2          }
+  114   1      
+  115   1          Bin_CCD_Filter();//½«¶þÖµ»¯ºóµÄÊý¾Ý½øÐÐÂË²¨£¬²¢±£´æµ½È«¾ÖÊý¾ÝÖÐ
+  116   1      }
+  117          
+  118          /*******************************************************************
+C251 COMPILER V5.60.0,  LQ_CCD                                                             21/06/26  23:15:55  PAGE 3   
+
+  119           * º¯ÊýÃû£ºuint16_t ccd_get_threshold(uint16_t ccd_data[CCD_W])
+  120           * ¹¦  ÄÜ£ºCCD¼ÆËã¶¯Ì¬ãÐÖµ
+  121           * ²Î  Êý£ºccd_data[CCD_W]
+  122           * ·µ»ØÖµ: ãÐÖµ((value1_max + value1_min) / 2)
+  123           ******************************************************************/
+  124          uint16_t ccd_get_threshold(uint16_t ccd_data[128])
+  125          {
+  126   1          uint8_t i = 0;
+  127   1          uint16_t value1_max, value1_min;
+  128   1          value1_max = ccd_data[0];
+  129   1          value1_min = ccd_data[0];
+  130   1          ccd_data += 5;
+  131   1          for (i = 5; i < 123; i++)
+  132   1          {
+  133   2              if (value1_max <= ccd_data[i])
+  134   2                  value1_max = ccd_data[i];
+  135   2              else if (value1_min >= ccd_data[i])
+  136   2                  value1_min = ccd_data[i];
+  137   2          }
+  138   1      
+  139   1          return ((value1_max + value1_min) / 2);
+  140   1      }
+  141          
+  142          
+  143          /*******************************************************************
+  144           * º¯ÊýÃû£ºuint16_t ccd_get_error(uint8_t bin_ccd[CCD_W], uint8_t ccd_x)
+  145           * ¹¦  ÄÜ£º»ñÈ¡CCD±ßÏß£¬¼ÆËãÈüµÀÆ«²îÖµ
+  146           * ²Î  Êý£º¶þÖµ»¯µÄCCDÊý¾ÝÊý×é ccd_data[CCD_W],CCDÇø·Ö£¬Ò»¸öº¯ÊýÊµÏÖ»ñÈ¡±ßÏßºÍÖÐÏßÆ«²î»ñÈ¡
+  147           * ·µ»ØÖµ: ¸ù¾Ý×óÓÒ±ßÏß¼ÆËãÖÐÏßÆ«²î
+  148           ******************************************************************/
+  149          uint16_t ccd_get_error(uint8_t bin_ccd[128])
+  150          {
+  151   1          uint8_t i = 0, j = 0;
+  152   1          char Left, Right;
+  153   1          j = 64; // ´ÓÖÐ¼äÏòÁ½±ßÕÒ±ßÏß
+  154   1          if (bin_ccd[64] == 0)
+  155   1          {
+  156   2              for (i = 0; i < (64 - 3); i++)
+  157   2              {
+  158   3                  if ((bin_ccd[j - i] + bin_ccd[j - i - 1] + bin_ccd[j - i - 2]) == 3) // ×ó¶ªÏß
+  159   3                  {
+  160   4                      return -64;
+  161   4                  }
+  162   3                  if ((bin_ccd[j + i] + bin_ccd[j + i + 1] + bin_ccd[j + i + 2]) == 3) // ÓÒ¶ªÏß
+  163   3                  {
+  164   4                      return 64;
+  165   4                  }
+  166   3              }
+  167   2              return 200; // ¡¡Á½±ß¶¼¶ªÏß
+  168   2          }
+  169   1          else
+  170   1          {
+  171   2      //        LED_Ctrl(LED0, RVS);
+  172   2              i = j = 64;
+  173   2              for (i = 64; i >= 3; i--) // ´ÓÖÐ¼äÏò×óÕÒ±ßÏß Ñ°ÕÒÌø±äµãÌáÈ¡±ßÏß
+  174   2              {
+  175   3                  if ((bin_ccd[i - 1] + bin_ccd[i - 2] + bin_ccd[i - 3]) == 0) // i×ó±ßÈ«Îª0
+  176   3                  {
+  177   4                      if ((bin_ccd[i + 1] + bin_ccd[i + 2] + bin_ccd[i + 3]) == 3) // iÓÒ±ßÈ«Îª1 ÔòiÎª×ó±ßÏß
+  178   4                      {
+  179   5                          Left = i;
+  180   5                          break;
+  181   5                      }
+  182   4                  }
+  183   3                  if (i <= 3) // ×îÐ¡±ßÏßÎª3
+  184   3                      Left = 3;
+C251 COMPILER V5.60.0,  LQ_CCD                                                             21/06/26  23:15:55  PAGE 4   
+
+  185   3              }
+  186   2      
+  187   2              for (j = 64; j <= 125; j++) // ´ÓÖÐ¼äÏòÓÒÕÒ±ßÏß Ñ°ÕÒÌø±äµãÌáÈ¡±ßÏß
+  188   2              {
+  189   3                  if ((bin_ccd[j + 1] + bin_ccd[j + 2] + bin_ccd[j + 3]) == 0) // ÓÒ±ßÈ«Îª0
+  190   3                  {
+  191   4                      if ((bin_ccd[j - 1] + bin_ccd[j - 2] + bin_ccd[j - 3]) == 3) // j×ó±ßÈ«Îª1£¬iÎªÓÒ±ßÏß
+  192   4                      {
+  193   5                          Right = j;
+  194   5                          break;
+  195   5                      }
+  196   4                  }
+  197   3                  if (j >= 125) // ×î´ó±ßÏßÎª125
+  198   3                      Right = 125;
+  199   3              }
+  200   2              return (Left + Right - 128); // ¸ù¾Ý×óÓÒ±ßÏß¼ÆËãÈüµÀÖÐÏß
+  201   2          }
+  202   1      }
+  203          
+  204          /*******************************************************************
+  205           * º¯ÊýÃû£ºvoid Bin_CCD_Filter(char ccd_n)
+  206           * ¹¦  ÄÜ£º¶Ô¶þÖµ»¯ºóµÄCCDÊý¾Ý½øÐÐ¼òµ¥ÂË²¨´¦Àí
+  207           * ·µ»ØÖµ: ÎÞ
+  208           ******************************************************************/
+  209          void Bin_CCD_Filter()
+  210          {
+  211   1          u8 i = 0;
+  212   1          for (i = 1; i < 128; i++)
+  213   1          {
+  214   2              if (CCD1_Bin[i] == 1 && CCD1_Bin[i - 1] == 0 && CCD1_Bin[i + 1] == 0) // Èç¹ûÇ°Ò»¸öÏñËØµãºÍºóÒ»¸ö
+             -ÏñËØµã¶¼Îª0 Ôò´ËÏñËØµãÎª0
+  215   2              {
+  216   3                  CCD1_Bin[i] = 0;
+  217   3              }
+  218   2              else if (CCD1_Bin[i] == 0 && CCD1_Bin[i - 1] == 1 && CCD1_Bin[i + 1] == 1) // Èç¹ûÇ°Ò»¸öÏñËØµãºÍº
+             -óÒ»¸öÏñËØµã¶¼Îª1 Ôò´ËÏñËØµãÎª1
+  219   2              {
+  220   3                  CCD1_Bin[i] = 1;
+  221   3              }
+  222   2          }
+  223   1      }
+  224          
+  225          
+  226          
+  227          
+  228          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       789     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =       128     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------         12
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+C251 COMPILER V5.60.0,  LQ_CCD                                                             21/06/26  23:15:55  PAGE 5   
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

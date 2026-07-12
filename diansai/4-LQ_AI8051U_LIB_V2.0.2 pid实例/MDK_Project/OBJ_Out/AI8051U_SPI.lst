@@ -1,0 +1,223 @@
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        21/06/26  23:16:01  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_SPI
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_SPI.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_SPI.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_SPI.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\AI8051U_SPI.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* --- Web: www.STCAI.com ---------------------------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_SPI.h"
+    6          
+    7          bit B_SPI_Busy; //发送忙标志
+    8          bit SPI_RxTimerOut;
+    9          bit SPI_TimerOutEn;
+   10          u8  SPI_RxCnt;
+   11          u8  SPI_BUF_type SPI_RxBuffer[SPI_BUF_LENTH];
+   12          
+   13          //========================================================================
+   14          // 函数: void SPI_Init(SPI_InitTypeDef *SPIx)
+   15          // 描述: SPI初始化程序.
+   16          // 参数: SPIx: 结构参数,请参考spi.h里的定义.
+   17          // 返回: none.
+   18          // 版本: V1.0, 2012-11-22
+   19          //========================================================================
+   20          void SPI_Init(SPI_InitTypeDef *SPIx)
+   21          {
+   22   1          if(SPIx->SPI_SSIG == ENABLE) SSIG = 1;     //conform Master or Slave by SPI_Mode(ignore SS)
+   23   1          else                         SSIG = 0;     //conform Master or Slave by SS pin.
+   24   1          SPI_Start(SPIx->SPI_Enable);
+   25   1          SPI_FirstBit_Set(SPIx->SPI_FirstBit);
+   26   1          SPI_Mode_Set(SPIx->SPI_Mode);
+   27   1          SPI_CPOL_Set(SPIx->SPI_CPOL);
+   28   1          SPI_CPHA_Set(SPIx->SPI_CPHA);
+   29   1          SPI_Clock_Select(SPIx->SPI_Speed);
+   30   1      
+   31   1          if(SPIx->TimeOutScale == TO_SCALE_SYSCLK)   SPITOCR |= 0x20;  //超时计数时钟源：系统时钟
+   32   1          else
+   33   1          {
+   34   2              SET_TPS();          //设置系统等待时间单元，用于控制EEPROM操作、SPI/I2C超时时间以及休眠唤醒等待时
+             -间
+   35   2              SPITOCR &= ~0x20;   //超时计数时钟源：1us时钟(1MHz时钟)
+   36   2          }
+   37   1      
+   38   1          if((SPIx->TimeOutTimer > 0) && (SPIx->TimeOutTimer <= 0xffffff))
+   39   1          {
+   40   2              SPITOTL = (u8)SPIx->TimeOutTimer;
+   41   2              SPITOTH = (u8)(SPIx->TimeOutTimer>>8);
+   42   2              SPITOTE = (u8)(SPIx->TimeOutTimer>>16); //写 SPITOTE 后，新的TM值才会生效
+   43   2          }
+   44   1          
+   45   1          if((SPIx->SPI_Mode == SPI_Mode_Slave) && (SPIx->TimeOutEnable == ENABLE))
+   46   1          {
+   47   2              SPI_TimerOutEn = 1;
+   48   2              SPITOCR |= 0x80;    //从机接收超时功能使能
+   49   2          }
+   50   1          else
+   51   1          {
+   52   2              SPI_TimerOutEn = 0;
+   53   2              SPITOCR &= ~0x80;   //从机接收超时功能禁止
+   54   2          }
+   55   1      
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        21/06/26  23:16:01  PAGE 2   
+
+   56   1          if(SPIx->TimeOutINTEnable == ENABLE) SPITOCR |= 0x40;   //从机接收超时中断使能
+   57   1          else                                 SPITOCR &= ~0x40;  //从机接收超时中断禁止
+   58   1      
+   59   1          SPI_RxTimerOut = 0;
+   60   1          B_SPI_Busy = 0;
+   61   1          SPI_RxCnt = 0;
+   62   1      }
+   63          
+   64          //========================================================================
+   65          // 函数: void SPI_SetMode(u8 mode)
+   66          // 描述: SPI设置主从模式函数.
+   67          // 参数: mode: 指定模式, 取值 SPI_Mode_Master 或 SPI_Mode_Slave.
+   68          // 返回: none.
+   69          // 版本: V1.0, 2012-11-22
+   70          //========================================================================
+   71          void SPI_SetMode(u8 mode)
+   72          {
+   73   1          if(mode == SPI_Mode_Slave)
+   74   1          {
+   75   2              MSTR = 0;     //重新设置为从机待机
+   76   2              SSIG = 0;     //SS引脚确定主从
+   77   2              if(SPI_TimerOutEn)
+   78   2              {
+   79   3                  SPI_TOIFClear();
+   80   3                  SPITOCR |= 0x80;    //从机接收超时功能使能
+   81   3              }
+   82   2          }
+   83   1          else
+   84   1          {
+   85   2              SPITOCR &= ~0x80;   //从机接收超时功能禁止
+   86   2              MSTR = 1;     //使能 SPI 主机模式
+   87   2              SSIG = 1;     //忽略SS引脚功能
+   88   2          }
+   89   1      }
+   90          
+   91          //========================================================================
+   92          // 函数: void SPI_WriteByte(u8 dat)
+   93          // 描述: SPI发送一个字节数据.
+   94          // 参数: dat: 要发送的数据.
+   95          // 返回: none.
+   96          // 版本: V1.0, 2020-09-14
+   97          //========================================================================
+   98          void SPI_WriteByte(u8 dat)  //SPI发送一个字节数据
+   99          {
+  100   1          if(ESPI)
+  101   1          {
+  102   2              B_SPI_Busy = 1;
+  103   2              SPDAT = dat;
+  104   2              while(B_SPI_Busy);  //中断模式
+  105   2          }
+  106   1          else
+  107   1          {
+  108   2              SPDAT = dat;
+  109   2              while(SPIF == 0);   //查询模式
+  110   2              SPI_ClearFlag();    //清除SPIF和WCOL标志
+  111   2          }
+  112   1      }
+  113          
+  114          //========================================================================
+  115          // 函数: void SPI_ReadByte(u8 dat)
+  116          // 描述: SPI查询模式读取一个字节数据.
+  117          // 参数: none.
+  118          // 返回: 读取的数据.
+  119          // 版本: V1.0, 2020-09-14
+  120          //========================================================================
+  121          u8 SPI_ReadByte(void)
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        21/06/26  23:16:01  PAGE 3   
+
+  122          {
+  123   1          SPDAT = 0xff;
+  124   1          if(ESPI)
+  125   1          {
+  126   2              B_SPI_Busy = 1;
+  127   2              while(B_SPI_Busy);  //中断模式
+  128   2          }
+  129   1          else
+  130   1          {
+  131   2              while(SPIF == 0);   //查询模式
+  132   2              SPI_ClearFlag();     //清除SPIF和WCOL标志
+  133   2          }
+  134   1          return (SPDAT);
+  135   1      }
+  136          
+  137          
+  138          
+  139          
+  140          /**************************************************************
+  141           *  函数名：void SPI_Write_Nbytes(u32 addr, u8 *buffer, u8 size)
+  142           *  功  能：向设备某地址写数据
+  143           *  入参数:
+  144           *  addr   : 地址参数
+  145           *  buffer : 缓冲需要写入设备的数据
+  146           *  size   : 数据块大小
+  147           *出参数: 无
+  148           *************************************************************/
+  149          void SPI_Write_NByte(u8 addr, u8* buffer, u8 sizel)
+  150          {
+  151   1      //    SPI_SS_3  = 0;                       // enable device
+  152   1          SPI_WriteByte(addr);                //发送写命令设置起始地址
+  153   1          do{
+  154   2              SPI_WriteByte(*buffer++);       //
+  155   2              buffer++;
+  156   2          }while(--sizel);
+  157   1      //    SPI_SS_3  = 1;                    // disable device
+  158   1      }
+  159          
+  160          /**************************************************************
+  161           *  函数名：void SPI_Write_Nbytes(u32 addr, u8 *buffer, u8 size)写数据到设备中
+  162           *  功  能：从设备某地址读取数据
+  163           *  入参数:
+  164           *  addr   : 地址参数
+  165           *  buffer : 缓冲需要读取设备的数据
+  166           *  size   : 数据块大小
+  167           *出参数: 无
+  168           *************************************************************/
+  169          void SPI_Read_NByte(u8 addr, u8* buffer, u8 sizel)
+  170          {
+  171   1      //    SPI_SS_3  = 0;                     //enable device
+  172   1          SPI_WriteByte(addr|0x80);                //发送读命令
+  173   1          do{
+  174   2              *buffer = SPI_ReadByte();       //receive byte and store at buffer
+  175   2              buffer++;
+  176   2          }while(--sizel);                   //read until no_bytes is reached
+  177   1      //    SPI_SS_3  = 1;                    //disable device
+  178   1      }
+  179          
+  180          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       534     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+C251 COMPILER V5.60.0,  AI8051U_SPI                                                        21/06/26  23:16:01  PAGE 4   
+
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =       129          2
+  bit size             =         3     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

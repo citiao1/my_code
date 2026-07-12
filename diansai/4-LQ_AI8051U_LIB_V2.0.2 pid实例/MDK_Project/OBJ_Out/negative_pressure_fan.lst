@@ -1,0 +1,38 @@
+C251 COMPILER V5.60.0,  negative_pressure_fan                                              21/06/26  23:16:02  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE negative_pressure_fan
+OBJECT MODULE PLACED IN .\OBJ_Out\negative_pressure_fan.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\UserCode\MIDDLE\negative_pressure_fan.c XSMALL OA UNSIGNED_CHAR FLO
+                    -AT64 BROWSE INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\
+                    -UserCode;..\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\negative_pressu
+                    -re_fan.lst) TABS(2) OBJECT(.\OBJ_Out\negative_pressure_fan.obj) 
+
+stmt  level    source
+
+    1          #include "LQ_MotorServo.h"
+    2          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =    ------     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

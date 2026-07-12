@@ -1,0 +1,69 @@
+C251 COMPILER V5.60.0,  AI8051U_Compare                                                    21/06/26  23:15:59  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Compare
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Compare.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_Compare.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE
+                    - INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..
+                    -\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Compare.lst) TABS(
+                    -2) OBJECT(.\OBJ_Out\AI8051U_Compare.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_Compare.h"
+    6          
+    7          //========================================================================
+    8          // 函数:void CMP_Inilize(CMP_InitDefine *CMPx)
+    9          // 描述: 比较器初始化程序.
+   10          // 参数: CMPx: 结构参数,请参考compare.h里的定义.
+   11          // 返回: none.
+   12          // 版本: V1.0, 2012-10-22
+   13          //========================================================================
+   14          void CMP_Inilize(CMP_InitDefine *CMPx)
+   15          {
+   16   1        CMPCR1 &= 0x30;
+   17   1        CMPCR2 = CMPx->CMP_OutDelayDuty & 0x3f; // 比较结果变化延时周期数, 0~63
+   18   1        if (CMPx->CMP_EN == ENABLE)
+   19   1          CMPEN = 1; // 允许比较器        ENABLE,DISABLE
+   20   1        if (CMPx->CMP_Outpt_En == ENABLE)
+   21   1          CMPOE = 1; // 允许比较结果输出到P3.4/P4.1,   ENABLE,DISABLE
+   22   1        if (CMPx->CMP_InvCMPO == ENABLE)
+   23   1          INVCMPO = 1; // 比较器输出取反,   ENABLE,DISABLE
+   24   1        if (CMPx->CMP_100nsFilter == DISABLE)
+   25   1          DISFLT = 1; // 内部0.1us滤波,    ENABLE,DISABLE
+   26   1      
+   27   1        if (CMPx->CMP_P_Select <= CMP_P_ADC)
+   28   1          CMPEXCFG = (CMPEXCFG & ~0x03) | (CMPx->CMP_P_Select); // 比较器输入正极选择, CMP_P_P46/CMP_P_P50/CMP_P_
+             -P51, CMP_P_ADC: 由ADC模拟输入端做正输入.
+   29   1        if (CMPx->CMP_N_Select <= CMP_N_GAP)
+   30   1          CMPEXCFG = (CMPEXCFG & ~0x04) | (CMPx->CMP_N_Select << 2); // 比较器输入负极选择, CMP_N_GAP: 选择内部Ba
+             -ndGap经过OP后的电压做负输入, CMP_N_P44: 选择P4.4做负输入.
+   31   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       136     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

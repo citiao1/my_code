@@ -1,0 +1,599 @@
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    21/06/26  23:15:57  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_DMA_Isr
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_DMA_Isr.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\isr\AI8051U_DMA_Isr.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE
+                    - INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..
+                    -\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_DMA_Isr.lst) TABS(
+                    -2) OBJECT(.\OBJ_Out\AI8051U_DMA_Isr.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_DMA.h"
+    6          #include "AI8051U_SPI.h"
+    7          #include "AI8051U_LCM.h"
+    8           
+    9          
+   10          bit DmaTx1Flag;
+   11          bit DmaRx1Flag;
+   12          bit DmaTx2Flag;
+   13          bit DmaRx2Flag;
+   14          bit DmaTx3Flag;
+   15          bit DmaRx3Flag;
+   16          bit DmaTx4Flag;
+   17          bit DmaRx4Flag;
+   18          
+   19          u16 LCM_Cnt;
+   20          bit DmaLcmFlag;
+   21          
+   22          bit DmaADCFlag = 0;
+   23          bit DmaM2MFlag = 0;
+   24          bit DmaI2CTFlag = 0;
+   25          bit DmaI2CRFlag = 0;
+   26          
+   27          bit SpiTxFlag;
+   28          bit SpiRxFlag;
+   29          
+   30          bit u2sFlag;    //UART to SPI
+   31          bit s2uFlag;    //SPI to UART
+   32          
+   33          bit SpiSendFlag;
+   34          bit UartSendFlag;
+   35          
+   36          //========================================================================
+   37          // 函数: DMA_ADC_ISR_Handler
+   38          // 描述: DMA ADC 中断函数.
+   39          // 参数: none.
+   40          // 返回: none.
+   41          // 版本: V1.0, 2022-03-23
+   42          //========================================================================
+   43          void DMA_ADC_ISR_Handler (void) interrupt DMA_ADC_VECTOR
+   44          {
+   45   1        // TODO: 在此处添加用户代码
+   46   1        if(DMA_ADC_STA & 0x01)  //AD转换完成
+   47   1        {
+   48   2          DMA_ADC_STA &= ~0x01; //清标志位
+   49   2          DmaADCFlag = 1;
+   50   2              
+   51   2      //        ADC_KEY_DMAbuf = (u16)(((DmaAdKey_Buffer[10])<<8)|DmaAdKey_Buffer[11]); 
+   52   2      //        DMA_ADC_TRIG(); // 重新触发启动下一次转换
+   53   2      
+   54   2        }
+   55   1      
+   56   1      }
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    21/06/26  23:15:57  PAGE 2   
+
+   57          
+   58          //========================================================================
+   59          // 函数: DMA_M2M_ISR_Handler
+   60          // 描述: DMA M2M 中断函数.
+   61          // 参数: none.
+   62          // 返回: none.
+   63          // 版本: V1.0, 2022-03-23
+   64          //========================================================================
+   65          void DMA_M2M_ISR_Handler (void) interrupt DMA_M2M_VECTOR
+   66          {
+   67   1        // TODO: 在此处添加用户代码
+   68   1        if(DMA_M2M_STA & 0x01)  //M2M传输完成
+   69   1        {
+   70   2          DMA_M2M_STA &= ~0x01; //清标志位
+   71   2          DmaM2MFlag = 1;
+   72   2          if(u2sFlag)
+   73   2          {
+   74   3            u2sFlag = 0;
+   75   3            SpiSendFlag = 1;
+   76   3          }
+   77   2          if(s2uFlag)
+   78   2          {
+   79   3            s2uFlag = 0;
+   80   3            UartSendFlag = 1;
+   81   3          }
+   82   2        }
+   83   1      }
+   84          
+   85          //========================================================================
+   86          // 函数: DMA_UART1TX_ISR_Handler
+   87          // 描述: DMA UART1 TX 中断函数.
+   88          // 参数: none.
+   89          // 返回: none.
+   90          // 版本: V1.0, 2022-03-23
+   91          //========================================================================
+   92          void DMA_UART1TX_ISR_Handler (void) interrupt DMA_UR1T_VECTOR
+   93          {
+   94   1        // TODO: 在此处添加用户代码
+   95   1        if (DMA_UR1T_STA & 0x01)  //发送完成
+   96   1        {
+   97   2          DMA_UR1T_STA &= ~0x01;  //清标志位
+   98   2          DmaTx1Flag = 1;
+   99   2        }
+  100   1        if (DMA_UR1T_STA & 0x04)  //数据覆盖
+  101   1        {
+  102   2          DMA_UR1T_STA &= ~0x04;  //清标志位
+  103   2        }
+  104   1      }
+  105          
+  106          //========================================================================
+  107          // 函数: DMA_UART1RX_ISR_Handler
+  108          // 描述: DMA UART1 RX 中断函数.
+  109          // 参数: none.
+  110          // 返回: none.
+  111          // 版本: V1.0, 2022-03-23
+  112          //========================================================================
+  113          void DMA_UART1RX_ISR_Handler (void) interrupt DMA_UR1R_VECTOR
+  114          {
+  115   1        // TODO: 在此处添加用户代码
+  116   1        if (DMA_UR1R_STA & 0x01)  //接收完成
+  117   1        {
+  118   2          DMA_UR1R_STA &= ~0x01;  //清标志位
+  119   2          DmaRx1Flag = 1;
+  120   2      
+  121   2      //    DMA_UR1T_TRIG();  //重新触发UART1发送功能
+  122   2      //    DMA_UR1R_TRIG();  //重新触发UART1接收功能
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    21/06/26  23:15:57  PAGE 3   
+
+  123   2        }
+  124   1        if (DMA_UR1R_STA & 0x02)  //数据丢弃
+  125   1        {
+  126   2          DMA_UR1R_STA &= ~0x02;  //清标志位
+  127   2        }
+  128   1      }
+  129          
+  130          //========================================================================
+  131          // 函数: DMA_UART2TX_ISR_Handler
+  132          // 描述: DMA UART2 TX 中断函数.
+  133          // 参数: none.
+  134          // 返回: none.
+  135          // 版本: V1.0, 2022-03-23
+  136          //========================================================================
+  137          void DMA_UART2TX_ISR_Handler (void) interrupt DMA_UR2T_VECTOR
+  138          {
+  139   1        // TODO: 在此处添加用户代码
+  140   1        if (DMA_UR2T_STA & 0x01)  //发送完成
+  141   1        {
+  142   2          DMA_UR2T_STA &= ~0x01;  //清标志位
+  143   2          DmaTx2Flag = 1;
+  144   2        }
+  145   1        if (DMA_UR2T_STA & 0x04)  //数据覆盖
+  146   1        {
+  147   2          DMA_UR2T_STA &= ~0x04;  //清标志位
+  148   2        }
+  149   1      }
+  150          
+  151          //========================================================================
+  152          // 函数: DMA_UART2RX_ISR_Handler
+  153          // 描述: DMA UART2 RX 中断函数.
+  154          // 参数: none.
+  155          // 返回: none.
+  156          // 版本: V1.0, 2022-03-23
+  157          //========================================================================
+  158          void DMA_UART2RX_ISR_Handler (void) interrupt DMA_UR2R_VECTOR
+  159          {
+  160   1        // TODO: 在此处添加用户代码
+  161   1        if (DMA_UR2R_STA & 0x01)  //接收完成
+  162   1        {
+  163   2          DMA_UR2R_STA &= ~0x01;  //清标志位
+  164   2          DmaRx2Flag = 1;
+  165   2      
+  166   2      //    DMA_UR2T_TRIG();  //重新触发UART2发送功能
+  167   2      //    DMA_UR2R_TRIG();  //重新触发UART2接收功能
+  168   2        }
+  169   1        if (DMA_UR2R_STA & 0x02)  //数据丢弃
+  170   1        {
+  171   2          DMA_UR2R_STA &= ~0x02;  //清标志位
+  172   2        }
+  173   1      }
+  174          
+  175          //========================================================================
+  176          // 函数: DMA_UART3TX_ISR_Handler
+  177          // 描述: DMA UART3 TX 中断函数.
+  178          // 参数: none.
+  179          // 返回: none.
+  180          // 版本: V1.0, 2022-03-23
+  181          //========================================================================
+  182          void DMA_UART3TX_ISR_Handler (void) interrupt DMA_UR3T_VECTOR
+  183          {
+  184   1        // TODO: 在此处添加用户代码
+  185   1        if (DMA_UR3T_STA & 0x01)  //发送完成
+  186   1        {
+  187   2          DMA_UR3T_STA &= ~0x01;  //清标志位
+  188   2          DmaTx3Flag = 1;
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    21/06/26  23:15:57  PAGE 4   
+
+  189   2        }
+  190   1        if (DMA_UR3T_STA & 0x04)  //数据覆盖
+  191   1        {
+  192   2          DMA_UR3T_STA &= ~0x04;  //清标志位
+  193   2        }
+  194   1      }
+  195          
+  196          //========================================================================
+  197          // 函数: DMA_UART3RX_ISR_Handler
+  198          // 描述: DMA UART3 RX 中断函数.
+  199          // 参数: none.
+  200          // 返回: none.
+  201          // 版本: V1.0, 2022-03-23
+  202          //========================================================================
+  203          void DMA_UART3RX_ISR_Handler (void) interrupt DMA_UR3R_VECTOR
+  204          {
+  205   1        // TODO: 在此处添加用户代码
+  206   1        if (DMA_UR3R_STA & 0x01)  //接收完成
+  207   1        {
+  208   2          DMA_UR3R_STA &= ~0x01;  //清标志位
+  209   2          DmaRx3Flag = 1;
+  210   2      
+  211   2      //    DMA_UR3T_TRIG();  //重新触发UART3发送功能
+  212   2      //    DMA_UR3R_TRIG();  //重新触发UART3接收功能
+  213   2        }
+  214   1        if (DMA_UR3R_STA & 0x02)  //数据丢弃
+  215   1        {
+  216   2          DMA_UR3R_STA &= ~0x02;  //清标志位
+  217   2        }
+  218   1      }
+  219          
+  220          //========================================================================
+  221          // 函数: DMA_UART4TX_ISR_Handler
+  222          // 描述: DMA UART4 TX 中断函数.
+  223          // 参数: none.
+  224          // 返回: none.
+  225          // 版本: V1.0, 2022-03-23
+  226          //========================================================================
+  227          void DMA_UART4TX_ISR_Handler (void) interrupt DMA_UR4T_VECTOR
+  228          {
+  229   1        // TODO: 在此处添加用户代码
+  230   1        if (DMA_UR4T_STA & 0x01)  //发送完成
+  231   1        {
+  232   2          DMA_UR4T_STA &= ~0x01;  //清标志位
+  233   2          DmaTx4Flag = 1;
+  234   2        }
+  235   1        if (DMA_UR4T_STA & 0x04)  //数据覆盖
+  236   1        {
+  237   2          DMA_UR4T_STA &= ~0x04;  //清标志位
+  238   2        }
+  239   1      }
+  240          
+  241          //========================================================================
+  242          // 函数: DMA_UART4RX_ISR_Handler
+  243          // 描述: DMA UART4 RX 中断函数.
+  244          // 参数: none.
+  245          // 返回: none.
+  246          // 版本: V1.0, 2022-03-23
+  247          //========================================================================
+  248          void DMA_UART4RX_ISR_Handler (void) interrupt DMA_UR4R_VECTOR
+  249          {
+  250   1        // TODO: 在此处添加用户代码
+  251   1        if (DMA_UR4R_STA & 0x01)  //接收完成
+  252   1        {
+  253   2          DMA_UR4R_STA &= ~0x01;  //清标志位
+  254   2          DmaRx4Flag = 1;
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    21/06/26  23:15:57  PAGE 5   
+
+  255   2      
+  256   2      //    DMA_UR4T_TRIG();  //重新触发UART4发送功能
+  257   2      //    DMA_UR4R_TRIG();  //重新触发UART4接收功能
+  258   2        }
+  259   1        if (DMA_UR4R_STA & 0x02)  //数据丢弃
+  260   1        {
+  261   2          DMA_UR4R_STA &= ~0x02;  //清标志位
+  262   2        }
+  263   1      }
+  264          
+  265          //========================================================================
+  266          // 函数: DMA_SPI_ISR_Handler
+  267          // 描述: DMA SPI 中断函数.
+  268          // 参数: none.
+  269          // 返回: none.
+  270          // 版本: V1.0, 2022-03-23
+  271          //========================================================================
+  272          void DMA_SPI_ISR_Handler (void) interrupt DMA_SPI_VECTOR
+  273          {
+  274   1        // TODO: 在此处添加用户代码
+  275   1        if(DMA_SPI_STA & 0x01)  //通信完成
+  276   1        {
+  277   2          DMA_SPI_STA &= ~0x01; //清标志位
+  278   2          if(MSTR)
+  279   2          { //主机模式
+  280   3            SpiTxFlag = 1;
+  281   3            SPI_SS_2 = 1;
+  282   3          }
+  283   2          else
+  284   2          { //从机模式
+  285   3            SpiRxFlag = 1;
+  286   3          }
+  287   2        }
+  288   1        if(DMA_SPI_STA & 0x02)  //数据丢弃
+  289   1        {
+  290   2          DMA_SPI_STA &= ~0x02; //清标志位
+  291   2        }
+  292   1        if(DMA_SPI_STA & 0x04)  //数据覆盖
+  293   1        {
+  294   2          DMA_SPI_STA &= ~0x04; //清标志位
+  295   2        }
+  296   1      }
+  297          
+  298          //========================================================================
+  299          // 函数: DMA_I2C_ISR_Handler
+  300          // 描述: DMA I2C 发送中断函数.
+  301          // 参数: none.
+  302          // 返回: none.
+  303          // 版本: V1.0, 2022-03-25
+  304          //========================================================================
+  305          void DMA_I2CT_ISR_Handler (void) interrupt DMA_I2CT_VECTOR
+  306          {
+  307   1        // TODO: 在此处添加用户代码
+  308   1        if(DMA_I2CT_STA & 0x01)   //发送完成
+  309   1        {
+  310   2          DMA_I2CT_STA &= ~0x01;  //清除标志位
+  311   2          DmaI2CTFlag = 0;
+  312   2        }
+  313   1        if(DMA_I2CT_STA & 0x04)   //数据覆盖
+  314   1        {
+  315   2          DMA_I2CT_STA &= ~0x04;  //清除标志位
+  316   2        }
+  317   1      }
+  318          
+  319          //========================================================================
+  320          // 函数: DMA_I2CR_ISR_Handler
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    21/06/26  23:15:57  PAGE 6   
+
+  321          // 描述: DMA I2C 接收中断函数.
+  322          // 参数: none.
+  323          // 返回: none.
+  324          // 版本: V1.0, 2022-03-25
+  325          //========================================================================
+  326          void DMA_I2CR_ISR_Handler (void) interrupt DMA_I2CR_VECTOR
+  327          {
+  328   1        // TODO: 在此处添加用户代码
+  329   1        if(DMA_I2CR_STA & 0x01)   //接收完成
+  330   1        {
+  331   2          DMA_I2CR_STA &= ~0x01;  //清除标志位
+  332   2          DmaI2CRFlag = 0;
+  333   2        }
+  334   1        if(DMA_I2CR_STA & 0x02)   //数据丢弃
+  335   1        {
+  336   2          DMA_I2CR_STA &= ~0x02;  //清除标志位
+  337   2        }
+  338   1      }
+  339          
+  340          //========================================================================
+  341          // 函数: DMA_LCM_ISR_Handler
+  342          // 描述: DMA LCM 中断函数.
+  343          // 参数: none.
+  344          // 返回: none.
+  345          // 版本: V1.0, 2022-03-23
+  346          //========================================================================
+  347          void DMA_LCM_ISR_Handler (void) interrupt DMA_LCM_VECTOR
+  348          {
+  349   1        // TODO: 在此处添加用户代码
+  350   1        if(DMA_LCM_STA & 0x01)
+  351   1        {
+  352   2          if(DmaLcmFlag)
+  353   2          {
+  354   3            DmaLcmFlag = 0;
+  355   3            DMA_LCM_CR = 0;
+  356   3          }
+  357   2          else
+  358   2          {
+  359   3            LCM_Cnt--;
+  360   3            if(LCM_Cnt == 0)
+  361   3            {
+  362   4              DMA_LCM_CR = 0;
+  363   4              LCD_CS=1;
+  364   4            }
+  365   3            else
+  366   3            {
+  367   4              DMA_LCM_CR = 0xa0;  //Write dat
+  368   4            }
+  369   3          }
+  370   2          DMA_LCM_STA = 0;    //清标志位
+  371   2        }
+  372   1      }
+  373          
+  374          //========================================================================
+  375          // 函数: DMA_ISR_Handler
+  376          // 描述: DMA中断函数.
+  377          // 参数: none.
+  378          // 返回: none.
+  379          // 版本: V1.0, 2021-05-25
+  380          //========================================================================
+  381          void DMA_ISR_Handler (void) interrupt 13
+  382          {
+  383   1        // TODO: 在此处添加用户代码
+  384   1      
+  385   1        //----------- DMA ADC --------------
+  386   1        if(DMA_ADC_STA & 0x01)  //AD转换完成
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    21/06/26  23:15:57  PAGE 7   
+
+  387   1        {
+  388   2          DMA_ADC_STA &= ~0x01; //清标志位
+  389   2          DmaADCFlag = 1;
+  390   2        }
+  391   1      
+  392   1        //----------- DMA M2M --------------
+  393   1        if(DMA_M2M_STA & 0x01)  //M2M传输完成
+  394   1        {
+  395   2          DMA_M2M_STA &= ~0x01; //清标志位
+  396   2          DmaM2MFlag = 1;
+  397   2          if(u2sFlag)
+  398   2          {
+  399   3            u2sFlag = 0;
+  400   3            SpiSendFlag = 1;
+  401   3          }
+  402   2          if(s2uFlag)
+  403   2          {
+  404   3            s2uFlag = 0;
+  405   3            UartSendFlag = 1;
+  406   3          }
+  407   2        }
+  408   1      
+  409   1        //---------- DMA UART1 -------------
+  410   1        if (DMA_UR1T_STA & 0x01)  //发送完成
+  411   1        {
+  412   2          DMA_UR1T_STA &= ~0x01;  //清标志位
+  413   2          DmaTx1Flag = 1;
+  414   2        }
+  415   1        if (DMA_UR1T_STA & 0x04)  //数据覆盖
+  416   1        {
+  417   2          DMA_UR1T_STA &= ~0x04;  //清标志位
+  418   2        }
+  419   1      
+  420   1        if (DMA_UR1R_STA & 0x01)  //接收完成
+  421   1        {
+  422   2          DMA_UR1R_STA &= ~0x01;  //清标志位
+  423   2          DmaRx1Flag = 1;
+  424   2        }
+  425   1        if (DMA_UR1R_STA & 0x02)  //数据丢弃
+  426   1        {
+  427   2          DMA_UR1R_STA &= ~0x02;  //清标志位
+  428   2        }
+  429   1        //---------- DMA UART2 -------------
+  430   1        if (DMA_UR2T_STA & 0x01)  //发送完成
+  431   1        {
+  432   2          DMA_UR2T_STA &= ~0x01;  //清标志位
+  433   2          DmaTx2Flag = 1;
+  434   2        }
+  435   1        if (DMA_UR2T_STA & 0x04)  //数据覆盖
+  436   1        {
+  437   2          DMA_UR2T_STA &= ~0x04;  //清标志位
+  438   2        }
+  439   1      
+  440   1        if (DMA_UR2R_STA & 0x01)  //接收完成
+  441   1        {
+  442   2          DMA_UR2R_STA &= ~0x01;  //清标志位
+  443   2          DmaRx2Flag = 1;
+  444   2        }
+  445   1        if (DMA_UR2R_STA & 0x02)  //数据丢弃
+  446   1        {
+  447   2          DMA_UR2R_STA &= ~0x02;  //清标志位
+  448   2        }
+  449   1        //---------- DMA UART3 -------------
+  450   1        if (DMA_UR3T_STA & 0x01)  //发送完成
+  451   1        {
+  452   2          DMA_UR3T_STA &= ~0x01;  //清标志位
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    21/06/26  23:15:57  PAGE 8   
+
+  453   2          DmaTx3Flag = 1;
+  454   2        }
+  455   1        if (DMA_UR3T_STA & 0x04)  //数据覆盖
+  456   1        {
+  457   2          DMA_UR3T_STA &= ~0x04;  //清标志位
+  458   2        }
+  459   1      
+  460   1        if (DMA_UR3R_STA & 0x01)  //接收完成
+  461   1        {
+  462   2          DMA_UR3R_STA &= ~0x01;  //清标志位
+  463   2          DmaRx3Flag = 1;
+  464   2        }
+  465   1        if (DMA_UR3R_STA & 0x02)  //数据丢弃
+  466   1        {
+  467   2          DMA_UR3R_STA &= ~0x02;  //清标志位
+  468   2        }
+  469   1        //---------- DMA UART4 -------------
+  470   1        if (DMA_UR4T_STA & 0x01)  //发送完成
+  471   1        {
+  472   2          DMA_UR4T_STA &= ~0x01;  //清标志位
+  473   2          DmaTx4Flag = 1;
+  474   2        }
+  475   1        if (DMA_UR4T_STA & 0x04)  //数据覆盖
+  476   1        {
+  477   2          DMA_UR4T_STA &= ~0x04;  //清标志位
+  478   2        }
+  479   1      
+  480   1        if (DMA_UR4R_STA & 0x01)  //接收完成
+  481   1        {
+  482   2          DMA_UR4R_STA &= ~0x01;  //清标志位
+  483   2          DmaRx4Flag = 1;
+  484   2        }
+  485   1        if (DMA_UR4R_STA & 0x02)  //数据丢弃
+  486   1        {
+  487   2          DMA_UR4R_STA &= ~0x02;  //清标志位
+  488   2        }
+  489   1      
+  490   1      #ifdef USE_DMA_SPI
+               
+                 //---------- DMA SPI -------------
+                 if(DMA_SPI_STA & 0x01)  //通信完成
+                 {
+                   DMA_SPI_STA &= ~0x01; //清标志位
+                   if(MSTR)
+                   { //主机模式
+                     SpiTxFlag = 1;
+                     SPI_SS_2 = 1;
+                   }
+                   else
+                   { //从机模式
+                     SpiRxFlag = 1;
+                   }
+                 }
+                 if(DMA_SPI_STA & 0x02)  //数据丢弃
+                 {
+                   DMA_SPI_STA &= ~0x02; //清标志位
+                 }
+                 if(DMA_SPI_STA & 0x04)  //数据覆盖
+                 {
+                   DMA_SPI_STA &= ~0x04; //清标志位
+                 }
+               
+                 //------------- LCM --------------
+                 if(LCMIFSTA & 0x01)
+                 {
+                   LCMIFSTA = 0x00;
+C251 COMPILER V5.60.0,  AI8051U_DMA_Isr                                                    21/06/26  23:15:57  PAGE 9   
+
+                   LcmFlag = 0;
+                 }
+               
+                 //---------- DMA LCM -------------
+                 if(DMA_LCM_STA & 0x01)
+                 {
+                   if(DmaLcmFlag)
+                   {
+                     DmaLcmFlag = 0;
+                     DMA_LCM_CR = 0;
+                   }
+                   else
+                   {
+                     LCM_Cnt--;
+                     if(LCM_Cnt == 0)
+                     {
+                       DMA_LCM_CR = 0;
+                       LCD_CS=1;
+                     }
+                     else
+                     {
+                       DMA_LCM_CR = 0xa0;  //Write dat
+                     }
+                   }
+                   DMA_LCM_STA = 0;    //清标志位
+                 }
+               #endif
+  546   1      
+  547   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      1287     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         2     ------
+  bit size             =        19     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

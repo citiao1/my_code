@@ -1,0 +1,99 @@
+C251 COMPILER V5.60.0,  AI8051U_Delay                                                      21/06/26  23:15:59  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Delay
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Delay.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_Delay.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE I
+                    -NCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\U
+                    -serCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Delay.lst) TABS(2) O
+                    -BJECT(.\OBJ_Out\AI8051U_Delay.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_Delay.h"
+    6          
+    7          //========================================================================
+    8          // 函数: void delay_ms(unsigned int ms)
+    9          // 描述: 延时函数。
+   10          // 参数: ms,要延时的ms数, 这里只支持1~65535ms. 自动适应主时钟.
+   11          // 返回: none.
+   12          // 版本: VER1.0
+   13          // 日期: 2021-3-9
+   14          // 备注: 参考STC官方，比较精准且自适应主频
+   15          //========================================================================
+   16          void delay_ms(unsigned int ms)
+   17          {
+   18   1        unsigned int i;
+   19   1        do
+   20   1        {
+   21   2          i = MAIN_Fosc / 6000;
+   22   2          while (--i)
+   23   2            ;
+   24   2        } while (--ms);
+   25   1      }
+   26          
+   27          //========================================================================
+   28          // 函数: void delay_us(unsigned int us)
+   29          // 描述: 延时函数。
+   30          // 参数: us,要延时的us数,改变时钟频率后，可更换do while内循环使得延时准确
+   31          // 版本: V1.0
+   32          // 日期: 2024-12-9
+   33          // 备注: 软件微秒延时  //@40MHz
+   34          //========================================================================
+   35          void delay_us(unsigned int us)
+   36          {
+   37   1        unsigned long edata i;
+   38   1        do
+   39   1        {
+   40   2          _nop_();
+   41   2          _nop_();
+   42   2          i = 8UL;
+   43   2          while (i)
+   44   2            i--;
+   45   2        } while (us--);
+   46   1      }
+   47          
+   48          //========================================================================
+   49          // 函数: void I2C_Delay(void)
+   50          // 描述: I2C延时函数.
+   51          // 参数: none.
+   52          // 返回: none.
+   53          // 版本: V1.0, 2020-09-15
+   54          //========================================================================
+   55          void I2C_Delay_2us(void)
+   56          {
+C251 COMPILER V5.60.0,  AI8051U_Delay                                                      21/06/26  23:15:59  PAGE 2   
+
+   57   1        u8 dly;
+   58   1        dly = MAIN_Fosc / 2000000UL; // 按2us计算
+   59   1        while (--dly)
+   60   1          ;
+   61   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        70     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

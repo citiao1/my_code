@@ -1,0 +1,156 @@
+C251 COMPILER V5.60.0,  AI8051U_EEPROM                                                     21/06/26  23:15:59  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_EEPROM
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_EEPROM.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_EEPROM.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE 
+                    -INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\
+                    -UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_EEPROM.lst) TABS(2)
+                    - OBJECT(.\OBJ_Out\AI8051U_EEPROM.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_EEPROM.h"
+    6          
+    7          //========================================================================
+    8          // 函数: void ISP_Disable(void)
+    9          // 描述: 禁止访问ISP/IAP.
+   10          // 参数: non.
+   11          // 返回: non.
+   12          // 版本: V1.0, 2012-10-22
+   13          //========================================================================
+   14          void DisableEEPROM(void)
+   15          {
+   16   1        IAP_CONTR = 0;    // 禁止IAP操作
+   17   1        IAP_CMD = 0;    // 去除IAP命令
+   18   1        IAP_TRIG = 0;   // 防止IAP命令误触发
+   19   1        IAP_ADDRE = 0xff; // 将地址设置到非 IAP 区域
+   20   1        IAP_ADDRH = 0xff; // 将地址设置到非 IAP 区域
+   21   1        IAP_ADDRL = 0xff;
+   22   1      }
+   23          
+   24          //========================================================================
+   25          // 函数: void EEPROM_Trig(void)
+   26          // 描述: 触发EEPROM操作.
+   27          // 参数: none.
+   28          // 返回: none.
+   29          // 版本: V1.0, 2014-6-30
+   30          //========================================================================
+   31          void EEPROM_Trig(void)
+   32          {
+   33   1        F0 = EA;         // 保存全局中断
+   34   1        EA = 0;          // 禁止中断, 避免触发命令无效
+   35   1        IAP_TRIG = 0x5A;
+   36   1        IAP_TRIG = 0xA5; // 先送5AH，再送A5H到IAP触发寄存器，每次都需要如此
+   37   1                 // 送完A5H后，IAP命令立即被触发启动
+   38   1                 // CPU等待IAP完成后，才会继续执行程序。
+   39   1          NOP4();         // 多级流水线的指令系统，触发命令后建议加4个NOP，保证IAP_DATA的数据完成准备
+   40   1      //  _nop_();_nop_();_nop_();_nop_();
+   41   1        EA = F0;        // 恢复全局中断
+   42   1      }
+   43          
+   44          //========================================================================
+   45          // 函数: void EEPROM_read_n(u32 EE_address,u8 *DataAddress,u16 number)
+   46          // 描述: 从指定EEPROM首地址读出n个字节放指定的缓冲.
+   47          // 参数: EE_address:  读出EEPROM的首地址.
+   48          //       DataAddress: 读出数据放缓冲的首地址.
+   49          //       number:      读出的字节长度.
+   50          // 返回: non.
+   51          // 版本: V1.0, 2012-10-22
+   52          //========================================================================
+   53          void EEPROM_read_n(u32 EE_address, u8 *DataAddress, u16 number)
+   54          {
+   55   1        IAP_ENABLE(); // 设置等待时间，允许IAP操作，送一次就够
+   56   1        IAP_READ();   // 送字节读命令，命令不需改变时，不需重新送命令
+C251 COMPILER V5.60.0,  AI8051U_EEPROM                                                     21/06/26  23:15:59  PAGE 2   
+
+   57   1        do
+   58   1        {
+   59   2          IAP_ADDRE = (u8)(EE_address >> 16); // 送地址高字节（地址需要改变时才需重新送地址）
+   60   2          IAP_ADDRH = (u8)(EE_address >> 8);  // 送地址中字节（地址需要改变时才需重新送地址）
+   61   2          IAP_ADDRL = (u8)EE_address;     // 送地址低字节（地址需要改变时才需重新送地址）
+   62   2          EEPROM_Trig();            // 触发EEPROM操作
+   63   2          *DataAddress = IAP_DATA;      // 读出的数据送往
+   64   2          EE_address++;
+   65   2          DataAddress++;
+   66   2        } while (--number);
+   67   1      
+   68   1        DisableEEPROM();
+   69   1      }
+   70          
+   71          //========================================================================
+   72          // 函数: void EEPROM_SectorErase(u32 EE_address)
+   73          // 描述: 把指定地址的EEPROM扇区擦除.
+   74          // 参数: EE_address:  要擦除的扇区EEPROM的地址，扇区内任意地址皆被视为该扇区地址
+   75          // 返回: non.
+   76          // 版本: V1.0, 2013-5-10
+   77          //========================================================================
+   78          void EEPROM_SectorErase(u32 EE_address)
+   79          {
+   80   1        IAP_ENABLE();  // 设置等待时间，允许IAP操作，送一次就够
+   81   1        IAP_ERASE();   // 宏调用, 送扇区擦除命令，命令不需改变时，不需重新送命令
+   82   1                         // 只有扇区擦除，没有字节擦除，512字节/扇区。扇区中任意一个字节地址都是扇区地址。
+   83   1        IAP_ADDRE = (u8)(EE_address >> 16); // 送扇区地址高字节（地址需要改变时才需重新送地址）
+   84   1        IAP_ADDRH = (u8)(EE_address >> 8);  // 送扇区地址中字节（地址需要改变时才需重新送地址）
+   85   1        IAP_ADDRL = (u8)EE_address;     // 送扇区地址低字节（地址需要改变时才需重新送地址）
+   86   1        EEPROM_Trig();            // 触发EEPROM操作  包含中断挂起与恢复
+   87   1        DisableEEPROM();          // 禁止EEPROM操作
+   88   1      }
+   89          
+   90          //========================================================================
+   91          // 函数: void EEPROM_write_n(u32 EE_address,u8 *DataAddress,u16 number)
+   92          // 描述: 把缓冲的n个字节写入指定首地址的EEPROM.
+   93          // 参数: EE_address:  写入EEPROM的首地址.
+   94          //       DataAddress: 写入源数据的缓冲的首地址.
+   95          //       number:      写入的字节长度.
+   96          // 返回: non.
+   97          // 版本: V1.0, 2012-10-22
+   98          //========================================================================
+   99          void EEPROM_write_n(u32 EE_address, u8 *DataAddress, u16 number)
+  100          {
+  101   1        IAP_ENABLE(); // 设置等待时间，允许IAP操作，送一次就够
+  102   1        IAP_WRITE();  // 宏调用, 送字节写命令
+  103   1        do
+  104   1        {
+  105   2          IAP_ADDRE = (u8)(EE_address >> 16);     // 送地址高字节（地址需要改变时才需重新送地址）
+  106   2          IAP_ADDRH = (u8)(EE_address >> 8);      // 送地址中字节（地址需要改变时才需重新送地址）
+  107   2          IAP_ADDRL = (u8)EE_address;         // 送地址低字节（地址需要改变时才需重新送地址）
+  108   2          IAP_DATA = *DataAddress;          // 送数据到IAP_DATA，只有数据改变时才需重新送
+  109   2                  
+  110   2          EEPROM_Trig();                // 触发EEPROM操作
+  111   2                  
+  112   2          EE_address++;               // 下一个地址
+  113   2          DataAddress++;                // 下一个数据
+  114   2        } while (--number);  // 直到结束
+  115   1        DisableEEPROM();
+  116   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       215     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+C251 COMPILER V5.60.0,  AI8051U_EEPROM                                                     21/06/26  23:15:59  PAGE 3   
+
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------         12
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

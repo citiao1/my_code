@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f6f5">
+  <title>C30D Vehicle Console</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>C30D Vehicle Console</h1>
+      <div class="subtitle">STM32F407 · Hall Encoder</div>
+    </div>
+    <div class="connection-tools">
+      <select id="connectionMode" class="mode-select" aria-label="连接方式">
+        <option value="bridge">本地桥接</option>
+        <option value="ble">BLE 蓝牙</option>
+        <option value="serial">串口 COM</option>
+      </select>
+      <span id="connectionBadge" class="badge disconnected"><span class="dot"></span><span id="connectionText">未连接</span></span>
+      <button id="connectButton" class="command primary" type="button">连接桥接</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="control-surface" aria-labelledby="controlTitle">
+      <div class="section-heading">
+        <div>
+          <span class="kicker">DRIVE</span>
+          <h2 id="controlTitle">运动控制</h2>
+        </div>
+        <span id="enableBadge" class="badge neutral"><span class="dot"></span>使能未知</span>
+      </div>
+
+      <div class="drive-pad" aria-label="方向控制">
+        <button class="drive-button up" data-direction="forward" type="button" title="前进" aria-label="前进">↑</button>
+        <button class="drive-button left" data-direction="left" type="button" title="左转" aria-label="左转">←</button>
+        <button id="stopButton" class="drive-button stop" type="button" title="紧急停止" aria-label="紧急停止">■</button>
+        <button class="drive-button right" data-direction="right" type="button" title="右转" aria-label="右转">→</button>
+        <button class="drive-button down" data-direction="back" type="button" title="后退" aria-label="后退">↓</button>
+      </div>
+
+      <div class="speed-control">
+        <div class="speed-label">
+          <label for="speedSlider">目标速度比例</label>
+          <output id="speedValue" for="speedSlider">60%</output>
+        </div>
+        <input id="speedSlider" type="range" min="20" max="100" step="5" value="60">
+        <div class="scale"><span>20</span><span>60</span><span>100</span></div>
+      </div>
+
+      <div class="pid-panel">
+        <div class="pid-heading">
+          <div><span class="kicker">SPEED LOOP</span><h3>速度环 PID</h3></div>
+          <span id="pidCurrent">L --/--/-- · R --/--/--</span>
+        </div>
+        <div class="pid-inputs">
+          <label>左 Kp<input id="pidLeftKp" type="number" min="0" max="50000" step="100" value="4000"></label>
+          <label>左 Ki<input id="pidLeftKi" type="number" min="0" max="50000" step="50" value="800"></label>
+          <label>左 Kd<input id="pidLeftKd" type="number" min="0" max="5000" step="10" value="0"></label>
+          <label>右 Kp<input id="pidRightKp" type="number" min="0" max="50000" step="100" value="4000"></label>
+          <label>右 Ki<input id="pidRightKi" type="number" min="0" max="50000" step="50" value="800"></label>
+          <label>右 Kd<input id="pidRightKd" type="number" min="0" max="5000" step="10" value="0"></label>
+          <label>最高轮速 mm/s<input id="maxSpeed" type="number" min="50" max="1500" step="50" value="200"></label>
+        </div>
+        <button id="applyPidButton" class="command secondary pid-apply" type="button">应用参数</button>
+      </div>
+
+      <div class="pid-panel">
+        <div class="pid-heading">
+          <div><span class="kicker">YAW RATE LOOP</span><h3>角速度环</h3></div>
+          <label class="yaw-toggle"><input id="yawEnabled" type="checkbox">启用</label>
+        </div>
+        <div class="pid-inputs">
+          <label>Kp<input id="yawKp" type="number" min="0" max="0.1" step="0.0005" value="0.001"></label>
+          <label>Ki<input id="yawKi" type="number" min="0" max="0.1" step="0.0005" value="0"></label>
+          <label>Kd<input id="yawKd" type="number" min="0" max="0.1" step="0.0001" value="0"></label>
+          <label>最大角速度 °/s<input id="maxYawRate" type="number" min="10" max="360" step="10" value="120"></label>
+        </div>
+        <button id="applyYawButton" class="command secondary pid-apply" type="button">应用角速度参数</button>
+      </div>
+
+      <div class="control-footer">
+        <div class="command-state">
+          <span>油门</span><strong id="throttleValue">0</strong>
+          <span>转向</span><strong id="steeringValue">0</strong>
+        </div>
+        <button id="zeroButton" class="command secondary" type="button">数据归零</button>
+      </div>
+    </section>
+
+    <section class="telemetry-surface" aria-labelledby="telemetryTitle">
+      <div class="section-heading">
+        <div>
+          <span class="kicker">TELEMETRY</span>
+          <h2 id="telemetryTitle">实时遥测</h2>
+        </div>
+        <span id="packetTime">-- ms</span>
+      </div>
+
+      <div class="attitude-grid">
+        <div class="metric"><span>航向角</span><strong id="yawValue">0.0°</strong></div>
+        <div class="metric"><span>俯仰角</span><strong id="pitchValue">0.0°</strong></div>
+        <div class="metric"><span>横滚角</span><strong id="rollValue">0.0°</strong></div>
+      </div>
+
+      <div class="data-grid">
+        <div class="data-row"><span>左轮速度</span><strong id="leftSpeed">0.000 m/s</strong></div>
+        <div class="data-row"><span>右轮速度</span><strong id="rightSpeed">0.000 m/s</strong></div>
+        <div class="data-row"><span>左轮目标</span><strong id="leftTarget">0.000 m/s</strong></div>
+        <div class="data-row"><span>右轮目标</span><strong id="rightTarget">0.000 m/s</strong></div>
+        <div class="data-row"><span>左轮误差</span><strong id="leftError">0.000 m/s</strong></div>
+        <div class="data-row"><span>右轮误差</span><strong id="rightError">0.000 m/s</strong></div>
+        <div class="data-row"><span>左编码器</span><strong id="leftEncoder">0</strong></div>
+        <div class="data-row"><span>右编码器</span><strong id="rightEncoder">0</strong></div>
+        <div class="data-row"><span>估算里程</span><strong id="distanceValue">0 mm</strong></div>
+        <div class="data-row"><span>控制链路</span><strong id="linkValue">待机</strong></div>
+        <div class="data-row"><span>左轮 PWM</span><strong id="leftPwm">0</strong></div>
+        <div class="data-row"><span>右轮 PWM</span><strong id="rightPwm">0</strong></div>
+        <div class="data-row"><span>目标角速度</span><strong id="targetYawRate">0.0 °/s</strong></div>
+        <div class="data-row"><span>实际角速度</span><strong id="yawRate">0.0 °/s</strong></div>
+        <div class="data-row"><span>角速度误差</span><strong id="yawRateError">0.0 °/s</strong></div>
+        <div class="data-row"><span>差速修正</span><strong id="yawCorrection">0.000 m/s</strong></div>
+        <div class="data-row"><span>角速度闭环</span><strong id="yawLoopState">关闭</strong></div>
+        <div class="data-row"><span>MPU6050</span><strong id="mpuState">未知</strong></div>
+        <div class="data-row"><span>电池电压</span><strong id="batteryVoltage">0.00 V</strong></div>
+        <div class="data-row"><span>电池 ADC</span><strong id="batteryRaw">0</strong></div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-heading">
+          <span>轮速趋势</span>
+          <div class="legend"><span class="left-line">左实际</span><span class="right-line">右实际</span><span class="target-left-line">左目标</span><span class="target-right-line">右目标</span></div>
+        </div>
+        <canvas id="speedChart" aria-label="左右轮速度趋势图"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer class="statusbar">
+    <span id="browserStatus">Local Bridge · 8766</span>
+    <span id="eventLog">等待连接</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

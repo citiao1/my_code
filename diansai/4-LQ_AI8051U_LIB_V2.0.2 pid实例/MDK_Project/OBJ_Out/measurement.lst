@@ -1,0 +1,40 @@
+C251 COMPILER V5.60.0,  measurement                                                        17/04/26  17:06:23  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE measurement
+OBJECT MODULE PLACED IN .\OBJ_Out\measurement.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\User_Code\measurement.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCD
+                    -IR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control) DEFINE(AI8051U_32B
+                    -it) DEBUG PRINT(.\OBJ_Out\measurement.lst) TABS(2) OBJECT(.\OBJ_Out\measurement.obj) 
+
+stmt  level    source
+
+    1          /*
+    2          包含电感读入，电感处理，返回一个处理后的值，可用来衡量赛道偏差
+    3          */
+    4          
+    5          #include "measurement.h"
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =    ------     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

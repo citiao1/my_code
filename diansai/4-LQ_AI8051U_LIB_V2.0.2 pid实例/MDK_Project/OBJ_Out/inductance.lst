@@ -1,0 +1,117 @@
+C251 COMPILER V5.60.0,  inductance                                                         21/06/26  23:16:01  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE inductance
+OBJECT MODULE PLACED IN .\OBJ_Out\inductance.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\UserCode\MIDDLE\inductance.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE
+                    - INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..
+                    -\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\inductance.lst) TABS(2) OB
+                    -JECT(.\OBJ_Out\inductance.obj) 
+
+stmt  level    source
+
+    1          #include "inductance.h"
+    2          
+    3          // 电磁传感器变量定义
+    4          static int ADC_values[5];//L1, L2, M, R1, R2
+    5          int L1, L2, M, R1, R2;
+    6          /**
+    7           * @brief ADC 值归一化
+    8           * 将 ADC 值归一化到指定范围
+    9           * @param value ADC 值
+   10           * @param min 最小值
+   11           * @param max 最大值
+   12           * @return 归一化后的值
+   13           */
+   14          int _adcNormalize(int value, double min, double max)
+   15          {
+   16   1          double normalized = (double)(value - min) / (max - min)* 100.0;
+   17   1          if(normalized > 100.0) normalized = 100.0;
+   18   1          if(normalized < 1.0) normalized = 1.0;
+   19   1          return (int)normalized;
+   20   1      }
+   21          /**
+   22           * @brief 去极值平均滤波函数
+   23           * 连续采样 5 次，去掉最大值和最小值，其余取平均
+   24           * @param ch ADC通道号
+   25           * @return 滤波后的有效ADC值
+   26           */
+   27          int Get_Filtered_ADC(uint8 ch)
+   28          {
+   29   1          int i;
+   30   1          int temp;
+   31   1          int sum = 0;
+   32   1          int max_val = 0;
+   33   1          int min_val = 65535; // 赋初值为理论最大可能值
+   34   1      
+   35   1          // 连续采样 5 次
+   36   1          for (i = 0; i < 3; i++)
+   37   1          {
+   38   2              temp = Get_ADCResult(ch);
+   39   2              sum += temp;
+   40   2              
+   41   2              // 筛选最大值和最小值
+   42   2              if (temp > max_val) max_val = temp;
+   43   2              if (temp < min_val) min_val = temp;
+   44   2          }
+   45   1      
+   46   1          // 减去极值后取平均 (总和 - 最大 - 最小) / 3
+   47   1          return (sum - max_val - min_val) / 3;
+   48   1      }
+   49          /**
+   50           * @brief 扫描电磁传感器数据
+   51           * 放在定时器读取五个电磁传感器ADC值
+   52           */
+   53          void ScanInductance(void)
+   54          {
+   55   1          // 原ADC值，调试用
+   56   1           L1 = Get_ADCResult(5);//L1
+C251 COMPILER V5.60.0,  inductance                                                         21/06/26  23:16:01  PAGE 2   
+
+   57   1           L2 = Get_ADCResult(1);//L2
+   58   1           M = Get_ADCResult(2);//M
+   59   1           R1 = Get_ADCResult(3);//R1
+   60   1           R2 = Get_ADCResult(4);//R2
+   61   1      //     L1 = Get_Filtered_ADC(5); // L1
+   62   1      //    L2 = Get_Filtered_ADC(1); // L2
+   63   1      //    M  = Get_Filtered_ADC(2); // M
+   64   1      //    R1 = Get_Filtered_ADC(3); // R1
+   65   1      //    R2 = Get_Filtered_ADC(4); // R2
+   66   1          
+   67   1        
+   68   1          //归一化后的ADC值
+   69   1          ADC_values[0] = _adcNormalize(L1, 50, 2500);//L1
+   70   1          ADC_values[1] = _adcNormalize(L2, 50, 2500);//L2
+   71   1          ADC_values[2] = _adcNormalize(M, 0, 2500);//M
+   72   1          ADC_values[3] = _adcNormalize(R1, 20, 2500);//R1
+   73   1          ADC_values[4] = _adcNormalize(R2, 100, 2500);//R2
+   74   1      }
+   75          
+   76          int* GetInductance()
+   77          {
+   78   1          return ADC_values;  // 返回数组首地址
+   79   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       511     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        20         24
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

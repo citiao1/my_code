@@ -1,0 +1,154 @@
+C251 COMPILER V5.60.0,  AI8051U_Clock                                                      21/06/26  23:15:59  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_Clock
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_Clock.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_Clock.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE I
+                    -NCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\U
+                    -serCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_Clock.lst) TABS(2) O
+                    -BJECT(.\OBJ_Out\AI8051U_Clock.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_Clock.h"
+    6          #include "AI8051U_Delay.h"
+    7          #include "LQ_UART.h"
+    8          //========================================================================
+    9          // 函数: void HIRCClkConfig(u8 div)
+   10          // 描述: 高速IRC时钟初始化程序.
+   11          // 参数: div: 时钟分频系数.
+   12          // 返回: none.
+   13          // 版本: V1.0, 2022-04-03
+   14          //========================================================================
+   15          void HIRCClkConfig(u8 div)
+   16          {
+   17   1        HIRCCR = 0x80; // 启动内部 IRC
+   18   1        while (!(HIRCCR & 1))
+   19   1          ; // 等待时钟稳定
+   20   1        CLKDIV = div;
+   21   1        CLKSEL = 0x00; // 选择内部 IRC ( 默认 )
+   22   1      }
+   23          
+   24          //========================================================================
+   25          // 函数: void XOSCClkConfig(u8 div)
+   26          // 描述: 外部晶振时钟初始化程序.
+   27          // 参数: div: 时钟分频系数.
+   28          // 返回: none.
+   29          // 版本: V1.0, 2022-04-03
+   30          //========================================================================
+   31          void XOSCClkConfig(u8 div)
+   32          {
+   33   1        XOSCCR = 0xc0; // 启动外部晶振
+   34   1        while (!(XOSCCR & 1))
+   35   1          ;      // 等待时钟稳定
+   36   1        CLKDIV = div;  // 时钟分频
+   37   1        CLKSEL = 0x01; // 选择外部晶振
+   38   1      }
+   39          
+   40          //========================================================================
+   41          // 函数: void IRC32KClkConfig(u8 div)
+   42          // 描述: 低速32K IRC时钟初始化程序.
+   43          // 参数: div: 时钟分频系数.
+   44          // 返回: none.
+   45          // 版本: V1.0, 2022-04-03
+   46          //========================================================================
+   47          void IRC32KClkConfig(u8 div)
+   48          {
+   49   1        IRC32KCR = 0x80; // 启动内部 32K IRC
+   50   1        while (!(IRC32KCR & 1))
+   51   1          ;      // 等待时钟稳定
+   52   1        CLKDIV = div;  // 时钟分频
+   53   1        CLKSEL = 0x03; // 选择内部 32K
+   54   1      }
+   55          
+   56          //========================================================================
+C251 COMPILER V5.60.0,  AI8051U_Clock                                                      21/06/26  23:15:59  PAGE 2   
+
+   57          // 函数: void HSPllClkConfig(u8 clksrc, u8 pcki, u8 pllsel, u8 div)
+   58          // 描述: 高速IO时钟初始化程序.
+   59          // 参数: clksrc: 系统时钟选择, MCLKSEL_HIRC/MCLKSEL_XIRC/MCLKSEL_X32K/MCLKSEL_I32K/MCLKSEL_PLL/MCLKSEL_PL
+             -L2/MCLKSEL_I48M.
+   60          // 参数: pllsel: PLL时钟选择, PLL_96M/PLL_144M.
+   61          // 参数: div: 高速IO时钟分频系数.
+   62          // 返回: none.
+   63          // 版本: V1.0, 2022-04-03
+   64          //========================================================================
+   65          void HSPllClkConfig(u8 clksrc, u8 pllsel, u8 div)
+   66          {
+   67   1          MainClockSel(clksrc);       //系统时钟选择, MCLKSEL_HIRC/MCLKSEL_XIRC/MCLKSEL_X32K/MCLKSEL_I32K/MCLKS
+             -EL_PLL/MCLKSEL_PLL2/MCLKSEL_I48M
+   68   1      
+   69   1          //系统时钟 n 分频作为PLL时钟源,确保分频后为12M
+   70   1          USBCLK &= ~PCKI_MSK;
+   71   1      #if (MAIN_Fosc == 12000000UL)
+                   USBCLK |= PCKI_D1;          //PLL输入时钟1分频
+               #elif (MAIN_Fosc == 24000000UL)
+                   USBCLK |= PCKI_D2;          //PLL输入时钟2分频
+               #elif (MAIN_Fosc == 48000000UL)
+                   USBCLK |= PCKI_D4;          //PLL输入时钟4分频
+               #elif (MAIN_Fosc == 96000000UL)
+                   USBCLK |= PCKI_D8;          //PLL输入时钟8分频
+               #else
+   80   1          USBCLK |= PCKI_D4;          //默认PLL输入时钟4分频
+   81   1      #endif
+   82   1      
+   83   1          PLLClockSel(pllsel);        //PLL时钟选择, PLL_96M/PLL_144M
+   84   1          PLLEnable(ENABLE);          //PLL倍频使能, ENABLE/DISABLE
+   85   1          delay_ms(1);                //等待PLL锁频
+   86   1          HSIOClockSel(HSCK_PLL);     //高速IO时钟选择, HSCK_MCLK/HSCK_PLL
+   87   1          HSClockDiv(div);            //高速IO时钟分频系数
+   88   1      }
+   89          
+   90          /***************************************************************************
+   91           * 函     数: void System_Init()
+   92           * 描     述: 系统上电初始化
+   93           * 参     数: None.
+   94           * 返     回: None.
+   95           ****************************************************************************/
+   96          void System_Init()
+   97          {
+   98   1          WTST = 0;  // 设置程序指令延时参数，赋值为0可将CPU执行指令的速度设置为最快
+   99   1          EAXSFR();  // 扩展SFR(XFR)外设寄存器访问使能
+  100   1          CKCON = 0; // 提高访问XRAM速度
+  101   1      
+  102   1          USBCLK &= ~0xf0;
+  103   1          USBCLK |= 0xd0;
+  104   1          CLKSEL |= 0xc0;
+  105   1          TFPU_CLKDIV = 0;
+  106   1          DMAIR = 0x3f;
+  107   1      
+  108   1          PNRST = 1; // P47，即RSTCFG|=1<<4;复位寄存器配置,防止复位按键失效
+  109   1      
+  110   1          UART_Init(UART1_P30_P31, 115200ul);
+  111   1      }
+  112          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       306     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+C251 COMPILER V5.60.0,  AI8051U_Clock                                                      21/06/26  23:15:59  PAGE 3   
+
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,37 @@
+C251 COMPILER V5.60.0,  motor_encoders                                                     25/04/26  23:30:25  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE motor_encoders
+OBJECT MODULE PLACED IN .\OBJ_Out\motor_encoders.obj
+COMPILER INVOKED BY: D:\keil5-C251\C251\BIN\C251.EXE ..\UserCode\MIDDLE\motor_encoders.c XSMALL OA UNSIGNED_CHAR FLOAT64
+                    - BROWSE INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\User
+                    -Code;..\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\motor_encoders.lst)
+                    - TABS(2) OBJECT(.\OBJ_Out\motor_encoders.obj) 
+
+stmt  level    source
+
+*** WARNING C38 IN LINE 1 OF ..\UserCode\MIDDLE\motor_encoders.c: empty translation unit
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =    ------     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,303 @@
+C251 COMPILER V5.60.0,  LQ_BDGPS                                                           21/06/26  23:15:55  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_BDGPS
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_BDGPS.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_BDGPS.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR
+                    -(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCo
+                    -de\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_BDGPS.lst) TABS(2) OBJECT(.\OB
+                    -J_Out\LQ_BDGPS.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           【平    台】北京龙邱智能科技STC32位核心板
+    3           【编    写】龙邱科技
+    4           【E-mail  】chiusir@163.com
+    5           【软件版本】V1.0 版权所有，单位使用请先联系授权
+    6           【相关信息参考下列地址】
+    7           【网    站】http://www.lqist.cn
+    8           【淘宝店铺】http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           【  IDE  】 keil C251 V5.60
+   11           【Target 】 STC32G/STC8051U/AI8051U 32位模式
+   12           【SYS CLK】 42 MHz使用内部晶振
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          #include "LQ_BDGPS.h"
+   15          
+   16          #include "include.h"
+   17          
+   18          
+   19          Position_t point_p;
+   20          
+   21          _SaveData Save_Data;   //在串口中断中接收数据
+   22          
+   23          
+   24          
+   25          double my_strtod(const char *str)
+   26          {
+   27   1        double result = 0.0;
+   28   1        double fraction = 1.0;
+   29   1      //  int sign = 1;
+   30   1      //  int exponent = 0;
+   31   1      //  int exp_sign = 1;
+   32   1      //  int exp_num = 0;
+   33   1      
+   34   1        signed char sign = 1;
+   35   1        signed char exponent = 0;
+   36   1        signed char exp_sign = 1;
+   37   1        signed char exp_num = 0;
+   38   1          
+   39   1        while (isspace(*str)) str++;  // 跳过空白字符
+   40   1      
+   41   1        // 处理正负号
+   42   1        if (*str == '-' || *str == '+')
+   43   1        {
+   44   2          sign = (*str++ == '-' ? -1 : 1);
+   45   2        }
+   46   1      
+   47   1        // 解析整数部分
+   48   1        while (isdigit(*str))
+   49   1        {
+   50   2          result = result * 10 + (*str++ - '0');
+   51   2        }
+   52   1      
+   53   1        // 处理小数点
+   54   1        if (*str == '.')
+   55   1        {
+   56   2          str++;
+C251 COMPILER V5.60.0,  LQ_BDGPS                                                           21/06/26  23:15:55  PAGE 2   
+
+   57   2          while (isdigit(*str))
+   58   2          {
+   59   3            fraction /= 10;
+   60   3            result += (*str++ - '0') * fraction;
+   61   3          }
+   62   2        }
+   63   1      
+   64   1        // 处理指数部分
+   65   1        if (*str == 'e' || *str == 'E')
+   66   1        {
+   67   2          str++;
+   68   2          // 处理指数的正负号
+   69   2          if (*str == '-' || *str == '+')
+   70   2          {
+   71   3            exp_sign = (*str++ == '-' ? -1 : 1);
+   72   3          }
+   73   2          exp_num = 0;
+   74   2          while (isdigit(*str))
+   75   2          {
+   76   3            exp_num = exp_num * 10 + (*str++ - '0');
+   77   3          }
+   78   2          exponent = exp_sign * exp_num;
+   79   2        }
+   80   1      
+   81   1        while (exponent > 0)
+   82   1        {
+   83   2          result *= 10;
+   84   2          exponent--;
+   85   2        }
+   86   1        while (exponent < 0)
+   87   1        {
+   88   2          result /= 10;
+   89   2          exponent++;
+   90   2        }
+   91   1      
+   92   1        return sign * result;
+   93   1      }
+   94          
+   95           
+   96           
+   97          
+   98          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+   99          @函数名称：void parseGpsBuffer(void);
+  100          @功能说明：数据解析
+  101          @参数说明：无
+  102          @函数返回：无
+  103          @修改时间：2022/02/24
+  104          @备    注：将串口收到的数据分门别类的保存到结构体中
+  105          @           $GNRMC,130416.000,A,2236.91843,N,11359.19128,E,0.001,306.28,090720,,,A*4F
+  106          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+  107          void parseGpsBuffer(void)
+  108          {
+  109   1        char *subString;
+  110   1        char *subStringNext;
+  111   1        char i = 0;
+  112   1        if (Save_Data.isGetData)      //如果字符串不为空
+  113   1        {
+  114   2          for (i = 0 ; i <= 8 ; i++)  //循环7次
+  115   2          {
+  116   3            if (i == 0)
+  117   3            {
+  118   4              if ((subString = strchr(Save_Data.GPS_Buffer, ',')) == NULL)  //没有检测到逗号
+  119   4                while(1);             //解析错误
+  120   4            }
+  121   3            else  //检测到逗号，返回逗号的位置
+  122   3            {
+C251 COMPILER V5.60.0,  LQ_BDGPS                                                           21/06/26  23:15:55  PAGE 3   
+
+  123   4              subString++;    //位置加1（定位到逗号的后一位）
+  124   4              if ((subStringNext = strchr(subString, ',')) != NULL)//定位下一个逗号的位置
+  125   4              {
+  126   5                char usefullBuffer[2];
+  127   5                switch(i)
+  128   5                {
+  129   6                case 1:
+  130   6                    memcpy(Save_Data.UTCTime, subString, subStringNext - subString);       //两个逗号之间
+             -为 时间信息 并转换成北京时间
+  131   6                    Save_Data.UTCTime[1] = Save_Data.UTCTime[1]+ 8;
+  132   6                    if(Save_Data.UTCTime[1] > '9')
+  133   6                    {
+  134   7                      Save_Data.UTCTime[0]++;
+  135   7                      if(Save_Data.UTCTime[0] == '3')
+  136   7                        Save_Data.UTCTime[0] = '0';
+  137   7                      Save_Data.UTCTime[1] = (Save_Data.UTCTime[1] % '9') + '0'-1;
+  138   7                    }
+  139   6                    break;//结束switch
+  140   6                case 2:memcpy(usefullBuffer,            subString, subStringNext - subString);break; //数据�
+             -�否有效标志
+  141   6                case 3:memcpy(Save_Data.latitude,       subString, subStringNext - subString);break;  //获取�
+             -��度信息
+  142   6                case 4:memcpy(Save_Data.N_S,            subString, subStringNext - subString);break;  //获取N
+             -/S
+  143   6                case 5:memcpy(Save_Data.longitude,      subString, subStringNext - subString);break;  //获取�
+             -��度信息
+  144   6                case 6:memcpy(Save_Data.E_W,            subString, subStringNext - subString);break;  //获取E
+             -/W
+  145   6                case 7:memcpy(Save_Data.speed,          subString, subStringNext - subString);break;  //获取�
+             -��度
+  146   6                case 8:memcpy(Save_Data.direction,      subString, subStringNext - subString);break;  //获取�
+             -��向
+  147   6                default:break;
+  148   6                }
+  149   5                subString = subStringNext;    //下一个逗号位置给第一个指针，
+  150   5                Save_Data.isParseData = 1; //手动给真值，（数据是否解析完成）
+  151   5                //          if(usefullBuffer[0] == 'A')
+  152   5                //            Save_Data.isUsefull = true;
+  153   5                //          else if(usefullBuffer[0] == 'V')
+  154   5                //            Save_Data.isUsefull = false;
+  155   5              }
+  156   4              else
+  157   4              {
+  158   5      //          while(1); //解析错误
+  159   5                 UART1_PutStr("北斗数据解析错误\n");
+  160   5              }
+  161   4            }
+  162   3          }
+  163   2        }
+  164   1      }
+  165          
+  166          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+  167          @函数名称：char Get_IntData(int* Lon_Z, int* Lon_X, int* Lat_Z, int* Lat_X);
+  168          @功能说明：经纬度原始值
+  169          @参数说明：Lon_Z（经度整数），Lon_X（经度小数），Lat_Z（纬度整数）,Lat_X（纬�
+             -�小数）
+  170          @函数返回：无
+  171          @修改时间：2022/02/24
+  172          @备    注：将结构体中的字符串转换成数据，有两种方式，#if 1：以小数点为分�
+             -�。#if 0：自己手动调节
+  173          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+  174          char Get_IntData(int* Lon_Z, int* Lon_X, int* Lat_Z, int* Lat_X)
+  175          {
+  176   1      #if 1
+  177   1        //判断纬度值中是否有‘.'有:说明有数据 例如：3946.99715  变化范围在后六位中�
+             -��化，最后一位不稳定可舍去。取值为3946和99715
+C251 COMPILER V5.60.0,  LQ_BDGPS                                                           21/06/26  23:15:55  PAGE 4   
+
+  178   1        if((strstr(Save_Data.latitude, ".")) != NULL)
+  179   1        {
+  180   2          sscanf(Save_Data.latitude, "%d.%d",&(* Lat_Z), &(* Lat_X));
+  181   2        }
+  182   1        else
+  183   1          return 0;
+  184   1        //经度原理同上 例如：11628.32198  取值为11628 和 32198
+  185   1        if((strstr(Save_Data.longitude, ".")) != NULL)
+  186   1        {
+  187   2          sscanf(Save_Data.longitude, "%d.%d",&(* Lon_Z), &(* Lon_X));
+  188   2        }
+  189   1        else
+  190   1          return 0;
+  191   1        return 1;
+  192   1      #else
+                 unsigned num=0;
+                 //判断纬度值中是否有‘.'有:说明有数据 例如：3946.99715  变化范围在后六位中�
+             -��化，最后一位不稳定可舍去。
+                 if((strstr(Save_Data.latitude, ".")) != NULL)
+                 {
+                   *Lat_Z = (Save_Data.latitude[0] - '0')*100 + (Save_Data.latitude[1] - '0')*10 + (Save_Data.latitude[2
+             -] - '0');
+                   num    = (Save_Data.latitude[3] - '0')*100000 + (Save_Data.latitude[5] - '0')*10000 + (Save_Data.lati
+             -tude[6] - '0')*1000 + \
+                            (Save_Data.latitude[7] - '0')*100 + (Save_Data.latitude[8] - '0')*10 + (Save_Data.latitude[9
+             -] - '0');
+                   *Lat_X = num;       //取值为394 和 699715
+                 }
+                 else
+                   return 0;
+                 //经度原理同上 例如：11628.32198
+                 if((strstr(Save_Data.longitude, ".")) != NULL)
+                 {
+                   *Lon_Z = (Save_Data.longitude[0] - '0')*1000 + (Save_Data.longitude[1] - '0')*100 + \
+                            (Save_Data.longitude[2] - '0')*10 + (Save_Data.longitude[3] - '0');
+                   num    = (Save_Data.longitude[4] - '0')*100000 + (Save_Data.longitude[6] - '0')*10000 + (Save_Data.lo
+             -ngitude[7] - '0')*1000 + \
+                            (Save_Data.longitude[8] - '0')*100 + (Save_Data.longitude[9] - '0')*10 + (Save_Data.longitud
+             -e[10] - '0');
+                   *Lon_X = num;       //取值为1162 和 832198
+                 }
+                 else
+                   return 0;
+                 return 1;
+               #endif
+  217   1      }
+  218          
+  219          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+  220          @函数名称：char Get_DoubleData(double* Lon, double* Lat)
+  221          @功能说明：经纬度字符串转化成浮点数
+  222          @参数说明：Lon（经度），Lat（纬度）
+  223          @函数返回：0:转化失败 1：转化成功
+  224          @修改时间：2022/02/24
+  225          @备    注：
+  226          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+  227          char Get_DoubleData(_SaveData * BDdata, double *Lon ,double *Lat)
+  228          {
+  229   1          double gW,gJ;
+  230   1          gJ = my_strtod(BDdata->longitude);
+  231   1          gW = my_strtod(BDdata->latitude);
+  232   1          if(gW == 0.0)
+  233   1              return 0;
+  234   1          else
+  235   1              *Lon = gJ/100.0;
+  236   1          if(gJ == 0.0)
+  237   1              return 0;
+C251 COMPILER V5.60.0,  LQ_BDGPS                                                           21/06/26  23:15:55  PAGE 5   
+
+  238   1          else
+  239   1              *Lat = gW/100.0;
+  240   1          return 1;
+  241   1      }
+  242          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      1230     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =       205         63
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        34     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

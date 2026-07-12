@@ -1,0 +1,1110 @@
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_IPSLCD
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_IPSLCD.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_IPSLCD.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDI
+                    -R(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserC
+                    -ode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_IPSLCD.lst) TABS(2) OBJECT(.\
+                    -OBJ_Out\LQ_IPSLCD.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           ¡¾Æ½    Ì¨¡¿±±¾©ÁúÇñÖÇÄÜ¿Æ¼¼STC32Î»ºËÐÄ°å
+    3           ¡¾±à    Ð´¡¿ÁúÇñ¿Æ¼¼
+    4           ¡¾E-mail  ¡¿chiusir@163.com
+    5           ¡¾Èí¼þ°æ±¾¡¿V1.0 °æÈ¨ËùÓÐ£¬µ¥Î»Ê¹ÓÃÇëÏÈÁªÏµÊÚÈ¨
+    6           ¡¾Ïà¹ØÐÅÏ¢²Î¿¼ÏÂÁÐµØÖ·¡¿
+    7           ¡¾Íø    Õ¾¡¿http://www.lqist.cn
+    8           ¡¾ÌÔ±¦µêÆÌ¡¿http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           ¡¾  IDE  ¡¿ keil C251 V5.60
+   11           ¡¾Target ¡¿ STC32G/STC8051U/AI8051U 32Î»Ä£Ê½
+   12           ¡¾SYS CLK¡¿ 42 MHzÊ¹ÓÃÄÚ²¿¾§Õñ
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          
+   15          #include "LQ_IPSLCD.h"
+   16          #include "include.h"
+   17          #include "font.h"
+   18          
+   19          
+   20          /*!
+   21            * @brief    IPS1.14³õÊ¼»¯
+   22            * @return   ÎÞ
+   23            * @note     Èç¹ûÐÞ¸Ä¹Ü½Å ÐèÒªÐÞ¸Ä³õÊ¼»¯µÄ¹Ü½Å
+   24            * @see      IPS_LCD_Init();
+   25            */
+   26          void IPS_LCD_Init(void)
+   27          {
+   28   1      #if Use_HARDSPI
+               //    SPIM_Init(SPI2,baud_72M,SPI2_0_SCK_PB13,SPI_MISO_NULL,SPI2_0_MOSI_PB15,PA8);
+               #else   //Èí¼þSPI¹Ü½Å³õÊ¼»¯
+   31   1          GPIO_Init(GPIO_P3,GPIO_Pin_2|GPIO_Pin_4,GPIO_Mode_Out_PP);            //SCLK,MOSI ÍÆÍìÊä³ö
+   32   1          GPIO_Init(GPIO_P2,GPIO_Pin_1|GPIO_Pin_5|GPIO_Pin_6,GPIO_Mode_Out_PP); //RST,DC,CS ÍÆÍìÊä³ö
+   33   1      #endif
+   34   1          /*¸´Î»*/
+   35   1          IPS_RST_L;
+   36   1          delay_ms(100);
+   37   1          IPS_RST_H;
+   38   1          delay_ms(100);
+   39   1      
+   40   1          IPS_CS_L;
+   41   1          delay_ms(150);
+   42   1          LCD_Write_Cmd(0x11);
+   43   1          delay_ms(120);
+   44   1          LCD_Write_Cmd(0x36);
+   45   1          if(USE_HORIZONTAL==0)LCD_Write_Byte(0x00);
+   46   1          else if(USE_HORIZONTAL==1)LCD_Write_Byte(0xC0);
+   47   1          else if(USE_HORIZONTAL==2)LCD_Write_Byte(0x70);
+   48   1          else LCD_Write_Byte(0xA0);
+   49   1      
+   50   1          LCD_Write_Cmd(0x3A);
+   51   1          LCD_Write_Byte(0x05);
+   52   1          LCD_Write_Cmd(0xB2);
+   53   1          LCD_Write_Byte(0x0C);
+   54   1          LCD_Write_Byte(0x0C);
+   55   1          LCD_Write_Byte(0x00);
+   56   1          LCD_Write_Byte(0x33);
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 2   
+
+   57   1          LCD_Write_Byte(0x33);
+   58   1          LCD_Write_Cmd(0xB7);
+   59   1          LCD_Write_Byte(0x35);
+   60   1          LCD_Write_Cmd(0xBB);
+   61   1          LCD_Write_Byte(0x19);
+   62   1          LCD_Write_Cmd(0xC0);
+   63   1          LCD_Write_Byte(0x2C);
+   64   1          LCD_Write_Cmd(0xC2);
+   65   1          LCD_Write_Byte(0x01);
+   66   1          LCD_Write_Cmd(0xC3);
+   67   1          LCD_Write_Byte(0x12);
+   68   1          LCD_Write_Cmd(0xC4);
+   69   1          LCD_Write_Byte(0x20);
+   70   1          LCD_Write_Cmd(0xC6);
+   71   1          LCD_Write_Byte(0x0F);
+   72   1          LCD_Write_Cmd(0xD0);
+   73   1          LCD_Write_Byte(0xA4);
+   74   1          LCD_Write_Byte(0xA1);
+   75   1          LCD_Write_Cmd(0xE0);
+   76   1          LCD_Write_Byte(0xD0);
+   77   1          LCD_Write_Byte(0x04);
+   78   1          LCD_Write_Byte(0x0D);
+   79   1          LCD_Write_Byte(0x11);
+   80   1          LCD_Write_Byte(0x13);
+   81   1          LCD_Write_Byte(0x2B);
+   82   1          LCD_Write_Byte(0x3F);
+   83   1          LCD_Write_Byte(0x54);
+   84   1          LCD_Write_Byte(0x4C);
+   85   1          LCD_Write_Byte(0x18);
+   86   1          LCD_Write_Byte(0x0D);
+   87   1          LCD_Write_Byte(0x0B);
+   88   1          LCD_Write_Byte(0x1F);
+   89   1          LCD_Write_Byte(0x23);
+   90   1          LCD_Write_Cmd(0xE1);
+   91   1          LCD_Write_Byte(0xD0);
+   92   1          LCD_Write_Byte(0x04);
+   93   1          LCD_Write_Byte(0x0C);
+   94   1          LCD_Write_Byte(0x11);
+   95   1          LCD_Write_Byte(0x13);
+   96   1          LCD_Write_Byte(0x2C);
+   97   1          LCD_Write_Byte(0x3F);
+   98   1          LCD_Write_Byte(0x44);
+   99   1          LCD_Write_Byte(0x51);
+  100   1          LCD_Write_Byte(0x2F);
+  101   1          LCD_Write_Byte(0x1F);
+  102   1          LCD_Write_Byte(0x1F);
+  103   1          LCD_Write_Byte(0x20);
+  104   1          LCD_Write_Byte(0x23);
+  105   1          LCD_Write_Cmd(0x21);
+  106   1          LCD_Write_Cmd(0x29);
+  107   1          delay_ms(20);
+  108   1      }
+  109          
+  110          /*!
+  111            * @brief    ¼òµ¥ÑÓÊ±º¯Êý
+  112            *
+  113            * @param    Del £ºÑÓÊ±Ê±¼ä
+  114            *
+  115            * @return   ÎÞ
+  116            *
+  117            * @note     ÄÚ²¿µ÷ÓÃ
+  118            *
+  119            * @see      IPSdelay_1us(1);
+  120            *
+  121            */
+  122          void IPSdelay_1us(unsigned int Del)     //
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 3   
+
+  123          {
+  124   1          delay_us(Del);
+  125   1      //  while(Del--)
+  126   1      //  {
+  127   1      //    __asm("NOP");
+  128   1      //  }
+  129   1      }
+  130          
+  131          /*!
+  132            * @brief    Ð´ÃüÁî
+  133            * @param    cmd £ºÃüÁî
+  134            * @return   ÎÞ
+  135            * @note     ÄÚ²¿µ÷ÓÃ
+  136            * @see      LCD_Write_Cmd(0xb7); //LCD Driveing control
+  137            */
+  138          void LCD_Write_Cmd(unsigned char cmd)
+  139          {
+  140   1          unsigned char i;
+  141   1          IPS_DC_L;// A0=0 ILI9163_A0=0;     //A0=0·¢ËÍÃüÁî
+  142   1      #if Use_HARDSPI
+                   SPI_Write_8Bit(SPI2,cmd);
+               #else
+  145   1      
+  146   1          for(i=0;i<8;i++)
+  147   1          {
+  148   2              IPS_CK_L;                   // SCK=0
+  149   2              if(cmd&0x80)
+  150   2                  {
+  151   3                      IPS_DI_H;               // SDI=1
+  152   3                  }else{
+  153   3                      IPS_DI_L;               // SDI=0
+  154   3                  }
+  155   2              IPS_CK_H;                   // SCK=1
+  156   2              cmd <<= 1;
+  157   2          }
+  158   1      #endif
+  159   1          IPS_DC_H;
+  160   1      }
+  161          
+  162          /*!
+  163            * @brief    Ð´×Ö½Ú
+  164            * @param    dat £ºÊý¾Ý
+  165            * @return   ÎÞ
+  166            * @note     ÄÚ²¿µ÷ÓÃ
+  167            * @see      LCD_Write_Byte(0x00); //CRL=0
+  168            */
+  169          void LCD_Write_Byte(unsigned char dat)
+  170          {
+  171   1          unsigned char i;
+  172   1          IPS_DC_H;// A0=1  ILI9163_A0=1;         //A0=1·¢ËÍÊý¾Ý
+  173   1      #if Use_HARDSPI
+                   SPI_Write_8Bit(SPI2,dat);
+               #else
+  176   1      
+  177   1          for(i=0;i<8;i++)
+  178   1          {
+  179   2              IPS_CK_L;   // SCK=0  ILI9163_SCK=0;
+  180   2              if(dat&0x80){IPS_DI_H;}// SDI=1
+  181   2              else{IPS_DI_L;}// SDI=0
+  182   2              IPS_CK_H;   // SCK=1 ILI9163_SCK = 1;
+  183   2              dat = (dat<<1);
+  184   2          }
+  185   1      #endif
+  186   1      }
+  187          
+  188          /*!
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 4   
+
+  189            * @brief    Ð´°ë×Ö
+  190            * @param    dat £ºÊý¾Ý
+  191            * @return   ÎÞ
+  192            * @note     ÎÞ
+  193            * @see      LCD_Write_Word(0xFFFF);
+  194            */
+  195          void LCD_Write_Word(unsigned int dat)
+  196          {
+  197   1          unsigned char i;
+  198   1          IPS_DC_H;// A0=1  ILI9163_A0=1;
+  199   1      #if Use_HARDSPI
+                   SPI_Write_16Bit(SPI2,dat);
+               #else
+  202   1      
+  203   1          for(i=0;i<16;i++)
+  204   1          {
+  205   2              IPS_CK_L;   // SCK=0  ILI9163_SCK=0;
+  206   2              if(dat&0x8000){ IPS_DI_H;}// SDI=1
+  207   2              else{IPS_DI_L;}// SDI=0
+  208   2              IPS_CK_H;   // SCK=1  ILI9163_SCK=1;
+  209   2              dat<<=1;
+  210   2          }
+  211   1      #endif
+  212   1      
+  213   1      }
+  214          
+  215          /******************************************************************************
+  216                º¯ÊýËµÃ÷£ºÉèÖÃÆðÊ¼ºÍ½áÊøµØÖ·
+  217                Èë¿ÚÊý¾Ý£ºx1,x2 ÉèÖÃÁÐµÄÆðÊ¼ºÍ½áÊøµØÖ·
+  218                       y1,y2 ÉèÖÃÐÐµÄÆðÊ¼ºÍ½áÊøµØÖ·
+  219                ·µ»ØÖµ£º  ÎÞ
+  220          ******************************************************************************/
+  221          void LCD_Address_Set(unsigned int x1,unsigned int y1,unsigned int x2,unsigned int y2)
+  222          {
+  223   1          int W_offset = 0, H_offset = 0;
+  224   1          if(USE_HORIZONTAL==0)
+  225   1          {
+  226   2      #ifdef IPS114
+  227   2              W_offset = 52; H_offset = 40;
+  228   2      #endif
+  229   2      #ifdef IPS130
+                       W_offset = 0; H_offset = 0;
+               #endif
+  232   2      #ifdef IPS154
+                       W_offset = 0; H_offset = 0;
+               #endif
+  235   2      #ifdef IPS200
+                       W_offset = 0; H_offset = 0;
+               #endif
+  238   2          }
+  239   1          else if(USE_HORIZONTAL==1)
+  240   1          {
+  241   2      #ifdef IPS114
+  242   2              W_offset = 53; H_offset = 40;
+  243   2      #endif
+  244   2      #ifdef IPS130
+                       W_offset = 0; H_offset = 80;
+               #endif
+  247   2      #ifdef IPS154
+                       W_offset = 0; H_offset = 80;
+               #endif
+  250   2      #ifdef IPS200
+                       W_offset = 0; H_offset = 0;
+               #endif
+  253   2          }
+  254   1          else if(USE_HORIZONTAL==2)
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 5   
+
+  255   1          {
+  256   2      #ifdef IPS114
+  257   2              W_offset = 40; H_offset = 53;
+  258   2      #endif
+  259   2      #ifdef IPS130
+                       W_offset = 0; H_offset = 0;
+               #endif
+  262   2      #ifdef IPS154
+                       W_offset = 0; H_offset = 0;
+               #endif
+  265   2      #ifdef IPS200
+                       W_offset = 0; H_offset = 0;
+               #endif
+  268   2          }
+  269   1          else
+  270   1          {
+  271   2      #ifdef IPS114
+  272   2              W_offset = 40; H_offset = 52;
+  273   2      #endif
+  274   2      #ifdef IPS130
+                       W_offset = 80; H_offset = 0;
+               #endif
+  277   2      #ifdef IPS154
+                       W_offset = 80; H_offset = 0;
+               #endif
+  280   2      #ifdef IPS200
+                       W_offset = 0; H_offset = 0;
+               #endif
+  283   2          }
+  284   1          LCD_Write_Cmd(0x2a);//ÁÐµØÖ·ÉèÖÃ
+  285   1          LCD_Write_Word(x1+W_offset);
+  286   1          LCD_Write_Word(x2+W_offset);
+  287   1          LCD_Write_Cmd(0x2b);//ÐÐµØÖ·ÉèÖÃ
+  288   1          LCD_Write_Word(y1+H_offset);
+  289   1          LCD_Write_Word(y2+H_offset);
+  290   1          LCD_Write_Cmd(0x2c);//´¢´æÆ÷Ð´
+  291   1      }
+  292          
+  293          /******************************************************************************
+  294                º¯ÊýËµÃ÷£ºÔÚÖ¸¶¨Î»ÖÃ»­µã
+  295                Èë¿ÚÊý¾Ý£ºx,y »­µã×ø±ê
+  296                          color µãµÄÑÕÉ«
+  297                ·µ»ØÖµ£º  ÎÞ
+  298          ******************************************************************************/
+  299          void LCD_DrawPoint(unsigned int x,unsigned int y,unsigned int color)
+  300          {
+  301   1          LCD_Address_Set(x,y,x,y);//ÉèÖÃ¹â±êÎ»ÖÃ
+  302   1          LCD_Write_Word(color);
+  303   1      }
+  304          
+  305          /******************************************************************************
+  306                º¯ÊýËµÃ÷£ºÏÔÊ¾µ¥¸ö×Ö·û
+  307                Èë¿ÚÊý¾Ý£ºx,yÏÔÊ¾×ø±ê
+  308                          num ÒªÏÔÊ¾µÄ×Ö·û
+  309                          fc ×ÖµÄÑÕÉ«
+  310                          bc ×ÖµÄ±³¾°É«
+  311                          sizey ×ÖºÅ£º¿ÉÑ¡12 16 24 32
+  312                          mode:  0·Çµþ¼ÓÄ£Ê½  1µþ¼ÓÄ£Ê½
+  313                ·µ»ØÖµ£º  ÎÞ
+  314          ******************************************************************************/
+  315          void LCD_ShowChar(unsigned int x,unsigned int y,unsigned char num,unsigned int fc,unsigned int bc,unsigne
+             -d char sizey,unsigned char mode)
+  316          {
+  317   1          unsigned char temp,sizex,t,m=0;
+  318   1          unsigned int i,TypefaceNum;//Ò»¸ö×Ö·ûËùÕ¼×Ö½Ú´óÐ¡
+  319   1          unsigned int x0=x;
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 6   
+
+  320   1          sizex=sizey/2;
+  321   1          TypefaceNum=(sizex/8+((sizex%8)?1:0))*sizey;
+  322   1          num=num-' ';    //µÃµ½Æ«ÒÆºóµÄÖµ
+  323   1          LCD_Address_Set(x,y,x+sizex-1,y+sizey-1);  //ÉèÖÃ¹â±êÎ»ÖÃ
+  324   1          for(i=0;i<TypefaceNum;i++)
+  325   1          {
+  326   2      //        if(sizey==12)temp=ascii_1206[num][i];              //µ÷ÓÃ6x12×ÖÌå  Ì«Ð¡£¬×Ö¿âÖÐÉ¾³ý£¬ÏëÓÃ¿´¿ÉÒÔ
+             -ÔÚÌí¼Ó£¬µ«»áÔö¼Ó±àÒëºóµÄÎÄ¼þ´óÐ¡
+  327   2      //        else
+  328   2                  if(sizey==16)temp=ascii_1608[num][i];       //µ÷ÓÃ8x16×ÖÌå
+  329   2              else if(sizey==24)temp=ascii_2412[num][i];       //µ÷ÓÃ12x24×ÖÌå
+  330   2      //        else if(sizey==32)temp=ascii_3216[num][i];       //µ÷ÓÃ16x32×ÖÌå
+  331   2              else return;
+  332   2              for(t=0;t<8;t++)
+  333   2              {
+  334   3                  if(!mode)//·Çµþ¼ÓÄ£Ê½
+  335   3                  {
+  336   4                      if(temp&(0x01<<t))LCD_Write_Word(fc);
+  337   4                      else LCD_Write_Word(bc);
+  338   4                      m++;
+  339   4                      if(m%sizex==0)
+  340   4                      {
+  341   5                          m=0;
+  342   5                          break;
+  343   5                      }
+  344   4                  }
+  345   3                  else//µþ¼ÓÄ£Ê½
+  346   3                  {
+  347   4                      if(temp&(0x01<<t))LCD_DrawPoint(x,y,fc);//»­Ò»¸öµã
+  348   4                      x++;
+  349   4                      if((x-x0)==sizex)
+  350   4                      {
+  351   5                          x=x0;
+  352   5                          y++;
+  353   5                          break;
+  354   5                      }
+  355   4                  }
+  356   3              }
+  357   2          }
+  358   1      }
+  359          
+  360          /******************************************************************************
+  361                º¯ÊýËµÃ÷£ºÏÔÊ¾×Ö·û´®
+  362                Èë¿ÚÊý¾Ý£ºx,yÏÔÊ¾×ø±ê
+  363                          *p ÒªÏÔÊ¾µÄ×Ö·û´®
+  364                          fc ×ÖµÄÑÕÉ«
+  365                          bc ×ÖµÄ±³¾°É«
+  366                          sizey ×ÖºÅ£º¿ÉÑ¡12 16 24 32
+  367                          mode:  0·Çµþ¼ÓÄ£Ê½  1µþ¼ÓÄ£Ê½
+  368                ·µ»ØÖµ£º  ÎÞ
+  369          ******************************************************************************/
+  370          void LCD_ShowString(unsigned int x,unsigned int y, char *p,unsigned int fc,unsigned int bc,unsigned char 
+             -sizey,unsigned char mode)
+  371          {
+  372   1          while(*p!='\0')
+  373   1          {
+  374   2              LCD_ShowChar(x,y,*p,fc,bc,sizey,mode);
+  375   2              x+=sizey/2;
+  376   2              p++;
+  377   2          }
+  378   1      }
+  379          
+  380          /******************************************************************************
+  381                º¯ÊýËµÃ÷£ºÏÔÊ¾12*06´óÐ¡µÄ×Ö·û´®
+  382                Èë¿ÚÊý¾Ý£ºx    IPS114: ºá×ø±ê£¨ºáÆÁÊ±£º0-39     ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-10     ÊúÆÁÊ±£º0
+             --19£©
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 7   
+
+  383                       x  IPS130: ºá×ø±ê£¨ºáÆÁÊ±£º0-39      ÊúÆÁÊ±£º0-39£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-19     ÊúÆÁÊ±£º0-19£
+             -©
+  384                       x  IPS154: ºá×ø±ê£¨ºáÆÁÊ±£º0-39      ÊúÆÁÊ±£º0-39£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-19     ÊúÆÁÊ±£º0-19£
+             -©
+  385                       x  IPS200: ºá×ø±ê£¨ºáÆÁÊ±£º0-52      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-19     ÊúÆÁÊ±£º0-21£
+             -©
+  386                          *p  ÒªÏÔÊ¾µÄ×Ö·û´®
+  387                          fc  ×ÖµÄÑÕÉ«
+  388                          bc  ×ÖµÄ±³¾°É«
+  389                ·µ»ØÖµ£º  ÎÞ
+  390          ******************************************************************************/
+  391          void LCD_ShowStr_12(unsigned int x,unsigned int y, char *p,unsigned int fc,unsigned int bc)
+  392          {
+  393   1          while(*p!='\0')
+  394   1          {
+  395   2              LCD_ShowChar(x*6,y*12,*p,fc,bc,12,0);
+  396   2              x++;
+  397   2              p++;
+  398   2          }
+  399   1      }
+  400          /******************************************************************************
+  401                º¯ÊýËµÃ÷£ºÏÔÊ¾16*08´óÐ¡µÄ×Ö·û´®
+  402                Èë¿ÚÊý¾Ý£ºx    IPS114: ºá×ø±ê£¨ºáÆÁÊ±£º0-29     ÊúÆÁÊ±£º0-15£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-7     ÊúÆÁÊ±£º0-
+             -14£©
+  403                       x  IPS130: ºá×ø±ê£¨ºáÆÁÊ±£º0-29      ÊúÆÁÊ±£º0-29£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-14     ÊúÆÁÊ±£º0-14£
+             -©
+  404                       x  IPS154: ºá×ø±ê£¨ºáÆÁÊ±£º0-29      ÊúÆÁÊ±£º0-29£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-14     ÊúÆÁÊ±£º0-14£
+             -©
+  405                       x  IPS200: ºá×ø±ê£¨ºáÆÁÊ±£º0-39      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-14     ÊúÆÁÊ±£º0-21£
+             -©
+  406                ·µ»ØÖµ£º  ÎÞ
+  407          ******************************************************************************/
+  408          void LCD_ShowStr_16(unsigned int x,unsigned int y, char *p,unsigned int fc,unsigned int bc)
+  409          {
+  410   1          while(*p!='\0')
+  411   1          {
+  412   2              LCD_ShowChar(x*8,y*16,*p,fc,bc,16,0);
+  413   2              x++;
+  414   2              p++;
+  415   2          }
+  416   1      }
+  417          /******************************************************************************
+  418                º¯ÊýËµÃ÷£ºÏÔÊ¾24*12´óÐ¡µÄ×Ö·û´®
+  419                Èë¿ÚÊý¾Ý£ºx    IPS114: ºá×ø±ê£¨ºáÆÁÊ±£º0-19     ÊúÆÁÊ±£º0-10£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-4     ÊúÆÁÊ±£º0-
+             -9£©
+  420                       x  IPS130: ºá×ø±ê£¨ºáÆÁÊ±£º0-19      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-9     ÊúÆÁÊ±£º0-21£©
+  421                       x  IPS154: ºá×ø±ê£¨ºáÆÁÊ±£º0-39      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-19     ÊúÆÁÊ±£º0-21£
+             -©
+  422                       x  IPS200: ºá×ø±ê£¨ºáÆÁÊ±£º0-25      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-9     ÊúÆÁÊ±£º0-21£©
+  423                          *p  ÒªÏÔÊ¾µÄ×Ö·û´®
+  424                          fc  ×ÖµÄÑÕÉ«
+  425                          bc  ×ÖµÄ±³¾°É«
+  426                ·µ»ØÖµ£º  ÎÞ
+  427          ******************************************************************************/
+  428          void LCD_ShowStr_24(unsigned int x,unsigned int y, char *p,unsigned int fc,unsigned int bc)
+  429          {
+  430   1          while(*p!='\0')
+  431   1          {
+  432   2              LCD_ShowChar(x*12,y*24,*p,fc,bc,24,0);
+  433   2              x++;
+  434   2              p++;
+  435   2          }
+  436   1      }
+  437          /******************************************************************************
+  438                º¯ÊýËµÃ÷£ºx    IPS114: ºá×ø±ê£¨ºáÆÁÊ±£º0-14     ÊúÆÁÊ±£º0-7£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-3     ÊúÆÁÊ±£º0-6
+             -£©
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 8   
+
+  439                       x  IPS130: ºá×ø±ê£¨ºáÆÁÊ±£º0-14      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-6     ÊúÆÁÊ±£º0-21£©
+  440                       x  IPS154: ºá×ø±ê£¨ºáÆÁÊ±£º0-14      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-6     ÊúÆÁÊ±£º0-21£©
+  441                       x  IPS200: ºá×ø±ê£¨ºáÆÁÊ±£º0-19      ÊúÆÁÊ±£º0-21£© y ×Ý×ø±ê£¨ºáÆÁÊ±£º0-6     ÊúÆÁÊ±£º0-21£©
+  442                          *p  ÒªÏÔÊ¾µÄ×Ö·û´®
+  443                          fc  ×ÖµÄÑÕÉ«
+  444                          bc  ×ÖµÄ±³¾°É«
+  445                ·µ»ØÖµ£º  ÎÞ
+  446          ******************************************************************************/
+  447          void LCD_ShowStr_32(unsigned int x,unsigned int y, char *p,unsigned int fc,unsigned int bc)
+  448          {
+  449   1          while(*p!='\0')
+  450   1          {
+  451   2              LCD_ShowChar(x*16,y*32,*p,fc,bc,32,0);
+  452   2              x++;
+  453   2              p++;
+  454   2          }
+  455   1      }
+  456          /******************************************************************************
+  457                º¯ÊýËµÃ÷£ºÔÚÖ¸¶¨ÇøÓòÌî³äÑÕÉ«
+  458                Èë¿ÚÊý¾Ý£ºxsta,ysta   ÆðÊ¼×ø±ê
+  459                          xend,yend   ÖÕÖ¹×ø±ê
+  460                                          color       ÒªÌî³äµÄÑÕÉ«
+  461                ·µ»ØÖµ£º  ÎÞ
+  462          ******************************************************************************/
+  463          void LCD_Fill(unsigned int xsta,unsigned int ysta,unsigned int xend,unsigned int yend,unsigned int color)
+  464          {
+  465   1          unsigned int i,j;
+  466   1          LCD_Address_Set(xsta,ysta,xend-1,yend-1);//ÉèÖÃÏÔÊ¾·¶Î§
+  467   1          for(i=ysta;i<yend;i++)
+  468   1          {
+  469   2              for(j=xsta;j<xend;j++)
+  470   2              {
+  471   3                  LCD_Write_Word(color);
+  472   3              }
+  473   2          }
+  474   1      }
+  475          /******************************************************************************
+  476                º¯ÊýËµÃ÷£ºÇåÆÁ
+  477                Èë¿ÚÊý¾Ý£ºcolor       ÒªÌî³äµÄÑÕÉ«
+  478                ·µ»ØÖµ£º  ÎÞ
+  479          ******************************************************************************/
+  480          void LCD_CLS(unsigned int color)
+  481          {
+  482   1          LCD_Fill(0,0,LCD_W,LCD_H,color);
+  483   1      }
+  484          
+  485          
+  486          /******************************************************************************
+  487                º¯ÊýËµÃ÷£º»­Ïß
+  488                Èë¿ÚÊý¾Ý£ºxs £ºÆðÊ¼x
+  489                                          ys £ºÆðÊ¼y
+  490                                          xe £º½áÊøx IPS114   (ºáÆÁx:0-240, ÊúÆÁx:0-135)
+  491                                          xe £º½áÊøx IPS130  (ºáÆÁx:0-240, ÊúÆÁx:0-240)
+  492                                          xe £º½áÊøx IPS154  (ºáÆÁx:0-240, ÊúÆÁx:0-240)
+  493                                          xe £º½áÊøx IPS200  (ºáÆÁx:0-320, ÊúÆÁx:0-240)
+  494                                          ys £º½áÊøy IPS114   (ºáÆÁy:0-135, ÊúÆÁx:0-240)
+  495                                          ys £º½áÊøy IPS130  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
+  496                                          ys £º½áÊøy IPS154  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
+  497                                          ys £º½áÊøy IPS200  (ºáÆÁy:0-240, ÊúÆÁx:0-320)
+  498                                          color_dat £ºÑÕÉ«
+  499                ·µ»ØÖµ£º  ÎÞ
+  500          ******************************************************************************/
+  501          void LCD_Draw_Line(unsigned char xs,unsigned char ys,unsigned char xe,unsigned char ye,unsigned short col
+             -or_dat)
+  502          {
+  503   1        int i,ds;
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 9   
+
+  504   1        int dx,dy,inc_x, inc_y;
+  505   1        int xerr = 0, yerr = 0;                       //³õÊ¼»¯±äÁ¿
+  506   1      
+  507   1        if(xs==xe)                            //Èç¹ûÊÇ»­´¹Ö±ÏßÔòÖ»Ðè¶ÔÊúÖ±×ø±ê¼ÆÊý
+  508   1        {
+  509   2          LCD_Address_Set(xs,ys,xe,ye);
+  510   2          for(i=0;i<(ye-ys+1);i++)
+  511   2          {
+  512   3            LCD_Write_Word(color_dat);
+  513   3          }
+  514   2        }
+  515   1        else if(ys==ye)                       //Èç¹ûÊÇË®Æ½ÏßÔòÖ»ÐèÒª¶ÔË®Æ½×ø±ê¼ÆÊý
+  516   1        {
+  517   2          LCD_Address_Set(xs,ys,xe,ye);
+  518   2          for(i=0;i<(xe-xs+1);i++)
+  519   2          {
+  520   3            LCD_Write_Word(color_dat);
+  521   3          }
+  522   2        }
+  523   1        else                              //Èç¹ûÊÇÐ±Ïß£¬ÔòÖØÐÂ¼ÆËã£¬Ê¹ÓÃ»­µãº¯Êý»­³öÖ±Ïß
+  524   1        {
+  525   2          dx = xe - xs;                       //¼ÆËã×ø±êÔöÁ¿
+  526   2          dy = ye - ys;
+  527   2      
+  528   2          if(dx > 0) inc_x = 1;                   //ÉèÖÃµ¥²½·½Ïò
+  529   2          else
+  530   2          {
+  531   3            inc_x = -1; dx = -dx;
+  532   3          }
+  533   2          if(dy > 0) inc_y = 1;                   //ÉèÖÃµ¥²½·½Ïò
+  534   2          else
+  535   2          {
+  536   3            inc_y = -1; dy = -dy;
+  537   3          }
+  538   2      
+  539   2          if(dx > dy) {ds = dx;}                  //Ñ¡È¡»ù±¾ÔöÁ¿×ø±êÖá
+  540   2          else        {ds = dy;}
+  541   2      
+  542   2          for(i = 0; i <= ds+1; i++)                  //»­ÏßÊä³ö
+  543   2          {
+  544   3            LCD_DrawPoint(xs, ys,color_dat);  //»­µã
+  545   3            xerr += dx;
+  546   3            yerr += dy;
+  547   3            if(xerr > ds)
+  548   3            {
+  549   4              xerr -= ds;
+  550   4              xs   += inc_x;
+  551   4            }
+  552   3            if(yerr > ds)
+  553   3            {
+  554   4              yerr -= ds;
+  555   4              ys   += inc_y;
+  556   4            }
+  557   3          }
+  558   2        }
+  559   1      }
+  560          
+  561          /******************************************************************************
+  562                º¯ÊýËµÃ÷£º»­¾ØÐÎ¿ò
+  563                Èë¿ÚÊý¾Ý£ºxs £ºÆðÊ¼x
+  564                                          ys £ºÆðÊ¼y
+  565                                          xe £º½áÊøx IPS114   (ºáÆÁx:0-240, ÊúÆÁx:0-135)
+  566                                          xe £º½áÊøx IPS130  (ºáÆÁx:0-240, ÊúÆÁx:0-240)
+  567                                          xe £º½áÊøx IPS154  (ºáÆÁx:0-240, ÊúÆÁx:0-240)
+  568                                          xe £º½áÊøx IPS200  (ºáÆÁx:0-320, ÊúÆÁx:0-240)
+  569                                          ys £º½áÊøy IPS114   (ºáÆÁy:0-135, ÊúÆÁx:0-240)
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 10  
+
+  570                                          ys £º½áÊøy IPS130  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
+  571                                          ys £º½áÊøy IPS154  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
+  572                                          ys £º½áÊøy IPS200  (ºáÆÁy:0-240, ÊúÆÁx:0-320)
+  573                                          color_dat £ºÑÕÉ«
+  574                ·µ»ØÖµ£º  ÎÞ
+  575          ******************************************************************************/
+  576          void LCD_Draw_Rectangle(unsigned char xs,unsigned char ys,unsigned char xe,unsigned char ye,unsigned shor
+             -t color_dat)
+  577          {
+  578   1        LCD_Draw_Line(xs,ys,xs,ye,color_dat);   //»­¾ØÐÎ×ó±ß
+  579   1        LCD_Draw_Line(xe,ys,xe,ye,color_dat);   //»­¾ØÐÎÓÒ±ß
+  580   1        LCD_Draw_Line(xs,ys,xe,ys,color_dat);   //»­¾ØÐÎÉÏ±ß
+  581   1        LCD_Draw_Line(xs,ye,xe,ye,color_dat);   //»­¾ØÐÎÏÂ±ß
+  582   1      }
+  583          
+  584          /******************************************************************************
+  585                º¯ÊýËµÃ÷£º»­Ô²
+  586                Èë¿ÚÊý¾Ý£ºx £ºÔ²ÐÄx IPS114    (ºáÆÁx:0-240, ÊúÆÁx:0-135)
+  587                                IPS130  (ºáÆÁx:0-240, ÊúÆÁx:0-240)
+  588                                IPS154  (ºáÆÁx:0-240, ÊúÆÁx:0-240)
+  589                                 IPS200  (ºáÆÁx:0-320, ÊúÆÁx:0-240)
+  590                      y £ºÔ²ÐÄy  IPS114   (ºáÆÁy:0-135, ÊúÆÁx:0-240)
+  591                               IPS130  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
+  592                               IPS154  (ºáÆÁy:0-240, ÊúÆÁx:0-240)
+  593                               IPS200  (ºáÆÁy:0-240, ÊúÆÁx:0-320)
+  594                                          r £º°ë¾¶
+  595                                          color_dat £ºÑÕÉ«
+  596                ·µ»ØÖµ£º  ÎÞ
+  597          ******************************************************************************/
+  598          void LCD_Draw_Circle(unsigned char x,unsigned char y,unsigned char r,unsigned short color_dat)
+  599          {
+  600   1        unsigned char dx, dy = r;
+  601   1      
+  602   1        if((x>=r) &&((LCD_W-x)>=r) && (y>=r) && ((LCD_H-y)>=r))       //È·¶¨Ëù»­Ô²ÔÚÆÁÄ»·¶Î§ÄÚ£¬Ã»ÓÐ³¬³ö×îÍâ±ß£
+             -¬(ÔÝ²»Ö§³ÖÓëÆÁÄ»±ßÏà½»)
+  603   1        {
+  604   2          for(dx = 0; dx <= r; dx++)
+  605   2          {
+  606   3            while((r * r + 1 - dx * dx) < (dy * dy)) dy--;
+  607   3            LCD_DrawPoint(x + dx, y - dy, color_dat);
+  608   3            LCD_DrawPoint(x - dx, y - dy, color_dat);
+  609   3            LCD_DrawPoint(x - dx, y + dy, color_dat);
+  610   3            LCD_DrawPoint(x + dx, y + dy, color_dat);
+  611   3      
+  612   3            LCD_DrawPoint(x + dy, y - dx, color_dat);
+  613   3            LCD_DrawPoint(x - dy, y - dx, color_dat);
+  614   3            LCD_DrawPoint(x - dy, y + dx, color_dat);
+  615   3            LCD_DrawPoint(x + dy, y + dx, color_dat);
+  616   3          }
+  617   2        }
+  618   1      }
+  619          
+  620          /******************************************************************************
+  621                º¯ÊýËµÃ÷£ºÏÔÊ¾Í¼Æ¬
+  622                Èë¿ÚÊý¾Ý£ºx,yÆðµã×ø±ê
+  623                          length Í¼Æ¬³¤¶È
+  624                          width  Í¼Æ¬¿í¶È
+  625                          pic[]  Í¼Æ¬Êý×é
+  626                ·µ»ØÖµ£º  ÎÞ
+  627          ******************************************************************************/
+  628          void LCD_ShowPicture(unsigned int x, unsigned int y, unsigned int length, unsigned int width,const unsign
+             -ed char pic[])
+  629          {
+  630   1          unsigned int i,j;
+  631   1          unsigned long k=0;
+  632   1          LCD_Address_Set(x,y,x+length-1,y+width-1);
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 11  
+
+  633   1          for(i=0;i<length;i++)
+  634   1          {
+  635   2              for(j=0;j<width;j++)
+  636   2              {
+  637   3                  LCD_Write_Byte(pic[k*2]);
+  638   3                  LCD_Write_Byte(pic[k*2+1]);
+  639   3                  k++;
+  640   3              }
+  641   2          }
+  642   1      }
+  643          /******************************************************************************
+  644                º¯ÊýËµÃ÷£ºÏÔÊ¾µ¥¸ö12x12ºº×Ö
+  645                Èë¿ÚÊý¾Ý£ºx,yÏÔÊ¾µÄÐÐÊýºÍÁÐÊý
+  646                          *s_dat ÒªÏÔÊ¾µÄºº×Ö
+  647                          word_color ×ÖµÄÑÕÉ«
+  648                          back_color ×ÖµÄ±³¾°É«
+  649                ·µ»ØÖµ£º  ÎÞ
+  650          ******************************************************************************/
+  651          //void LCD_ShowChinese12x12(unsigned int x, unsigned int y,  char *s_dat,unsigned int word_color,unsigned
+             - int back_color)
+  652          //{
+  653          //    unsigned char wm=0,ii = 0,i,j;
+  654          //    int adder=1;
+  655          //    while(s_dat[ii] != '\0')
+  656          //    {
+  657          //        wm = 0;
+  658          //        adder = 1;
+  659          //        while(tfont_Idx[wm] > 127)
+  660          //        {
+  661          //          if(tfont_Idx[wm] == (uint8_t)s_dat[ii])
+  662          //          {
+  663          //            if(tfont_Idx[wm + 1] == (uint8_t)s_dat[ii + 1])
+  664          //            {
+  665          //              adder = wm * 12;
+  666          //              break;
+  667          //            }
+  668          //          }
+  669          //          wm += 2;
+  670          //        }
+  671          
+  672          //        if(adder != 1)// ÏÔÊ¾ºº×Ö
+  673          //        {
+  674          //            LCD_Address_Set(x*12,y*12,(x+1)*12-1,(y+1)*12-1);         //¶¨Î»×Ö·ûÏÔÊ¾ÇøÓò
+  675          //          for(j=0; j <24; j++)
+  676          //          {
+  677          //              if((j%2) == 0){
+  678          //                  for(i=0; i<8; i++)
+  679          //                  {
+  680          //                      if((tfont_12x12[adder]) &  (0x80>>i))
+  681          //                          LCD_Write_Word(word_color);
+  682          //                      else
+  683          //                          LCD_Write_Word(back_color);
+  684          //                  }
+  685          //              }
+  686          //              else{
+  687          //                  for(i=0; i<4; i++)
+  688          //                  {
+  689          //                      if((tfont_12x12[adder]) &  (0x80>>i))
+  690          //                          LCD_Write_Word(word_color);
+  691          //                      else
+  692          //                          LCD_Write_Word(back_color);
+  693          //                  }
+  694          //              }
+  695          //            adder += 1;
+  696          //          }
+  697          //        }
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 12  
+
+  698          //        else              //ÏÔÊ¾¿Õ°××Ö·û
+  699          //        {}
+  700          //        //y+=1;//×óÓÒ·½Ïò
+  701          //        x+=1;//ÉÏÏÂ·½Ïò
+  702          //        ii += 2;
+  703          //      }
+  704          //}
+  705          
+  706          /******************************************************************************
+  707                º¯ÊýËµÃ÷£ºÏÔÊ¾µ¥¸ö16x16ºº×Ö
+  708                Èë¿ÚÊý¾Ý£ºx,yÏÔÊ¾µÄÐÐÊýºÍÁÐÊý
+  709                          *s_dat ÒªÏÔÊ¾µÄºº×Ö
+  710                          word_color ×ÖµÄÑÕÉ«
+  711                          back_color ×ÖµÄ±³¾°É«
+  712                ·µ»ØÖµ£º  ÎÞ
+  713          ******************************************************************************/
+  714          void LCD_ShowChinese16x16(unsigned int x, unsigned int y,  char *s_dat,unsigned int word_color,unsigned i
+             -nt back_color)
+  715          {
+  716   1          unsigned char wm=0,ii = 0,i,j;
+  717   1          int adder=1;
+  718   1          while(s_dat[ii] != '\0')
+  719   1          {
+  720   2              wm = 0;
+  721   2              adder = 1;
+  722   2              while(tfont_Idx[wm] > 127)
+  723   2              {
+  724   3                if(tfont_Idx[wm] == (uint8_t)s_dat[ii])
+  725   3                {
+  726   4                  if(tfont_Idx[wm + 1] == (uint8_t)s_dat[ii + 1])
+  727   4                  {
+  728   5                    adder = wm * 16;
+  729   5                    break;
+  730   5                  }
+  731   4                }
+  732   3                wm += 2;
+  733   3              }
+  734   2      
+  735   2              if(adder != 1)// ÏÔÊ¾ºº×Ö
+  736   2              {
+  737   3                  LCD_Address_Set(x*16,y*16,(x+1)*16-1,(y+1)*16-1);         //¶¨Î»×Ö·ûÏÔÊ¾ÇøÓò
+  738   3                for(j=0; j <32; j++)
+  739   3                {
+  740   4                  for(i=0; i<8; i++)
+  741   4                  {
+  742   5                    if((tfont_16x16[adder]) &  (0x80>>i))
+  743   5                        LCD_Write_Word(word_color);
+  744   5                    else
+  745   5                        LCD_Write_Word(back_color);
+  746   5                  }
+  747   4                  adder += 1;
+  748   4                }
+  749   3              }
+  750   2              else              //ÏÔÊ¾¿Õ°××Ö·û
+  751   2              {}
+  752   2              //y+=1;//×óÓÒ·½Ïò
+  753   2              x+=1;//ÉÏÏÂ·½Ïò
+  754   2              ii += 2;
+  755   2            }
+  756   1      }
+  757          
+  758          /******************************************************************************
+  759                º¯ÊýËµÃ÷£ºÏÔÊ¾µ¥¸ö24x24ºº×Ö
+  760                Èë¿ÚÊý¾Ý£ºx,yÏÔÊ¾µÄÐÐÊýºÍÁÐÊý
+  761                          *s_dat ÒªÏÔÊ¾µÄºº×Ö
+  762                          word_color ×ÖµÄÑÕÉ«
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 13  
+
+  763                          back_color ×ÖµÄ±³¾°É«
+  764                ·µ»ØÖµ£º  ÎÞ
+  765          ******************************************************************************/
+  766          //void LCD_ShowChinese24x24(unsigned int x, unsigned int y,  char *s_dat,unsigned int word_color,unsigned
+             - int back_color)
+  767          //{
+  768          //    unsigned char wm=0,ii = 0,i,j;
+  769          //    int adder=1;
+  770          //    while(s_dat[ii] != '\0')
+  771          //    {
+  772          //        wm = 0;
+  773          //        adder = 1;
+  774          //        while(tfont_Idx[wm] > 127)
+  775          //        {
+  776          //          if(tfont_Idx[wm] == (uint8_t)s_dat[ii])
+  777          //          {
+  778          //            if(tfont_Idx[wm + 1] == (uint8_t)s_dat[ii + 1])
+  779          //            {
+  780          //              adder = wm * 36;
+  781          //              break;
+  782          //            }
+  783          //          }
+  784          //          wm += 2;
+  785          //        }
+  786          
+  787          //        if(adder != 1)// ÏÔÊ¾ºº×Ö
+  788          //        {
+  789          //            LCD_Address_Set(x*24,y*24,(x+1)*24-1,(y+1)*24-1);         //¶¨Î»×Ö·ûÏÔÊ¾ÇøÓò
+  790          //          for(j=0; j <72; j++)
+  791          //          {
+  792          //            for(i=0; i<8; i++)
+  793          //            {
+  794          //              if((tfont_24x24[adder]) &  (0x80>>i))
+  795          //                  LCD_Write_Word(word_color);
+  796          //              else
+  797          //                  LCD_Write_Word(back_color);
+  798          //            }
+  799          //            adder += 1;
+  800          //          }
+  801          //        }
+  802          //        else              //ÏÔÊ¾¿Õ°××Ö·û
+  803          //        {}
+  804          //        //y+=1;//×óÓÒ·½Ïò
+  805          //        x+=1;//ÉÏÏÂ·½Ïò
+  806          //        ii += 2;
+  807          //      }
+  808          //}
+  809          
+  810          
+  811          /******************************************************************************
+  812                º¯ÊýËµÃ÷£ºÏÔÊ¾µ¥¸ö32x32ºº×Ö
+  813                Èë¿ÚÊý¾Ý£ºx,yÏÔÊ¾µÄÐÐÊýºÍÁÐÊý
+  814                          *s_dat ÒªÏÔÊ¾µÄºº×Ö
+  815                          word_color ×ÖµÄÑÕÉ«
+  816                          back_color ×ÖµÄ±³¾°É«
+  817                ·µ»ØÖµ£º  ÎÞ
+  818          ******************************************************************************/
+  819          //void LCD_ShowChinese32x32(unsigned int x, unsigned int y,  char *s_dat,unsigned int word_color,unsigned
+             - int back_color)
+  820          //{
+  821          //    unsigned char wm=0,ii = 0,i,j;
+  822          //    int adder=1;
+  823          //    while(s_dat[ii] != '\0')
+  824          //    {
+  825          //        wm = 0;
+  826          //        adder = 1;
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 14  
+
+  827          //        while(tfont_Idx[wm] > 127)
+  828          //        {
+  829          //          if(tfont_Idx[wm] == (uint8_t)s_dat[ii])
+  830          //          {
+  831          //            if(tfont_Idx[wm + 1] == (uint8_t)s_dat[ii + 1])
+  832          //            {
+  833          //              adder = wm * 64;
+  834          //              break;
+  835          //            }
+  836          //          }
+  837          //          wm += 2;
+  838          //        }
+  839          
+  840          //        if(adder != 1)// ÏÔÊ¾ºº×Ö
+  841          //        {
+  842          //            LCD_Address_Set(x*32,y*32,(x+1)*32-1,(y+1)*32-1);         //¶¨Î»×Ö·ûÏÔÊ¾ÇøÓò
+  843          //          for(j=0; j <128; j++)
+  844          //          {
+  845          //            for(i=0; i<8; i++)
+  846          //            {
+  847          //              if((tfont_32x32[adder]) &  (0x80>>i))
+  848          //                  LCD_Write_Word(word_color);
+  849          //              else
+  850          //                  LCD_Write_Word(back_color);
+  851          //            }
+  852          //            adder += 1;
+  853          //          }
+  854          //        }
+  855          //        else              //ÏÔÊ¾¿Õ°××Ö·û
+  856          //        {}
+  857          //        x+=1;//ÉÏÏÂ·½Ïò
+  858          //        ii += 2;
+  859          //      }
+  860          //}
+  861          /******************************************************************************
+  862                º¯ÊýËµÃ÷£ºÏÔÊ¾ºº×Ö´®
+  863                Èë¿ÚÊý¾Ý£ºx,yÏÔÊ¾µÄÆðÊ¼ÐÐÊýºÍÁÐÊý
+  864                          *s ÒªÏÔÊ¾µÄºº×Ö´®
+  865                          fc ×ÖµÄÑÕÉ«
+  866                          bc ×ÖµÄ±³¾°É«
+  867                          sizey ×ÖºÅ ¿ÉÑ¡ 12 16 24 32
+  868                ·µ»ØÖµ£º  ÎÞ
+  869                      ±¸×¢  £º  ×Ö¿âÔÚfont.hÖÐ£¬È¡Ä£Ñ¡Ïî£ºËÎÌå£¬ÒõÂë£¬ÖðÐÐÊ½£¬µãÕó16*16£¬Ë³Ïò£¬Ê®Áù½øÖÆ£¬C51¸ñÊ½
+  870          ******************************************************************************/
+  871          void LCD_ShowChinese(unsigned int x,unsigned int y,char *s,unsigned int fc,unsigned int bc,unsigned char 
+             -sizey)
+  872          {
+  873   1          while(*s!=0)
+  874   1          {
+  875   2      //        if(sizey==12) LCD_ShowChinese12x12(x,y,s,fc,bc);
+  876   2      //        else
+  877   2                  if(sizey==16) LCD_ShowChinese16x16(x,y,s,fc,bc);
+  878   2      //        else if(sizey==24) LCD_ShowChinese24x24(x,y,s,fc,bc);
+  879   2      //        else if(sizey==32) LCD_ShowChinese32x32(x,y,s,fc,bc);
+  880   2              else return;
+  881   2              s+=2;
+  882   2              x++;
+  883   2          }
+  884   1      }
+  885          
+  886          /*!
+  887            * @brief    ÏÔÊ¾ÁúÇñLOG
+  888            *
+  889            * @param    ÎÞ
+  890            *
+  891            * @return   ÎÞ
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 15  
+
+  892            *
+  893            * @note     ÎÞ
+  894            *
+  895            * @see      LCD_Show_Logo();
+  896            */
+  897          //void LCD_Show_Logo(unsigned char xs,unsigned char ys)
+  898          //{
+  899          //    LCD_ShowPicture(xs,ys,160,54,gImage_logo);
+  900          //}
+  901          
+  902          /*!
+  903            * @brief    IPSÆÁ unsigned int RGBÊý¾ÝÏÔÊ¾
+  904            *
+  905            * @param    high_start £º ÏÔÊ¾Í¼Ïñ¿ªÊ¼Î»ÖÃ
+  906            * @param    wide_start £º ÏÔÊ¾Í¼Ïñ¿ªÊ¼Î»ÖÃ
+  907            * @param    high £º ÏÔÊ¾Í¼Ïñ¸ß¶È
+  908            * @param    wide £º ÏÔÊ¾Í¼Ïñ¿í¶È
+  909            * @param    Pixle£º ÏÔÊ¾Í¼ÏñÊý¾ÝµØÖ·
+  910            *
+  911            * @return   ÎÞ
+  912            *
+  913            * @note     ×¢Òâ ÆÁÄ»×óÉÏÎª £¨0£¬0£©
+  914            *
+  915            * @see
+  916            *
+  917            * @date     2024/7/31
+  918            */
+  919          void LCDSPI_Road_RGB565(unsigned char wide_start, unsigned char high_start, unsigned char high, unsigned 
+             -char wide, uint16_t *Pixle)
+  920          {
+  921   1          unsigned long i,j;
+  922   1          /* ÉèÖÃÏÔÊ¾·¶Î§ */
+  923   1          LCD_Address_Set(wide_start, high_start, wide_start + wide - 1, high_start + high - 1);
+  924   1          for(i = 0; i < LCDH; i++)
+  925   1              {
+  926   2                  for(j = 0; j < LCDW; j ++)
+  927   2                  {
+  928   3                      /* ÏÔÊ¾ */
+  929   3      //                color = Image_RGB565[i][j].R *2*2*2*2*2*2*2*2*2*2*2 +  Image_RGB565[i][j].G *2*2*2*2*2 
+             -+ Image_RGB565[i][j].B;
+  930   3                      LCD_Write_Word (*Pixle++);
+  931   3      //                LCD_Write_Word (color);
+  932   3                  }
+  933   2              }
+  934   1      }
+  935          
+  936          /*!
+  937            * @brief    IPS114ÆÁ unsigned char »Ò¶ÈÊý¾ÝÏÔÊ¾
+  938            *
+  939            * @param    high_start £º ÏÔÊ¾Í¼Ïñ¿ªÊ¼Î»ÖÃ
+  940            * @param    wide_start £º ÏÔÊ¾Í¼Ïñ¿ªÊ¼Î»ÖÃ
+  941            * @param    high £º ÏÔÊ¾Í¼Ïñ¸ß¶È
+  942            * @param    wide £º ÏÔÊ¾Í¼Ïñ¿í¶È
+  943            * @param    Pixle£º ÏÔÊ¾Í¼ÏñÊý¾ÝµØÖ·
+  944            *
+  945            * @return   ÎÞ
+  946            *
+  947            * @note     ×¢Òâ ÆÁÄ»×óÉÏÎª £¨0£¬0£©
+  948            *
+  949            * @see
+  950            *
+  951            * @date     2019/12/3 ÐÇÆÚ¶þ
+  952            */
+  953          void LCDSPI_Road(unsigned char wide_start, unsigned char high_start, unsigned char high, unsigned char wi
+             -de, unsigned char *Pixle)
+  954          {
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 16  
+
+  955   1          uint32_t i;
+  956   1          uint16_t color;
+  957   1          uint32_t temp = high * wide;
+  958   1          /* ÉèÖÃÏÔÊ¾·¶Î§ */
+  959   1          LCD_Address_Set(wide_start, high_start, wide_start - 1 + wide, high_start - 1 + high);
+  960   1      
+  961   1          /* ÏÔÊ¾Í¼Ïñ */
+  962   1          for(i = 0; i < temp; i++)
+  963   1          {
+  964   2                  /* ½«»Ò¶È×ª»¯Îª RGB565 */
+  965   2                  color = (Pixle[i] >> 3) << 11;
+  966   2                  color |= (Pixle[i] >> 2) << 5;
+  967   2                  color |= Pixle[i] >> 3;
+  968   2      //            /* ÏÔÊ¾ */
+  969   2                  LCD_Write_Word (color);
+  970   2          }
+  971   1      }
+  972          
+  973          /*!
+  974            * @brief    IPS114ÆÁ unsigned char ¶þÖµ»¯Êý¾ÝÏÔÊ¾
+  975            *
+  976            * @param    high_start £º ÏÔÊ¾Í¼Ïñ¿ªÊ¼Î»ÖÃ
+  977            * @param    wide_start £º ÏÔÊ¾Í¼Ïñ¿ªÊ¼Î»ÖÃ
+  978            * @param    high £º ÏÔÊ¾Í¼Ïñ¸ß¶È
+  979            * @param    wide £º ÏÔÊ¾Í¼Ïñ¿í¶È
+  980            * @param    Pixle£º ÏÔÊ¾Í¼ÏñÊý¾ÝµØÖ·
+  981            *
+  982            * @return   ÎÞ
+  983            *
+  984            * @note     ×¢Òâ ÆÁÄ»×óÉÏÎª £¨0£¬0£©
+  985            *
+  986            * @see
+  987            *
+  988            * @date     2019/12/3 ÐÇÆÚ¶þ
+  989            */
+  990          void LCDSPI_BinRoad(unsigned char wide_start, unsigned char high_start, unsigned char high, unsigned char
+             - wide, unsigned char *Pixle)
+  991          {
+  992   1          unsigned long i;
+  993   1          unsigned long temp = high * wide;
+  994   1          /* ÉèÖÃÏÔÊ¾·¶Î§ */
+  995   1          LCD_Address_Set(wide_start, high_start, wide_start - 1 + wide, high_start - 1 + high);
+  996   1      
+  997   1      
+  998   1          /* ÏÔÊ¾Í¼Ïñ */
+  999   1          for(i = 0; i < temp; i++)
+ 1000   1          {
+ 1001   2              if(Pixle[i])
+ 1002   2              {
+ 1003   3                  /* ÏÔÊ¾ */
+ 1004   3                  LCD_Write_Word (0xffff);
+ 1005   3              }
+ 1006   2              else
+ 1007   2              {
+ 1008   3                  /* ÏÔÊ¾ */
+ 1009   3                  LCD_Write_Word (0);
+ 1010   3              }
+ 1011   2          }
+ 1012   1      }
+ 1013          
+ 1014          
+ 1015          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      3363     ------
+C251 COMPILER V5.60.0,  LQ_IPSLCD                                                          21/06/26  23:15:52  PAGE 17  
+
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------        161
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =      6115     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,94 @@
+C251 COMPILER V5.60.0,  LQ_I2C_VL53                                                        21/06/26  23:15:54  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_I2C_VL53
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_I2C_VL53.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_I2C_VL53.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_I2C_VL53.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\LQ_I2C_VL53.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           【平    台】北京龙邱智能科技STC32位核心板
+    3           【编    写】龙邱科技
+    4           【E-mail  】chiusir@163.com
+    5           【软件版本】V1.0 版权所有，单位使用请先联系授权
+    6           【相关信息参考下列地址】
+    7           【网    站】http://www.lqist.cn
+    8           【淘宝店铺】http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           【  IDE  】 keil C251 V5.60
+   11           【Target 】 STC32G/STC8051U/AI8051U 32位模式
+   12           【SYS CLK】 42 MHz使用内部晶振
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          
+   15          #include "LQ_I2C_VL53.h"
+   16          #include "include.h"
+   17          #include "LQ_Soft_I2C.h"
+   18          
+   19          static Soft_I2C_cfg_t vl53_i2c_cfg; // I2C配置结构体
+   20          
+   21          void VL53_Soft_I2C_Init()
+   22          {
+   23   1          vl53_i2c_cfg.scl = VL53_SCL_PIN; // 设置I2C的SCL引脚
+   24   1          vl53_i2c_cfg.sda = VL53_SDA_PIN; // 设置I2C的SDA引脚
+   25   1          vl53_i2c_cfg.addr = VL53ADDR;    // 设置I2C的从机通信地址
+   26   1          soft_i2c_init(&vl53_i2c_cfg);
+   27   1      }
+   28          
+   29          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+   30          @函数名称：void VL53_Write_Byte(u8 reg, u8 val)
+   31          @功能说明：VL53 写1个寄存器 reg：  寄存器 data：  写入数据
+   32          @参数说明：dev：    地址
+   33          @函数返回：无
+   34          @修改时间：2022/03/15
+   35          @调用方法：无
+   36          @备    注：无
+   37          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   38          void VL53_Write_Byte(u8 reg, u8 val)
+   39          {
+   40   1          soft_i2c_write_n_byte(&vl53_i2c_cfg, reg, &val, 1);
+   41   1      }
+   42          
+   43          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+   44          @函数名称：void VL53_Read_nByte(u8 reg, u8 length, u8 *dat)
+   45          @功能说明：VL53 写1个寄存器 reg：  寄存器 data：  写入数据
+   46          @参数说明：dev：    地址
+   47          @函数返回：N字节数据
+   48          @修改时间：2022/03/15
+   49          @调用方法：无
+   50          @备    注：无
+   51          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   52          void VL53_Read_nByte(u8 reg, u8 length, u8 *dat)
+   53          { 
+   54   1         soft_i2c_read_n_byte(&vl53_i2c_cfg, reg, dat, length);
+   55   1      }
+   56          
+C251 COMPILER V5.60.0,  LQ_I2C_VL53                                                        21/06/26  23:15:54  PAGE 2   
+
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        69     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         5          1
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

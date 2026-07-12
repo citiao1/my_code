@@ -1,0 +1,275 @@
+C251 COMPILER V5.60.0,  LQ_XINT                                                            21/06/26  23:15:53  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_XINT
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_XINT.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_XINT.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(
+                    -..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCod
+                    -e\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_XINT.lst) TABS(2) OBJECT(.\OBJ_
+                    -Out\LQ_XINT.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           ¡¾Æ½    Ì¨¡¿±±¾©ÁúÇñÖÇÄÜ¿Æ¼¼STC32Î»ºËĞÄ°å
+    3           ¡¾±à    Ğ´¡¿ÁúÇñ¿Æ¼¼
+    4           ¡¾E-mail  ¡¿chiusir@163.com
+    5           ¡¾Èí¼ş°æ±¾¡¿V1.0 °æÈ¨ËùÓĞ£¬µ¥Î»Ê¹ÓÃÇëÏÈÁªÏµÊÚÈ¨
+    6           ¡¾Ïà¹ØĞÅÏ¢²Î¿¼ÏÂÁĞµØÖ·¡¿
+    7           ¡¾Íø    Õ¾¡¿http://www.lqist.cn
+    8           ¡¾ÌÔ±¦µêÆÌ¡¿http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           ¡¾  IDE  ¡¿ keil C251 V5.60
+   11           ¡¾Target ¡¿ STC32G/STC8051U/AI8051U 32Î»Ä£Ê½
+   12           ¡¾SYS CLK¡¿ 42 MHzÊ¹ÓÃÄÚ²¿¾§Õñ
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          #include "include.h"
+   15          
+   16          
+   17          /***********************************************************************************
+   18           * º¯ Êı Ãû£ºvoid Exti_Init(void)
+   19           * ¹¦    ÄÜ£ºSTC´«Í³Íâ²¿ÖĞ¶Ï³õÊ¼»¯£¬¹Ü½Å³õÊ¼»¯ºÍÖĞ¶ÏÄ£Ê½¡¢Ê¹ÄÜµÈÉèÖÃ
+   20           * ²Î    Êı£ºEXT_INTx£¬Íâ²¿ÖĞ¶ÏºÅ
+   21           * ·µ »Ø Öµ£ºÎŞ
+   22           * Ëµ    Ã÷£ºINT½ÅÎ»ÓÚP3¿Ú£ºEXT_INT0_P32¡¢EXT_INT1_P33¡¢EXT_INT2_P36¡¢EXT_INT3_P37
+   23           *           ÆäÖĞ£ºEXT_INT2¡¢EXT_INT3¡¢EXT_INT4½öÖ§³ÖÏÂ½µÑØ´¥·¢ÖĞ¶Ï
+   24           **********************************************************************************/
+   25          void Exti_Init(u8 EXT_INTx, u8 Priority_n)
+   26          {
+   27   1        EXTI_InitTypeDef  Exti_InitStructure;   //½á¹¹¶¨Òå
+   28   1          //ÖĞ¶ÏIOÅäÖÃ
+   29   1          switch(EXT_INTx)
+   30   1          {
+   31   2              case EXT_INT0_P32:
+   32   2              {
+   33   3                  //INT0ÖĞ¶Ï¹Ü½ÅÉèÖÃ
+   34   3                  gpio_init_pin(P3_2,GPIO_Mode_IPU);              //ÉèÖÃP3.2ÎªÉÏÀ­ÊäÈëÄ£Ê½
+   35   3                  //ÖĞ¶ÏÄ£Ê½³õÊ¼»¯ÅäÖÃ
+   36   3                  Exti_InitStructure.EXTI_Mode = EXT_MODE_Fall;   //ÖĞ¶ÏÄ£Ê½ÉèÎªÏÂ½µÑØ´¥·¢, EXT_MODE_RiseFall,E
+             -XT_MODE_Fall
+   37   3                  Ext_Inilize(EXT_INT0_P32,&Exti_InitStructure);  //³õÊ¼»¯£¬EXT_INT0Á¬½ÓÍâ²¿P3.2¹Ü½Å
+   38   3                  NVIC_INT0_Init(ENABLE,Priority_n);              //ÖĞ¶ÏÊ¹ÄÜ, ENABLE/DISABLE; ÓÅÏÈ¼¶(µÍµ½¸ß) Pr
+             -iority_0~Priority_3/NULL:ÎŞÓÅÏÈ¼¶
+   39   3              }break;
+   40   2              case EXT_INT1_P33:
+   41   2              {
+   42   3                  //INT1ÖĞ¶Ï¹Ü½ÅÉèÖÃ
+   43   3                  gpio_init_pin(P3_3,GPIO_Mode_IPU);              //ÉèÖÃP3.3ÎªÉÏÀ­ÊäÈëÄ£Ê½
+   44   3                  //ÖĞ¶ÏÄ£Ê½³õÊ¼»¯ÅäÖÃ
+   45   3                  Exti_InitStructure.EXTI_Mode = EXT_MODE_Fall;   //ÖĞ¶ÏÄ£Ê½ÉèÎªÏÂ½µÑØ´¥·¢, EXT_MODE_RiseFall,E
+             -XT_MODE_Fall
+   46   3                  Ext_Inilize(EXT_INT1_P33,&Exti_InitStructure);  //³õÊ¼»¯£¬  EXT_INT1Á¬½ÓÍâ²¿P3.3¹Ü½Å
+   47   3                  NVIC_INT1_Init(ENABLE,Priority_n);              //ÖĞ¶ÏÊ¹ÄÜ, ENABLE/DISABLE; ÓÅÏÈ¼¶(µÍµ½¸ß) Pr
+             -iority_0~Priority_3/NULL:ÎŞÓÅÏÈ¼¶
+   48   3              }break;
+   49   2              case EXT_INT2_P36:
+   50   2              {
+   51   3                  //INT1ÖĞ¶Ï¹Ü½ÅÉèÖÃ
+   52   3                  gpio_init_pin(P3_6,GPIO_Mode_IPU);              //ÉèÖÃP3.6ÎªÉÏÀ­ÊäÈëÄ£Ê½
+C251 COMPILER V5.60.0,  LQ_XINT                                                            21/06/26  23:15:53  PAGE 2   
+
+   53   3                  //ÖĞ¶Ï³õÊ¼»¯ÅäÖÃ
+   54   3                  Ext_Inilize(EXT_INT2_P36,&Exti_InitStructure);  //½ö½øÈëº¯ÊıÇå±êÖ¾Î»£¬Ê¹ÄÜ£¬Ä¬ÈÏÏÂ½µÑØ´¥·¢£¬Ó
+             -Ã»§²»¿ÉÅäÖÃ
+   55   3                  NVIC_INT2_Init(ENABLE,Priority_n);              //ÖĞ¶ÏÊ¹ÄÜ, ENABLE/DISABLE; ÓÅÏÈ¼¶(µÍµ½¸ß)  P
+             -riority_0~Priority_3/NULL:ÎŞÓÅÏÈ¼¶
+   56   3              }break;
+   57   2              case EXT_INT3_P37:
+   58   2              {
+   59   3                  //INT1ÖĞ¶Ï¹Ü½ÅÉèÖÃ
+   60   3                  gpio_init_pin(P3_7,GPIO_Mode_IPU);              //ÉèÖÃP3.7ÎªÉÏÀ­ÊäÈëÄ£Ê½
+   61   3                  //ÖĞ¶Ï³õÊ¼»¯ÅäÖÃ
+   62   3                  Ext_Inilize(EXT_INT3_P37,&Exti_InitStructure);  //³õÊ¼»¯½ö½øÈëº¯ÊıÇå±êÖ¾Î»£¬Ê¹ÄÜ£¬Ä¬ÈÏÏÂ½µÑØ´
+             -¥·¢£¬ÓÃ»§²»¿ÉÅäÖÃ
+   63   3                  NVIC_INT3_Init(ENABLE,Priority_n);              //ÖĞ¶ÏÊ¹ÄÜ, ENABLE/DISABLE; ÓÅÏÈ¼¶(µÍµ½¸ß)  P
+             -riority_0~Priority_3/NULL:ÎŞÓÅÏÈ¼¶
+   64   3              }break;
+   65   2              case EXT_INT4_P30:
+   66   2              {
+   67   3                  //INT1ÖĞ¶Ï¹Ü½ÅÉèÖÃ
+   68   3                  gpio_init_pin(P3_0,GPIO_Mode_IPU);              //ÉèÖÃP3.0ÎªÉÏÀ­ÊäÈëÄ£Ê½
+   69   3                  //ÖĞ¶Ï³õÊ¼»¯ÅäÖÃ
+   70   3                  Ext_Inilize(EXT_INT4_P30,&Exti_InitStructure);  //³õÊ¼»¯½ö½øÈëº¯ÊıÇå±êÖ¾Î»£¬Ê¹ÄÜ£¬Ä¬ÈÏÏÂ½µÑØ´
+             -¥·¢£¬ÓÃ»§²»¿ÉÅäÖÃ
+   71   3                  NVIC_INT4_Init(ENABLE,Priority_n);              //ÖĞ¶ÏÊ¹ÄÜ, ENABLE/DISABLE; ÓÅÏÈ¼¶(µÍµ½¸ß)  P
+             -riority_0~Priority_3/NULL:ÎŞÓÅÏÈ¼¶
+   72   3              }break;
+   73   2              default: //·Ç·¨×Ö¶Î
+   74   2                  break;
+   75   2          }
+   76   1      }
+   77          
+   78          
+   79          //----------------------- ÒÔÏÂÎª IOÖĞ¶Ï³õÊ¼»¯Ïà¹ØÄÚÈİ £¬ËùÓĞ¹Ü½Å½Ô¿ÉÖĞ¶Ï-------------------------
+   80          
+   81          //  Ê¹ÓÃÊ±¿ÉÒÔ×¢ÊÍµôÓÃ²»µ½µÄ£¬½ÚÊ¡¿Õ¼ä£¬ÈôÊ±STC32G12K128ÔòÎŞĞèµ£ĞÄ¿Õ¼äÎÊÌâ
+   82          
+   83          
+   84          /***********************************************************************************
+   85           * º¯ Êı Ãû£ºu8 GPIO_INT_Config(u8 GPIO, GPIO_InitTypeDef *GPIOx)
+   86           * ¹¦    ÄÜ£º³õÊ¼»¯GPIO ¶Ë¿ÚÖĞ¶Ï,¾«È·µ½Ã¿¸öIO¿Ú£¬³õÊ¼»¯ºóÁ¢¼´Ê¹ÄÜ£¬eg: P0INTE  µÄ7¸öÎ»¶ÔÓ¦P0.0µ½P0.7
+   87           * ²Î    Êı£ºGPIO¶Ë¿Ú£¬I/O½á¹¹Ìå£¨¹Ü½ÅºÍÖĞ¶ÏÄ£Ê½ÅäÖÃ£©
+   88           * ·µ »Ø Öµ£ºÎŞ
+   89           * Ê±    ¼ä£º2024-11-18
+   90           * Èí¼ş°æ±¾£ºV1.0
+   91           **********************************************************************************/
+   92          u8 GPIO_INT_Config(u8 GPIO, GPIO_InitTypeDef *GPIOx)
+   93          {
+   94   1        if(GPIO > GPIO_P7)  return FAIL;                  //´íÎó
+   95   1        if(GPIOx->Mode > PxINT_MODE_HIGH) return FAIL;  //´íÎó
+   96   1        if(GPIO == GPIO_P0)
+   97   1        {
+   98   2          if(GPIOx->Mode == PxINT_MODE_Fall)    {P0IM1 &= ~(GPIOx->Pin),   P0IM0 &= ~(GPIOx->Pin);}  //ÏÂ½µÑØÖĞ¶Ï
+   99   2          if(GPIOx->Mode == PxINT_MODE_Rise)    {P0IM1 &= ~(GPIOx->Pin),   P0IM0 |=  (GPIOx->Pin);}  //ÉÏÉıÑØÖĞ¶Ï
+  100   2          if(GPIOx->Mode == PxINT_MODE_LOW)   {P0IM1 |=  (GPIOx->Pin),   P0IM0 &= ~(GPIOx->Pin);}  //µÍµçÆ½ÖĞ¶Ï
+  101   2          if(GPIOx->Mode == PxINT_MODE_HIGH)    {P0IM1 |=  (GPIOx->Pin),   P0IM0 |=  (GPIOx->Pin);}  //¸ßµãÆ½ÖĞ¶Ï
+  102   2              P0INTE |= GPIOx->Pin;        //Ê¹ÄÜP0.PinÖĞ¶Ï
+  103   2          }
+  104   1        if(GPIO == GPIO_P1)
+  105   1        {
+  106   2          if(GPIOx->Mode == PxINT_MODE_Fall)    {P1IM1 &= ~(GPIOx->Pin),   P1IM0 &= ~(GPIOx->Pin);}  //ÏÂ½µÑØÖĞ¶Ï
+  107   2          if(GPIOx->Mode == PxINT_MODE_Rise)    {P1IM1 &= ~(GPIOx->Pin),   P1IM0 |=  (GPIOx->Pin);}  //ÉÏÉıÑØÖĞ¶Ï
+  108   2          if(GPIOx->Mode == PxINT_MODE_LOW)   {P1IM1 |=  (GPIOx->Pin),   P1IM0 &= ~(GPIOx->Pin);}  //µÍµçÆ½ÖĞ¶Ï
+  109   2          if(GPIOx->Mode == PxINT_MODE_HIGH)    {P1IM1 |=  (GPIOx->Pin),   P1IM0 |=  (GPIOx->Pin);}  //¸ßµãÆ½ÖĞ¶Ï
+  110   2              P1INTE |= GPIOx->Pin;        //Ê¹ÄÜP1.PinÖĞ¶Ï
+  111   2        }
+  112   1        if(GPIO == GPIO_P2)
+C251 COMPILER V5.60.0,  LQ_XINT                                                            21/06/26  23:15:53  PAGE 3   
+
+  113   1        {
+  114   2          if(GPIOx->Mode == PxINT_MODE_Fall)    {P2IM1 &= ~(GPIOx->Pin),   P2IM0 &= ~(GPIOx->Pin);}  //ÏÂ½µÑØÖĞ¶Ï
+  115   2          if(GPIOx->Mode == PxINT_MODE_Rise)    {P2IM1 &= ~(GPIOx->Pin),   P2IM0 |=  (GPIOx->Pin);}  //ÉÏÉıÑØÖĞ¶Ï
+  116   2          if(GPIOx->Mode == PxINT_MODE_LOW)   {P2IM1 |=  (GPIOx->Pin),   P2IM0 &= ~(GPIOx->Pin);}  //µÍµçÆ½ÖĞ¶Ï
+  117   2          if(GPIOx->Mode == PxINT_MODE_HIGH)    {P2IM1 |=  (GPIOx->Pin),   P2IM0 |=  (GPIOx->Pin);}  //¸ßµãÆ½ÖĞ¶Ï
+  118   2              P2INTE |= GPIOx->Pin;        //Ê¹ÄÜP2.PinÖĞ¶Ï
+  119   2        }
+  120   1        if(GPIO == GPIO_P3)
+  121   1        {
+  122   2          if(GPIOx->Mode == PxINT_MODE_Fall)    {P3IM1 &= ~(GPIOx->Pin),   P3IM0 &= ~(GPIOx->Pin);}  //ÏÂ½µÑØÖĞ¶Ï
+  123   2          if(GPIOx->Mode == PxINT_MODE_Rise)    {P3IM1 &= ~(GPIOx->Pin),   P3IM0 |=  (GPIOx->Pin);}  //ÉÏÉıÑØÖĞ¶Ï
+  124   2          if(GPIOx->Mode == PxINT_MODE_LOW)   {P3IM1 |=  (GPIOx->Pin),   P3IM0 &= ~(GPIOx->Pin);}  //µÍµçÆ½ÖĞ¶Ï
+  125   2          if(GPIOx->Mode == PxINT_MODE_HIGH)    {P3IM1 |=  (GPIOx->Pin),   P3IM0 |=  (GPIOx->Pin);}  //¸ßµãÆ½ÖĞ¶Ï
+  126   2              P3INTE |= GPIOx->Pin;        //Ê¹ÄÜP3.PinÖĞ¶Ï
+  127   2        }
+  128   1        if(GPIO == GPIO_P4)
+  129   1        {
+  130   2          if(GPIOx->Mode == PxINT_MODE_Fall)    {P4IM1 &= ~(GPIOx->Pin),   P4IM0 &= ~(GPIOx->Pin);}  //ÏÂ½µÑØÖĞ¶Ï
+  131   2          if(GPIOx->Mode == PxINT_MODE_Rise)    {P4IM1 &= ~(GPIOx->Pin),   P4IM0 |=  (GPIOx->Pin);}  //ÉÏÉıÑØÖĞ¶Ï
+  132   2          if(GPIOx->Mode == PxINT_MODE_LOW)   {P4IM1 |=  (GPIOx->Pin),   P4IM0 &= ~(GPIOx->Pin);}  //µÍµçÆ½ÖĞ¶Ï
+  133   2          if(GPIOx->Mode == PxINT_MODE_HIGH)    {P4IM1 |=  (GPIOx->Pin),   P4IM0 |=  (GPIOx->Pin);}  //¸ßµãÆ½ÖĞ¶Ï
+  134   2              P4INTE |= GPIOx->Pin;        //Ê¹ÄÜP4.PinÖĞ¶Ï
+  135   2        }
+  136   1        if(GPIO == GPIO_P5)
+  137   1        {
+  138   2              if(GPIOx->Pin > 6||GPIOx->Pin > 7) return FAIL;  //AI8051U Ã»ÓĞP5.6  P5.7
+  139   2          if(GPIOx->Mode == PxINT_MODE_Fall)    {P5IM1 &= ~(GPIOx->Pin),   P5IM0 &= ~(GPIOx->Pin);}  //ÏÂ½µÑØÖĞ¶Ï
+  140   2          if(GPIOx->Mode == PxINT_MODE_Rise)    {P5IM1 &= ~(GPIOx->Pin),   P5IM0 |=  (GPIOx->Pin);}  //ÉÏÉıÑØÖĞ¶Ï
+  141   2          if(GPIOx->Mode == PxINT_MODE_LOW)   {P5IM1 |=  (GPIOx->Pin),   P5IM0 &= ~(GPIOx->Pin);}  //µÍµçÆ½ÖĞ¶Ï
+  142   2          if(GPIOx->Mode == PxINT_MODE_HIGH)    {P5IM1 |=  (GPIOx->Pin),   P5IM0 |=  (GPIOx->Pin);}  //¸ßµãÆ½ÖĞ¶Ï
+  143   2              P5INTE |= GPIOx->Pin;        //Ê¹ÄÜP5.PinÖĞ¶Ï
+  144   2        }
+  145   1          if(GPIO == GPIO_P6)
+  146   1        {
+  147   2          if(GPIOx->Mode == PxINT_MODE_Fall)    {P6IM1 &= ~(GPIOx->Pin),   P6IM0 &= ~(GPIOx->Pin);}  //ÏÂ½µÑØÖĞ¶Ï
+  148   2          if(GPIOx->Mode == PxINT_MODE_Rise)    {P6IM1 &= ~(GPIOx->Pin),   P6IM0 |=  (GPIOx->Pin);}  //ÉÏÉıÑØÖĞ¶Ï
+  149   2          if(GPIOx->Mode == PxINT_MODE_LOW)   {P6IM1 |=  (GPIOx->Pin),   P6IM0 &= ~(GPIOx->Pin);}  //µÍµçÆ½ÖĞ¶Ï
+  150   2          if(GPIOx->Mode == PxINT_MODE_HIGH)    {P6IM1 |=  (GPIOx->Pin),   P6IM0 |=  (GPIOx->Pin);}  //¸ßµãÆ½ÖĞ¶Ï
+  151   2              P6INTE |= GPIOx->Pin;        //Ê¹ÄÜP6.PinÖĞ¶Ï
+  152   2        }
+  153   1          if(GPIO == GPIO_P7)
+  154   1          {
+  155   2              if(GPIOx->Mode == PxINT_MODE_Fall)    {P7IM1 &= ~(GPIOx->Pin),   P7IM0 &= ~(GPIOx->Pin);}  //ÏÂ½µÑØ
+             -ÖĞ¶Ï
+  156   2              if(GPIOx->Mode == PxINT_MODE_Rise)    {P7IM1 &= ~(GPIOx->Pin),   P7IM0 |=  (GPIOx->Pin);}  //ÉÏÉıÑØ
+             -ÖĞ¶Ï
+  157   2              if(GPIOx->Mode == PxINT_MODE_LOW)   {P7IM1 |=  (GPIOx->Pin),   P7IM0 &= ~(GPIOx->Pin);}  //µÍµçÆ½Ö
+             -Ğ¶Ï
+  158   2              if(GPIOx->Mode == PxINT_MODE_HIGH)    {P7IM1 |=  (GPIOx->Pin),   P7IM0 |=  (GPIOx->Pin);}  //¸ßµãÆ½
+             -ÖĞ¶Ï
+  159   2              P7INTE |= GPIOx->Pin;        //Ê¹ÄÜP7.PinÖĞ¶Ï
+  160   2          }
+  161   1          return SUCCESS;         //³É¹¦
+  162   1      }
+  163          
+  164          
+  165          /***********************************************************************************
+  166           * º¯ Êı Ãû: NVIC_PxINT_Init
+  167           * Ãè    Êö: PxINTÇ¶Ì×ÏòÁ¿ÖĞ¶Ï¿ØÖÆÆ÷³õÊ¼»¯.
+  168           * ²Î    Êı: Priority: ÖĞ¶ÏÓÅÏÈ¼¶, Priority_0,Priority_1,Priority_2,Priority_3.
+  169           * ·µ    »Ø: Ö´ĞĞ½á¹û SUCCESS/FAIL.
+  170           * °æ    ±¾: V1.0, 2024-11-20
+  171           **********************************************************************************/
+  172          u8 NVIC_PxINT_Init(u8 GPIO_Px, u8 Priority)
+  173          {
+  174   1          if(GPIO_Px > GPIO_P7)   return FAIL;
+C251 COMPILER V5.60.0,  LQ_XINT                                                            21/06/26  23:15:53  PAGE 4   
+
+  175   1          if(Priority > Priority_3) return FAIL;
+  176   1          //Px¶Ë¿ÚµÄÖĞ¶ÏÓÅÏÈ¼¶
+  177   1      
+  178   1          if(0 == Priority) PINIPH &= ~(0x01<<GPIO_Px), PINIPL &= ~(0x01<<GPIO_Px);
+  179   1          if(1 == Priority) PINIPH &= ~(0x01<<GPIO_Px), PINIPL |=  (0x01<<GPIO_Px);
+  180   1        if(2 == Priority) PINIPH |=  (0x01<<GPIO_Px), PINIPL &= ~(0x01<<GPIO_Px);
+  181   1        if(3 == Priority) PINIPH |=  (0x01<<GPIO_Px), PINIPL |=  (0x01<<GPIO_Px);
+  182   1      
+  183   1        return SUCCESS;
+  184   1      }
+  185          
+  186          
+  187          /***********************************************************************************
+  188           * º¯ Êı Ãû£ºGPIO_PxINT_Init(Pin_list Pinx, GPIO_INT_Mode_e INT_Mode,u8 Priority_n)
+  189           * ¹¦    ÄÜ£ºIO¶Ë¿ÚÖĞ¶Ï£¬³õÊ¼»¯£¬ÉèÖÃÖĞ¶ÏIO£¬ÒÔ¼°ÖĞ¶ÏÄ£Ê½¡¢¶Ë¿ÚÓÅÏÈ¼¶µÈ
+  190           * ²Î    Êı£ºPinx - Òª³õÊ¼»¯µÄIO¶Ë¿Ú£»INT_Mode - ÖĞ¶ÏÄ£Ê½£»Priority_n - ÖĞ¶ÏÓÅÏÈ¼¶
+  191           * ·µ »Ø Öµ£ºÎŞ
+  192           * Ëµ    Ã÷£ºAI8051U»òSTC32GÖ§³ÖËùÓĞÆÕÍ¨I/O¿ÉÖĞ¶Ï£¬ÇĞ¼ÇĞèÒªÊÖ¶¯Çå³ıÖĞ¶Ï±êÖ¾Î»£¨Ïê¼ûÖĞ¶Ï·şÎñº¯Êı£©
+  193           * Àı    ×Ó£ºGPIO_PxINT_Init(P0_0,PxINT_MODE_Fall,Priority_0); //P0.0 ÏÂ½µÑØ´¥·¢ÖĞ¶Ï£¬ÓÅÏÈ¼¶Îª0
+  194           **********************************************************************************/
+  195          void GPIO_PxINT_Init(Pin_list Pinx, GPIO_INT_Mode_e INT_Mode,u8 Priority_n)
+  196          {
+  197   1          GPIO_InitTypeDef  GPIO_PxINT_Structure;
+  198   1          u8  GPIO_Port = GPIO_Get_Port(Pinx);
+  199   1          switch (INT_Mode)
+  200   1          {
+  201   2          case PxINT_MODE_Fall:gpio_init_pin(Pinx,GPIO_Mode_IPU);   //ÏÂ½µÑØ´¥·¢ÖĞ¶Ï,IO³õÊ¼»¯ÎªÉÏÀ­ÊäÈëÄ£Ê½
+  202   2              break;
+  203   2          case PxINT_MODE_Rise:gpio_init_pin(Pinx,GPIO_Mode_IPD);   //ÉÏÉıÑØ´¥·¢ÖĞ¶Ï,IO³õÊ¼»¯ÎªÏÂÀ­ÊäÈëÄ£Ê½
+  204   2              break;
+  205   2          case PxINT_MODE_LOW:gpio_init_pin(Pinx,GPIO_Mode_IPU);    //µÍµçÆ½´¥·¢ÖĞ¶Ï,IO³õÊ¼»¯ÎªÉÏÀ­ÊäÈëÄ£Ê½
+  206   2              break;
+  207   2          case PxINT_MODE_HIGH:gpio_init_pin(Pinx,GPIO_Mode_IPD);   //¸ßµçÆ½´¥·¢ÖĞ¶Ï,IO³õÊ¼»¯ÎªÏÂÀ­ÊäÈëÄ£Ê½
+  208   2              break;
+  209   2          }
+  210   1          GPIO_PxINT_Structure.Pin  = (0x01 << GPIO_Get_Pin(Pinx));                 //Òª³õÊ¼»¯µÄI/O  eg: GPIO_P
+             -in_0|GPIO_Pin_2;
+  211   1          GPIO_PxINT_Structure.Mode = INT_Mode;                 //³õÊ¼»¯µÄI/O Ä£Ê½ ÏÂ½µÑØ´¥·¢ÖĞ¶Ï
+  212   1          GPIO_INT_Config(GPIO_Port,&GPIO_PxINT_Structure);      //³õÊ¼»¯¹Ü½ÅÖĞ¶ÏÄ£Ê½ĞĞ ²¢ >Ê¹ÄÜ< Æä¹Ü½ÅÖĞ¶Ï£¡£
+             -¡£¡
+  213   1          NVIC_PxINT_Init(GPIO_Port,Priority_n);                //ÖĞ¶ÏÓÅÏÈ¼¶ÅäÖÃ,¶ÔÏóÊÇ¶Ë¿Ú PO_INT_Priority(Pri
+             -ority_0)£»
+  214   1      }
+  215          
+  216          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      2280     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------          5
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

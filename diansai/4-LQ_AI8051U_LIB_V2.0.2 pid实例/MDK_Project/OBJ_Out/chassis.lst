@@ -1,0 +1,650 @@
+C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE chassis
+OBJECT MODULE PLACED IN .\OBJ_Out\chassis.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\UserCode\APP\chassis.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDI
+                    -R(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserC
+                    -ode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\chassis.lst) TABS(2) OBJECT(.\OB
+                    -J_Out\chassis.obj) 
+
+stmt  level    source
+
+    1          #include "chassis.h"
+    2          #include "inductance.h"
+    3          #include "motor.h"
+    4          #include "LQ_Encoder.h"
+    5          #include "LQ_LSM6DSR_Hard.h"
+    6          
+    7          // 设定单节 3.3V (总压 9.9V) 的极限死亡线阈值
+    8          #define BAT_SAFE_ADC_THRESHOLD  2240
+    9          // ==========================================
+   10          // 🌟 物理标定常数 (根据实际测试结果设定)
+   11          // ==========================================
+   12          #define ROUNDABOUT_ZONE_MIN  600000  // ���뱽��Ԥ���� (��ǰһ������)
+   13          #define ROUNDABOUT_ZONE_MAX  900000 // �뿪����Ԥ���� (���껷���󳹵ױ���)
+   14          #define PITCH_THRESHOLD  1500
+   15          // 距离标定：1m ≈ 64000 
+   16          #define LOOP_ENTRY_DIST  15000  // 入环前盲开距离 (约 0.5m)，如果进环太早，可增大此�
+             -�
+   17          #define LOOP_IN_DIST 13000
+   18          #define LOOP_COOLDOWN_DIST  12000 // 出环后的冷却距离 (约 30cm, 64000*0.3)
+   19          // 角度标定：1° ≈ 14.21
+   20          #define LOOP_EXIT_ANGLE  5300   // 环岛出口触发角度g (约 310°)
+   21          #define LOOP_IN_ANGLE  600   // 环岛入口触发角度 (约 30°)
+   22          #define LOOP_EXIT_EXTRA_ANGLE  420   // 出环额外要求的 30° 旋转
+   23          Chassis_TypeDef chassis;
+   24          IMU_Data_t imu_data; // 实例化全局缓存变量
+   25          int16 direction_output;          // 内环输出：最终给车轮的差速修正量
+   26          int16 actual_yaw_rate;            // 内环输入：真实的偏航角速度
+   27          int16 current_adc;
+   28          int16 target_yaw_rate = 0;
+   29          int set_angle_calculation = 0;
+   30          RoundaboutState_e loop_state = LOOP_NORMAL;
+   31          LoopType_e loop_type = LOOP_NONE;
+   32          
+   33          double car_angle = 0.0f;       // 车辆绝对角度
+   34          /**
+   35           * @brief 底盘初始化
+   36           * 初始化底盘结构体中的速度和目标偏差变量
+   37           */
+   38          void Chassis_Init(void)
+   39          {
+   40   1          chassis.target_speed = 300;       // 初始化目标速度为100   max : 1100
+   41   1          chassis.current_deviation = 0;  // 初始化当前偏差为0
+   42   1          chassis.left_speed = 0;         // 初始化左轮速度为0
+   43   1          chassis.right_speed = 0;        // 初始化右轮速度为0
+   44   1      }
+   45          
+   46          void Clear_Car_Angle(void)
+   47          {
+   48   1        car_angle = 0.0f;
+   49   1      }
+   50          
+   51          /**
+   52           * @brief 电池低压保护监控任务
+   53           * 建议放在 2ms 的 Timer1 中断中执行
+   54           */
+   55          void Battery_Protection_Task(void)
+C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 2   
+
+   56          {
+   57   1          static uint16 low_vol_timer = 0;
+   58   1          
+   59   1          // 1. 直接读取原始 ADC 值 (无需消耗算力转换成浮点电压)
+   60   1          current_adc = Get_ADCResult(ADC_CH9_P01);
+   61   1          
+   62   1          if(stop_flag == 1) return;
+   63   1          // 2. 检测是否低于警戒线
+   64   1          if (current_adc < BAT_SAFE_ADC_THRESHOLD) 
+   65   1          {
+   66   2              low_vol_timer++;
+   67   2              
+   68   2              // 3. 时间滤波（防抖）：2ms * 500 = 1秒
+   69   2              // 防止电机瞬间加速抽血导致的误判
+   70   2              if (low_vol_timer >= 500) 
+   71   2              {
+   72   3                  stop_flag = 1;  // 触发全局急停
+   73   3              }
+   74   2          }
+   75   1          else 
+   76   1          {
+   77   2              // 电压弹回安全线以上，清零计时器
+   78   2              low_vol_timer = 0;
+   79   2          }
+   80   1      }
+   81          /**
+   82           * @brief 统一更新 IMU 全部 6 轴数据
+   83           * 建议在控制主循环 (2ms) 的最开头调用一次即可
+   84           */
+   85          void IMU_Update(void)
+   86          {
+   87   1      #ifdef HARDWARE_SPI
+   88   1          LSM6DSR_Read_Data(&imu_data.ax, &imu_data.ay, &imu_data.az, &imu_data.gx, &imu_data.gy, &imu_data.gz)
+             -;
+   89   1      #elif defined HARDWARE_IIC
+                   LQ_HARD_IIC_LSM60DSR_Read(&imu_data.ax, &imu_data.ay, &imu_data.az, &imu_data.gx, &imu_data.gy, &imu_
+             -data.gz);
+               #else
+                   imu_data.gy = 0; 
+                   imu_data.gz = 0; 
+               #endif
+   95   1      }
+   96          
+   97          /**
+   98           * @brief 获取陀螺仪Z轴角速度 (偏航角速度)
+   99           * @return int16 Z轴原始角速度数据
+  100           */
+  101          int16 Get_Yaw_Rate(void)
+  102          {
+  103   1          int16 ax, ay, az, gx, gy, gz;
+  104   1          
+  105   1          // 调用底层函数读取6轴数据
+  106   1          // 注意：传入的是变量的地址(&)，底层函数会把读到的值放进这些变量里
+  107   1      #ifdef HARDWARE_SPI
+  108   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
+  109   1      #elif defined HARDWARE_IIC
+                   LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
+               #else
+                   // 如果都没有定义，默认给0防止报错，请检查你的工程宏定义
+                   gz = 0; 
+               #endif
+  115   1      
+  116   1          // 我们只需要 Z轴的角速度 (Gyro Z)
+  117   1          return gz; 
+  118   1      }
+  119          
+C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 3   
+
+  120          /**
+  121           * @brief 获取陀螺仪Y轴角速度 (通常为俯仰或横滚角速度，取决于安装方向)
+  122           * @return int16 Y轴原始角速度数据
+  123           */
+  124          int16 Get_Pitch_Rate(void)
+  125          {
+  126   1          int16 ax, ay, az, gx, gy, gz;
+  127   1          
+  128   1          // 调用底层函数读取6轴数据
+  129   1          // 注意：传入的是变量的地址(&)，底层函数会把读到的值放进这些变量里
+  130   1      #ifdef HARDWARE_SPI
+  131   1          LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
+  132   1      #elif defined HARDWARE_IIC
+                   LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
+               #else
+                   // 如果都没有定义，默认给0防止报错，请检查你的工程宏定义
+                   gy = 0;  // 🌟 注意这里改成了给 gy 赋默认值
+               #endif
+  138   1      
+  139   1          // 我们只需要 Y轴的角速度 (Gyro Y)
+  140   1          return gy; 
+  141   1      }
+  142          
+  143          ///**
+  144          // * @brief 计算循迹偏差
+  145          // * 使用差比和算法计算车辆偏离中心线的程度
+  146          // * 公式：( (左感+左感) - (右感+右感) ) / (总电感 + 补偿值) * 100
+  147          // * @return int 归一化后的偏差值，范围 -100 到 100
+  148          // */
+  149          //int Calculate_Deviation(void) 
+  150          //{
+  151          //    // 获取电感ADC数组指针 (假设顺序为: 左外, 左内, 中, 右内, 右外)
+  152          //    int* adc_values = GetInductance();
+  153          //    
+  154          //    // 计算左右两侧电感值的差值 (分子)，反映偏向哪一侧
+  155          //    int eleSub = (adc_values[0] + adc_values[1]) - (adc_values[3] + adc_values[4]);
+  156          //    
+  157          //    // 计算所有电感值的总和 (分母)，+10是为了防止分母为0导致除零错误
+  158          //    // 使用“差比和”可以消除由于速度变化导致的磁场强度整体变化影响
+  159          //    int eleAdd = adc_values[0] + adc_values[1] + adc_values[2] + adc_values[3] + adc_values[4] + 10;
+  160          //  
+  161          //    // 计算归一化偏差值
+  162          //    float eleValue = (float)eleSub / (float)eleAdd * 100.0f;
+  163          //  
+  164          //    static uint16 off_track_timer = 0;   // 丢线持续时间计数器
+  165          //    if(stop_flag == 1) return 0;
+  166          //  
+  167          //    if(eleAdd < 20.0)
+  168          //    {
+  169          //      off_track_timer++;
+  170          //      if(off_track_timer >= 250) stop_flag = 1;
+  171          //    }
+  172          //    else
+  173          //    {
+  174          //      off_track_timer = 0;
+  175          //    }
+  176          //    
+  177          //    // 限幅处理：将偏差值限制在 -100 到 100 之间
+  178          //    if(eleValue > 100.0f) eleValue = 100.0f;
+  179          //    else if(eleValue < -100.0f) eleValue = -100.0f;
+  180          
+  181          //    // 转换为整型返回给控制层
+  182          //    return (int)(eleValue);
+  183          //}
+  184          
+  185          /**
+C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 4   
+
+  186           * @brief 计算循迹偏差
+  187           * 根据苯环状态机，动态切换差比和权重，欺骗 PID 做出特定转向动作
+  188           */
+  189          int Calculate_Deviation(void) 
+  190          {
+  191   1          int* adc = GetInductance(); // 简化指针名称，方便书写
+  192   1          float eleSub = 0;
+  193   1          float eleAdd = 0;
+  194   1          float eleValue = 0;
+  195   1          static uint16 off_track_timer = 0;
+  196   1      
+  197   1          if(stop_flag == 1) return 0;
+  198   1      
+  199   1          // =========================================================================
+  200   1          // 🌟 核心控制层：状态机多路复用权重分配
+  201   1          // =========================================================================
+  202   1          if (loop_state == LOOP_NORMAL)
+  203   1          {
+  204   2              // 【正常巡线】原汁原味的差比和
+  205   2              eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
+  206   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
+  207   2          }
+  208   1          else if (loop_state == LOOP_APPROACH)
+  209   1          {
+  210   2              // 【逼近阶段】屏蔽最外侧电感 (adc[0]和adc[3])，防止被侧边圆环的磁场提�
+             -��“吸”偏
+  211   2              eleSub = adc[1] - adc[4];
+  212   2      //        eleAdd = adc[1] + adc[2] + adc[4] + 10;
+  213   2      //          eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
+  214   2                eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
+  215   2          }
+  216   1          else if (loop_state == LOOP_TURN_IN)
+  217   1          {
+  218   2              // 【强制入环】制造巨大假偏差，瞬间拉满 PID！
+  219   2              if (loop_type == LOOP_RIGHT)
+  220   2              {
+  221   3                  // 进左环：极度削弱左侧，放大右侧。制造“严重偏右”的假象，强迫
+             -车猛向左打死！
+  222   3                  eleSub = (0.2f * adc[0] + 0.5f * adc[1]) - (1.8f * adc[3] + 1.5f * adc[4]);
+  223   3              }
+  224   2              else if (loop_type == LOOP_LEFT)
+  225   2              {
+  226   3                  // 进右环：极度放大左侧，削弱右侧。制造“严重偏左”的假象，强迫
+             -车猛向右打死！
+  227   3                  eleSub = (1.8f * adc[0] + 1.5f * adc[1]) - (0.2f * adc[3] + 0.5f * adc[4]);
+  228   3              }
+  229   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
+  230   2          }
+  231   1          else if (loop_state == LOOP_IN_LOOP)
+  232   1          {
+  233   2              // 【环内巡线】微调权重，防止被离心力甩出
+  234   2      //        if (loop_type == LOOP_RIGHT)
+  235   2      //        {
+  236   2      //            // 左环内，适度放大右侧，让车有持续向左靠拢（贴内侧）的趋势
+  237   2      //            eleSub = (0.8f * adc[0] + 0.8f * adc[1]) - (1.2f * adc[3] + 1.2f * adc[4]);
+  238   2      //        }
+  239   2      //        else 
+  240   2      //        {
+  241   2      //            // 右环内，适度放大左侧，让车有持续向右靠拢的趋势
+  242   2      //            eleSub = (1.2f * adc[0] + 1.2f * adc[1]) - (0.8f * adc[3] + 0.8f * adc[4]);
+  243   2      //        }
+  244   2              eleSub = (adc[0] + adc[1]) - (adc[3] + adc[4]);
+  245   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
+  246   2          }
+  247   1          else if (loop_state == LOOP_EXITING)
+  248   1          {
+C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 5   
+
+  249   2              // 【强制出环】反向拉扯，把车头强制拽出圆环
+  250   2              if (loop_type == LOOP_RIGHT)
+  251   2              {
+  252   3                  // 左环出环：放大左侧权重，送给 PID 正偏差，强迫车头向右转（拉直�
+             -��环）
+  253   3                  eleSub = (1.5f * adc[0] + 1.5f * adc[1]) - (0.5f * adc[3] + 0.5f * adc[4]);
+  254   3              }
+  255   2              else 
+  256   2              {
+  257   3                  // 右环出环：放大右侧权重，强迫车头向左转
+  258   3                  eleSub = (0.5f * adc[0] + 0.5f * adc[1]) - (1.5f * adc[3] + 1.5f * adc[4]);
+  259   3              }
+  260   2              eleAdd = adc[0] + adc[1] + adc[2] + adc[3] + adc[4] + 10;
+  261   2          }
+  262   1          // =========================================================================
+  263   1      
+  264   1          // 丢线保护逻辑 (保持原样不动)
+  265   1          if(eleAdd < 20.0)
+  266   1          {
+  267   2              off_track_timer++;
+  268   2              if(off_track_timer >= 250) stop_flag = 1;
+  269   2          }
+  270   1          else
+  271   1          {
+  272   2              off_track_timer = 0;
+  273   2          }
+  274   1      
+  275   1          // 归一化偏差值计算
+  276   1          eleValue = (float)eleSub / (float)eleAdd * 100.0f;
+  277   1      
+  278   1          // 限幅处理：将偏差值限制在 -100 到 100 之间
+  279   1          if(eleValue > 100.0f) eleValue = 100.0f;
+  280   1          else if(eleValue < -100.0f) eleValue = -100.0f;
+  281   1      
+  282   1          // 转换为整型返回给控制层
+  283   1          return (int)(eleValue);
+  284   1      }
+  285          
+  286          
+  287          /**
+  288           * @brief 动态角速度阶跃测试序列 (状态机)
+  289           * @note 依赖 Timer1 的 2ms 周期。500次 tick = 1秒。
+  290           */
+  291          void Dynamic_Yaw_Test_Task(void)
+  292          {
+  293   1          static uint16 time_tick = 0;   // 时间计数器
+  294   1          static uint8 current_stage = 0; // 当前所处的测试阶段
+  295   1      
+  296   1          // 1. 如果车子处于急停/未发车状态，重置测试进度
+  297   1          if (stop_flag == 1) 
+  298   1          {
+  299   2              time_tick = 0;
+  300   2              current_stage = 0;
+  301   2              target_yaw_rate = 0;
+  302   2              return;
+  303   2          }
+  304   1      
+  305   1          // 2. 车子启动后，开始计时 (2ms 进一次)
+  306   1          time_tick++;
+  307   1      
+  308   1          // 3. 设定每个阶段持续的时间：例如 1.5 秒 (750 ticks) 切换一次状态
+  309   1          if (time_tick >= 2500) 
+  310   1          {
+  311   2              time_tick = 0;       // 清零计时器
+  312   2              current_stage++;     // 进入下一个测试阶段
+  313   2          }
+C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 6   
+
+  314   1      
+  315   1          // 4. 执行状态机序列
+  316   1          switch (current_stage)
+  317   1          {
+  318   2              case 0: target_yaw_rate = 4000;  break;  // 阶段0：正转 3000
+  319   2              case 1: target_yaw_rate = -4000; break;  // 阶段1：反转 3000
+  320   2              case 2: target_yaw_rate = 7000;  break;  // 阶段2：正转 4000
+  321   2             case 3: target_yaw_rate = -7000; break;  // 阶段3：反转 4000
+  322   2      //        case 4: target_yaw_rate = 8500;  break;  // 阶段4：正转 5000
+  323   2      //        case 5: target_yaw_rate = 5500; break;  // 阶段5：反转 5000
+  324   2      //        case 6: target_yaw_rate = 6000;  break;  // 阶段6：正转 6000
+  325   2      //        case 7: target_yaw_rate = -6000; break;  // 阶段7：反转 6000
+  326   2      //      case 8: target_yaw_rate = 9000;break;
+  327   2      //      case 9: target_yaw_rate = -9000;break;
+  328   2      //      case 10:target_yaw_rate = 10000;break;
+  329   2      //      case 11:target_yaw_rate = -10000;break;
+  330   2              default:
+  331   2                  // 测试结束：归零并强行触发停车保护
+  332   2                  target_yaw_rate = 0;
+  333   2                  stop_flag = 1; 
+  334   2                  break;
+  335   2          }
+  336   1      }
+  337          
+  338          void Roundabout_Detect_Task(void)
+  339          {
+  340   1          int* adc = GetInductance(); // 0:左外, 1:左内, 2:中, 3:右内, 4:右外
+  341   1          int16 pitch = imu_data.gy;
+  342   1          static uint16 state_timer = 0;
+  343   1          static uint16 timeout_counter = 0; // 🌟 新增：超时保护计数器
+  344   1          
+  345   1          switch(loop_state)
+  346   1          {
+  347   2              case LOOP_NORMAL:
+  348   2                
+  349   2              if (global_distance < ROUNDABOUT_ZONE_MIN || global_distance > ROUNDABOUT_ZONE_MAX)
+  350   2                  {
+  351   3                      // ���ڱ�������ǿ�ƹ���������ؼ�ʱ������ֱ��������������ѭ����
+  352   3                      state_timer = 0;
+  353   3                      break; 
+  354   3                  }
+  355   2          // 🌟 识别左环
+  356   2              if (set_distance_calculation == 1 && car_distance < LOOP_COOLDOWN_DIST)
+  357   2                  {
+  358   3                      // 还在冷却期内，什么都不做
+  359   3                      state_timer = 0;
+  360   3                      break; 
+  361   3                  }
+  362   2              else if (set_distance_calculation == 1 && car_distance >= LOOP_COOLDOWN_DIST)
+  363   2                  {
+  364   3                      // 跑够了冷却距离，关闭距离积分，恢复正常寻找状态
+  365   3                      set_distance_calculation = 0; 
+  366   3                  }
+  367   2              if(adc[2] > 90 && ((adc[0] > 80 )|| adc[3] > 80) && abs(pitch) < PITCH_THRESHOLD)     //(adc[0] + adc[1
+             -]) - (adc[3] + adc[4]) > 30   (adc[0] + adc[1]) - (adc[3] + adc[4]) > 15  abs(pitch) < PITCH_THRESHOLD
+  368   2              {
+  369   3                  state_timer++;
+  370   3                  if(state_timer >= 2) // 20ms 防抖
+  371   3                  {
+  372   4                      loop_state = LOOP_APPROACH;
+  373   4                      loop_type = LOOP_NONE;
+  374   4                      Clear_Car_Distance(); // 距离清零，开始盲开计步
+  375   4                      set_distance_calculation = 1;  //开启位置计算
+  376   4                      state_timer = 0;
+  377   4                      timeout_counter = 0; // 清零超时计数
+  378   4                  }
+C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 7   
+
+  379   3              }
+  380   2          // 🌟 识别右环 (必须加 else if！)
+  381   2      //        else if(adc[2] > 90 && adc[3] > 70  && (adc[4] + adc[3]) - (adc[0] + adc[1]) > 10)    //(adc[4] + adc
+             -[3]) - (adc[0] + adc[1]) > 25   (adc[4] + adc[3]) - (adc[0] + adc[1]) > 15
+  382   2      //        {
+  383   2      //            state_timer++;
+  384   2      //            if(state_timer >= 1) // 20ms 防抖
+  385   2      //            {
+  386   2      //                loop_state = LOOP_APPROACH;
+  387   2      //                loop_type = LOOP_RIGHT;
+  388   2      //                Clear_Car_Distance(); // 距离清零，开始盲开计步
+  389   2      //                set_distance_calculation = 1;  //开启距离积分
+  390   2      //                state_timer = 0;
+  391   2      //                timeout_counter = 0; // 清零超时计数
+  392   2      //            }
+  393   2      //        }
+  394   2          // 🌟 如果都不满足，才清零防抖计时器
+  395   2              else 
+  396   2              { 
+  397   3                  state_timer = 0;
+  398   3              }
+  399   2              break;
+  400   2      
+  401   2              case LOOP_APPROACH:
+  402   2                  // 等待车头逼近入环点（靠里程积分判断）
+  403   2                  timeout_counter++;
+  404   2                  if(car_distance >= LOOP_ENTRY_DIST && adc[2] > 70 &&(adc[0] > 60 || adc[3] > 60)) 
+  405   2                  {
+  406   3                      
+  407   3                      if ((adc[0] + adc[1]) >= (adc[3] + adc[4])) 
+  408   3                      {
+  409   4                          loop_type = LOOP_LEFT;  // 左边能量大，确认是左环
+  410   4                      }
+  411   3                      else if((adc[0] + adc[1])< (adc[3] + adc[4]))
+  412   3                      {
+  413   4                          loop_type = LOOP_RIGHT; // 右边能量大，确认是右环
+  414   4                      }
+  415   3                      
+  416   3                      loop_state = LOOP_TURN_IN;
+  417   3                      Clear_Car_Distance();
+  418   3                      Clear_Car_Angle(); // 🌟 角度清零，准备入环测角度！
+  419   3                      set_angle_calculation = 1;
+  420   3                      set_distance_calculation = 1;
+  421   3                      timeout_counter = 0; // 🌟 状态切换，清零超时计数
+  422   3                  }
+  423   2      //            else if (timeout_counter > 500)
+  424   2      //            {
+  425   2      //                loop_state = LOOP_NORMAL;
+  426   2      //                loop_type = LOOP_NONE;
+  427   2      //                set_distance_calculation = 0;
+  428   2      //                set_angle_calculation = 0;
+  429   2      //            }
+  430   2                  break;
+  431   2      
+  432   2              case LOOP_TURN_IN:
+  433   2                  // 入环一定时间，或者侧边电感回落，认为已进环
+  434   2                  timeout_counter++;
+  435   2                  if(car_angle > LOOP_IN_ANGLE && adc[2] < 60 && car_distance > LOOP_IN_DIST)
+  436   2                  {
+  437   3                      loop_state = LOOP_IN_LOOP;
+  438   3                    
+  439   3                    // 🌟 极其重要：为下一个阶段 (IN_LOOP) 准备干净的战场！
+  440   3                      Clear_Car_Angle();    // 清零，因为 IN_LOOP 需要重新从 0 算到 310 度来判�
+             -�出口
+  441   3                      Clear_Car_Distance(); // 如果你 IN_LOOP 里不用距离，清不清无所谓，保险�
+             -��见清掉
+C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 8   
+
+  442   3                      
+  443   3                      // IN_LOOP 只需要测角度，不需要测距离了
+  444   3                      set_distance_calculation = 0; 
+  445   3                      set_angle_calculation = 1;
+  446   3                      timeout_counter = 0; // 🌟 状态切换，清零超时计数
+  447   3                  }
+  448   2      //            else if (timeout_counter > 300)
+  449   2      //            {
+  450   2      //                loop_state = LOOP_NORMAL;
+  451   2      //                loop_type = LOOP_NONE;
+  452   2      //                set_distance_calculation = 0;
+  453   2      //                set_angle_calculation = 0;
+  454   2      //            }
+  455   2                  break;
+  456   2      
+  457   2              case LOOP_IN_LOOP:
+  458   2                timeout_counter++; // 🌟 开始计时
+  459   2                  // 在环内，绝对不能看电感，只看陀螺仪角度积分！
+  460   2                  // 转够了 300 度，认为到了出口
+  461   2                  if(abs((int)car_angle) > LOOP_EXIT_ANGLE)
+  462   2                  {
+  463   3                      loop_state = LOOP_EXITING;
+  464   3                      // 🌟 极其关键：将角度清零！让 EXITING 阶段重新从 0 开始测那 30°！
+  465   3                      Clear_Car_Angle(); 
+  466   3                      set_angle_calculation = 1; // 保持角度积分开启
+  467   3                      timeout_counter = 0; // 🌟 状态切换，清零超时计数
+  468   3                  }
+  469   2      //            else if (timeout_counter > 700)
+  470   2      //            {
+  471   2      //                loop_state = LOOP_NORMAL;
+  472   2      //                loop_type = LOOP_NONE;
+  473   2      //                set_distance_calculation = 0;
+  474   2      //                set_angle_calculation = 0;
+  475   2      //            }
+  476   2                  break;
+  477   2      
+  478   2              case LOOP_EXITING:
+  479   2                  timeout_counter++; // 🌟 开始计时
+  480   2                  // 车身回正，电感恢复正常水平
+  481   2                  if(abs((int)car_angle) > LOOP_EXIT_EXTRA_ANGLE)
+  482   2                  {
+  483   3                      // 🌟 2. 角度转够了，再看车身有没有回正 (电感恢复平直)
+  484   3                      if(adc[2] < 80 && adc[0] < 60 && adc[3] < 60)
+  485   3                      {
+  486   4                          state_timer++;
+  487   4                          if(state_timer >= 1) // 20ms 防抖
+  488   4                          {
+  489   5                              // ✅ 出环大获全胜！
+  490   5                              loop_state = LOOP_NORMAL;
+  491   5                              loop_type = LOOP_NONE;
+  492   5                              state_timer = 0;
+  493   5                              timeout_counter = 0; // 🌟 开始计时
+  494   5                              // 🌟 开启出环“冷却期”：关闭角度，开启距离，重置清零
+  495   5                              set_angle_calculation = 0; // 彻底关闭角度积分，防溢出
+  496   5                              Clear_Car_Angle();
+  497   5                              Clear_Car_Distance();
+  498   5                              set_distance_calculation = 1; // 开启距离，为 NORMAL 里的冷却期测距�
+             -��
+  499   5                          }
+  500   4                      }
+  501   3                      else { state_timer = 0; }
+  502   3                  }
+  503   2                  
+  504   2      //            if (timeout_counter > 300)
+  505   2      //            {
+  506   2      //                loop_state = LOOP_NORMAL;
+C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 9   
+
+  507   2      //                loop_type = LOOP_NONE;
+  508   2      //                set_distance_calculation = 0;
+  509   2      //                set_angle_calculation = 0;
+  510   2      //                state_timer = 0;
+  511   2      //            }
+  512   2                  break;
+  513   2          }
+  514   1      }
+  515          
+  516          /**
+  517           * @brief 底盘闭环控制
+  518           * 获取偏差并输入方向PID，计算差速输出
+  519           */
+  520          void Chassis_Control(void)
+  521          {
+  522   1          const PID_TypeDef *direction_pid; //外环：赛道偏差PID  
+  523   1          const PID_TypeDef *yaw_rate_pid;  // 内环：角速度PID (输出最终差速)
+  524   1          static uint8 outer_loop_timer = 0;
+  525   1          float k = 0;
+  526   1          //获取方向环PID控制器句柄和偏航角速度环PID句柄
+  527   1          direction_pid = PID_GetController(PID_DIRECTION);
+  528   1          yaw_rate_pid = PID_GetController(PID_YAW_RATE); // 新增！获取第4组PID
+  529   1        
+  530   1          IMU_Update();
+  531   1        
+  532   1          //电池保护
+  533   1          Battery_Protection_Task();
+  534   1          /*角速度环测试*/
+  535   1      //    Dynamic_Yaw_Test_Task();
+  536   1        
+  537   1          outer_loop_timer++;
+  538   1          if(outer_loop_timer >= 3) 
+  539   1          {
+  540   2              outer_loop_timer = 0;
+  541   2              
+  542   2              chassis.current_deviation = Calculate_Deviation();
+  543   2              // 外环算出力矩，更新 direction_output
+  544   2              target_yaw_rate = PID_CascadePosition((PID_TypeDef *)direction_pid, chassis.current_deviation, 0)
+             -;
+  545   2          }
+  546   1          //读取当前的偏航角速度
+  547   1          actual_yaw_rate = imu_data.gz;
+  548   1          if(set_angle_calculation)
+  549   1          {
+  550   2            if (abs(actual_yaw_rate) > 20) 
+  551   2              {
+  552   3                  car_angle += abs((double)actual_yaw_rate) * 0.002f;
+  553   3              }
+  554   2          }
+  555   1          direction_output = PID_CascadePosition((PID_TypeDef *)yaw_rate_pid, actual_yaw_rate, -target_yaw_rate);
+  556   1      //      direction_output = 0;
+  557   1          
+  558   1      
+  559   1          k = direction_output * 0.01;
+  560   1          if(k >= 0)
+  561   1          {
+  562   2            k = k > 0.65 ? 0.65 : k;
+  563   2          }
+  564   1          else
+  565   1          {
+  566   2            k = k < -0.65 ? -0.65 : k;
+  567   2          }
+  568   1          if(k >= 0)
+  569   1          {
+  570   2            chassis.left_speed  = chassis.target_speed * (1 - k);
+  571   2            chassis.right_speed = chassis.target_speed * (1 + k * 0.2);
+C251 COMPILER V5.60.0,  chassis                                                            22/06/26  17:22:33  PAGE 10  
+
+  572   2          }
+  573   1          else
+  574   1          {
+  575   2            k *= -1;
+  576   2            chassis.left_speed  = chassis.target_speed * (1 + k * 0.2);
+  577   2            chassis.right_speed = chassis.target_speed * (1 - k);
+  578   2          }
+  579   1      //    chassis.left_speed  = chassis.target_speed - direction_output;
+  580   1      //    chassis.right_speed = chassis.target_speed + direction_output;
+  581   1          //执行电机控制
+  582   1          Motor_Control(chassis.left_speed, chassis.right_speed);
+  583   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      2391     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        54         28
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        76     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

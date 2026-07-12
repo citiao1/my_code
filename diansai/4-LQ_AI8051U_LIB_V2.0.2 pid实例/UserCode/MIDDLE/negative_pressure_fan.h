@@ -1,0 +1,4 @@
+#ifndef __NEGATIVE_PRESSURE_FAN_H_
+#define __NEGATIVE_PRESSURE_FAN_H_
+
+#endif

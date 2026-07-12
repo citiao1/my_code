@@ -1,0 +1,306 @@
+C251 COMPILER V5.60.0,  AI8051U_DMA                                                        21/06/26  23:15:59  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_DMA
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_DMA.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\Src\AI8051U_DMA.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_DMA.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\AI8051U_DMA.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_DMA.h"
+    6          #include "AI8051U_UART.h"
+    7          
+    8          //========================================================================
+    9          // 函数: void DMA_ADC_Inilize(DMA_ADC_InitTypeDef *DMA)
+   10          // 描述: DMA ADC 初始化程序.
+   11          // 参数: DMA: 结构参数,请参考DMA.h里的定义.
+   12          // 返回: none.
+   13          // 版本: V1.0, 2021-05-17
+   14          //========================================================================
+   15          void DMA_ADC_Inilize(DMA_ADC_InitTypeDef *DMA)
+   16          {
+   17   1        DMA_ADC_STA = 0x00;
+   18   1        DMA_ADC_CHSW1 = (u8)(DMA->DMA_Channel >> 8);
+   19   1        DMA_ADC_CHSW0 = (u8)(DMA->DMA_Channel);
+   20   1        DMA_ADC_RXAH = (u8)(DMA->DMA_Buffer >> 8);
+   21   1        DMA_ADC_RXAL = (u8)(DMA->DMA_Buffer);
+   22   1        DMA_ADC_CFG2 = DMA->DMA_Times;
+   23   1      
+   24   1        if (DMA->DMA_Enable == ENABLE)
+   25   1          DMA_ADC_CR |= 0x80; // 使能ADC DMA
+   26   1        else
+   27   1          DMA_ADC_CR &= ~0x80; // 禁止ADC DMA
+   28   1      }
+   29          
+   30          //========================================================================
+   31          // 函数: void DMA_M2M_Inilize(DMA_M2M_InitTypeDef *DMA)
+   32          // 描述: DMA M2M 初始化程序.
+   33          // 参数: DMA: 结构参数,请参考DMA.h里的定义.
+   34          // 返回: none.
+   35          // 版本: V1.0, 2021-05-17
+   36          //========================================================================
+   37          void DMA_M2M_Inilize(DMA_M2M_InitTypeDef *DMA)
+   38          {
+   39   1        DMA_M2M_STA = 0x00;
+   40   1        DMA_M2M_RXAH = (u8)(DMA->DMA_Rx_Buffer >> 8);
+   41   1        DMA_M2M_RXAL = (u8)(DMA->DMA_Rx_Buffer);
+   42   1        DMA_M2M_TXAH = (u8)(DMA->DMA_Tx_Buffer >> 8);
+   43   1        DMA_M2M_TXAL = (u8)(DMA->DMA_Tx_Buffer);
+   44   1        DMA_M2M_AMT = (u8)DMA->DMA_Length;       // 设置传输总字节数(低8位)：n+1
+   45   1        DMA_M2M_AMTH = (u8)(DMA->DMA_Length >> 8); // 设置传输总字节数(高8位)：n+1
+   46   1      
+   47   1        if (DMA->DMA_SRC_Dir == M2M_ADDR_DEC)
+   48   1          DMA_M2M_CFG |= 0x20; // 数据读完后地址自减
+   49   1        else
+   50   1          DMA_M2M_CFG &= ~0x20; // 数据读完后地址自减
+   51   1        if (DMA->DMA_DEST_Dir == M2M_ADDR_DEC)
+   52   1          DMA_M2M_CFG |= 0x10; // 数据写入后地址自减
+   53   1        else
+   54   1          DMA_M2M_CFG &= ~0x10; // 数据写入后地址自减
+   55   1      
+   56   1        if (DMA->DMA_Enable == ENABLE)
+C251 COMPILER V5.60.0,  AI8051U_DMA                                                        21/06/26  23:15:59  PAGE 2   
+
+   57   1          DMA_M2M_CR |= 0x80; // 使能M2M DMA
+   58   1        else
+   59   1          DMA_M2M_CR &= ~0x80; // 禁止M2M DMA
+   60   1      }
+   61          
+   62          //========================================================================
+   63          // 函数: void DMA_SPI_Inilize(DMA_SPI_InitTypeDef *DMA)
+   64          // 描述: DMA SPI 初始化程序.
+   65          // 参数: DMA: 结构参数,请参考DMA.h里的定义.
+   66          // 返回: none.
+   67          // 版本: V1.0, 2021-05-17
+   68          //========================================================================
+   69          void DMA_SPI_Inilize(DMA_SPI_InitTypeDef *DMA)
+   70          {
+   71   1        DMA_SPI_STA = 0x00;
+   72   1        DMA_SPI_RXAH = (u8)(DMA->DMA_Rx_Buffer >> 8);
+   73   1        DMA_SPI_RXAL = (u8)(DMA->DMA_Rx_Buffer);
+   74   1        DMA_SPI_TXAH = (u8)(DMA->DMA_Tx_Buffer >> 8);
+   75   1        DMA_SPI_TXAL = (u8)(DMA->DMA_Tx_Buffer);
+   76   1        DMA_SPI_AMT = (u8)DMA->DMA_Length;       // 设置传输总字节数(低8位)：n+1
+   77   1        DMA_SPI_AMTH = (u8)(DMA->DMA_Length >> 8); // 设置传输总字节数(高8位)：n+1
+   78   1      
+   79   1        if (DMA->DMA_SS_Sel <= SPI_SS_P35)
+   80   1          DMA_SPI_CFG2 = (DMA_SPI_CFG2 & 0xfc) | DMA->DMA_SS_Sel; // 自动控制SS脚选择
+   81   1      
+   82   1        if (DMA->DMA_Tx_Enable == ENABLE)
+   83   1          DMA_SPI_CFG |= 0x40; // 使能SPI发送数据
+   84   1        else
+   85   1          DMA_SPI_CFG &= ~0x40; // 禁止SPI发送数据
+   86   1      
+   87   1        if (DMA->DMA_Rx_Enable == ENABLE)
+   88   1          DMA_SPI_CFG |= 0x20; // 使能SPI接收数据
+   89   1        else
+   90   1          DMA_SPI_CFG &= ~0x20; // 禁止SPI接收数据
+   91   1      
+   92   1        if (DMA->DMA_AUTO_SS == ENABLE)
+   93   1          DMA_SPI_CFG2 |= 0x04; // 使能SS自动控制
+   94   1        else
+   95   1          DMA_SPI_CFG2 &= ~0x04; // 禁止SS自动控制
+   96   1      
+   97   1        if (DMA->DMA_Enable == ENABLE)
+   98   1          DMA_SPI_CR |= 0x80; // 使能SPI DMA
+   99   1        else
+  100   1          DMA_SPI_CR &= ~0x80; // 禁止SPI DMA
+  101   1      }
+  102          
+  103          //========================================================================
+  104          // 函数: void DMA_UART_Inilize(u8 UARTx, DMA_UART_InitTypeDef *DMA)
+  105          // 描述: DMA UART 初始化程序.
+  106          // 参数: UARTx: UART组号, DMA: 结构参数,请参考DMA.h里的定义.
+  107          // 返回: none.
+  108          // 版本: V1.0, 2021-05-17
+  109          //========================================================================
+  110          void DMA_UART_Inilize(u8 UARTx, DMA_UART_InitTypeDef *DMA)
+  111          {
+  112   1      #ifdef UART1
+  113   1        if (UARTx == UART1)
+  114   1        {
+  115   2          DMA_UR1T_STA = 0x00;
+  116   2          DMA_UR1R_STA = 0x00;
+  117   2          DMA_UR1T_AMT = (u8)DMA->DMA_TX_Length;
+  118   2          DMA_UR1T_AMTH = (u8)(DMA->DMA_TX_Length >> 8);
+  119   2          DMA_UR1T_TXAH = (u8)(DMA->DMA_TX_Buffer >> 8);
+  120   2          DMA_UR1T_TXAL = (u8)(DMA->DMA_TX_Buffer);
+  121   2          DMA_UR1R_RXAH = (u8)(DMA->DMA_RX_Buffer >> 8);
+  122   2          DMA_UR1R_RXAL = (u8)(DMA->DMA_RX_Buffer);
+C251 COMPILER V5.60.0,  AI8051U_DMA                                                        21/06/26  23:15:59  PAGE 3   
+
+  123   2          DMA_UR1R_AMT = (u8)DMA->DMA_RX_Length;        // 设置传输总字节数(低8位)：n+1
+  124   2          DMA_UR1R_AMTH = (u8)(DMA->DMA_RX_Length >> 8); // 设置传输总字节数(高8位)：n+1
+  125   2      
+  126   2          if (DMA->DMA_TX_Enable == ENABLE)
+  127   2            DMA_UR1T_CR |= 0x80; // 使能UART1 TX DMA
+  128   2          else
+  129   2            DMA_UR1T_CR &= ~0x80; // 禁止UART1 TX DMA
+  130   2          if (DMA->DMA_RX_Enable == ENABLE)
+  131   2            DMA_UR1R_CR |= 0x80; // 使能UART1 RX DMA
+  132   2          else
+  133   2            DMA_UR1R_CR &= ~0x80; // 禁止UART1 RX DMA
+  134   2        }
+  135   1      #endif
+  136   1      #ifdef UART2
+                 if (UARTx == UART2)
+                 {
+                   DMA_UR2T_STA = 0x00;
+                   DMA_UR2R_STA = 0x00;
+                   DMA_UR2T_AMT = (u8)DMA->DMA_TX_Length;
+                   DMA_UR2T_AMTH = (u8)(DMA->DMA_TX_Length >> 8);
+                   DMA_UR2T_TXAH = (u8)(DMA->DMA_TX_Buffer >> 8);
+                   DMA_UR2T_TXAL = (u8)(DMA->DMA_TX_Buffer);
+                   DMA_UR2R_RXAH = (u8)(DMA->DMA_RX_Buffer >> 8);
+                   DMA_UR2R_RXAL = (u8)(DMA->DMA_RX_Buffer);
+                   DMA_UR2R_AMT = (u8)DMA->DMA_RX_Length;        // 设置传输总字节数(低8位)：n+1
+                   DMA_UR2R_AMTH = (u8)(DMA->DMA_RX_Length >> 8); // 设置传输总字节数(高8位)：n+1
+               
+                   if (DMA->DMA_TX_Enable == ENABLE)
+                     DMA_UR2T_CR |= 0x80; // 使能UART2 TX DMA
+                   else
+                     DMA_UR2T_CR &= ~0x80; // 禁止UART2 TX DMA
+                   if (DMA->DMA_RX_Enable == ENABLE)
+                     DMA_UR2R_CR |= 0x80; // 使能UART2 RX DMA
+                   else
+                     DMA_UR2R_CR &= ~0x80; // 禁止UART2 RX DMA
+                 }
+               #endif
+  160   1      #ifdef UART3
+  161   1        if (UARTx == UART3)
+  162   1        {
+  163   2          DMA_UR3T_STA = 0x00;
+  164   2          DMA_UR3R_STA = 0x00;
+  165   2          DMA_UR3T_AMT = (u8)DMA->DMA_TX_Length;
+  166   2          DMA_UR3T_AMTH = (u8)(DMA->DMA_TX_Length >> 8);
+  167   2          DMA_UR3T_TXAH = (u8)(DMA->DMA_TX_Buffer >> 8);
+  168   2          DMA_UR3T_TXAL = (u8)(DMA->DMA_TX_Buffer);
+  169   2          DMA_UR3R_RXAH = (u8)(DMA->DMA_RX_Buffer >> 8);
+  170   2          DMA_UR3R_RXAL = (u8)(DMA->DMA_RX_Buffer);
+  171   2          DMA_UR3R_AMT = (u8)DMA->DMA_RX_Length;       // 设置传输总字节数(低8位)：n+1
+  172   2          DMA_UR3R_AMTH = (u8)(DMA->DMA_RX_Length >> 8); // 设置传输总字节数(高8位)：n+1
+  173   2      
+  174   2          if (DMA->DMA_TX_Enable == ENABLE)
+  175   2            DMA_UR3T_CR |= 0x80; // 使能UART3 TX DMA
+  176   2          else
+  177   2            DMA_UR3T_CR &= ~0x80; // 禁止UART3 TX DMA
+  178   2          if (DMA->DMA_RX_Enable == ENABLE)
+  179   2            DMA_UR3R_CR |= 0x80; // 使能UART3 RX DMA
+  180   2          else
+  181   2            DMA_UR3R_CR &= ~0x80; // 禁止UART3 RX DMA
+  182   2        }
+  183   1      #endif
+  184   1      #ifdef UART4
+  185   1        if (UARTx == UART4)
+  186   1        {
+  187   2          DMA_UR4T_STA = 0x00;
+  188   2          DMA_UR4R_STA = 0x00;
+C251 COMPILER V5.60.0,  AI8051U_DMA                                                        21/06/26  23:15:59  PAGE 4   
+
+  189   2          DMA_UR4T_AMT = (u8)DMA->DMA_TX_Length;
+  190   2          DMA_UR4T_AMTH = (u8)(DMA->DMA_TX_Length >> 8);
+  191   2          DMA_UR4T_TXAH = (u8)(DMA->DMA_TX_Buffer >> 8);
+  192   2          DMA_UR4T_TXAL = (u8)(DMA->DMA_TX_Buffer);
+  193   2          DMA_UR4R_RXAH = (u8)(DMA->DMA_RX_Buffer >> 8);
+  194   2          DMA_UR4R_RXAL = (u8)(DMA->DMA_RX_Buffer);
+  195   2          DMA_UR4R_AMT = (u8)DMA->DMA_RX_Length;       // 设置传输总字节数(低8位)：n+1
+  196   2          DMA_UR4R_AMTH = (u8)(DMA->DMA_RX_Length >> 8); // 设置传输总字节数(高8位)：n+1
+  197   2      
+  198   2          if (DMA->DMA_TX_Enable == ENABLE)
+  199   2            DMA_UR4T_CR |= 0x80; // 使能UART4 TX DMA
+  200   2          else
+  201   2            DMA_UR4T_CR &= ~0x80; // 禁止UART4 TX DMA
+  202   2          if (DMA->DMA_RX_Enable == ENABLE)
+  203   2            DMA_UR4R_CR |= 0x80; // 使能UART4 RX DMA
+  204   2          else
+  205   2            DMA_UR4R_CR &= ~0x80; // 禁止UART4 RX DMA
+  206   2        }
+  207   1      #endif
+  208   1      }
+  209          
+  210          //========================================================================
+  211          // 函数: void DMA_LCM_Inilize(DMA_LCM_InitTypeDef *DMA)
+  212          // 描述: DMA LCM 初始化程序.
+  213          // 参数: DMA: 结构参数,请参考DMA.h里的定义.
+  214          // 返回: none.
+  215          // 版本: V1.0, 2021-05-17
+  216          //========================================================================
+  217          void DMA_LCM_Inilize(DMA_LCM_InitTypeDef *DMA)
+  218          {
+  219   1        DMA_LCM_STA = 0x00;
+  220   1        DMA_LCM_RXAH = (u8)(DMA->DMA_Rx_Buffer >> 8);
+  221   1        DMA_LCM_RXAL = (u8)(DMA->DMA_Rx_Buffer);
+  222   1        DMA_LCM_TXAH = (u8)(DMA->DMA_Tx_Buffer >> 8);
+  223   1        DMA_LCM_TXAL = (u8)(DMA->DMA_Tx_Buffer);
+  224   1        DMA_LCM_AMT = (u8)DMA->DMA_Length;       // 设置传输总字节数(低8位)：n+1
+  225   1        DMA_LCM_AMTH = (u8)(DMA->DMA_Length >> 8); // 设置传输总字节数(高8位)：n+1
+  226   1      
+  227   1        if (DMA->DMA_Enable == ENABLE)
+  228   1          DMA_LCM_CR |= 0x80; // 使能LCM DMA
+  229   1        else
+  230   1          DMA_LCM_CR &= ~0x80; // 禁止LCM DMA
+  231   1      }
+  232          
+  233          //========================================================================
+  234          // 函数: void DMA_I2C_Inilize(DMA_I2C_InitTypeDef *DMA)
+  235          // 描述: DMA I2C 初始化程序.
+  236          // 参数: DMA: 结构参数,请参考DMA.h里的定义.
+  237          // 返回: none.
+  238          // 版本: V1.0, 2021-05-17
+  239          //========================================================================
+  240          void DMA_I2C_Inilize(DMA_I2C_InitTypeDef *DMA)
+  241          {
+  242   1        DMA_I2CT_STA = 0x00;
+  243   1        DMA_I2CT_TXAH = (u8)(DMA->DMA_TX_Buffer >> 8);
+  244   1        DMA_I2CT_TXAL = (u8)(DMA->DMA_TX_Buffer);
+  245   1        DMA_I2CT_AMT = (u8)DMA->DMA_TX_Length;       // 设置传输总字节数(低8位)：n+1
+  246   1        DMA_I2CT_AMTH = (u8)(DMA->DMA_TX_Length >> 8); // 设置传输总字节数(高8位)：n+1
+  247   1      
+  248   1        DMA_I2CR_STA = 0x00;
+  249   1        DMA_I2CR_RXAH = (u8)(DMA->DMA_RX_Buffer >> 8);
+  250   1        DMA_I2CR_RXAL = (u8)(DMA->DMA_RX_Buffer);
+  251   1        DMA_I2CR_AMT = (u8)DMA->DMA_RX_Length;       // 设置传输总字节数(低8位)：n+1
+  252   1        DMA_I2CR_AMTH = (u8)(DMA->DMA_RX_Length >> 8); // 设置传输总字节数(高8位)：n+1
+  253   1      
+  254   1        if (DMA->DMA_TX_Enable == ENABLE)
+C251 COMPILER V5.60.0,  AI8051U_DMA                                                        21/06/26  23:15:59  PAGE 5   
+
+  255   1          DMA_I2CT_CR |= 0x80; // 使能I2CT DMA
+  256   1        else
+  257   1          DMA_I2CT_CR &= ~0x80; // 禁止I2CT DMA
+  258   1        if (DMA->DMA_RX_Enable == ENABLE)
+  259   1          DMA_I2CR_CR |= 0x80; // 使能I2CR DMA
+  260   1        else
+  261   1          DMA_I2CR_CR &= ~0x80; // 禁止I2CT DMA
+  262   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      1525     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

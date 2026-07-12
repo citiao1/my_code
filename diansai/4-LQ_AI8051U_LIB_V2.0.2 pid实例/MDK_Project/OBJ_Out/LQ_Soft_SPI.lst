@@ -1,0 +1,211 @@
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        21/06/26  23:15:53  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_Soft_SPI
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_Soft_SPI.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_Soft_SPI.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_Soft_SPI.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\LQ_Soft_SPI.obj) 
+
+stmt  level    source
+
+    1          #include "include.h"
+    2          
+    3          /*************************************************************************
+    4           * @code    void soft_spi_init(Soft_SPI_cfg_t *cfg)
+    5           * @brief   模拟SPI初始化.
+    6           * @param   cfg : SPI配置参数.
+    7           * @return  成功返回0, 失败返回1.
+    8           * @date    2025-12-26.
+    9           * @note    初始化时调用
+   10           *************************************************************************/
+   11          void soft_spi_init(Soft_SPI_cfg_t *cfg)
+   12          {
+   13   1          if (cfg == NULL)
+   14   1              return;
+   15   1          Soft_SPI_SCK_Out(cfg->sck);
+   16   1          Soft_SPI_MISO_In(cfg->miso);
+   17   1          Soft_SPI_MOSI_Out(cfg->mosi);
+   18   1          Soft_SPI_CS_Out(cfg->cs);
+   19   1      
+   20   1          Soft_SPI_SCK_L(cfg->sck); // 片选拉高
+   21   1      }
+   22          
+   23          /*************************************************************************
+   24           * @code    void soft_spi_read_write_n_byte(const Soft_SPI_cfg_t *cfg, u8 *lqbuff, u16 len)
+   25           * @brief   模拟SPI读写数据及长度.
+   26           * @param   cfg   : SPI配置参数.
+   27           * @param   lqbuf : 数据指针.
+   28           * @param   len   : 长度.
+   29           * @return  none.
+   30           * @date    2025-12-26.
+   31           *************************************************************************/
+   32          void soft_spi_read_write_n_byte(const Soft_SPI_cfg_t *cfg, u8 *lqbuff, u16 len)
+   33          {
+   34   1          u8 i;
+   35   1          if ((lqbuff == NULL) || (Soft_SPI_Mode_3 < cfg->mode))
+   36   1              return;
+   37   1          Soft_SPI_CS_L(cfg->cs); // 拉低片选
+   38   1          if ((Soft_SPI_Mode_0 == cfg->mode) || (Soft_SPI_Mode_1 == cfg->mode))
+   39   1              Soft_SPI_SCK_L(cfg->sck); // 初始SCK设为低(CPOL=0)
+   40   1          else
+   41   1              Soft_SPI_SCK_H(cfg->sck); // 初始SCK设为高(CPOL=1)
+   42   1          do
+   43   1          {
+   44   2              for (i = 0; i < 8; i++)
+   45   2              {
+   46   3                  if ((*lqbuff) >= 0x80)
+   47   3                      Soft_SPI_MOSI_H(cfg->mosi);
+   48   3                  else
+   49   3                      Soft_SPI_MOSI_L(cfg->mosi);
+   50   3                  if (Soft_SPI_Mode_0 == cfg->mode)
+   51   3                  {
+   52   4                      Soft_SPI_SCK_H(cfg->sck); // 产生一个上升沿
+   53   4                      (*lqbuff) = (*lqbuff) << 1;
+   54   4                      (*lqbuff) |= Soft_SPI_MISO_READ(cfg->miso); // 上升沿采样MISO(CPHA=0)
+   55   4                      Soft_SPI_SCK_L(cfg->sck);                   // 产生一个下降沿
+   56   4                  }
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        21/06/26  23:15:53  PAGE 2   
+
+   57   3                  else if (Soft_SPI_Mode_1 == cfg->mode)
+   58   3                  {
+   59   4                      Soft_SPI_SCK_H(cfg->sck); // 产生一个上升沿
+   60   4                      (*lqbuff) = (*lqbuff) << 1;
+   61   4                      Soft_SPI_SCK_L(cfg->sck);                   // 产生一个下降沿
+   62   4                      (*lqbuff) |= Soft_SPI_MISO_READ(cfg->miso); // 下降沿采样MISO(CPHA=1)
+   63   4                  }
+   64   3                  else if (Soft_SPI_Mode_2 == cfg->mode)
+   65   3                  {
+   66   4                      Soft_SPI_SCK_L(cfg->sck); // 产生一个下降沿
+   67   4                      (*lqbuff) = (*lqbuff) << 1;
+   68   4                      (*lqbuff) |= Soft_SPI_MISO_READ(cfg->miso); // 下降沿采样MISO(CPHA=0)
+   69   4                      Soft_SPI_SCK_H(cfg->sck);                   // 产生一个上升沿
+   70   4                  }
+   71   3                  else
+   72   3                  {
+   73   4                      Soft_SPI_SCK_L(cfg->sck); // 产生一个下降沿
+   74   4                      (*lqbuff) = (*lqbuff) << 1;
+   75   4                      Soft_SPI_SCK_H(cfg->sck);                   // 产生一个上升沿
+   76   4                      (*lqbuff) |= Soft_SPI_MISO_READ(cfg->miso); // 上升沿采样MISO(CPHA=1)
+   77   4                  }
+   78   3              }
+   79   2              lqbuff++;
+   80   2          } while (--len);
+   81   1          Soft_SPI_CS_H(cfg->cs); // 拉高片选
+   82   1      }
+   83          
+   84          /*************************************************************************
+   85           * @code    u8 soft_spi_read_byte(const Soft_SPI_cfg_t *cfg, const u8 reg)
+   86           * @brief   模拟SPI从设备读取一字节数据.
+   87           * @param   cfg : SPI配置参数.
+   88           * @param   reg : 设备起始地址.
+   89           * @return  读取到的数据.
+   90           * @date    2025-12-26.
+   91           *************************************************************************/
+   92          u8 soft_spi_read_byte(const Soft_SPI_cfg_t *cfg, const u8 reg)
+   93          {
+   94   1          u8 buff[2];
+   95   1          if (Soft_SPI_Mode_3 < cfg->mode)
+   96   1              return 0;
+   97   1          buff[0] = reg | 0x80;
+   98   1          soft_spi_read_write_n_byte(cfg, buff, 2);
+   99   1          return buff[1];
+  100   1      }
+  101          
+  102          /*************************************************************************
+  103           * @code    void soft_spi_read_n_byte(const Soft_SPI_cfg_t *cfg, const u8 reg, u8 *buf, u16 len)
+  104           * @brief   模拟SPI从设备读取 n 字节数据.
+  105           * @param   cfg : SPI配置参数.
+  106           * @param   reg : 设备起始地址.
+  107           * @param   buf : 数据存放地址.
+  108           * @param   len : 待写入的数据长度.
+  109           * @return  none.
+  110           * @date    2025-12-26.
+  111           *************************************************************************/
+  112          void soft_spi_read_n_byte(const Soft_SPI_cfg_t *cfg, const u8 reg, u8 *buf, u16 len)
+  113          {
+  114   1          u8 rx_buf[SOFT_SPI_MAX_TRANS_LEN] = {0}, i;
+  115   1          if ((buf == NULL) || (len == 0) || (Soft_SPI_Mode_3 < cfg->mode))
+  116   1              return;
+  117   1          if (len > (SOFT_SPI_MAX_TRANS_LEN - 1)) // 防止数组越界
+  118   1              len = SOFT_SPI_MAX_TRANS_LEN - 1;
+  119   1          rx_buf[0] = reg | 0x80;
+  120   1          soft_spi_read_write_n_byte(cfg, rx_buf, len + 1);
+  121   1          for (i = 0; i < len; i++)
+  122   1          {
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        21/06/26  23:15:53  PAGE 3   
+
+  123   2              buf[i] = rx_buf[i + 1];
+  124   2          }
+  125   1      }
+  126          
+  127          /*************************************************************************
+  128           * @code    void soft_spi_write_byte(const Soft_SPI_cfg_t *cfg, const u8 reg, u8 value)
+  129           * @brief   模拟SPI向设备写入一字节数据.
+  130           * @param   reg   : 设备起始地址.
+  131           * @param   reg   : 设备起始地址.
+  132           * @param   value : 待写入的数据.
+  133           * @return  none.
+  134           * @date    2025-12-26.
+  135           *************************************************************************/
+  136          void soft_spi_write_byte(const Soft_SPI_cfg_t *cfg, const u8 reg, u8 value)
+  137          {
+  138   1          u8 buff[2];
+  139   1          if (Soft_SPI_Mode_3 < cfg->mode)
+  140   1              return;
+  141   1          buff[0] = reg & 0x7f; // 先发送寄存器
+  142   1          buff[1] = value;      // 再发送数据
+  143   1          soft_spi_read_write_n_byte(cfg, buff, 2);
+  144   1      }
+  145          
+  146          /*************************************************************************
+  147           * @code    void soft_spi_write_n_byte(const Soft_SPI_cfg_t *cfg, const u8 reg, u8 *buf, u16 len)
+  148           * @brief   模拟SPI向设备写入 n 字节数据.
+  149           * @param   cfg : SPI配置参数.
+  150           * @param   reg : 设备起始地址.
+  151           * @param   buf : 待写入的数据.
+  152           * @param   len : 待写入的数据长度.
+  153           * @return  none.
+  154           * @date    2025-12-26.
+  155           *************************************************************************/
+  156          void soft_spi_write_n_byte(const Soft_SPI_cfg_t *cfg, const u8 reg, u8 *buf, u16 len)
+  157          {
+  158   1          u8 tx_buf[SOFT_SPI_MAX_TRANS_LEN] = {0}, i;
+  159   1          if ((buf == NULL) || (len == 0) || (Soft_SPI_Mode_3 < cfg->mode))
+  160   1              return;
+  161   1          if (len > (SOFT_SPI_MAX_TRANS_LEN - 1)) // 防止数组越界
+  162   1              len = SOFT_SPI_MAX_TRANS_LEN - 1;
+  163   1          tx_buf[0] = reg & 0x7f;
+  164   1          for (i = 0; i < len; i++)
+  165   1          {
+  166   2              tx_buf[i + 1] = buf[i];
+  167   2          }
+  168   1          soft_spi_read_write_n_byte(cfg, tx_buf, len + 1);
+  169   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       791     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------        143
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =       128     ------
+C251 COMPILER V5.60.0,  LQ_Soft_SPI                                                        21/06/26  23:15:53  PAGE 4   
+
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

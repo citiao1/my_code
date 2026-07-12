@@ -1,0 +1,120 @@
+C251 COMPILER V5.60.0,  LQ_GPIO_LED                                                        21/06/26  23:15:51  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_GPIO_LED
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_GPIO_LED.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_GPIO_LED.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INC
+                    -DIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\Use
+                    -rCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_GPIO_LED.lst) TABS(2) OBJEC
+                    -T(.\OBJ_Out\LQ_GPIO_LED.obj) 
+
+stmt  level    source
+
+    1          /*LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+    2           【平    台】北京龙邱智能科技STC32位核心板
+    3           【编    写】龙邱科技
+    4           【E-mail  】chiusir@163.com
+    5           【软件版本】V1.0 版权所有，单位使用请先联系授权
+    6           【相关信息参考下列地址】
+    7           【网    站】http://www.lqist.cn
+    8           【淘宝店铺】http://longqiu.taobao.com
+    9           --------------------------------------------------------------------------------
+   10           【  IDE  】 keil C251 V5.60
+   11           【Target 】 STC32G/STC8051U/AI8051U 32位模式
+   12           【SYS CLK】 40 MHz使用内部晶振
+   13          QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
+   14          
+   15          #include "include.h"
+   16           #include "LQ_GPIO_LED.h"
+   17          /*************************************************************************
+   18           * @code    void GPIO_LED_Init(void);
+   19           * @brief   用户调用 LED初始化程序. LED0 -->在LQ_BEEP_LED.h中宏定义
+   20           * @return  none.
+   21           * @date    2025-10-22.
+   22           *************************************************************************/
+   23          void GPIO_LED_Init(void)
+   24          {
+   25   1        gpio_init_pin(LED_0P, GPIO_Mode_Out_PP); // LED0 推挽输出
+   26   1        gpio_init_pin(LED_1P, GPIO_Mode_Out_PP); // LED1
+   27   1        gpio_init_pin(LED_2P, GPIO_Mode_Out_PP); // LED2
+   28   1      
+   29   1        gpio_write_pin(LED_0P, HIGH); // 初始化关闭LED0 拉高
+   30   1        gpio_write_pin(LED_1P, HIGH); // 关闭LED1
+   31   1        gpio_write_pin(LED_2P, HIGH); // 关闭LED2
+   32   1      }
+   33          
+   34          
+   35          /*************************************************************************
+   36           * @code    void LED_Ctrl(LED_n ledp, LED_s sta)
+   37           * @brief   用户调用 LED状态控制程序.
+   38           * @param   ledp ：LED编号， LED0/LED1/LED2/LED_ALL
+   39           * @param   sta  ：LED状态， ON/ OFF/ RVS
+   40           * @return  none.
+   41           * @date    2025-10-22.
+   42           * @note    LED管脚在 头文件中宏定义，这里直接使用传统51的位操作效率更高
+   43           *************************************************************************/
+   44          void LED_Ctrl(LED_n ledp, LED_s sta)
+   45          {
+   46   1        switch (ledp)
+   47   1        {
+   48   2        case LED0:
+   49   2          if (sta == ON)      LED_PIN0 = LOW;
+   50   2          else if (sta == OFF)  LED_PIN0 = HIGH;
+   51   2          else if (sta == RVS)  LED_PIN0 = !LED_PIN0;
+   52   2          break;
+   53   2          case LED1:
+   54   2          if (sta == ON)      LED_PIN1 = LOW;
+   55   2          else if (sta == OFF)  LED_PIN1 = HIGH;
+   56   2          else if (sta == RVS)  LED_PIN1 = !LED_PIN1;
+C251 COMPILER V5.60.0,  LQ_GPIO_LED                                                        21/06/26  23:15:51  PAGE 2   
+
+   57   2          break;
+   58   2        case LED2:
+   59   2          if (sta == ON)      LED_PIN2 = LOW;
+   60   2          else if (sta == OFF)  LED_PIN2 = HIGH;
+   61   2          else if (sta == RVS)  LED_PIN2 = !LED_PIN2;
+   62   2          break;
+   63   2        case LED_ALL:
+   64   2          if (sta == ON)
+   65   2          {
+   66   3            LED_PIN0 = LOW;   LED_PIN1 = LOW;   LED_PIN2 = LOW;
+   67   3          }
+   68   2          else if (sta == OFF)
+   69   2          {
+   70   3            LED_PIN0 = HIGH;   LED_PIN1 = HIGH;   LED_PIN2 = HIGH;
+   71   3          }
+   72   2          else if (sta == RVS)
+   73   2          {
+   74   3            LED_PIN0 = !LED_PIN0; LED_PIN1 = !LED_PIN1; LED_PIN2 = !LED_PIN2;
+   75   3          }
+   76   2          break;
+   77   2        default:;
+   78   2          break;
+   79   2        }
+   80   1      }
+   81          
+   82          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       304     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

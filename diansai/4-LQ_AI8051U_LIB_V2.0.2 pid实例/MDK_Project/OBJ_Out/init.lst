@@ -1,0 +1,240 @@
+C251 COMPILER V5.60.0,  init                                                               22/06/26  14:42:23  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE init
+OBJECT MODULE PLACED IN .\OBJ_Out\init.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\UserCode\APP\init.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(.
+                    -.\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCode
+                    -\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\init.lst) TABS(2) OBJECT(.\OBJ_Out\
+                    -init.obj) 
+
+stmt  level    source
+
+    1          #include "init.h"
+    2          #include "lcd.h"
+    3          #include "motor.h"
+    4          #include "chassis.h"
+    5          #include "LQ_MotorServo.h"
+    6          #include "LQ_IPSLCD.h"
+    7          #include "LQ_TIMER.h"
+    8          #include "LQ_HI2C_Gyro.h"
+    9          #include "pid.h"
+   10          #include "inductance.h"
+   11          
+   12          /**
+   13           * @brief 统一初始化所有外设和模块
+   14           * 包含: ADC, LCD, Timer, Motor, PID, Chassis等
+   15           */
+   16          void User_Init(void)
+   17          {
+   18   1          //LQ写的
+   19   1          // 1. ADC初始化
+   20   1          ADC_Init();
+   21   1          
+   22   1          ADC_Key_Init();
+   23   1          
+   24   1          // 2. LCD初始化
+   25   1          IPS_LCD_Init();
+   26   1          LCD_CLS(u16_BLACK);
+   27   1          //编码器初始化 将 Timer3 和 Timer4 配置为外部脉冲计数模式
+   28   1          Timer_EncInit(Timer3 | Timer4);
+   29   1          // 3. 定时器初始化 
+   30   1          TIM_Init_ms(Timer0, 1);  //电感采集
+   31   1          TIM_Init_ms(Timer1, 2);  //控制算法
+   32   1          TIM_Init_ms(Timer11,3);  //显示屏
+   33   1          // 4. 电机初始化
+   34   1          Motor_Init(Motor_FREQ);
+   35   1          // 5. 陀螺仪初始化（可选）
+   36   1          // lsm6dsr_init();  //软件陀螺仪初始化
+   37   1          LQ_HARD_SPI_LSM60DSR_Init(); // 硬件陀螺仪初始化
+   38   1        
+   39   1          //负压风扇初始化
+   40   1          BLmotor_Init_1(Servo_FREQ); // 频率为50Hz，此处频率需要与舵机频率保持一致,满占空�
+             -��20000
+   41   1          target_fan_pwm = 1800;  //1750
+   42   1          current_fan_pwm = 900;
+   43   1          BLmotor_Ctrl_w1(current_fan_pwm); // 以最低待机转速上电
+   44   1        
+   45   1        //下面是我自己写的
+   46   1          //PID参数初始化（速度环+方向环）
+   47   1          PID_AllInit();
+   48   1          //底盘初始化
+   49   1          Chassis_Init();
+   50   1          left_pwm = 0;
+   51   1          right_pwm = 0;
+   52   1      }
+   53          
+   54          /**
+   55           * @brief 按键发车等待函数 (V2.0 安全倒计时版)
+C251 COMPILER V5.60.0,  init                                                               22/06/26  14:42:23  PAGE 2   
+
+   56           * @note 必须按下并松开 GO 按键，随后延时 1 秒才会发车
+   57           */
+   58          void Wait_For_Start(void)
+   59          {
+   60   1          // 初始化 P2_0 为上拉输入模式
+   61   1          gpio_init_pin(P2_0, GPIO_Mode_IPU);
+   62   1          
+   63   1          // 等待按键按下
+   64   1          while (gpio_read_pin(P2_0) == 1)
+   65   1          {
+   66   2            if (flag_20ms_lcd == 1)
+   67   2              {
+   68   3                  flag_20ms_lcd = 0;
+   69   3                  Lcd_Display();
+   70   3                  Key_Tuning_Task(); // 顺便支持发车前调参
+   71   3              }
+   72   2          }
+   73   1          
+   74   1          // 按下消抖
+   75   1          delay_ms(20); 
+   76   1          
+   77   1          // 确认按下
+   78   1          if (gpio_read_pin(P2_0) == 0)
+   79   1          {
+   80   2              // 等待按键松开（核心防刮手逻辑：你不松手，它绝对不走）
+   81   2              while (gpio_read_pin(P2_0) == 0); 
+   82   2              
+   83   2              // 松手消抖
+   84   2              delay_ms(20);
+   85   2              
+   86   2              // =====================================
+   87   2              // 🌪️ 起飞预热：改变期望值，让现值平滑追踪
+   88   2              // =====================================
+   89   2              
+   90   2              // 阻塞式追踪：只要现值还没达到期望值，就继续加
+   91   2              while(current_fan_pwm < target_fan_pwm) 
+   92   2              {
+   93   3                  current_fan_pwm += 50; 
+   94   3                  BLmotor_Ctrl_w1(current_fan_pwm);
+   95   3                  delay_ms(500); 
+   96   3              }
+   97   2            
+   98   2              LED_Ctrl(LED0, ON); 
+   99   2              delay_ms(500);
+  100   2              LED_Ctrl(LED0, OFF);
+  101   2              
+  102   2              
+  103   2              stop_flag = 0;
+  104   2          }
+  105   1      }
+  106          
+  107          void Emergency_Stop_Task(void)
+  108          {
+  109   1          static uint8 key_press_cnt = 0; // 连续按下计数器
+  110   1      
+  111   1          // 如果系统已经是停车状态，就没必要检测急停了
+  112   1          if (stop_flag == 1) 
+  113   1          {
+  114   2              key_press_cnt = 0;
+  115   2              return;
+  116   2          }
+  117   1      
+  118   1          // 检测 P2_0 是否被按下 (0为按下)
+  119   1          if (gpio_read_pin(P2_0) == 0)
+  120   1          {
+  121   2      //        key_press_cnt++;
+C251 COMPILER V5.60.0,  init                                                               22/06/26  14:42:23  PAGE 3   
+
+  122   2      //        
+  123   2      //        // 连续检测到按下大约 10 次 (相当于滤除了极短的震动或静电干扰)
+  124   2      //        if (key_press_cnt >= 100) 
+  125   2      //        {
+  126   2                  stop_flag = 1;     // 🚀 触发全局急停，底层电机和风扇会立刻被锁死！
+  127   2      //            key_press_cnt = 0; // 清零计数器
+  128   2      //        }
+  129   2          }
+  130   1      //    else
+  131   1      //    {
+  132   1      //        // 只要期间有哪怕一次松开，或者只是电磁毛刺干扰，就立刻清零重新�
+             -�数
+  133   1      //        key_press_cnt = 0; 
+  134   1      //    }
+  135   1      }
+  136          
+  137          /**
+  138           * @brief 按键调参后台任务 (非阻塞、防连加)
+  139           * @note 放在 while(1) 中轮询
+  140           */
+  141          /**
+  142           * @brief 按键调参后台任务 (专攻方向外环 PID)
+  143           */
+  144          void Key_Tuning_Task(void)
+  145          {
+  146   1          u8 rent_key = ADKey_Scan(); 
+  147   1          
+  148   1          if (rent_key != KEY_NONE)   
+  149   1          {
+  150   2              // 🌟 修改点 1：获取【方向环】（索引为 2）真实的参数
+  151   2              const PID_TypeDef* pid = PID_GetController(2);
+  152   2              float temp_kp = pid->Kp;
+  153   2              float temp_kd = pid->Kd;
+  154   2      
+  155   2              switch (rent_key)
+  156   2              {
+  157   3                  case KEY_PRESS:   // 1. 中间按压键：在 Kp 和 Kd 之间切换 (0:Kp -> 2:Kd -> 回到0
+             -)
+  158   3                      if (selected_param == 0) selected_param = 2;
+  159   3                      else selected_param = 0;
+  160   3                      break;
+  161   3      
+  162   3                  case KEY_UP:      // 2. 向上键：参数增加
+  163   3                      if (selected_param == 0)      temp_kp += tune_step;
+  164   3                      else                          temp_kd += tune_step;
+  165   3                      break;
+  166   3      
+  167   3                  case KEY_DOWN:    // 3. 向下键：参数减少
+  168   3                      if (selected_param == 0)      temp_kp -= tune_step;
+  169   3                      else                          temp_kd -= tune_step;
+  170   3                      
+  171   3                      // P和D绝对不能为负数
+  172   3                      if (temp_kp < 0.0f) temp_kp = 0.0f;
+  173   3                      if (temp_kd < 0.0f) temp_kd = 0.0f;
+  174   3                      break;
+  175   3      
+  176   3                  case KEY_LEFT:    // 4. 向左键：高精度微调 
+  177   3                      // 🌟 修改点 2：方向环的 P 通常在 10~50 级别，微调步长给 0.5
+  178   3                      tune_step = 1.0f;
+  179   3                      break;
+  180   3      
+  181   3                  case KEY_RIGHT:   // 5. 向右键：大幅度粗调
+  182   3                      // 🌟 修改点 3：粗调步长给 2.0
+  183   3                      tune_step = 10.0f;
+  184   3                      break;
+  185   3              }
+C251 COMPILER V5.60.0,  init                                                               22/06/26  14:42:23  PAGE 4   
+
+  186   2      
+  187   2              // 重新刷进【方向环】工作 RAM 中
+  188   2              PID_SetKp(3, temp_kp);
+  189   2              PID_SetKd(3, temp_kd);
+  190   2      //        PID_SetKp(0, temp_kp);
+  191   2      //        PID_SetKi(0, temp_ki);
+  192   2      //        PID_SetKp(1, temp_kp);
+  193   2      //        PID_SetKi(1, temp_ki);
+  194   2          }
+  195   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       526     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         1          1
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =         5     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,169 @@
+C251 COMPILER V5.60.0,  LQ_SBUS                                                            21/06/26  23:15:56  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_SBUS
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_SBUS.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_SBUS.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR(
+                    -..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCod
+                    -e\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_SBUS.lst) TABS(2) OBJECT(.\OBJ_
+                    -Out\LQ_SBUS.obj) 
+
+stmt  level    source
+
+    1          
+    2          #include "LQ_SBUS.h"
+    3          #include <stdio.h>
+    4          #include "include.h"
+    5          
+    6          /***********************************************************
+    7          *º¯ Êý Ãû:UpDate_SBUS
+    8          *Éè¼ÆÊ±¼ä: 2023Äê10ÔÂ12ÈÕ
+    9          *×÷    Õß:  LQ008
+   10          *¹¦ÄÜËµÃ÷: ½âÎöHotRC DS600 Ò£¿ØÆ÷SUBSÄ£¿éÐÅÏ¢
+   11          ***********************************************************/
+   12          
+   13          
+   14          
+   15          
+   16          //typedef struct
+   17          //{
+   18          /*                Í¨µÀÖµ             ¼üÃû          Í¨µÀºÅ       Ä¬ÈÏÖµ·¶Î§  */
+   19              signed int rc_RLR  = 0;     //Ò¡¸Ë×óÓÒ       CH1          432  992  1552
+   20              signed int rc_RUD  = 0;     //×óÊÖÉÏÏÂ       CH2          432  992  1552
+   21              signed int rc_LUD  = 0;     //×óÊÖÉÏÏÂ       CH3          432  992  1552
+   22              signed int rc_LLR  = 0;     //×óÊÖ×óÓÒ       CH4          432  992  1552
+   23              signed int rc_SW5  = 0;     //Èýµµ²¦¸Ë5      CH5          192  992  1792
+   24              signed int rc_SW6  = 0;     //Á½µµ²¦¸Ë6      CH6          192¡ý -   1792¡ü
+   25              signed int rc_SW7  = 0;     //Á½µµ²¦¸Ë7      CH7          192   -   1792
+   26              signed int rc_SW8  = 0;     //Èýµµ²¦¸Ë8      CH8          192  992  1792    
+   27          //}hotRC_data;
+   28          
+   29          /* - - - - */                          //****     CHn
+   30          unsigned char SReadBuff[64];
+   31          
+   32          
+   33          unsigned int Status_flag    = 0;     //×´Ì¬±êÖ¾  
+   34          unsigned char sbus_Rec_Fini_Flag = 0;  //½ÓÊÕ×´Ì¬¿ØÖÆ
+   35          //unsigned char sbus_receive_flag[5] = {0x00, 0x00, 0x03, 0x00, 0x0f};
+   36          unsigned char receive_flag = 0;
+   37          
+   38          /***********************************************************************
+   39           * º¯ÊýÃû£ºvoid UpDate_SBUS()
+   40           * ¹¦  ÄÜ£ºSBUSÊý¾Ý½âÎö
+   41           * ·µ»ØÖµ£ºÎÞ
+   42           *********************************************************************/
+   43          void UpDate_SBUS()
+   44          {
+   45   1      //    CHDATA[0]= ReadBuff4[0];
+   46   1          rc_RLR= ((SReadBuff[1] | SReadBuff[2] << 8 ) & 0x07FF); 
+   47   1          rc_RUD= ((SReadBuff[2] >> 3 | SReadBuff[3] << 5 ) & 0x07FF);
+   48   1          rc_LUD= (SReadBuff[3] >> 6 | SReadBuff[4] << 2 | SReadBuff[5] << 10 ) & 0x07FF;
+   49   1          rc_LLR= (SReadBuff[5] >> 1 | SReadBuff[6] << 7 ) & 0x07FF;
+   50   1          rc_SW5= (SReadBuff[6] >> 4 | SReadBuff[7] << 4 ) & 0x07FF;
+   51   1          rc_SW6= (SReadBuff[7] >> 7 | SReadBuff[8] << 1 | SReadBuff[9] << 9 ) & 0x07FF; 
+   52   1          rc_SW7= (SReadBuff[9] >> 2 | SReadBuff[10]<< 6) & 0x07FF;
+   53   1          rc_SW8= (SReadBuff[10]>> 5 | SReadBuff[11]<< 3) & 0x07FF;
+   54   1          
+   55   1          receive_flag = 1;
+   56   1          // Status_flag=(ReadBuff4[23] | ReadBuff4[24] << 8 ) & 0x07FF;
+C251 COMPILER V5.60.0,  LQ_SBUS                                                            21/06/26  23:15:56  PAGE 2   
+
+   57   1      
+   58   1      //    Usart3_Rec_Fini_Flag = 0;
+   59   1        
+   60   1        
+   61   1      //ReadBuff4[23]ÎªÒ£¿ØÆ÷×´Ì¬±êÖ¾,Ê§¿ØÊ± ReadBuff4[23]=0x0f£¬Õý³£Ê± tmpbuf[23]=0x03
+   62   1      
+   63   1      }
+   64          
+   65          
+   66          /**********************************************´®¿Ú3ÖÐ¶Ï·þÎñº¯ÊýÖÐµÄ´úÂë£¬ÅäºÏÉÏÃæ²âÊÔº¯Êý£¬ÒÔ·À¶ªÊ§ ÔÚÕâ
+             -Àï±¸·Ý****************************************/
+   67          //u8 num3=0;
+   68          //void SUBS_RX_IRQHandler()
+   69          //{
+   70          
+   71          //    unsigned char buf;
+   72          
+   73          //    /* ÓÃ»§´úÂë */
+   74          //    buf = UART_GetChar(USART_3);
+   75          //    if(Usart3_Rec_Fini_Flag == 1)       //¿ÉÒÔ½ÓÊÕ
+   76          //    {
+   77          //        if (num3 == 0 && buf == 0x0F)   //Ö¡Í·
+   78          //        {
+   79          //            ReadBuff4[num3] = buf;
+   80          //            num3++;
+   81          ////            LED_Ctrl(LED0, RVS);        // LEDÉÁË¸ Ö¸Ê¾³ÌÐòÔËÐÐ×´Ì¬
+   82          //        }
+   83          //        else if(num3 != 0)
+   84          //        {
+   85          ////            LED_Ctrl(LED0, RVS);        // LEDÉÁË¸ Ö¸Ê¾³ÌÐòÔËÐÐ×´Ì¬
+   86          //            ReadBuff4[num3] = buf;
+   87          //            num3++;
+   88          //            if (num3 > 24)              //½ÓÊÕÊý¾Ý³¬¹ý24£¬±íÊ¾Ò»Ö¡½ÓÊÕÍê³É
+   89          //            {
+   90          //                Usart3_Rec_Fini_Flag = 0;   //Í£Ö¹½ÓÊÕ
+   91          
+   92          //                if (ReadBuff4[0] == 0x0F && ReadBuff4[24] == 0x00 && num3 == 25)    //½ÓÊÜÍêÒ»Ö¡Êý¾Ý
+   93          //                {
+   94          //                    UpDate_SBUS();      //Êý¾Ý½âÎö
+   95          //                }
+   96          //                num3 = 0;               //Çå¿Õ
+   97          //            }
+   98          
+   99          //        }
+  100          //    }
+  101          //}
+  102          /********************************************** ´®¿Ú4ÖÐ¶Ï·þÎñº¯ÊýÖÐµÄ´úÂë£¬ÅäºÏÉÏÃæ²âÊÔº¯Êý£¬ÒÔ·À¶ªÊ§ ÔÚÕ
+             -âÀï±¸·Ý****************************************/
+  103          
+  104          
+  105          
+  106          
+  107          
+  108          
+  109          
+  110          
+  111          
+  112          
+  113          
+  114          
+  115          
+  116          
+  117          
+  118          
+  119          
+  120          
+C251 COMPILER V5.60.0,  LQ_SBUS                                                            21/06/26  23:15:56  PAGE 3   
+
+  121          
+  122          
+  123          
+  124          
+  125          
+  126          
+  127          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       259     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        84     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        64     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

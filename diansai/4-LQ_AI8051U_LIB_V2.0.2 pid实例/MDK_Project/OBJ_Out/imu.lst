@@ -1,0 +1,42 @@
+C251 COMPILER V5.60.0,  imu                                                                09/05/26  16:42:55  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE imu
+OBJECT MODULE PLACED IN .\OBJ_Out\imu.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\UserCode\MIDDLE\imu.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDIR
+                    -(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserCo
+                    -de\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\imu.lst) TABS(2) OBJECT(.\OBJ_Out
+                    -\imu.obj) 
+
+stmt  level    source
+
+    1          #include "imc.h"
+*** ERROR C318 IN LINE 1 OF ..\UserCode\MIDDLE\imu.c: can't open file 'imc.h'
+    2          
+    3          /**
+    4           * @brief 获取陀螺仪Z轴角速度 (偏航角速度)
+    5           * @return int16 Z轴原始角速度数据
+    6           */
+    7          int16 Get_Yaw_Rate(void)
+    8          {
+*** ERROR C42 IN LINE 8 OF ..\UserCode\MIDDLE\imu.c: 'Get_Yaw_Rate': not in formal parameter list
+*** ERROR C25 IN LINE 8 OF ..\UserCode\MIDDLE\imu.c: syntax error near '{'
+    9              int16 ax, ay, az, gx, gy, gz;
+   10              
+   11              // 调用底层函数读取6轴数据
+   12              // 注意：传入的是变量的地址(&)，底层函数会把读到的值放进这些变量里
+   13          #ifdef HARDWARE_SPI
+                   LSM6DSR_Read_Data(&ax, &ay, &az, &gx, &gy, &gz);
+               #elif defined HARDWARE_IIC
+                   LQ_HARD_IIC_LSM60DSR_Read(&ax, &ay, &az, &gx, &gy, &gz);
+               #else
+   18              // 如果都没有定义，默认给0防止报错，请检查你的工程宏定义
+   19              gz = 0; 
+   20          #endif
+   21          
+   22              // 我们只需要 Z轴的角速度 (Gyro Z)
+   23              return gz; 
+   24          }
+*** ERROR C7 IN LINE 24 OF ..\UserCode\MIDDLE\imu.c: compilation aborted
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  4 ERROR(S)

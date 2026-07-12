@@ -1,0 +1,289 @@
+C251 COMPILER V5.60.0,  LQ_EEPROM                                                          21/06/26  23:15:55  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE LQ_EEPROM
+OBJECT MODULE PLACED IN .\OBJ_Out\LQ_EEPROM.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\LQ_LIB\Src\LQ_EEPROM.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE INCDI
+                    -R(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..\UserC
+                    -ode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\LQ_EEPROM.lst) TABS(2) OBJECT(.\
+                    -OBJ_Out\LQ_EEPROM.obj) 
+
+stmt  level    source
+
+    1          #include "AI8051U_EEPROM.h"
+    2          #include "include.h"
+    3          // #include "LQ_EEPROM.h"
+    4          /**********************************************************************************
+    5           * º¯ Êý Ãû£ºvoid EEPROM_Write_Data(eeprom_Addr ID_addr, uint16_t u16data)
+    6           * ¹¦    ÄÜ£ºÏòEEPROMÖ¸¶¨µØÖ·£¬Ð´ÈëÊý¾Ý£¬Êý¾ÝÀàÐÍÖ§³Ö16Î»Êý¾Ý
+    7           * ²Î    Êý£ºID_addr£ºÒªÐ´ÈëµÄeepromµØÖ·£¬ u16data£ºÐ´Èë¸ÃÇ°ÃæµØÖ·µÄÊý¾Ý
+    8           * ·µ »Ø Öµ£ºÎÞ
+    9           *           ±£´æ16Î»µÄÊý¾Ý£¬±ØÐëÃ÷È·µØÖ·IDºÍ·¶Î§
+   10           * µ÷ÓÃÊ¾Àý: IAP_Write_u16Data(Page_0,12345); //½«12345 ±£´æµ½ eepromµØÖ·Page_0 ÖÐ
+   11           *********************************************************************************/
+   12          void IAP_Write_u16Data(eeprom_Addr ID_addr, u16 u16data)
+   13          {
+   14   1        u8 u8data[2];
+   15   1        u8data[0] = (u8)(u16data >> 8);      // µÃµ½¸ß°ËÎ»
+   16   1        u8data[1] = (u8)u16data;         // µÍ°ËÎ»
+   17   1        EEPROM_write_n((u32)ID_addr, u8data, 2); // ½«Á½×Ö½ÚÊý¾ÝÐ´ÈëEEPROM µØÖ·£¬EE_ADDRESS   tmpÊý¾ÝµØÖ·
+   18   1      }
+   19          
+   20          /**********************************************************************************
+   21           * º¯ Êý Ãû£ºuint16_t EEPROM_Read_Data(eeprom_Addr ID_addr)
+   22           * ¹¦    ÄÜ£ºÏòEEPROMÖ¸¶¨µØÖ·£¬¶ÁÈ¡Êý¾Ý£¬Êý¾ÝÀàÐÍÖ§³Ö16Î»Êý¾Ý£¬Á½¸ö×Ö½Ú
+   23           * ²Î    Êý£ºeeprom_Addr ID_addr£ºÄ¿±êµÄµØÖ·£¬ uint16_t u16data£ºÒª±£´æµÄÊý¾Ý
+   24           * ·µ »Ø Öµ£º¶ÁÈ¡µÄ16Î»Êý¾ÝÖµ
+   25           *********************************************************************************/
+   26          // ¶ÁÈ¡16Î»Êý¾Ý£¬Ã÷È·Òª¶ÁÈ¡µÄµØÖ·ID
+   27          u16 IAP_Read_u16Data(eeprom_Addr ID_addr)
+   28          {
+   29   1        u8 _temp[2];
+   30   1        EEPROM_read_n((u32)ID_addr, _temp, 2); // ¶Á³ö2×Ö½Ú
+   31   1        return ((u16)((_temp[0] << 8) + _temp[1]));
+   32   1      }
+   33          
+   34          /**********************************************************************************
+   35           * º¯ Êý Ãû£ºvoid IAP_Write_Byte(u32 eeprom_addr,u8 Byte_data)
+   36           * ¹¦    ÄÜ£ºÏòEEPROMÖ¸¶¨µØÖ·£¬Ð´ÈëÒ»¸ö×Ö½ÚµÄÊý¾Ý
+   37           * ²Î    Êý£ºu32 eeprom_addr£ºÒªÐ´ÈëµÄeepromµØÖ·£¬ u8 Byte_data£ºÐ´Èë¸ÃÇ°ÃæµØÖ·µÄÊý¾Ý
+   38           * ·µ »Ø Öµ£ºÎÞ
+   39           *           ±£´æ16Î»µÄÊý¾Ý£¬±ØÐëÃ÷È·µØÖ·IDºÍ·¶Î§
+   40           * µ÷ÓÃÊ¾Àý: u8 testData = 241;IAP_Write_Byte(Page_0,testData); //testData ±£´æµ½ eepromµØÖ·Page_0¿ªÊ¼µÄµ
+             -ØÖ·¿Õ¼äÖÐ
+   41           *********************************************************************************/
+   42          void IAP_Write_Byte(u32 eeprom_addr, u8 Byte_data)
+   43          {
+   44   1        IAP_ENABLE(); // ÉèÖÃµÈ´ýÊ±¼ä£¬ÔÊÐíIAP²Ù×÷£¬ËÍÒ»´Î¾Í¹»
+   45   1        IAP_WRITE();  // ºêµ÷ÓÃ, ËÍ×Ö½ÚÐ´ÃüÁî
+   46   1      
+   47   1        IAP_ADDRE = (u8)(eeprom_addr >> 16); // ËÍµØÖ·¸ß×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+   48   1        IAP_ADDRH = (u8)(eeprom_addr >> 8);  // ËÍµØÖ·ÖÐ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+   49   1        IAP_ADDRL = (u8)eeprom_addr;     // ËÍµØÖ·µÍ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+   50   1        IAP_DATA = Byte_data;        // ËÍÊý¾Ýµ½IAP_DATA£¬Ö»ÓÐÊý¾Ý¸Ä±äÊ±²ÅÐèÖØÐÂËÍ
+   51   1      
+   52   1        EEPROM_Trig(); // ´¥·¢EEPROM²Ù×÷£¬ÄÚº¬ÖÐ¶Ï±£´æ ¹ÒÆðºÍ»Ö¸´
+   53   1      
+   54   1        DisableEEPROM();
+   55   1      }
+C251 COMPILER V5.60.0,  LQ_EEPROM                                                          21/06/26  23:15:55  PAGE 2   
+
+   56          
+   57          /**********************************************************************************
+   58           * º¯ Êý Ãû£ºu8 IAP_Read_Byte(u32 eeprom_addr)
+   59           * ¹¦    ÄÜ£º´ÓEEPROMÖ¸¶¨µØÖ·£¬¶ÁÈ¡Ò»¸ö×Ö½ÚµÄÊý¾Ý
+   60           * ²Î    Êý£ºu32 eeprom_addr£ºÒª¶ÁÈ¡µÄeepromÆðÊ¼µØÖ·
+   61           * ·µ »Ø Öµ£º¶ÁÈ¡µÄÒ»×Ö½ÚÊý¾Ý
+   62           * µ÷ÓÃÊ¾Àý: u8 testData; testData = IAP_Read_Byte(Page_0);
+   63           *********************************************************************************/
+   64          u8 IAP_Read_Byte(u32 eeprom_addr)
+   65          {
+   66   1        u8 OenByte;
+   67   1        IAP_ENABLE(); // ÉèÖÃµÈ´ýÊ±¼ä£¬ÔÊÐíIAP²Ù×÷£¬ËÍÒ»´Î¾Í¹»
+   68   1        IAP_READ();   // ËÍ×Ö½Ú¶ÁÃüÁî£¬ÃüÁî²»Ðè¸Ä±äÊ±£¬²»ÐèÖØÐÂËÍÃüÁî
+   69   1      
+   70   1        IAP_ADDRE = (u8)(eeprom_addr >> 16); // ËÍµØÖ·¸ß×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+   71   1        IAP_ADDRH = (u8)(eeprom_addr >> 8);  // ËÍµØÖ·ÖÐ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+   72   1        IAP_ADDRL = (u8)eeprom_addr;     // ËÍµØÖ·µÍ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+   73   1        EEPROM_Trig();             // ´¥·¢EEPROM²Ù×÷
+   74   1        OenByte = IAP_DATA;          // ¶Á³öµÄÊý¾ÝËÍÍù
+   75   1        DisableEEPROM();
+   76   1      
+   77   1        return OenByte;
+   78   1      }
+   79          
+   80          /**********************************************************************************
+   81           * º¯ Êý Ãû£ºs8 IAP_Read_sByte(u32 eeprom_addr)
+   82           * ¹¦    ÄÜ£º´ÓEEPROMÖ¸¶¨µØÖ·£¬¶ÁÈ¡Ò»¸ö×Ö½ÚµÄÊý¾Ý
+   83           * ²Î    Êý£ºu32 eeprom_addr£ºÒª¶ÁÈ¡µÄeepromÆðÊ¼µØÖ·
+   84           * ·µ »Ø Öµ£º¶ÁÈ¡µÄÒ»×Ö½ÚÊý¾ÝÓÐ·ûºÅÊý
+   85           * µ÷ÓÃÊ¾Àý: s8 testData; testData = IAP_Read_sByte(Page_0);
+   86           *********************************************************************************/
+   87          s8 IAP_Read_sByte(u32 eeprom_addr)
+   88          {
+   89   1        s8 OenByte;
+   90   1        IAP_ENABLE(); // ÉèÖÃµÈ´ýÊ±¼ä£¬ÔÊÐíIAP²Ù×÷£¬ËÍÒ»´Î¾Í¹»
+   91   1        IAP_READ();   // ËÍ×Ö½Ú¶ÁÃüÁî£¬ÃüÁî²»Ðè¸Ä±äÊ±£¬²»ÐèÖØÐÂËÍÃüÁî
+   92   1      
+   93   1        IAP_ADDRE = (u8)(eeprom_addr >> 16); // ËÍµØÖ·¸ß×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+   94   1        IAP_ADDRH = (u8)(eeprom_addr >> 8);  // ËÍµØÖ·ÖÐ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+   95   1        IAP_ADDRL = (u8)eeprom_addr;     // ËÍµØÖ·µÍ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+   96   1        EEPROM_Trig();             // ´¥·¢EEPROM²Ù×÷
+   97   1        OenByte = (s8)IAP_DATA;        // ¶Á³öµÄÊý¾ÝËÍÍù
+   98   1        DisableEEPROM();
+   99   1      
+  100   1        return OenByte;
+  101   1      }
+  102          
+  103          /**********************************************************************************
+  104           * º¯ Êý Ãû£ºvoid IAP_Write_nByte(u32 eeprom_addr,u8 *nByte,u16 length)
+  105           * ¹¦    ÄÜ£ºÏòEEPROMÖ¸¶¨µØÖ·¿ªÊ¼£¬Á¬ÐøÐ´Èën×Ö½ÚµÄÊý¾Ý
+  106           * ²Î    Êý£ºu32 eeprom_addr£ºÒªÐ´ÈëµÄeepromµØÖ·£¬ u8 *nByte£ºÐ´Èë¸ÃÇ°ÃæµØÖ·µÄÊý¾Ý£»u16 length£ºÊý¾Ý³¤¶È
+  107           * ·µ »Ø Öµ£ºÎÞ
+  108           *           ±£´æ16Î»µÄÊý¾Ý£¬±ØÐëÃ÷È·µØÖ·IDºÍ·¶Î§
+  109           * µ÷ÓÃÊ¾Àý: IAP_Write_nByte(Page_0,(u8 *)12345,5); //12345 ±£´æµ½ eepromµØÖ·Page_0¿ªÊ¼µÄµØÖ·¿Õ¼äÖÐ
+  110           *********************************************************************************/
+  111          void IAP_Write_nByte(u32 eeprom_addr, u8 *nByte_addr, u16 length)
+  112          {
+  113   1        IAP_ENABLE(); // ÉèÖÃµÈ´ýÊ±¼ä£¬ÔÊÐíIAP²Ù×÷£¬ËÍÒ»´Î¾Í¹»
+  114   1        IAP_WRITE();  // ºêµ÷ÓÃ, ËÍ×Ö½ÚÐ´ÃüÁî
+  115   1        do
+  116   1        {
+  117   2          IAP_ADDRE = (u8)(eeprom_addr >> 16); // ËÍµØÖ·¸ß×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  118   2          IAP_ADDRH = (u8)(eeprom_addr >> 8);  // ËÍµØÖ·ÖÐ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  119   2          IAP_ADDRL = (u8)eeprom_addr;     // ËÍµØÖ·µÍ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  120   2          IAP_DATA = *nByte_addr;        // ËÍÊý¾Ýµ½IAP_DATA£¬Ö»ÓÐÊý¾Ý¸Ä±äÊ±²ÅÐèÖØÐÂËÍ
+  121   2      
+C251 COMPILER V5.60.0,  LQ_EEPROM                                                          21/06/26  23:15:55  PAGE 3   
+
+  122   2          EEPROM_Trig(); // ´¥·¢EEPROM²Ù×÷
+  123   2      
+  124   2          eeprom_addr++; // ÏÂÒ»¸öµØÖ·
+  125   2          nByte_addr++;  // ÏÂÒ»¸öÊý¾Ý
+  126   2        } while (--length); // Ö±µ½½áÊø
+  127   1      
+  128   1        DisableEEPROM();
+  129   1      }
+  130          
+  131          /**********************************************************************************
+  132           * º¯ Êý Ãû£ºvoid IAP_Read_nByte(u32 eeprom_addr,u8 *nByte,u16 length)
+  133           * ¹¦    ÄÜ£º´ÓEEPROMÖ¸¶¨µØÖ·¿ªÊ¼£¬Á¬Ðø¶Á³ön×Ö½ÚµÄÊý¾Ý
+  134           * ²Î    Êý£ºu32 eeprom_addr£ºÒª¶ÁÈ¡µÄeepromÆðÊ¼µØÖ·£¬ u8 *nByte±£´æ¶ÁÈ¡µ½µÄÊý¾Ý£»u16 length£ºÊý¾Ý³¤¶È
+  135           * ·µ »Ø Öµ£ºÎÞ
+  136           *           ±£´æ16Î»µÄÊý¾Ý£¬±ØÐëÃ÷È·µØÖ·IDºÍ·¶Î§
+  137           * µ÷ÓÃÊ¾Àý:
+  138            Test_Data[2];    IAP_Read_nByte(Page_0,Test_Data,2); // ´ÓeepromµØÖ·Page_0¿ªÊ¼¶ÁÈ¡2×Ö½ÚÊý¾Ý±£´æµ½Test_Da
+             -ta£»
+  139           *********************************************************************************/
+  140          void IAP_Read_nByte(u32 eeprom_addr, u8 *nByte_addr, u16 length)
+  141          {
+  142   1        IAP_ENABLE(); // ÉèÖÃµÈ´ýÊ±¼ä£¬ÔÊÐíIAP²Ù×÷£¬ËÍÒ»´Î¾Í¹»
+  143   1        IAP_READ();   // ËÍ×Ö½Ú¶ÁÃüÁî£¬ÃüÁî²»Ðè¸Ä±äÊ±£¬²»ÐèÖØÐÂËÍÃüÁî
+  144   1        do
+  145   1        {
+  146   2          IAP_ADDRE = (u8)(eeprom_addr >> 16); // ËÍµØÖ·¸ß×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  147   2          IAP_ADDRH = (u8)(eeprom_addr >> 8);  // ËÍµØÖ·ÖÐ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  148   2          IAP_ADDRL = (u8)eeprom_addr;     // ËÍµØÖ·µÍ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  149   2          EEPROM_Trig();             // ´¥·¢EEPROM²Ù×÷
+  150   2          *nByte_addr = IAP_DATA;        // ¶Á³öµÄÊý¾ÝËÍÍù
+  151   2          eeprom_addr++;
+  152   2          nByte_addr++;
+  153   2        } while (--length);
+  154   1      
+  155   1        DisableEEPROM();
+  156   1      }
+  157          
+  158          //****************************************************************************************
+  159          // º¯ Êý Ãû£ºvoid IAP_Write_Buff(u32 eeprom_addr, const u8 *buff)
+  160          // ¹¦    ÄÜ£ºÐ´buffµ½EEPROM
+  161          // ²Î    Êý£ºu32 eeprom_addr£ºÒªÐ´ÈëµÄeepromµØÖ·£¬ const u8 *buff£ºÐ´Èë¸ÃÇ°ÃæµØÖ·µÄÊý¾Ý
+  162          // ·µ »Ø Öµ£ºÎÞ
+  163          // µ÷ÓÃÊ¾Àý: IAP_Write_Buff(Page_0, (u8 *)"Hello World!",12); //½«×Ö·û´®"Hello World!"±£´æµ½ eepromµØÖ·Pa
+             -ge_0¿ªÊ¼µÄµØÖ·¿Õ¼äÖÐ
+  164          //****************************************************************************************
+  165          void IAP_Write_Buff(u32 eeprom_addr, u8 *buff, u16 length)
+  166          {
+  167   1        u8 txt[24] = {0};
+  168   1      #if 1
+  169   1        IAP_ENABLE(); // ÉèÖÃµÈ´ýÊ±¼ä£¬ÔÊÐíIAP²Ù×÷£¬ËÍÒ»´Î¾Í¹»
+  170   1        IAP_WRITE();  // ºêµ÷ÓÃ, ËÍ×Ö½ÚÐ´ÃüÁî
+  171   1        do
+  172   1        {
+  173   2          IAP_ADDRE = (eeprom_addr >> 16); // ËÍµØÖ·¸ß×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  174   2          IAP_ADDRH = (eeprom_addr >> 8);  // ËÍµØÖ·ÖÐ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  175   2          IAP_ADDRL = eeprom_addr;     // ËÍµØÖ·µÍ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  176   2          IAP_DATA = *buff;        // ËÍÊý¾Ýµ½IAP_DATA£¬Ö»ÓÐÊý¾Ý¸Ä±äÊ±²ÅÐèÖØÐÂËÍ
+  177   2      
+  178   2          sprintf(txt, "IAP_E:%#X ", eeprom_addr >> 16);
+  179   2          OLED_P6x8Str(0, 1, txt); // ÏÔÊ¾¶Á³öµÄÊý¾Ý
+  180   2          sprintf(txt, "IAP_H:%#X ", eeprom_addr >> 8);
+  181   2          OLED_P6x8Str(0, 2, txt); // ÏÔÊ¾¶Á³öµÄÊý¾Ý
+  182   2          sprintf(txt, "IAP_L:%#X ", eeprom_addr);
+  183   2          OLED_P6x8Str(0, 3, txt); // ÏÔÊ¾¶Á³öµÄÊý¾Ý
+  184   2      
+  185   2          EEPROM_Trig(); // ´¥·¢EEPROM²Ù×÷
+C251 COMPILER V5.60.0,  LQ_EEPROM                                                          21/06/26  23:15:55  PAGE 4   
+
+  186   2      
+  187   2          eeprom_addr++; // ÏÂÒ»¸öµØÖ·
+  188   2          buff++;      // ÏÂÒ»¸öÊý¾Ý
+  189   2        } while (--length); // Ö±µ½½áÊø
+  190   1      
+  191   1        DisableEEPROM();
+  192   1      #else
+                 while (length--)
+                 {
+                   IAP_Write_Byte(eeprom_addr, *buff); // Ð´ IAP Êý¾Ý
+                   eeprom_addr++;
+                   buff++;
+                 }
+               #endif
+  200   1      }
+  201          
+  202          //****************************************************************************************
+  203          // º¯ Êý Ãû£ºvoid IAP_Read_Buff(u32 eeprom_addr, u8 *buff, u16 len)
+  204          // ¹¦    ÄÜ£º´ÓEEPROM¶ÁÈ¡len¸ö×Ö½Úµ½buff
+  205          // ²Î    Êý£ºu32 eeprom_addr£ºÒª¶ÁÈ¡µÄeepromµØÖ·£¬ u8 *buff£º¶ÁÈ¡µ½µÄÊý¾Ý£¬ u16 len£º¶ÁÈ¡µÄÊý¾Ý³¤¶È
+  206          // ·µ »Ø Öµ£ºÎÞ
+  207          // µ÷ÓÃÊ¾Àý: IAP_Read_Buff(Page_0, buff, 10); // ´ÓeepromµØÖ·Page_0¿ªÊ¼¶ÁÈ¡10×Ö½ÚÊý¾Ý±£´æµ½buff£»
+  208          // ***************************************************************************************
+  209          void IAP_Read_Buff(u32 eeprom_addr, u8 *buff, u16 length)
+  210          {
+  211   1      #if 1
+  212   1        IAP_ENABLE(); // ÉèÖÃµÈ´ýÊ±¼ä£¬ÔÊÐíIAP²Ù×÷£¬ËÍÒ»´Î¾Í¹»
+  213   1        IAP_READ();   // ËÍ×Ö½Ú¶ÁÃüÁî£¬ÃüÁî²»Ðè¸Ä±äÊ±£¬²»ÐèÖØÐÂËÍÃüÁî
+  214   1        do
+  215   1        {
+  216   2          IAP_ADDRE = (eeprom_addr >> 16); // ËÍµØÖ·¸ß×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  217   2          IAP_ADDRH = (eeprom_addr >> 8);  // ËÍµØÖ·ÖÐ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  218   2          IAP_ADDRL = eeprom_addr;     // ËÍµØÖ·µÍ×Ö½Ú£¨µØÖ·ÐèÒª¸Ä±äÊ±²ÅÐèÖØÐÂËÍµØÖ·£©
+  219   2          EEPROM_Trig();           // ´¥·¢EEPROM²Ù×÷
+  220   2          *buff = IAP_DATA;        // ¶Á³öµÄÊý¾ÝËÍÍù
+  221   2          eeprom_addr++;
+  222   2          buff++;
+  223   2        } while (--length);
+  224   1      
+  225   1        DisableEEPROM();
+  226   1      #else
+               
+                 while (length--)
+                 {
+                   *buff++ = IAP_Read_Byte(eeprom_addr); // ¶Á IAP Êý¾Ý
+                   eeprom_addr++;
+                 }
+               #endif
+  234   1      }
+  235          
+  236          void IAP_Erase_Page(u32 eeprom_addr)
+  237          {
+  238   1        EEPROM_SectorErase(eeprom_addr);
+  239   1        delay_ms(6); // ²Á³ýÒ»Õû¸öÉÈÇø512×Ö½Ú£¬´«Èë²ÎÊýÖ»ÒªÔÚ¸ÃÉÈÇøÄÚ£¬Ã¿ÉÈÇøºÄÊ±Ô¼5ms
+  240   1      }
+  241          
+  242          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       603     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+C251 COMPILER V5.60.0,  LQ_EEPROM                                                          21/06/26  23:15:55  PAGE 5   
+
+  xdata-const size     =    ------     ------
+  edata size           =    ------         52
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        57     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

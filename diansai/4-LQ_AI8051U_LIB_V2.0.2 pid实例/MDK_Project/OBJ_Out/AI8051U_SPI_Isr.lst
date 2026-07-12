@@ -1,0 +1,71 @@
+C251 COMPILER V5.60.0,  AI8051U_SPI_Isr                                                    21/06/26  23:15:58  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE AI8051U_SPI_Isr
+OBJECT MODULE PLACED IN .\OBJ_Out\AI8051U_SPI_Isr.obj
+COMPILER INVOKED BY: F:\Keil_v5\C251\BIN\C251.EXE ..\Driver\isr\AI8051U_SPI_Isr.c XSMALL OA UNSIGNED_CHAR FLOAT64 BROWSE
+                    - INCDIR(..\LQ_APP\Inc;..\LQ_APP\Src;..\Driver;..\Driver\Inc;..\User;..\LQ_LIB\Inc;..\User_Code;..\control;..\UserCode;..
+                    -\UserCode\APP;..\UserCode\BSP;..\UserCode\MIDDLE) DEFINE(AI8051U_32Bit) DEBUG PRINT(.\OBJ_Out\AI8051U_SPI_Isr.lst) TABS(
+                    -2) OBJECT(.\OBJ_Out\AI8051U_SPI_Isr.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* ------------------- Web: www.STCAI.com -----------------------------*/
+    3          /*---------------------------------------------------------------------*/
+    4          
+    5          #include "AI8051U_SPI.h"
+    6          
+    7          //========================================================================
+    8          // 函数: SPI_ISR_Handler
+    9          // 描述: SPI中断函数.
+   10          // 参数: none.
+   11          // 返回: none.
+   12          // 版本: V1.0, 2020-09-23
+   13          //========================================================================
+   14          void SPI_ISR_Handler() interrupt SPI_VECTOR
+   15          {
+   16   1          if(SPIF)
+   17   1          {
+   18   2              if(MSTR)  //主机模式
+   19   2              {
+   20   3                  B_SPI_Busy = 0;
+   21   3              }
+   22   2              else        //从机模式
+   23   2              {
+   24   3                  if(SPI_RxCnt >= SPI_BUF_LENTH) SPI_RxCnt = 0;
+   25   3                  SPI_RxBuffer[SPI_RxCnt++] = SPDAT;
+   26   3              }
+   27   2          }
+   28   1          SPI_ClearFlag();      //清 SPIF 和 WCOL 标志
+   29   1      
+   30   1          if(SPITOSR & 0x01)
+   31   1          {
+   32   2              SPI_RxTimerOut = 1;
+   33   2              SPI_TOIFClear();     //设置 CTOCF 清除超时标志位 TOIF
+   34   2          }
+   35   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        98     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
