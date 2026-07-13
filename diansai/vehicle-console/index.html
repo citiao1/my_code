@@ -71,15 +71,80 @@
       <div class="pid-panel">
         <div class="pid-heading">
           <div><span class="kicker">YAW RATE LOOP</span><h3>角速度环</h3></div>
-          <label class="yaw-toggle"><input id="yawEnabled" type="checkbox">启用</label>
+          <label class="yaw-toggle"><input id="yawEnabled" type="checkbox" checked>启用</label>
         </div>
         <div class="pid-inputs">
           <label>Kp<input id="yawKp" type="number" min="0" max="0.1" step="0.0005" value="0.001"></label>
-          <label>Ki<input id="yawKi" type="number" min="0" max="0.1" step="0.0005" value="0"></label>
+          <label>Ki<input id="yawKi" type="number" min="0" max="0.1" step="0.0005" value="0.002"></label>
           <label>Kd<input id="yawKd" type="number" min="0" max="0.1" step="0.0001" value="0"></label>
-          <label>最大角速度 °/s<input id="maxYawRate" type="number" min="10" max="360" step="10" value="120"></label>
+          <label>Kff<input id="yawKff" type="number" min="0" max="0.1" step="0.0001" value="0.001205"></label>
+          <label>最大角速度 °/s<input id="maxYawRate" type="number" min="10" max="360" step="10" value="150"></label>
+        </div>
+        <div class="kff-calculator">
+          <div class="kff-calculator-heading">
+            <span class="kicker">KFF CALCULATOR</span>
+            <output id="kffResult">Kff 0.000000</output>
+          </div>
+          <div class="kff-calculator-inputs">
+            <label>稳定 I22 °/s<input id="kffTargetRate" type="number" min="-360" max="360" step="0.1" value="0"></label>
+            <label>稳定 I25 m/s<input id="kffCorrection" type="number" min="-1.5" max="1.5" step="0.001" value="0"></label>
+            <label>采用比例 %<input id="kffFactor" type="number" min="1" max="100" step="1" value="80"></label>
+          </div>
+          <div class="kff-calculator-actions">
+            <button id="captureKffButton" class="command secondary" type="button">采集当前</button>
+            <button id="calculateKffButton" class="command secondary" type="button">计算并填入</button>
+          </div>
         </div>
         <button id="applyYawButton" class="command secondary pid-apply" type="button">应用角速度参数</button>
+      </div>
+
+      <div class="pid-panel">
+        <div class="pid-heading">
+          <div><span class="kicker">HEADING OUTER LOOP</span><h3>航向方向环</h3></div>
+          <label class="yaw-toggle"><input id="headingEnabled" type="checkbox" checked>启用</label>
+        </div>
+        <div class="pid-inputs">
+          <label>Kp<input id="headingKp" type="number" min="0" max="20" step="0.1" value="4"></label>
+          <label>Kd<input id="headingKd" type="number" min="0" max="10" step="0.01" value="0.3"></label>
+          <label>Kff<input id="headingKff" type="number" min="0" max="2" step="0.05" value="1"></label>
+          <label>最大输出 °/s<input id="headingMaxRate" type="number" min="5" max="360" step="5" value="80"></label>
+          <label>测试目标航向 °<input id="headingTarget" type="number" min="-180" max="180" step="1" value="0"></label>
+        </div>
+        <div class="kff-calculator-actions">
+          <button id="captureHeadingButton" class="command secondary" type="button">采集当前航向</button>
+          <button id="sendHeadingTargetButton" class="command secondary" type="button">发送测试目标</button>
+        </div>
+        <button id="applyHeadingButton" class="command secondary pid-apply" type="button">应用方向环参数</button>
+        <div class="heading-auto-test">
+          <div class="kff-calculator-heading">
+            <span class="kicker">AUTOMATED STEP TEST</span>
+            <output id="headingTestStatus">待机</output>
+          </div>
+          <div class="kff-calculator-inputs">
+            <label>测试油门 %<input id="headingTestThrottle" type="number" min="5" max="50" step="5" value="20"></label>
+            <label>航向阶跃 °<input id="headingTestAngle" type="number" min="1" max="45" step="1" value="10"></label>
+            <label>每段时间 s<input id="headingTestDuration" type="number" min="1" max="10" step="0.5" value="2.5"></label>
+          </div>
+          <div class="kff-calculator-actions">
+            <button id="startHeadingTestButton" class="command primary" type="button">直行阶跃测试</button>
+            <button id="startQuarterTurnLeftButton" class="command secondary" type="button">左转 4×90°</button>
+            <button id="startQuarterTurnRightButton" class="command secondary" type="button">右转 4×90°</button>
+            <button id="stopHeadingTestButton" class="command secondary" type="button" disabled>停止测试</button>
+          </div>
+        </div>
+        <div class="heading-auto-test">
+          <div class="kff-calculator-heading">
+            <span class="kicker">1M SQUARE TEST</span>
+            <output id="squareTestStatus">待机</output>
+          </div>
+          <div class="kff-calculator-inputs">
+            <label>直行油门 %<input id="squareTestThrottle" type="number" min="10" max="60" step="5" value="30"></label>
+          </div>
+          <div class="kff-calculator-actions">
+            <button id="startSquareLeftButton" class="command primary" type="button">左转正方形</button>
+            <button id="startSquareRightButton" class="command secondary" type="button">右转正方形</button>
+          </div>
+        </div>
       </div>
 
       <div class="control-footer">
@@ -123,6 +188,11 @@
         <div class="data-row"><span>实际角速度</span><strong id="yawRate">0.0 °/s</strong></div>
         <div class="data-row"><span>角速度误差</span><strong id="yawRateError">0.0 °/s</strong></div>
         <div class="data-row"><span>差速修正</span><strong id="yawCorrection">0.000 m/s</strong></div>
+        <div class="data-row"><span>角速度前馈</span><strong id="yawFeedforward">0.000 m/s</strong></div>
+        <div class="data-row"><span>目标航向</span><strong id="targetHeading">0.0 °</strong></div>
+        <div class="data-row"><span>航向误差</span><strong id="headingError">0.0 °</strong></div>
+        <div class="data-row"><span>方向环输出</span><strong id="headingOutput">0.0 °/s</strong></div>
+        <div class="data-row"><span>方向环状态</span><strong id="headingLoopState">关闭</strong></div>
         <div class="data-row"><span>角速度闭环</span><strong id="yawLoopState">关闭</strong></div>
         <div class="data-row"><span>MPU6050</span><strong id="mpuState">未知</strong></div>
         <div class="data-row"><span>电池电压</span><strong id="batteryVoltage">0.00 V</strong></div>

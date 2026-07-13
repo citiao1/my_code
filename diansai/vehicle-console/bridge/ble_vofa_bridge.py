@@ -98,29 +98,42 @@ class BleVofaBridge:
     @staticmethod
     def to_firewater(line: str) -> Optional[bytes]:
         fields = line.split(",")
-        if len(fields) < 30 or fields[0] != "TEL":
+        if fields[0] != "TEL":
             return None
         try:
             values = list(map(int, fields[1:]))
         except ValueError:
             return None
-        time_ms, enabled, link, yaw10, pitch10, roll10 = values[:6]
-        left_mm, right_mm, target_l_mm, target_r_mm, error_l_mm, error_r_mm = values[6:12]
-        enc_l, enc_r, pwm_l, pwm_r, kp_l, ki_l, kd_l, kp_r, ki_r, kd_r = values[12:22]
-        target_yaw10, yaw_rate10, yaw_error10, yaw_correction_mm, yaw_enabled, battery_mv, battery_raw = values[22:29]
-        mpu_ok = values[29] if len(values) > 29 else -1
+
+        if len(values) >= 36:
+            time_ms, enabled, link, yaw10 = values[:4]
+            left_mm, right_mm, target_l_mm, target_r_mm = values[6:10]
+            pwm_l, pwm_r = values[14:16]
+            target_yaw10, yaw_rate10, yaw_error10, yaw_correction_mm = values[22:26]
+            yaw_enabled, battery_mv, mpu_ok, yaw_feedforward_mm = values[26], values[27], values[29], values[30]
+            target_heading10, heading_error10, heading_output10 = values[31:34]
+            heading_enabled, heading_active = values[34:36]
+        elif len(values) >= 23:
+            (time_ms, enabled, link, yaw10, left_mm, right_mm, target_l_mm, target_r_mm,
+             pwm_l, pwm_r, target_yaw10, yaw_rate10, yaw_error10, yaw_correction_mm,
+             yaw_enabled, mpu_ok, yaw_feedforward_mm, target_heading10, heading_error10,
+             heading_output10, heading_enabled, heading_active, battery_mv) = values[:23]
+        else:
+            return None
 
         # FireWater accepts one optional prefix, followed only by CSV numbers.
         channels = (
             time_ms, enabled, link,
-            yaw10 / 10, pitch10 / 10, roll10 / 10,
+            yaw10 / 10,
             left_mm / 1000, right_mm / 1000,
             target_l_mm / 1000, target_r_mm / 1000,
-            error_l_mm / 1000, error_r_mm / 1000,
-            enc_l, enc_r, pwm_l, pwm_r,
-            kp_l, ki_l, kd_l, kp_r, ki_r, kd_r,
+            pwm_l, pwm_r,
             target_yaw10 / 10, yaw_rate10 / 10, yaw_error10 / 10,
-            yaw_correction_mm / 1000, yaw_enabled, battery_mv / 1000, battery_raw, mpu_ok,
+            yaw_correction_mm / 1000, yaw_enabled, mpu_ok,
+            yaw_feedforward_mm / 1000,
+            target_heading10 / 10, heading_error10 / 10, heading_output10 / 10,
+            heading_enabled, heading_active,
+            battery_mv / 1000,
         )
         text = "vehicle:" + ",".join(f"{value:g}" for value in channels) + "\n"
         return text.encode("utf-8")

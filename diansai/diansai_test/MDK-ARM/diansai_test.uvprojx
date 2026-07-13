@@ -400,6 +400,41 @@
               <FilePath>../Core/Src/vehicle_app.c</FilePath>
             </File>
             <File>
+              <FileName>vehicle_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/vehicle_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/vehicle_motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_imu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/vehicle_imu.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_battery.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/vehicle_battery.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_comm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/vehicle_comm.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_display.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/vehicle_display.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_gray.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/vehicle_gray.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>

@@ -160,6 +160,17 @@ input[type="range"] { width: 100%; margin: 16px 0 4px; accent-color: var(--green
 .pid-inputs label:last-child { grid-column: 1 / -1; }
 .pid-inputs input { width: 100%; min-width: 0; height: 34px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: #fff; font: 13px Consolas, monospace; }
 .pid-inputs input:focus { outline: 2px solid #a7d3c2; border-color: var(--green); }
+.kff-calculator { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.kff-calculator-heading { min-height: 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+#kffResult { color: var(--green); font: 700 12px Consolas, monospace; }
+.kff-calculator-inputs { margin-top: 8px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.kff-calculator-inputs label { display: flex; flex-direction: column; gap: 5px; color: var(--muted); font-size: 11px; }
+.kff-calculator-inputs input { width: 100%; min-width: 0; height: 34px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: #fff; font: 13px Consolas, monospace; }
+.kff-calculator-inputs input:focus { outline: 2px solid #a7d3c2; border-color: var(--green); }
+.kff-calculator-actions { margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.heading-auto-test { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); }
+#headingTestStatus, #squareTestStatus { color: var(--green); font: 700 12px Consolas, monospace; }
+#stopHeadingTestButton:not(:disabled) { color: var(--red); border-color: #e3b6b6; }
 .pid-apply { width: 100%; margin-top: 10px; }
 .control-footer { justify-content: space-between; margin-top: 22px; gap: 14px; }
 .command-state { gap: 8px; color: var(--muted); font-size: 12px; }
@@ -219,5 +230,6 @@ input[type="range"] { width: 100%; margin: 16px 0 4px; accent-color: var(--green
   .metric:last-child { border-bottom: 0; }
   .metric strong { font-size: 21px; }
   .data-grid { grid-template-columns: 1fr; }
+  .kff-calculator-inputs { grid-template-columns: 1fr; }
   .statusbar { width: calc(100% - 20px); flex-direction: column; gap: 4px; }
 }

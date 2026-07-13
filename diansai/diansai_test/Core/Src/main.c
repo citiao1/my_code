@@ -88,6 +88,7 @@ int main(void)
   MX_I2C2_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
+  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   Vehicle_Init();
   /* USER CODE END 2 */

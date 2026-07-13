@@ -59,6 +59,12 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define MOTOR_EN_Pin GPIO_PIN_3
 #define MOTOR_EN_GPIO_Port GPIOD
+#define GRAY_SEL_A_Pin GPIO_PIN_1
+#define GRAY_SEL_A_GPIO_Port GPIOC
+#define GRAY_SEL_B_Pin GPIO_PIN_2
+#define GRAY_SEL_B_GPIO_Port GPIOC
+#define GRAY_SEL_C_Pin GPIO_PIN_3
+#define GRAY_SEL_C_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
 

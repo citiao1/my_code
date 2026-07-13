@@ -1,0 +1,12 @@
+~$*
+**/ProgramLogs.txt
+**/MDK-ARM/build.log
+**/MDK-ARM/.vscode/*.log
+**/MDK-ARM/*/*.axf
+**/MDK-ARM/*/*.crf
+**/MDK-ARM/*/*.d
+**/MDK-ARM/*/*.dep
+**/MDK-ARM/*/*.htm
+**/MDK-ARM/*/*.lnp
+**/MDK-ARM/*/*.map
+**/MDK-ARM/*/*.o
