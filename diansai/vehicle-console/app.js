@@ -89,6 +89,26 @@ const ui = {
   mpuState: document.querySelector('#mpuState'),
   batteryVoltage: document.querySelector('#batteryVoltage'),
   batteryRaw: document.querySelector('#batteryRaw'),
+  linePhase: document.querySelector('#linePhase'),
+  lineSpeedPercent: document.querySelector('#lineSpeedPercent'),
+  lineSpeedInput: document.querySelector('#lineSpeedInput'),
+  applyLineSpeedButton: document.querySelector('#applyLineSpeedButton'),
+  lineKp: document.querySelector('#lineKp'),
+  lineKd: document.querySelector('#lineKd'),
+  applyLinePidButton: document.querySelector('#applyLinePidButton'),
+  grayActiveCount: document.querySelector('#grayActiveCount'),
+  grayCalibrationState: document.querySelector('#grayCalibrationState'),
+  captureGrayWhiteButton: document.querySelector('#captureGrayWhiteButton'),
+  captureGrayBlackButton: document.querySelector('#captureGrayBlackButton'),
+  grayCalibrationParams: document.querySelector('#grayCalibrationParams'),
+  requestGrayCalibrationButton: document.querySelector('#requestGrayCalibrationButton'),
+  copyGrayCalibrationButton: document.querySelector('#copyGrayCalibrationButton'),
+  cornerAdvanceMm: document.querySelector('#cornerAdvanceMm'),
+  applyCornerAdvanceButton: document.querySelector('#applyCornerAdvanceButton'),
+  cornerTurnDeg: document.querySelector('#cornerTurnDeg'),
+  applyCornerTurnButton: document.querySelector('#applyCornerTurnButton'),
+  grayValues: Array.from({ length: 8 }, (_, index) => document.querySelector(`#gray${index}`)),
+  grayNormalized: Array.from({ length: 8 }, (_, index) => document.querySelector(`#grayNorm${index}`)),
 };
 
 let port;
@@ -111,6 +131,7 @@ let latestYawRate = 0;
 let latestHeadingError = 0;
 let latestHeadingState = { motorEnabled: 0, yawEnabled: 0, mpuOk: 0, headingEnabled: 0, headingActive: 0 };
 let latestSquareState = { active: 0, phase: 0, leg: 0, direction: 0, progressMm: 0, remainingMm: 0 };
+let latestGrayCalibration = { white: 0, black: 0 };
 let headingTestActive = false;
 let headingTestToken = 0;
 let headingTestCommandTimer;
@@ -144,6 +165,11 @@ async function sendLine(line) {
   return writeChain;
 }
 
+async function syncLineSpeed() {
+  const percent = Math.max(20, Math.min(100, Math.round(Number(ui.lineSpeedInput.value))));
+  return sendLine(`LINESPD,${percent}`);
+}
+
 async function connectSerial() {
   if (!('serial' in navigator)) {
     setLog('当前浏览器不支持 Web Serial');
@@ -158,6 +184,7 @@ async function connectSerial() {
     setConnected(true);
     setLog(`已连接 ${BAUD_RATE} baud`);
     await sendLine('STOP');
+    await sendLine('GRAYCAL');
     readLoop();
   } catch (error) {
     setLog(`连接失败: ${error.message}`);
@@ -190,6 +217,7 @@ async function connectBle() {
     setConnected(true);
     setLog(`已连接 ${bleDevice.name || 'BLE device'} · FFE0`);
     await sendLine('STOP');
+    await sendLine('GRAYCAL');
   } catch (error) {
     setLog(`蓝牙连接失败: ${error.message}`);
     await disconnect(false);
@@ -211,6 +239,7 @@ async function connectBridge() {
     setConnected(true);
     setLog('已连接本地 BLE 桥接 · ws://127.0.0.1:8766');
     await sendLine('STOP');
+    await sendLine('GRAYCAL');
   } catch (error) {
     setLog(`桥接连接失败: ${error.message}`);
     try { bridgeSocket?.close(); } catch (_) {}
@@ -306,12 +335,27 @@ function parseLine(line) {
   const values = fields.slice(1).map(Number);
   if (values.some(Number.isNaN)) return;
 
+  if (fields[0] === 'CAL') {
+    if (values.length < 16) return;
+    const white = values.slice(0, 8).map(Math.round);
+    const black = values.slice(8, 16).map(Math.round);
+    ui.grayCalibrationParams.value = JSON.stringify({ white, black });
+    return;
+  }
+
   if (fields[0] === 'STA') {
     if (values.length < 12) return;
     const [time, pitch10, roll10, encL, encR, batteryRaw,
       kpL, kiL, kdL, kpR, kiR, kdR,
       squareActive = 0, squarePhase = 0, squareLeg = 0, squareDirection = 0,
-      squareProgressMm = 0, squareRemainingMm = 0] = values;
+      squareProgressMm = 0, squareRemainingMm = 0,
+      linePhase = 0, lineSpeedPercent = 30, activeCount = 0, cornerAdvanceMm = 90,
+      g0 = 0, g1 = 0, g2 = 0, g3 = 0,
+      g4 = 0, g5 = 0, g6 = 0, g7 = 0, cornerTurnDeg = 60,
+      contiguousCount = activeCount, whiteCalibrated = 0, blackCalibrated = 0,
+      lineKpMilli = 900, lineKdMilli = 500,
+      n0 = 0, n1 = 0, n2 = 0, n3 = 0,
+      n4 = 0, n5 = 0, n6 = 0, n7 = 0] = values;
     ui.packetTime.textContent = `${time} ms`;
     ui.pitchValue.textContent = `${(pitch10 / 10).toFixed(1)}°`;
     ui.rollValue.textContent = `${(roll10 / 10).toFixed(1)}°`;
@@ -321,6 +365,31 @@ function parseLine(line) {
     ui.distanceValue.textContent = `${Math.round(distanceMm)} mm`;
     ui.batteryRaw.textContent = batteryRaw.toLocaleString();
     ui.pidCurrent.textContent = `L ${kpL}/${kiL}/${kdL} · R ${kpR}/${kiR}/${kdR}`;
+    const linePhaseNames = ['待机', '等待启动', '寻线中', '拐角前进',
+      `左转 ${cornerTurnDeg}°`, '丢线停止', '异常停止'];
+    ui.linePhase.textContent = linePhaseNames[linePhase] ?? `未知状态 ${linePhase}`;
+    ui.lineSpeedPercent.textContent = `${lineSpeedPercent}%`;
+    if (document.activeElement !== ui.lineSpeedInput) ui.lineSpeedInput.value = lineSpeedPercent;
+    if (document.activeElement !== ui.lineKp) ui.lineKp.value = (lineKpMilli / 1000).toFixed(3);
+    if (document.activeElement !== ui.lineKd) ui.lineKd.value = (lineKdMilli / 1000).toFixed(3);
+    ui.grayActiveCount.textContent = `${activeCount} / 8 · 连续 ${contiguousCount}`;
+    latestGrayCalibration = { white: whiteCalibrated, black: blackCalibrated };
+    ui.grayCalibrationState.classList.toggle('complete', Boolean(whiteCalibrated && blackCalibrated));
+    ui.grayCalibrationState.textContent = whiteCalibrated && blackCalibrated
+      ? '标定完成'
+      : (whiteCalibrated ? '白底已采集 · 等待黑线' : '未完整标定');
+    if (document.activeElement !== ui.cornerAdvanceMm) {
+      ui.cornerAdvanceMm.value = cornerAdvanceMm;
+    }
+    if (document.activeElement !== ui.cornerTurnDeg) {
+      ui.cornerTurnDeg.value = cornerTurnDeg;
+    }
+    [g0, g1, g2, g3, g4, g5, g6, g7].forEach((value, index) => {
+      ui.grayValues[index].textContent = value.toLocaleString();
+    });
+    [n0, n1, n2, n3, n4, n5, n6, n7].forEach((value, index) => {
+      ui.grayNormalized[index].textContent = `N${value}`;
+    });
     latestSquareState = {
       active: squareActive,
       phase: squarePhase,
@@ -420,20 +489,17 @@ function parseLine(line) {
 function applyPidParameters() {
   const left = [ui.pidLeftKp, ui.pidLeftKi, ui.pidLeftKd].map((input) => Math.round(Number(input.value)));
   const right = [ui.pidRightKp, ui.pidRightKi, ui.pidRightKd].map((input) => Math.round(Number(input.value)));
-  const maxSpeed = Math.round(Number(ui.maxSpeed.value));
   const validPid = ([kp, ki, kd]) => Number.isFinite(kp) && kp >= 0 && kp <= 50000
     && Number.isFinite(ki) && ki >= 0 && ki <= 50000
     && Number.isFinite(kd) && kd >= 0 && kd <= 5000;
-  const valid = validPid(left) && validPid(right)
-    && Number.isFinite(maxSpeed) && maxSpeed >= 50 && maxSpeed <= 1500;
+  const valid = validPid(left) && validPid(right);
   if (!valid) {
     setLog('PID 参数超出允许范围');
     return;
   }
   sendLine(`PIDL,${left.join(',')}`);
   sendLine(`PIDR,${right.join(',')}`);
-  sendLine(`MAX,${maxSpeed}`);
-  setLog(`已发送左 PID ${left.join('/')} · 右 PID ${right.join('/')} · ${maxSpeed} mm/s`);
+  setLog(`已发送左 PID ${left.join('/')} · 右 PID ${right.join('/')} · 轮速限幅 700 mm/s`);
 }
 
 function applyYawParameters() {
@@ -898,6 +964,80 @@ ui.startQuarterTurnRightButton.addEventListener('click', () => startQuarterTurnT
 ui.startSquareLeftButton.addEventListener('click', () => startSquareTest(1));
 ui.startSquareRightButton.addEventListener('click', () => startSquareTest(-1));
 ui.stopHeadingTestButton.addEventListener('click', () => stopHeadingAutoTest(true));
+ui.applyLineSpeedButton.addEventListener('click', () => {
+  const percent = Math.round(Number(ui.lineSpeedInput.value));
+  if (!Number.isFinite(percent) || percent < 20 || percent > 100) {
+    setLog('寻线速度必须在 20–100% 之间');
+    return;
+  }
+  ui.lineSpeedInput.value = percent;
+  syncLineSpeed();
+  setLog(`寻线速度已设为 ${percent}%`);
+});
+ui.applyLinePidButton.addEventListener('click', () => {
+  const kp = Number(ui.lineKp.value);
+  const kd = Number(ui.lineKd.value);
+  if (!Number.isFinite(kp) || kp < 0 || kp > 5 ||
+      !Number.isFinite(kd) || kd < 0 || kd > 10) {
+    setLog('寻线 PD 参数超出范围');
+    return;
+  }
+  sendLine(`LINEPID,${Math.round(kp * 1000)},${Math.round(kd * 1000)}`);
+  setLog(`寻线 PD 已设为 Kp ${kp} · Kd ${kd}`);
+});
+ui.captureGrayWhiteButton.addEventListener('click', async () => {
+  await sendLine('STOP');
+  await sendLine('GRAYWHITE');
+  setLog('已采集白底；现在将全部探头放到黑线上采集黑线');
+});
+ui.captureGrayBlackButton.addEventListener('click', async () => {
+  if (!latestGrayCalibration.white) {
+    setLog('请先采集白底');
+    return;
+  }
+  await sendLine('STOP');
+  await sendLine('GRAYBLACK');
+  setLog('已请求采集黑线，请查看标定状态');
+});
+ui.requestGrayCalibrationButton.addEventListener('click', () => sendLine('GRAYCAL'));
+ui.copyGrayCalibrationButton.addEventListener('click', async () => {
+  if (!latestGrayCalibration.white || !latestGrayCalibration.black) {
+    setLog('请先完成白底和黑线标定');
+    return;
+  }
+  const text = ui.grayCalibrationParams.value;
+  if (!text) {
+    setLog('还没有收到标定参数');
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (_) {
+    ui.grayCalibrationParams.select();
+    document.execCommand('copy');
+  }
+  setLog('标定参数已复制');
+});
+ui.applyCornerAdvanceButton.addEventListener('click', () => {
+  const millimeters = Math.round(Number(ui.cornerAdvanceMm.value));
+  if (!Number.isFinite(millimeters) || millimeters < 10 || millimeters > 1000) {
+    setLog('拐角前进距离必须在 10–1000 mm 之间');
+    return;
+  }
+  ui.cornerAdvanceMm.value = millimeters;
+  sendLine(`LINEADV,${millimeters}`);
+  setLog(`拐角前进距离已设为 ${millimeters} mm`);
+});
+ui.applyCornerTurnButton.addEventListener('click', () => {
+  const degrees = Math.round(Number(ui.cornerTurnDeg.value));
+  if (!Number.isFinite(degrees) || degrees < 10 || degrees > 180) {
+    setLog('拐角转向角度必须在 10–180° 之间');
+    return;
+  }
+  ui.cornerTurnDeg.value = degrees;
+  sendLine(`LINETURN,${degrees}`);
+  setLog(`拐角左转角度已设为 ${degrees}°`);
+});
 ui.speedSlider.addEventListener('input', () => {
   ui.speedValue.textContent = `${ui.speedSlider.value}%`;
   if (activeDirections.size) transmitCommand();

@@ -1,0 +1,1 @@
+powershell -ExecutionPolicy Bypass -File .\vehicle-console\bridge\start-bridge.ps1 --device WHEELTEC-IOS

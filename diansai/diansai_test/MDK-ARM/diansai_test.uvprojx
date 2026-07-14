@@ -435,6 +435,16 @@
               <FilePath>../Core/Src/vehicle_gray.c</FilePath>
             </File>
             <File>
+              <FileName>vehicle_buzzer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/vehicle_buzzer.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_line.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/vehicle_line.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>

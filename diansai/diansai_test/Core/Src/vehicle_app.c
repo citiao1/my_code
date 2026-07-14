@@ -2,6 +2,7 @@
 
 #include "main.h"
 #include "vehicle_battery.h"
+#include "vehicle_buzzer.h"
 #include "vehicle_comm.h"
 #include "vehicle_config.h"
 #include "vehicle_control.h"
@@ -9,6 +10,7 @@
 #include "vehicle_gray.h"
 #include "vehicle_imu.h"
 #include "vehicle_internal.h"
+#include "vehicle_line.h"
 #include "vehicle_motor.h"
 
 VehicleState state;
@@ -17,6 +19,7 @@ SpeedPidState pid_right;
 YawPidState pid_yaw;
 HeadingPidState pid_heading;
 SquareTestState square_test;
+LineFollowState line_follow;
 
 uint32_t last_command_ms;
 uint32_t last_heading_ms;
@@ -30,6 +33,7 @@ static uint32_t last_mpu_retry_ms;
 void Vehicle_Init(void)
 {
   VehicleControl_InitDefaults();
+  VehicleBuzzer_Init();
   VehicleMotor_Init();
   VehicleDisplay_Init();
   VehicleDisplay_WriteLine(0, "C30D VEHICLE");
@@ -39,6 +43,7 @@ void Vehicle_Init(void)
   VehicleControl_EnableDefaultLoops();
   VehicleBattery_Update();
   VehicleGray_Init();
+  VehicleLine_Init(HAL_GetTick());
   VehicleComm_Init();
 
   last_control_ms = HAL_GetTick();
@@ -51,6 +56,7 @@ void Vehicle_Init(void)
 void Vehicle_Loop(void)
 {
   uint32_t now = HAL_GetTick();
+  VehicleBuzzer_Update(now);
   VehicleComm_Process();
 
   if (!state.mpu_ok && state.throttle == 0 && state.steering == 0 &&

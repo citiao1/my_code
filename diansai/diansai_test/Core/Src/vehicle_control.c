@@ -4,6 +4,7 @@
 #include "vehicle_config.h"
 #include "vehicle_imu.h"
 #include "vehicle_internal.h"
+#include "vehicle_line.h"
 #include "vehicle_motor.h"
 
 #include <math.h>
@@ -22,7 +23,7 @@ void VehicleControl_InitDefaults(void)
   pid_left.kp = pid_right.kp = DEFAULT_PID_KP;
   pid_left.ki = pid_right.ki = DEFAULT_PID_KI;
   pid_left.kd = pid_right.kd = DEFAULT_PID_KD;
-  state.max_speed = DEFAULT_MAX_SPEED_MPS;
+  state.max_speed = MOTOR_SPEED_LIMIT_MPS;
   pid_yaw.kp = DEFAULT_YAW_KP;
   pid_yaw.ki = DEFAULT_YAW_KI;
   pid_yaw.kd = DEFAULT_YAW_KD;
@@ -55,13 +56,14 @@ static void ApplySpeedControl(uint32_t now)
   float left_target;
   float right_target;
   float peak;
+  uint8_t line_mode_active = VehicleLine_IsControlActive();
   uint8_t heading_mode_active = state.heading_control_enabled &&
                                 state.yaw_control_enabled &&
                                 state.mpu_ok &&
                                 state.heading_hold_active &&
                                 state.steering == 0;
 
-  if (!VehicleMotor_IsEnabled() || !state.link_active ||
+  if (!VehicleMotor_IsEnabled() || (!state.link_active && !line_mode_active) ||
       (state.throttle == 0 && state.steering == 0 && !heading_mode_active))
   {
     state.target_left = 0.0f;
@@ -73,7 +75,16 @@ static void ApplySpeedControl(uint32_t now)
     return;
   }
 
-  if (state.heading_control_enabled && state.yaw_control_enabled && state.mpu_ok &&
+  if (VehicleLine_IsRunning())
+  {
+    state.target_yaw_rate = VehicleLine_GetTargetYawRate();
+    state.heading_reference = state.yaw;
+    state.heading_reference_rate = 0.0f;
+    state.heading_error = 0.0f;
+    state.heading_output = 0.0f;
+    state.heading_hold_active = 0U;
+  }
+  else if (state.heading_control_enabled && state.yaw_control_enabled && state.mpu_ok &&
       state.steering == 0 && (state.throttle != 0 || state.heading_hold_active))
   {
     if (!state.heading_hold_active)
@@ -340,12 +351,13 @@ void VehicleControl_Update(uint32_t now)
 {
   VehicleMotor_UpdateFeedback();
   state.link_active = (last_command_ms != 0U && (now - last_command_ms) <= COMMAND_TIMEOUT_MS);
-  if (!state.link_active)
+  VehicleImu_Update(now);
+  VehicleLine_Update(now);
+  if (!state.link_active && !VehicleLine_IsControlActive())
   {
     state.throttle = 0;
     state.steering = 0;
   }
-  VehicleImu_Update(now);
   SquareTestUpdate(now);
   ApplySpeedControl(now);
   if ((now - last_battery_ms) >= BATTERY_PERIOD_MS)

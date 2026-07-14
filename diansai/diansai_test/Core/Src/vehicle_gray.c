@@ -2,6 +2,7 @@
 
 #include "adc.h"
 #include "main.h"
+#include "vehicle_config.h"
 
 static void SelectChannel(uint8_t channel)
 {
@@ -20,20 +21,28 @@ void VehicleGray_Init(void)
 
 uint16_t VehicleGray_ReadChannel(uint8_t channel)
 {
+  uint8_t sample;
   volatile uint32_t settle;
-  uint16_t value = 0U;
+  uint32_t sum = 0U;
 
   if (channel >= GRAY_SENSOR_CHANNELS) return 0U;
   SelectChannel(channel);
   for (settle = 0U; settle < 64U; ++settle) __NOP();
 
-  if (HAL_ADC_Start(&hadc2) != HAL_OK) return 0U;
-  if (HAL_ADC_PollForConversion(&hadc2, 2U) == HAL_OK)
+  for (sample = 0U; sample < GRAY_DISCARD_SAMPLES + GRAY_AVERAGE_SAMPLES; ++sample)
   {
+    uint16_t value;
+    if (HAL_ADC_Start(&hadc2) != HAL_OK) return 0U;
+    if (HAL_ADC_PollForConversion(&hadc2, 2U) != HAL_OK)
+    {
+      HAL_ADC_Stop(&hadc2);
+      return 0U;
+    }
     value = (uint16_t)HAL_ADC_GetValue(&hadc2);
+    HAL_ADC_Stop(&hadc2);
+    if (sample >= GRAY_DISCARD_SAMPLES) sum += value;
   }
-  HAL_ADC_Stop(&hadc2);
-  return value;
+  return (uint16_t)(sum / GRAY_AVERAGE_SAMPLES);
 }
 
 void VehicleGray_ReadAll(uint16_t values[GRAY_SENSOR_CHANNELS])

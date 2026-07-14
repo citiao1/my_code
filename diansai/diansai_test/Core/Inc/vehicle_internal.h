@@ -10,6 +10,7 @@ extern SpeedPidState pid_right;
 extern YawPidState pid_yaw;
 extern HeadingPidState pid_heading;
 extern SquareTestState square_test;
+extern LineFollowState line_follow;
 
 extern uint32_t last_command_ms;
 extern uint32_t last_heading_ms;

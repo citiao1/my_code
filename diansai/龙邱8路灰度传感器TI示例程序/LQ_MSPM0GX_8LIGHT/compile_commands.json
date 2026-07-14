@@ -1,0 +1,299 @@
+[
+    {
+        "directory": "User",
+        "file": "User/empty.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "User/empty.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/User/empty.o"
+        ]
+    },
+    {
+        "directory": "source",
+        "file": "source/include.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "source/include.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/source/include.o"
+        ]
+    },
+    {
+        "directory": "source",
+        "file": "source/include.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "source/include.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/source/include.o"
+        ]
+    },
+    {
+        "directory": "g:/LQ_项目文件/0_龙邱科技开源库gitee同步文件夹/LQ-TI-MSPG3507-LIB/LQ-TIMSPM0GX_LIB/LQ_MSPM0GX_8LIGHT",
+        "file": "empty.syscfg",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "empty.syscfg",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/g:/LQ_项目文件/0_龙邱科技开源库gitee同步文件夹/LQ-TI-MSPG3507-LIB/LQ-TIMSPM0GX_LIB/LQ_MSPM0GX_8LIGHT/empty.o"
+        ]
+    },
+    {
+        "directory": "g:/LQ_项目文件/0_龙邱科技开源库gitee同步文件夹/LQ-TI-MSPG3507-LIB/LQ-TIMSPM0GX_LIB/LQ_MSPM0GX_8LIGHT",
+        "file": "ti_msp_dl_config.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "ti_msp_dl_config.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/g:/LQ_项目文件/0_龙邱科技开源库gitee同步文件夹/LQ-TI-MSPG3507-LIB/LQ-TIMSPM0GX_LIB/LQ_MSPM0GX_8LIGHT/ti_msp_dl_config.o"
+        ]
+    },
+    {
+        "directory": "g:/LQ_项目文件/0_龙邱科技开源库gitee同步文件夹/LQ-TI-MSPG3507-LIB/LQ-TIMSPM0GX_LIB/LQ_MSPM0GX_8LIGHT",
+        "file": "ti_msp_dl_config.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "ti_msp_dl_config.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/g:/LQ_项目文件/0_龙邱科技开源库gitee同步文件夹/LQ-TI-MSPG3507-LIB/LQ-TIMSPM0GX_LIB/LQ_MSPM0GX_8LIGHT/ti_msp_dl_config.o"
+        ]
+    },
+    {
+        "directory": "keil",
+        "file": "keil/startup_mspm0g350x_uvision.s",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "keil/startup_mspm0g350x_uvision.s",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/keil/startup_mspm0g350x_uvision.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_gpio.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_gpio.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_gpio.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_gpio.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_gpio.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_gpio.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_key.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_key.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_key.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_key.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_key.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_key.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_oled.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_oled.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_oled.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_oled.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_oled.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_oled.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_oledfont.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_oledfont.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_oledfont.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_oledfont.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_oledfont.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_oledfont.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_encoder.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_encoder.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_encoder.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_encoder.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_encoder.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_encoder.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_motor.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_motor.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_motor.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_motor.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_motor.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_motor.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_servo.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_servo.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_servo.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_servo.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_servo.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_servo.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_usart.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_usart.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_usart.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_usart.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_usart.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_usart.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_lsm6dsr.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_lsm6dsr.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_lsm6dsr.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_lsm6dsr.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_lsm6dsr.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_lsm6dsr.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_tracking.c",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_tracking.c",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_tracking.o"
+        ]
+    },
+    {
+        "directory": "LQ_device",
+        "file": "LQ_device/LQ_tracking.h",
+        "arguments": [
+            "D:/Keil_v5/ARM/ARMCLANG/bin/armclang.exe",
+            "-c",
+            "LQ_device/LQ_tracking.h",
+            "-o",
+            "build/LQ_MSPM0G3X_LIB/LQ_device/LQ_tracking.o"
+        ]
+    }
+]

@@ -188,6 +188,29 @@ input[type="range"] { width: 100%; margin: 16px 0 4px; accent-color: var(--green
 .data-row span { color: var(--muted); font-size: 12px; }
 .data-row strong { font: 650 13px Consolas, monospace; text-align: right; }
 
+.line-panel { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+.line-panel-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+#linePhase { color: var(--green); font: 700 12px Consolas, monospace; text-align: right; }
+.gray-grid { margin-top: 12px; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.gray-channel { min-width: 0; min-height: 72px; padding: 8px 3px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; border-right: 1px solid var(--line); background: #fbfcfb; }
+.gray-channel:last-child { border-right: 0; }
+.gray-channel span { color: var(--muted); font: 10px Consolas, monospace; }
+.gray-channel strong { width: 100%; font: 700 12px Consolas, monospace; text-align: center; }
+.gray-channel small { color: var(--green); font: 700 10px Consolas, monospace; }
+.line-calibration { margin-top: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 4px; }
+#grayCalibrationState { color: var(--amber); font: 700 12px Consolas, monospace; }
+#grayCalibrationState.complete { color: var(--green); }
+.calibration-output-label { display: block; margin-top: 10px; color: var(--muted); font-size: 11px; }
+#grayCalibrationParams { width: 100%; margin-top: 5px; padding: 7px 8px; resize: vertical; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: #fbfcfb; font: 11px/1.4 Consolas, monospace; }
+#grayCalibrationParams:focus { outline: 2px solid #a7d3c2; border-color: var(--green); }
+.line-settings { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: end; }
+.line-stat, .line-settings label { min-height: 54px; padding: 8px 10px; display: flex; flex-direction: column; justify-content: space-between; gap: 5px; border: 1px solid var(--line); border-radius: 4px; color: var(--muted); font-size: 11px; }
+.line-stat strong { color: var(--ink); font: 700 13px Consolas, monospace; }
+.line-settings input { width: 100%; min-width: 0; height: 30px; padding: 4px 7px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: #fff; font: 13px Consolas, monospace; }
+.line-settings input:focus { outline: 2px solid #a7d3c2; border-color: var(--green); }
+.line-settings .command { width: 100%; }
+.line-settings .line-settings-wide { grid-column: 1 / -1; }
+
 .chart-block { margin-top: 18px; }
 .chart-heading { justify-content: space-between; margin-bottom: 8px; font-size: 12px; }
 .legend { gap: 16px; color: var(--muted); }
@@ -230,6 +253,10 @@ input[type="range"] { width: 100%; margin: 16px 0 4px; accent-color: var(--green
   .metric:last-child { border-bottom: 0; }
   .metric strong { font-size: 21px; }
   .data-grid { grid-template-columns: 1fr; }
+  .gray-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .gray-channel:nth-child(4) { border-right: 0; }
+  .gray-channel:nth-child(-n+4) { border-bottom: 1px solid var(--line); }
+  .line-settings { grid-template-columns: 1fr; }
   .kff-calculator-inputs { grid-template-columns: 1fr; }
   .statusbar { width: calc(100% - 20px); flex-direction: column; gap: 4px; }
 }

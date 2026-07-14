@@ -1,0 +1,112 @@
+#include "include.h"
+
+#define mclk_us (CPUCLK_FREQ/1000000)        //自适应主时钟
+
+// 搭配滴答定时器实现的精确us延时
+void delay_us(unsigned long __us)
+{
+	uint32_t ticks;
+	uint32_t told, tnow, tcnt = 35;     //tcnt给个初始值
+
+	// 计算需要的时钟数 = 延迟微秒数 * 每微秒的时钟数
+	ticks = __us * mclk_us;
+
+	// 获取当前的SysTick值
+	told = SysTick->VAL;
+
+	while (1)
+	{
+		// 重复刷新获取当前的SysTick值
+		tnow = SysTick->VAL;
+
+		if (tnow != told)
+		{
+			if (tnow < told)
+				tcnt += told - tnow;
+			else
+				tcnt += SysTick->LOAD - tnow + told;
+			told = tnow;
+
+			// 如果达到了需要的时钟数，就退出循环
+			if (tcnt >= ticks)
+				break;
+		}
+	}
+}
+// 搭配滴答定时器实现的精确ms延时
+void delay_ms(unsigned long ms)
+{
+	delay_us(ms * 990); // 弥补乘法耗时，使得延时更精确
+}
+
+/*
+// 串口发送单个字符
+void uart0_send_char(char ch)
+{
+	// 当串口0忙的时候等待，不忙的时候再发送传进来的字符
+	while (DL_UART_isBusy(UART_0_INST) == true)
+		;
+	// 发送单个字符
+	DL_UART_Main_transmitData(UART_0_INST, ch);
+}
+// 串口发送字符串
+void uart0_send_string(char *str)
+{
+	// 当前字符串地址不在结尾 并且 字符串首地址不为空
+	while (*str != 0 && str != 0)
+	{
+		// 发送字符串首地址中的字符，并且在发送完成之后首地址自增
+		uart0_send_char(*str++);
+	}
+}
+
+#if !defined(__MICROLIB)
+// 不使用微库的话就需要添加下面的函数
+#if (__ARMCLIB_VERSION <= 6000000)
+// 如果编译器是AC5  就定义下面这个结构体
+struct __FILE
+{
+	int handle;
+};
+#endif
+
+FILE __stdout;
+
+// 定义_sys_exit()以避免使用半主机模式
+void _sys_exit(int x)
+{
+	x = x;
+}
+#endif
+
+printf函数重定义
+int fputc(int ch, FILE *stream)
+{
+	// 当串口0忙的时候等待，不忙的时候再发送传进来的字符
+	while (DL_UART_isBusy(UART_0_INST) == true)
+		;
+
+	DL_UART_Main_transmitData(UART_0_INST, ch);
+
+	return ch;
+}
+
+// 串口的中断服务函数
+void UART_0_INST_IRQHandler(void)
+{
+	uint8_t uartdata = DL_UART_Main_receiveData(UART_0_INST); // 接收一个uint8_t数据
+															  // LED_Toggle();
+	switch (RxState)
+	{
+	case 0x55:
+		if (uartdata == 0x55)
+		{
+			// do somethings;
+		}
+		break;
+	}
+	NVIC_ClearPendingIRQ(UART_0_INST_INT_IRQN); // UART0
+}
+
+
+*/

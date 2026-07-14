@@ -44,7 +44,7 @@
 
       <div class="speed-control">
         <div class="speed-label">
-          <label for="speedSlider">目标速度比例</label>
+          <label for="speedSlider">手动驾驶速度比例</label>
           <output id="speedValue" for="speedSlider">60%</output>
         </div>
         <input id="speedSlider" type="range" min="20" max="100" step="5" value="60">
@@ -63,7 +63,7 @@
           <label>右 Kp<input id="pidRightKp" type="number" min="0" max="50000" step="100" value="4000"></label>
           <label>右 Ki<input id="pidRightKi" type="number" min="0" max="50000" step="50" value="800"></label>
           <label>右 Kd<input id="pidRightKd" type="number" min="0" max="5000" step="10" value="0"></label>
-          <label>最高轮速 mm/s<input id="maxSpeed" type="number" min="50" max="1500" step="50" value="200"></label>
+          <label>最高轮速 mm/s<input id="maxSpeed" type="number" value="700" disabled></label>
         </div>
         <button id="applyPidButton" class="command secondary pid-apply" type="button">应用参数</button>
       </div>
@@ -197,6 +197,62 @@
         <div class="data-row"><span>MPU6050</span><strong id="mpuState">未知</strong></div>
         <div class="data-row"><span>电池电压</span><strong id="batteryVoltage">0.00 V</strong></div>
         <div class="data-row"><span>电池 ADC</span><strong id="batteryRaw">0</strong></div>
+      </div>
+
+      <div class="line-panel">
+        <div class="line-panel-heading">
+          <div><span class="kicker">8-CHANNEL GRAYSCALE</span><h3>灰度寻线</h3></div>
+          <strong id="linePhase">待机</strong>
+        </div>
+        <div class="gray-grid" aria-label="8路灰度传感器原始值">
+          <div class="gray-channel"><span>G0</span><strong id="gray0">0</strong><small id="grayNorm0">N0</small></div>
+          <div class="gray-channel"><span>G1</span><strong id="gray1">0</strong><small id="grayNorm1">N0</small></div>
+          <div class="gray-channel"><span>G2</span><strong id="gray2">0</strong><small id="grayNorm2">N0</small></div>
+          <div class="gray-channel"><span>G3</span><strong id="gray3">0</strong><small id="grayNorm3">N0</small></div>
+          <div class="gray-channel"><span>G4</span><strong id="gray4">0</strong><small id="grayNorm4">N0</small></div>
+          <div class="gray-channel"><span>G5</span><strong id="gray5">0</strong><small id="grayNorm5">N0</small></div>
+          <div class="gray-channel"><span>G6</span><strong id="gray6">0</strong><small id="grayNorm6">N0</small></div>
+          <div class="gray-channel"><span>G7</span><strong id="gray7">0</strong><small id="grayNorm7">N0</small></div>
+        </div>
+        <div class="line-calibration">
+          <div class="line-panel-heading">
+            <span class="kicker">CALIBRATION</span>
+            <strong id="grayCalibrationState">未完整标定</strong>
+          </div>
+          <div class="kff-calculator-actions">
+            <button id="captureGrayWhiteButton" class="command secondary" type="button">采集白底</button>
+            <button id="captureGrayBlackButton" class="command secondary" type="button">采集黑线</button>
+          </div>
+          <label class="calibration-output-label" for="grayCalibrationParams">标定参数</label>
+          <textarea id="grayCalibrationParams" rows="3" readonly></textarea>
+          <div class="kff-calculator-actions">
+            <button id="requestGrayCalibrationButton" class="command secondary" type="button">刷新参数</button>
+            <button id="copyGrayCalibrationButton" class="command secondary" type="button">复制参数</button>
+          </div>
+        </div>
+        <div class="line-settings">
+          <div class="line-stat"><span>当前寻线速度</span><strong id="lineSpeedPercent">30%</strong></div>
+          <div class="line-stat"><span>判定为黑线的通道</span><strong id="grayActiveCount">0 / 8</strong></div>
+          <label>寻线行进速度（%）
+            <input id="lineSpeedInput" type="number" min="20" max="100" step="1" value="30">
+          </label>
+          <button id="applyLineSpeedButton" class="command secondary" type="button">应用寻线速度</button>
+          <label>寻线 Kp
+            <input id="lineKp" type="number" min="0" max="5" step="0.05" value="0.9">
+          </label>
+          <label>寻线 Kd
+            <input id="lineKd" type="number" min="0" max="10" step="0.05" value="0.5">
+          </label>
+          <button id="applyLinePidButton" class="command secondary line-settings-wide" type="button">应用寻线 PD</button>
+          <label>识别拐角后前进距离（mm）
+            <input id="cornerAdvanceMm" type="number" min="10" max="1000" step="1" value="90">
+          </label>
+          <button id="applyCornerAdvanceButton" class="command secondary" type="button">应用前进距离</button>
+          <label>拐角左转角度（°）
+            <input id="cornerTurnDeg" type="number" min="10" max="180" step="1" value="60">
+          </label>
+          <button id="applyCornerTurnButton" class="command secondary" type="button">应用转向角度</button>
+        </div>
       </div>
 
       <div class="chart-block">

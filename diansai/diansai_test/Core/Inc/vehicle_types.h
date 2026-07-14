@@ -54,6 +54,53 @@ typedef struct
   SquarePhase phase;
 } SquareTestState;
 
+typedef enum
+{
+  LINE_PHASE_IDLE = 0,
+  LINE_PHASE_WAIT = 1,
+  LINE_PHASE_RUN = 2,
+  LINE_PHASE_CORNER_ADVANCE = 3,
+  LINE_PHASE_CORNER_TURN = 4,
+  LINE_PHASE_LOST = 5,
+  LINE_PHASE_ERROR = 6
+} LineFollowPhase;
+
+typedef struct
+{
+  uint16_t gray[8];
+  uint16_t gray_normalized[8];
+  uint16_t gray_white[8];
+  uint16_t gray_black[8];
+  float error;
+  float filtered_error;
+  float previous_error;
+  float last_seen_error;
+  float target_yaw_rate;
+  uint32_t phase_start_ms;
+  uint32_t last_sample_ms;
+  uint32_t lost_start_ms;
+  uint32_t button_change_ms;
+  uint32_t corner_settle_start_ms;
+  uint32_t corner_cooldown_start_ms;
+  int32_t corner_start_left;
+  int32_t corner_start_right;
+  float corner_target_heading;
+  float corner_advance_distance_m;
+  float corner_turn_angle_deg;
+  float direction_kp;
+  float direction_kd;
+  uint8_t line_visible;
+  uint8_t active_count;
+  uint8_t corner_contiguous_count;
+  uint8_t corner_detect_count;
+  uint8_t speed_percent;
+  uint8_t white_calibrated;
+  uint8_t black_calibrated;
+  uint8_t button_raw;
+  uint8_t button_stable;
+  LineFollowPhase phase;
+} LineFollowState;
+
 typedef struct
 {
   float speed_left;

@@ -1,0 +1,21 @@
+#ifndef __INCLUDE_H_
+#define __INCLUDE_H_
+
+
+/*  系统都文件   */
+#include <stdint.h>
+
+#include "ti_msp_dl_config.h"
+
+
+/*  用户头文件   */
+
+
+
+/*  函数声明    */
+
+
+void delay_us(unsigned long __us);
+void delay_ms(unsigned long ms);
+
+#endif
