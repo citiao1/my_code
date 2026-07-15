@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f6f5">
+  <title>MSPM0G3507 Vehicle Console</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>MSPM0G3507 Vehicle Console</h1>
+      <div class="subtitle">LQ expansion · WHEELTEC-IOS · UART0 9600</div>
+    </div>
+    <div class="connection-tools">
+      <select id="connectionMode" class="mode-select" aria-label="连接方式">
+        <option value="bridge">WHEELTEC 本地桥接</option>
+        <option value="serial">串口 COM</option>
+      </select>
+      <span id="connectionBadge" class="badge disconnected"><span class="dot"></span><span id="connectionText">未连接</span></span>
+      <button id="connectButton" class="command primary" type="button">连接桥接</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="control-surface" aria-labelledby="controlTitle">
+      <div class="section-heading">
+        <div><span class="kicker">DRIVE</span><h2 id="controlTitle">运动控制</h2></div>
+        <span id="motorBadge" class="badge neutral"><span class="dot"></span>电机已停止</span>
+      </div>
+
+      <div class="drive-pad" aria-label="方向控制">
+        <button class="drive-button up" data-direction="forward" type="button" title="前进" aria-label="前进">↑</button>
+        <button class="drive-button left" data-direction="left" type="button" title="原地左转" aria-label="原地左转">←</button>
+        <button id="stopButton" class="drive-button stop" type="button" title="紧急停止" aria-label="紧急停止">■</button>
+        <button class="drive-button right" data-direction="right" type="button" title="原地右转" aria-label="原地右转">→</button>
+        <button class="drive-button down" data-direction="back" type="button" title="后退" aria-label="后退">↓</button>
+      </div>
+
+      <div class="speed-control">
+        <div class="speed-label"><label for="speedSlider">手动驱动比例</label><output id="speedValue" for="speedSlider">25%</output></div>
+        <input id="speedSlider" type="range" min="10" max="60" step="5" value="25">
+        <div class="scale"><span>10</span><span>35</span><span>60</span></div>
+      </div>
+
+      <div class="tool-section">
+        <div class="tool-heading"><div><span class="kicker">AT8236</span><h3>独立电机测试</h3></div><span id="motorCommand">L 0% · R 0%</span></div>
+        <div class="motor-inputs">
+          <label>左电机<input id="leftMotor" type="range" min="-60" max="60" value="0"><output id="leftMotorValue">0%</output></label>
+          <label>右电机<input id="rightMotor" type="range" min="-60" max="60" value="0"><output id="rightMotorValue">0%</output></label>
+        </div>
+        <div class="button-row">
+          <button id="runMotorsButton" class="command secondary" type="button">持续运行</button>
+          <button id="stopMotorsButton" class="command secondary danger-text" type="button">停止</button>
+        </div>
+      </div>
+
+      <div class="tool-section">
+        <div class="tool-heading"><div><span class="kicker">TOOLS</span><h3>传感器操作</h3></div></div>
+        <div class="button-grid">
+          <button id="zeroEncoderButton" class="command secondary" type="button">编码器清零</button>
+          <button id="zeroImuButton" class="command secondary" type="button">IMU 重新标定</button>
+          <button id="grayWhiteButton" class="command secondary" type="button">采集白底</button>
+          <button id="grayBlackButton" class="command secondary" type="button">采集黑线</button>
+        </div>
+      </div>
+
+      <div class="control-footer">
+        <div class="command-state"><span>控制命令</span><strong id="driveCommand">STOP</strong></div>
+        <span class="safety-copy">500 ms 失联停机</span>
+      </div>
+    </section>
+
+    <section class="telemetry-surface" aria-labelledby="telemetryTitle">
+      <div class="section-heading">
+        <div><span class="kicker">TELEMETRY</span><h2 id="telemetryTitle">车辆状态</h2></div>
+        <span id="packetTime">0 ms</span>
+      </div>
+
+      <div class="attitude-grid">
+        <div class="metric"><span>Yaw</span><strong id="yawValue">0.0°</strong></div>
+        <div class="metric"><span>Pitch</span><strong id="pitchValue">0.0°</strong></div>
+        <div class="metric"><span>Roll</span><strong id="rollValue">0.0°</strong></div>
+      </div>
+
+      <div class="data-grid">
+        <div class="data-row"><span>左轮速度</span><strong id="leftSpeed">0 mm/s</strong></div>
+        <div class="data-row"><span>右轮速度</span><strong id="rightSpeed">0 mm/s</strong></div>
+        <div class="data-row"><span>左编码器</span><strong id="leftEncoder">0</strong></div>
+        <div class="data-row"><span>右编码器</span><strong id="rightEncoder">0</strong></div>
+        <div class="data-row"><span>左轮输出</span><strong id="leftPwm">0%</strong></div>
+        <div class="data-row"><span>右轮输出</span><strong id="rightPwm">0%</strong></div>
+        <div class="data-row"><span>控制链路</span><strong id="linkValue">待机</strong></div>
+        <div class="data-row"><span>WHEELTEC</span><strong id="wheeltecValue">桥接未连接</strong></div>
+        <div class="data-row"><span>LSM6DSR</span><strong id="imuState">未知</strong></div>
+        <div class="data-row"><span>SPI 引脚</span><strong id="imuPins">--</strong></div>
+      </div>
+
+      <div class="line-panel">
+        <div class="line-panel-heading"><div><span class="kicker">8-CHANNEL · ADC 0–4095</span><h3>灰度传感器</h3></div><strong id="grayCalibrationState">未标定</strong></div>
+        <div id="grayGrid" class="gray-grid" aria-label="八路灰度原始值"></div>
+        <div class="calibration-line" id="grayCalibration">白底 -- · 黑线 --</div>
+      </div>
+
+      <div class="line-panel">
+        <div class="line-panel-heading"><div><span class="kicker">RAW 6-AXIS</span><h3>IMU 原始数据</h3></div></div>
+        <div class="raw-grid">
+          <div><span>AX / AY / AZ</span><strong id="accelRaw">0 / 0 / 0</strong></div>
+          <div><span>GX / GY / GZ</span><strong id="gyroRaw">0 / 0 / 0</strong></div>
+        </div>
+      </div>
+
+      <div class="chart-block">
+        <div class="chart-heading"><span>轮速趋势</span><div class="legend"><span class="left-line">左轮</span><span class="right-line">右轮</span></div></div>
+        <canvas id="speedChart" aria-label="左右轮速度趋势图"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer class="statusbar"><span id="browserStatus">WHEELTEC bridge · ws://127.0.0.1:8766</span><span id="eventLog">等待连接</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>

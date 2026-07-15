@@ -1,0 +1,31 @@
+在JLINK的command下依次运行如下命令 （*注意区分大小写*）
+
+以下命令从原来的V9.2升级到V9.6     -->取决于SN码 69655xxx  
+Exec SetSN=69655208     ;添加SN   69655xxx  (严谨点可以让AI计算一个)
+Exec AddFeature GDB      ;添加GDB 
+Exec AddFeature RDI      ;添加RDI 
+Exec AddFeature FlashBP  ;添加FlashBP  
+Exec AddFeature FlashDL  ;添加FlashDL 
+Exec AddFeature JFlash   ;添加JFlash 
+#Exec AddFeature RDDI    ； 千万不要添加这一条，否则会弹窗提示盗版！！！
+
+
+在J-Link Commander 窗口依次输入以上命令回车确定，每个会出现OK，即添加激活成功，其中SN码任意。
+例如：
+     Exec SetSN=69655210  回车
+
+     Exec AddFeature GDB  回车
+	 
+	 Exec AddFeature JFlash  回车     //添加JFlash 
+
+专属JLink-V9功能添加命令！
+
+Exec SetSN=69655208
+Exec AddFeature GDB       
+Exec AddFeature RDI      
+Exec AddFeature FlashBP  
+Exec AddFeature FlashDL  
+Exec AddFeature JFlash   
+ 
+
+vcom enable

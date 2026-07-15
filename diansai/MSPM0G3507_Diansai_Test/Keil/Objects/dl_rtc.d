@@ -1,0 +1,40 @@
+./objects/dl_rtc.o: ..\TI_SDK\ti\driverlib\dl_rtc.c \
+  ..\TI_SDK\ti\driverlib\dl_rtc.h ..\TI_SDK\ti\driverlib\dl_rtc_common.h \
+  D:\Keil5\ARM\ARMCLANG\Bin\..\include\stdbool.h \
+  D:\Keil5\ARM\ARMCLANG\Bin\..\include\stdint.h \
+  ..\TI_SDK\ti\devices\msp\msp.h ..\TI_SDK\ti\devices\DeviceFamily.h \
+  ..\TI_SDK\ti\devices\msp\m0p\mspm0g350x.h \
+  ..\TI_SDK\third_party\CMSIS\Core\Include\core_cm0plus.h \
+  ..\TI_SDK\third_party\CMSIS\Core\Include\cmsis_version.h \
+  ..\TI_SDK\third_party\CMSIS\Core\Include\cmsis_compiler.h \
+  ..\TI_SDK\third_party\CMSIS\Core\Include\cmsis_armclang.h \
+  D:\Keil5\ARM\ARMCLANG\Bin\..\include\arm_compat.h \
+  D:\Keil5\ARM\ARMCLANG\Bin\..\include\arm_acle.h \
+  ..\TI_SDK\third_party\CMSIS\Core\Include\mpu_armv7.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_adc12.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_aes.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_comp.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_crc.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_dac12.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_dma.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_flashctl.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_gpio.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_gptimer.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_i2c.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_iomux.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_mathacl.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_mcan.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_oa.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_rtc.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_spi.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_trng.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_uart.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_vref.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_wuc.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\hw_wwdt.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\m0p\hw_factoryregion.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\m0p\hw_cpuss.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\m0p\hw_debugss.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\m0p\hw_sysctl.h \
+  ..\TI_SDK\ti\devices\msp\peripherals\m0p\sysctl\hw_sysctl_mspm0g1x0x_g3x0x.h \
+  ..\TI_SDK\ti\driverlib\dl_common.h
