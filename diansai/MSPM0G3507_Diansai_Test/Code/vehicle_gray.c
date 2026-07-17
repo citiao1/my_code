@@ -8,9 +8,9 @@
 static VehicleGrayState gray_state;
 
 /*
- * 将当前 ADC 值按每个通道各自的白/黑参考映射到 0..1000：
+ * 将当前 ADC 值按每个通道各自的“背景/目标线”参考映射到 0..1000：
  *
- *     normalized = (raw - white) * 1000 / (black - white)
+ *     normalized = (raw - background) * 1000 / (line - background)
  *
  * 分母允许为负，因此无论传感器是“黑大白小”还是“黑小白大”都成立。
  * 任意一路黑白差小于 32 ADC count 时，说明标定对比度不足，整组归一化
@@ -104,28 +104,49 @@ static void Capture(uint16_t target[VEHICLE_GRAY_CHANNELS])
     }
 }
 
-uint8_t VehicleGray_CaptureWhite(void)
+void VehicleGray_ResetCalibration(void)
+{
+    memset(gray_state.white, 0, sizeof(gray_state.white));
+    memset(gray_state.black, 0, sizeof(gray_state.black));
+    memset(gray_state.normalized, 0, sizeof(gray_state.normalized));
+    gray_state.white_valid = 0U;
+    gray_state.black_valid = 0U;
+    gray_state.normalization_valid = 0U;
+}
+
+uint8_t VehicleGray_CaptureBackground(void)
 {
     Capture(gray_state.white);
     gray_state.white_valid = 1U;
     return UpdateNormalization();
 }
 
-uint8_t VehicleGray_CaptureBlack(void)
+uint8_t VehicleGray_CaptureLine(void)
 {
     Capture(gray_state.black);
     gray_state.black_valid = 1U;
     return UpdateNormalization();
 }
 
-uint8_t VehicleGray_CountActive(uint16_t threshold)
+uint8_t VehicleGray_CaptureWhite(void)
+{
+    return VehicleGray_CaptureBackground();
+}
+
+uint8_t VehicleGray_CaptureBlack(void)
+{
+    return VehicleGray_CaptureLine();
+}
+
+uint8_t VehicleGray_CountLineChannels(uint16_t normalized_threshold)
 {
     uint8_t channel;
     uint8_t count = 0U;
 
+    if (!gray_state.normalization_valid) return 0U;
     for (channel = 0U; channel < VEHICLE_GRAY_CHANNELS; channel++)
     {
-        if (gray_state.raw[channel] >= threshold) count++;
+        if (gray_state.normalized[channel] >= normalized_threshold) count++;
     }
     return count;
 }

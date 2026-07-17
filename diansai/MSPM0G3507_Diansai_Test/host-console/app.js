@@ -1,6 +1,7 @@
 const BAUD_RATE = 9600;
 const BRIDGE_URL = 'ws://127.0.0.1:8766';
 const MAX_DRIVE_SPEED_MM_S = 600;
+const CONTROL_INTERVAL_MS = 200;
 
 const ids = [
   'connectionMode', 'connectionBadge', 'connectionText', 'connectButton',
@@ -8,6 +9,12 @@ const ids = [
   'pidLeftKp', 'pidLeftKi', 'pidLeftKd', 'pidRightKp', 'pidRightKi', 'pidRightKd',
   'pidCurrent', 'yawEnabled', 'yawMaxRate', 'yawKp', 'yawKi', 'yawKd', 'yawKff',
   'yawCurrent', 'applyYawButton',
+  'headingEnabled', 'headingMaxRate', 'headingKp', 'headingKd', 'headingKff',
+  'headingCurrent', 'applyHeadingButton',
+  'headingTestAngle', 'headingTestRepeats', 'headingTestTolerance',
+  'headingTestRateTolerance', 'headingTestSettleMs', 'headingTestTimeoutMs',
+  'startHeadingTestButton', 'stopHeadingTestButton', 'headingTestState',
+  'headingTestResult', 'startSquareTestButton', 'stopSquareTestButton', 'squareTestState',
   'lineKp', 'lineKi', 'lineKd', 'lineDiff', 'lineSpeed', 'lineCurrent',
   'applyLineButton', 'startLineButton', 'stopLineButton',
   'leftMotor', 'rightMotor', 'leftMotorValue', 'rightMotorValue', 'motorCommand',
@@ -22,14 +29,17 @@ const ids = [
   'rollValue', 'leftSpeed', 'rightSpeed', 'leftTarget', 'rightTarget',
   'yawTarget', 'yawRate', 'yawError', 'yawFeedforward', 'yawPidCorrection',
   'yawCorrection', 'yawLoopState',
+  'targetHeading', 'headingReference', 'headingActual', 'headingError',
+  'headingOutput', 'headingLoopState',
   'lineState', 'lineRawError', 'lineFilteredError', 'linePidOutput',
   'lineTargetYaw', 'lineActualYaw', 'lineCorrection', 'lineNormalizedSum',
   'leftError', 'rightError', 'leftFeedforward', 'rightFeedforward',
   'leftPidCorrection', 'rightPidCorrection', 'leftEncoder', 'rightEncoder',
-  'leftPwm', 'rightPwm', 'linkValue', 'wheeltecValue', 'imuState', 'imuPins',
+  'leftPwm', 'rightPwm', 'linkValue', 'wheeltecValue', 'batteryVoltage',
+  'trackModeState', 'localRunState', 'dipSwitchState', 'imuState', 'imuPins',
   'grayGrid', 'grayCalibrationState', 'grayCalibration', 'grayNormalization',
   'accelRaw', 'gyroRaw',
-  'speedChart', 'browserStatus', 'eventLog'
+  'speedChart', 'headingChart', 'browserStatus', 'eventLog'
 ];
 const ui = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
 
@@ -60,16 +70,25 @@ let deadzoneBaseline;
 let deadzoneResults = loadDeadzoneResults();
 let yawFormDirty = false;
 let pendingYawParameters;
+let headingFormDirty = false;
+let pendingHeadingParameters;
+let headingTestTimer;
+let squareControlActive = false;
 let lineFormDirty = false;
 let pendingLineParameters;
 let lineControlActive = false;
-let latestLinePid = [400000, 0, 120000];
+let latestLinePid = [200000, 0, 350000];
 let latestLineDiff = 650;
 let grayWhiteValid = false;
 let grayBlackValid = false;
 let grayNormalizationValid = false;
+let trackColorMode = 0;
+let localRunActive = false;
+let latestGrayBackground = Array(8).fill(0);
+let latestGrayLine = Array(8).fill(0);
 const pressedDriveKeys = new Set();
 const history = { left: [], right: [], targetLeft: [], targetRight: [] };
+const headingHistory = { actual: [], target: [] };
 const latestVehicle = {
   leftSpeed: 0,
   rightSpeed: 0,
@@ -77,6 +96,30 @@ const latestVehicle = {
   rightTarget: 0,
   leftEncoder: 0,
   rightEncoder: 0,
+  yawDeg: 0,
+  yawRate: 0,
+};
+const latestHeading = {
+  target: 0,
+  reference: 0,
+  referenceRate: 0,
+  actual: 0,
+  error: 0,
+  output: 0,
+  enabled: false,
+  active: false,
+  receivedAt: 0,
+};
+const headingTest = {
+  active: false,
+  targets: [],
+  index: 0,
+  stepStartedAt: 0,
+  stableSince: 0,
+  stepStartHeading: 0,
+  maxOvershoot: 0,
+  results: [],
+  config: undefined,
 };
 const latestGrayRaw = Array(8).fill(0);
 
@@ -112,6 +155,9 @@ function setConnected(connected, label = '') {
     if (button === ui.connectButton) return;
     button.disabled = !connected;
   });
+  ui.applyHeadingButton.disabled = true;
+  renderHeadingTest();
+  renderSquareTest();
 }
 
 async function sendLine(line) {
@@ -138,6 +184,8 @@ function parseLine(line) {
     ui.wheeltecValue.textContent = online ? 'WHEELTEC-IOS 已连接' : '等待 WHEELTEC-IOS';
     ui.wheeltecValue.style.color = online ? '#147d58' : '#b46a11';
     setLog(fields.slice(2).join(',') || (online ? '蓝牙已连接' : '蓝牙未连接'));
+    if (!online && headingTest.active) finishHeadingTest('蓝牙链路断开', false);
+    if (!online && squareControlActive) stopControl(false);
     return;
   }
 
@@ -173,6 +221,18 @@ function parseLine(line) {
       updateYawTelemetry(targetYaw10, actualYaw10, yawError10,
         yawFeedforwardMm, yawPidMm, yawCorrectionMm, yawEnabled);
       updateYawReadback(yawEnabled, maxYawRate, [yawKp, yawKi, yawKd, yawKff]);
+      latestVehicle.yawRate = actualYaw10 / 10;
+    }
+    if (values.length >= 44) {
+      const [targetHeading10, referenceHeading10, referenceRate10,
+        actualHeading10, headingError10, headingOutput10,
+        headingEnabled, headingActive, headingMaxRate,
+        headingKp, headingKd, headingKff] = values.slice(32, 44);
+      updateHeadingTelemetry(targetHeading10, referenceHeading10,
+        referenceRate10, actualHeading10, headingError10, headingOutput10,
+        headingEnabled, headingActive);
+      updateHeadingReadback(headingEnabled, headingMaxRate,
+        [headingKp, headingKd, headingKff]);
     }
     pushHistory(leftMm, rightMm, targetLeft, targetRight);
     updateDeadzoneLive();
@@ -186,6 +246,8 @@ function parseLine(line) {
     latestVehicle.rightSpeed = rightMm;
     latestVehicle.leftTarget = targetLeft;
     latestVehicle.rightTarget = targetRight;
+    latestVehicle.yawDeg = yaw10 / 10;
+    latestVehicle.yawRate = values[11] / 10;
     ui.packetTime.textContent = `${time} ms`;
     ui.yawValue.textContent = `${(yaw10 / 10).toFixed(1)}°`;
     ui.leftSpeed.textContent = `${leftMm} mm/s`;
@@ -198,11 +260,14 @@ function parseLine(line) {
     ui.rightPwm.textContent = `${Math.round(pwmRight / 168)}%`;
     updateYawTelemetry(values[10], values[11], values[12], values[16],
       values[13] - values[16], values[13], values[14]);
+    updateHeadingTelemetry(values[17], undefined, undefined, yaw10,
+      values[18], values[19], values[20], values[21]);
     ui.linkValue.textContent = link ? '控制中' : '待机';
     ui.imuState.textContent = values[15] ? '0x6B 正常' : '未检测到';
     ui.imuState.style.color = values[15] ? '#147d58' : '#bd2f2f';
     ui.motorBadge.className = `badge ${enabled ? 'enabled' : 'neutral'}`;
     ui.motorBadge.innerHTML = `<span class="dot"></span>${enabled ? '电机运行中' : '电机已停止'}`;
+    if (values[22] > 0) ui.batteryVoltage.textContent = `${(values[22] / 1000).toFixed(2)} V`;
     if (!enabled) {
       ui.leftFeedforward.textContent = '0.0%';
       ui.rightFeedforward.textContent = '0.0%';
@@ -228,11 +293,30 @@ function parseLine(line) {
     if (values.length >= 54) {
       updateLineReadback(values.slice(50, 53), values[53]);
     }
+    if (values.length >= 59) {
+      updateHeadingReadback(values[54], values[55], values.slice(56, 59));
+    }
     values.slice(22, 30).forEach(updateGray);
     grayWhiteValid = Boolean(values[32]);
     grayBlackValid = Boolean(values[33]);
     renderGrayCalibrationState();
     updateDeadzoneLive();
+    return;
+  }
+
+  if (fields[0] === 'SQR' && values.length >= 7 && values.every(Number.isFinite)) {
+    const [, active, phase, leg, progressMm, remainingMm, targetHeading10] = values;
+    const phaseNames = ['待机', '直行', '左转', '完成', '异常停止'];
+    if (active) {
+      ui.squareTestState.textContent = `${phaseNames[phase] ?? '未知'} ${leg}/4 · `
+        + `${progressMm} mm · 余 ${remainingMm} mm · ${Number(targetHeading10 / 10).toFixed(1)}°`;
+    } else if (phase === 3 || phase === 4) {
+      if (squareControlActive) stopControl(false);
+      ui.squareTestState.textContent = phaseNames[phase];
+    } else {
+      ui.squareTestState.textContent = '待机';
+    }
+    renderSquareTest();
     return;
   }
 
@@ -244,15 +328,40 @@ function parseLine(line) {
   }
 
   if (fields[0] === 'CAL' && values.length >= 16 && values.every(Number.isFinite)) {
-    ui.grayCalibration.textContent = `白底 ${values.slice(0, 8).join('/')} · 黑线 ${values.slice(8, 16).join('/')}`;
+    latestGrayBackground = values.slice(0, 8);
+    latestGrayLine = values.slice(8, 16);
+    if (values.length >= 17) trackColorMode = values[16];
+    renderTrackMode();
+    renderGrayReferences();
     return;
   }
 
   if (fields[0] === 'NRM' && values.length >= 10 && values.every(Number.isFinite)) {
     grayNormalizationValid = Boolean(values[1]);
     const normalized = values.slice(2, 10);
+    if (values.length >= 11) trackColorMode = values[10];
     normalized.forEach(updateGrayNormalized);
     ui.grayNormalization.textContent = `归一化 ${normalized.join('/')}`;
+    renderGrayCalibrationState();
+    renderTrackMode();
+    return;
+  }
+
+  if (fields[0] === 'MOD' && values.length >= 8 && values.every(Number.isFinite)) {
+    const [time, mode, switch1Down, switch2Down, localRun,
+      backgroundValid, lineValid, batteryMv] = values;
+    trackColorMode = mode;
+    localRunActive = Boolean(localRun);
+    if (localRunActive && (controlRunning || headingTest.active)) stopControl(false);
+    grayWhiteValid = Boolean(backgroundValid);
+    grayBlackValid = Boolean(lineValid);
+    ui.packetTime.textContent = `${time} ms`;
+    ui.dipSwitchState.textContent = `SW1 ${switch1Down ? '下' : '上'} · SW2 ${switch2Down ? '下' : '上'}`;
+    ui.localRunState.textContent = localRunActive ? '运行中' : '待机';
+    ui.localRunState.style.color = localRunActive ? '#147d58' : '';
+    if (batteryMv > 0) ui.batteryVoltage.textContent = `${(batteryMv / 1000).toFixed(2)} V`;
+    renderTrackMode();
+    renderGrayReferences();
     renderGrayCalibrationState();
     return;
   }
@@ -266,7 +375,7 @@ function parseLine(line) {
     const activeCount = values.length >= 19 ? values[18] : 0;
     lineControlActive = Boolean(active);
     ui.packetTime.textContent = `${time} ms`;
-    const modeLabels = ['等待黑线', '正常跟踪', '短缝保持', '盲转找线', '确认丢线'];
+    const modeLabels = ['等待目标线', '正常跟踪', '短缝保持', '盲转找线', '确认丢线'];
     ui.lineState.textContent = `${modeLabels[lineMode] ?? '未知状态'}`
       + ((lineMode === 2 || lineMode === 3) ? ` · ${recoveryMs} ms` : '');
     ui.lineState.style.color = lineMode === 4 ? '#bd2f2f'
@@ -277,7 +386,7 @@ function parseLine(line) {
     ui.lineTargetYaw.textContent = `${(targetYaw10 / 10).toFixed(1)}°/s`;
     ui.lineActualYaw.textContent = `${(actualYaw10 / 10).toFixed(1)}°/s`;
     ui.lineCorrection.textContent = `${correctionMm} mm/s · 上限 ${formatMilli(diffMilli)}`;
-    ui.lineNormalizedSum.textContent = `${normalizedSum} · ${activeCount} 路黑`
+    ui.lineNormalizedSum.textContent = `${normalizedSum} · ${activeCount} 路目标`
       + (normalized ? '' : ' · 未归一化');
     latestVehicle.leftTarget = targetLeft;
     latestVehicle.rightTarget = targetRight;
@@ -291,8 +400,18 @@ function parseLine(line) {
   }
 
   if (fields[0] === 'BOOT' || fields[0] === 'ACK' || fields[0] === 'ERR') {
+    if (fields[0] === 'ACK' && fields[1] === 'HEADCFG') {
+      const headingValues = fields.slice(2).map(Number);
+      if (headingValues.length >= 5 && headingValues.every(Number.isFinite)) {
+        updateHeadingReadback(headingValues[0], headingValues[4],
+          headingValues.slice(1, 4));
+      }
+    }
     if (fields[0] === 'ERR' && fields[1]?.startsWith('LINE_')) {
       stopControl(false);
+    }
+    if (fields[0] === 'ERR' && fields[1]?.startsWith('HEAD')) {
+      finishHeadingTest(line, true);
     }
     setLog(line);
   }
@@ -326,9 +445,9 @@ function renderGrayCalibrationState() {
     label = '归一化无效';
     stateClass = 'invalid';
   } else if (grayWhiteValid) {
-    label = '已采白底';
+    label = trackColorMode === 0 ? '已采白底' : '已采蓝底';
   } else if (grayBlackValid) {
-    label = '已采黑线';
+    label = trackColorMode === 0 ? '已采黑线' : '已采白线';
   }
   ui.grayCalibrationState.textContent = label;
   ui.grayCalibrationState.className = stateClass;
@@ -337,6 +456,20 @@ function renderGrayCalibrationState() {
       channel.fill.style.height = `${latestGrayRaw[index] * 100 / 4095}%`;
     });
   }
+}
+
+function renderTrackMode() {
+  const blueWhite = trackColorMode === 1;
+  ui.trackModeState.textContent = blueWhite ? '蓝底白线' : '白底黑线';
+  ui.grayWhiteButton.textContent = blueWhite ? '采集蓝底' : '采集白底';
+  ui.grayBlackButton.textContent = blueWhite ? '采集白线' : '采集黑线';
+}
+
+function renderGrayReferences() {
+  const backgroundName = trackColorMode === 1 ? '蓝底' : '白底';
+  const lineName = trackColorMode === 1 ? '白线' : '黑线';
+  ui.grayCalibration.textContent = `${backgroundName} ${latestGrayBackground.join('/')}`
+    + ` · ${lineName} ${latestGrayLine.join('/')}`;
 }
 
 async function connectBridge() {
@@ -386,6 +519,7 @@ async function connect() {
     setLog('上位机连接成功');
     await sendLine('STOP');
     await sendLine('GRAYCAL');
+    await sendLine('HEADCFG');
     heartbeatTimer = setInterval(() => sendLine('PING'), 1000);
   } catch (error) {
     setLog(`连接失败: ${error.message}`);
@@ -422,7 +556,7 @@ async function controlLoop(generation, commandFactory) {
   ui.driveCommand.textContent = command;
   await sendLine(command);
   if (controlRunning && generation === controlGeneration && transportReady()) {
-    controlTimer = setTimeout(() => controlLoop(generation, commandFactory), 100);
+    controlTimer = setTimeout(() => controlLoop(generation, commandFactory), CONTROL_INTERVAL_MS);
   }
 }
 
@@ -437,6 +571,7 @@ function startControl(commandFactory, button) {
 }
 
 function stopControl(sendStop = true) {
+  if (headingTest.active) finishHeadingTest('已停止', false);
   controlGeneration++;
   controlRunning = false;
   clearTimeout(controlTimer);
@@ -447,7 +582,9 @@ function stopControl(sendStop = true) {
   updateKeyboardButtons();
   deadzoneOutputActive = false;
   lineControlActive = false;
+  squareControlActive = false;
   renderLineCurrent();
+  renderSquareTest();
   ui.driveCommand.textContent = 'STOP';
   if (sendStop && transportReady()) sendLine('STOP');
 }
@@ -590,6 +727,251 @@ async function applyYawParameters() {
   await sendLine(`YAWRATE,${parameters.maxRate}`);
   await sendLine(`YAW,${parameters.enabled ? 1 : 0}`);
   setLog(`已发送角速度 PID ${parameters.pid.join('/')} · ${parameters.maxRate}°/s`);
+}
+
+function wrapAngle(value) {
+  let angle = Number(value);
+  while (angle > 180) angle -= 360;
+  while (angle < -180) angle += 360;
+  return angle;
+}
+
+function formatHeadingMilli(value) {
+  return (Number(value) / 1000).toFixed(3);
+}
+
+function updateHeadingTelemetry(target10, reference10, referenceRate10,
+  actual10, error10, output10, enabled, active) {
+  const target = Number(target10) / 10;
+  const actual = Number(actual10) / 10;
+  const error = Number(error10) / 10;
+  const output = Number(output10) / 10;
+  if (![target, actual, error, output].every(Number.isFinite)) return;
+
+  latestHeading.target = target;
+  latestHeading.actual = actual;
+  latestHeading.error = error;
+  latestHeading.output = output;
+  latestHeading.enabled = Boolean(Number(enabled));
+  latestHeading.active = Boolean(Number(active));
+  latestHeading.receivedAt = performance.now();
+  latestVehicle.yawDeg = actual;
+  if (Number.isFinite(Number(reference10))) {
+    latestHeading.reference = Number(reference10) / 10;
+  }
+  if (Number.isFinite(Number(referenceRate10))) {
+    latestHeading.referenceRate = Number(referenceRate10) / 10;
+  }
+
+  ui.targetHeading.textContent = `${target.toFixed(1)}°`;
+  ui.headingReference.textContent = `${latestHeading.reference.toFixed(1)}°`;
+  ui.headingActual.textContent = `${actual.toFixed(1)}°`;
+  ui.headingError.textContent = `${error.toFixed(1)}°`;
+  ui.headingOutput.textContent = `${output.toFixed(1)}°/s`;
+  ui.headingLoopState.textContent = latestHeading.active
+    ? '保持中' : (latestHeading.enabled ? '已启用' : '已关闭');
+  ui.headingLoopState.style.color = latestHeading.active ? '#147d58'
+    : (latestHeading.enabled ? '#b46a11' : '#bd2f2f');
+  pushHeadingHistory(actual, target);
+}
+
+function updateHeadingReadback(enabled, maxRate, pidMilli) {
+  const normalizedPid = pidMilli.map(value => Math.round(Number(value)));
+  const normalizedMaxRate = Math.round(Number(maxRate));
+  const normalizedEnabled = Boolean(Number(enabled));
+  if (![normalizedMaxRate, ...normalizedPid].every(Number.isFinite)) return;
+
+  const matchesPending = pendingHeadingParameters
+    && pendingHeadingParameters.enabled === normalizedEnabled
+    && pendingHeadingParameters.maxRate === normalizedMaxRate
+    && normalizedPid.every((value, index) => value === pendingHeadingParameters.pid[index]);
+  if (matchesPending) {
+    pendingHeadingParameters = undefined;
+    headingFormDirty = false;
+  }
+  const state = pendingHeadingParameters ? ' · 等待确认'
+    : (headingFormDirty ? ' · 待应用' : '');
+  ui.headingCurrent.textContent = `${normalizedPid.map(formatHeadingMilli).join('/')}`
+    + ` · ${normalizedMaxRate}°/s · 已锁定${state}`;
+  if (pendingHeadingParameters || headingFormDirty) return;
+
+  ui.headingEnabled.checked = normalizedEnabled;
+  ui.headingMaxRate.value = normalizedMaxRate;
+  [ui.headingKp, ui.headingKd, ui.headingKff].forEach((input, index) => {
+    input.value = formatHeadingMilli(normalizedPid[index]);
+  });
+}
+
+function readHeadingInputs() {
+  const gains = [ui.headingKp, ui.headingKd, ui.headingKff]
+    .map(input => Number(input.value));
+  const maxRate = Math.round(Number(ui.headingMaxRate.value));
+  if (!Number.isFinite(gains[0]) || gains[0] < 0 || gains[0] > 20
+    || !Number.isFinite(gains[1]) || gains[1] < 0 || gains[1] > 10
+    || !Number.isFinite(gains[2]) || gains[2] < 0 || gains[2] > 2
+    || !Number.isFinite(maxRate) || maxRate < 5 || maxRate > 360) return undefined;
+  return {
+    enabled: ui.headingEnabled.checked,
+    maxRate,
+    pid: gains.map(value => Math.round(value * 1000)),
+  };
+}
+
+async function applyHeadingParameters() {
+  if (controlRunning || headingTest.active) stopControl();
+  await sendLine('HEAD,1');
+  await sendLine('HEADCFG');
+  setLog('遥控方向环已启用 · 参数锁定 4.000/0.300/1.000 · 80°/s');
+  return true;
+}
+
+function readHeadingTestInputs() {
+  const config = {
+    angle: Number(ui.headingTestAngle.value),
+    repeats: Math.round(Number(ui.headingTestRepeats.value)),
+    tolerance: Number(ui.headingTestTolerance.value),
+    rateTolerance: Number(ui.headingTestRateTolerance.value),
+    settleMs: Math.round(Number(ui.headingTestSettleMs.value)),
+    timeoutMs: Math.round(Number(ui.headingTestTimeoutMs.value)),
+  };
+  if (!Number.isFinite(config.angle) || config.angle < 5 || config.angle > 90
+    || !Number.isFinite(config.repeats) || config.repeats < 1 || config.repeats > 5
+    || !Number.isFinite(config.tolerance) || config.tolerance < 0.5 || config.tolerance > 10
+    || !Number.isFinite(config.rateTolerance) || config.rateTolerance < 1 || config.rateTolerance > 30
+    || !Number.isFinite(config.settleMs) || config.settleMs < 200 || config.settleMs > 3000
+    || !Number.isFinite(config.timeoutMs) || config.timeoutMs < 2000 || config.timeoutMs > 20000) {
+    return undefined;
+  }
+  return config;
+}
+
+function renderHeadingTest() {
+  ui.startHeadingTestButton.disabled = !transportReady() || headingTest.active;
+  ui.stopHeadingTestButton.disabled = !transportReady() || !headingTest.active;
+}
+
+function renderSquareTest() {
+  ui.startSquareTestButton.disabled = !transportReady() || squareControlActive;
+  ui.stopSquareTestButton.disabled = !transportReady() || !squareControlActive;
+}
+
+function startSquareTest() {
+  if (!transportReady() || squareControlActive) return;
+  let firstCommand = true;
+  startControl(() => {
+    if (firstCommand) {
+      firstCommand = false;
+      return 'SQUARE,1';
+    }
+    return 'SQUARE,2';
+  }, ui.startSquareTestButton);
+  squareControlActive = true;
+  ui.squareTestState.textContent = '准备';
+  renderSquareTest();
+  setLog('正方形测试启动 · 1 m直行 + 左转90°，共4次');
+}
+
+function beginHeadingTestStep() {
+  headingTest.stepStartedAt = performance.now();
+  headingTest.stableSince = 0;
+  headingTest.stepStartHeading = latestHeading.actual;
+  headingTest.maxOvershoot = 0;
+  ui.headingTestState.textContent =
+    `步骤 ${headingTest.index + 1}/${headingTest.targets.length}`;
+  runHeadingTestStep();
+}
+
+async function runHeadingTestStep() {
+  if (!headingTest.active) return;
+  if (!transportReady()) {
+    finishHeadingTest('连接已断开', false);
+    return;
+  }
+
+  const now = performance.now();
+  const target = headingTest.targets[headingTest.index];
+  const config = headingTest.config;
+  if (now - latestHeading.receivedAt > 1800) {
+    if (now - headingTest.stepStartedAt > config.timeoutMs) {
+      finishHeadingTest('遥测超时', true);
+      return;
+    }
+  } else {
+    const direction = Math.sign(wrapAngle(target - headingTest.stepStartHeading)) || 1;
+    const overshoot = direction * wrapAngle(latestHeading.actual - target);
+    headingTest.maxOvershoot = Math.max(headingTest.maxOvershoot, overshoot, 0);
+    if (Math.abs(latestHeading.error) <= config.tolerance
+      && Math.abs(latestVehicle.yawRate) <= config.rateTolerance) {
+      if (!headingTest.stableSince) headingTest.stableSince = now;
+      if (now - headingTest.stableSince >= config.settleMs) {
+        const settleMs = Math.round(now - headingTest.stepStartedAt);
+        headingTest.results.push({ target, settleMs, overshoot: headingTest.maxOvershoot });
+        ui.headingTestResult.textContent = `最近 ${settleMs} ms · 超调 ${headingTest.maxOvershoot.toFixed(1)}°`;
+        headingTest.index++;
+        if (headingTest.index >= headingTest.targets.length) {
+          const worst = Math.max(0, ...headingTest.results.map(result => result.overshoot));
+          finishHeadingTest(`完成 · 最大超调 ${worst.toFixed(1)}°`, true);
+          return;
+        }
+        beginHeadingTestStep();
+        return;
+      }
+    } else {
+      headingTest.stableSince = 0;
+    }
+  }
+
+  if (now - headingTest.stepStartedAt > config.timeoutMs) {
+    finishHeadingTest(`步骤 ${headingTest.index + 1} 超时`, true);
+    return;
+  }
+  await sendLine(`HEADSET,${Math.round(target * 10)}`);
+  headingTestTimer = setTimeout(runHeadingTestStep, CONTROL_INTERVAL_MS);
+}
+
+async function startHeadingTest() {
+  const config = readHeadingTestInputs();
+  if (!transportReady() || !config) {
+    setLog(config ? '方向测试尚未连接' : '方向测试参数超出允许范围');
+    return;
+  }
+  if (!latestHeading.receivedAt || performance.now() - latestHeading.receivedAt > 2000) {
+    setLog('没有新鲜航向遥测，不能开始测试');
+    return;
+  }
+
+  stopControl();
+  if (!await applyHeadingParameters()) {
+    setLog('请先启用方向保持');
+    return;
+  }
+  const base = latestHeading.actual;
+  const targets = [];
+  for (let repeat = 0; repeat < config.repeats; repeat++) {
+    targets.push(wrapAngle(base + config.angle));
+    targets.push(wrapAngle(base - config.angle));
+  }
+  targets.push(base);
+  Object.values(headingHistory).forEach(series => { series.length = 0; });
+  headingTest.active = true;
+  headingTest.targets = targets;
+  headingTest.index = 0;
+  headingTest.results = [];
+  headingTest.config = config;
+  ui.headingTestResult.textContent = '--';
+  renderHeadingTest();
+  beginHeadingTestStep();
+}
+
+function finishHeadingTest(message, sendStop = true) {
+  const wasActive = headingTest.active;
+  clearTimeout(headingTestTimer);
+  headingTest.active = false;
+  headingTest.stableSince = 0;
+  ui.headingTestState.textContent = message;
+  renderHeadingTest();
+  if (sendStop && wasActive && transportReady()) sendLine('STOP');
+  if (wasActive) setLog(`方向自动测试: ${message}`);
 }
 
 function formatMilli(value) {
@@ -812,6 +1194,59 @@ function drawChart() {
   ctx.setLineDash([]);
 }
 
+function pushHeadingHistory(actual, target) {
+  headingHistory.actual.push(actual);
+  headingHistory.target.push(target);
+  Object.values(headingHistory).forEach(series => {
+    if (series.length > 120) series.shift();
+  });
+  drawHeadingChart();
+}
+
+function drawHeadingChart() {
+  const canvas = ui.headingChart;
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const width = Math.max(1, Math.round(rect.width * dpr));
+  const height = Math.max(1, Math.round(rect.height * dpr));
+  if (canvas.width !== width || canvas.height !== height) {
+    canvas.width = width;
+    canvas.height = height;
+  }
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const w = rect.width;
+  const h = rect.height;
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = '#e2e7e4';
+  ctx.lineWidth = 1;
+  for (let i = 1; i < 4; i++) {
+    const y = h * i / 4;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  }
+  const values = Object.values(headingHistory).flat();
+  const minimum = values.length ? Math.min(...values) : -10;
+  const maximum = values.length ? Math.max(...values) : 10;
+  const center = (minimum + maximum) / 2;
+  const span = Math.max(20, maximum - minimum + 10);
+  const plot = (series, color, dashed = false) => {
+    if (series.length < 2) return;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = dashed ? 1.5 : 2;
+    ctx.setLineDash(dashed ? [5, 4] : []);
+    ctx.beginPath();
+    series.forEach((value, index) => {
+      const x = index * w / 119;
+      const y = h / 2 - (value - center) / span * h * .84;
+      if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  };
+  plot(headingHistory.target, '#b46a11', true);
+  plot(headingHistory.actual, '#167a94');
+  ctx.setLineDash([]);
+}
+
 document.querySelectorAll('.drive-button[data-direction]').forEach(button => {
   const start = event => {
     event.preventDefault();
@@ -859,6 +1294,21 @@ ui.applyYawButton.addEventListener('click', applyYawParameters);
     if (event.key === 'Enter') applyYawParameters();
   });
 });
+ui.applyHeadingButton.addEventListener('click', applyHeadingParameters);
+[ui.headingEnabled, ui.headingMaxRate, ui.headingKp, ui.headingKd, ui.headingKff]
+  .forEach(input => {
+    input.addEventListener('input', () => {
+      headingFormDirty = true;
+      pendingHeadingParameters = undefined;
+    });
+    input.addEventListener('keydown', event => {
+      if (event.key === 'Enter') applyHeadingParameters();
+    });
+  });
+ui.startHeadingTestButton.addEventListener('click', startHeadingTest);
+ui.stopHeadingTestButton.addEventListener('click', () => stopControl());
+ui.startSquareTestButton.addEventListener('click', startSquareTest);
+ui.stopSquareTestButton.addEventListener('click', () => stopControl());
 ui.applyLineButton.addEventListener('click', applyLineParameters);
 [ui.lineKp, ui.lineKi, ui.lineKd, ui.lineDiff].forEach(input => {
   input.addEventListener('input', () => {
@@ -897,17 +1347,28 @@ ui.zeroEncoderButton.addEventListener('click', () => sendLine('ENCZERO'));
 ui.zeroImuButton.addEventListener('click', () => sendLine('IMUZERO'));
 ui.grayWhiteButton.addEventListener('click', () => sendLine('GRAYWHITE'));
 ui.grayBlackButton.addEventListener('click', () => sendLine('GRAYBLACK'));
-window.addEventListener('blur', () => { if (controlRunning) stopControl(); });
-document.addEventListener('visibilitychange', () => { if (document.hidden && controlRunning) stopControl(); });
+window.addEventListener('blur', () => {
+  if (controlRunning || headingTest.active) stopControl();
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && (controlRunning || headingTest.active)) stopControl();
+});
 navigator.serial?.addEventListener('disconnect', event => { if (event.target === port && !closing) disconnect(false); });
 new ResizeObserver(drawChart).observe(ui.speedChart);
+new ResizeObserver(drawHeadingChart).observe(ui.headingChart);
 
 setConnected(false);
 updateSpeedTargetDisplay();
 updatePidReadback([4000, 800, 0], [4000, 800, 0]);
-updateLineReadback([400000, 0, 120000], 650);
+updateHeadingReadback(1, 80, [4000, 300, 1000]);
+updateLineReadback([200000, 0, 350000], 650);
+renderTrackMode();
+renderGrayReferences();
 updateMotorInputs();
 setDeadzonePwm(ui.deadzonePwm.value);
 renderDeadzoneResults();
 updateDeadzoneLive();
 drawChart();
+drawHeadingChart();
+renderHeadingTest();
+renderSquareTest();

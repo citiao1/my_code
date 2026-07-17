@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 /*
- * 三个控制环可以独立按位使能。当前 V16 应用只使能速度环和角速度环；
- * 方向角环代码已经准备好，但在应用层明确保持关闭，等待后续实车指令。
+ * 三个控制环可以独立按位使能。V23 在遥控直行保持和航向阶跃测试时启用
+ * 方向角环；寻线仍直接给目标角速度，不经过方向角环。
  */
 #define VEHICLE_LOOP_SPEED      (1U << 0)
 #define VEHICLE_LOOP_YAW_RATE   (1U << 1)
@@ -63,6 +63,14 @@ typedef struct
     float max_yaw_rate_dps;
     float max_wheel_correction_mm_s;
     float yaw_rate_feedforward_mm_s_per_dps;
+    float heading_feedforward;
+    float heading_period_s;
+    float heading_elapsed_s;
+    float heading_reference_deg;
+    float heading_reference_rate_dps;
+    float heading_correction_deadband_deg;
+    float heading_min_correction_dps;
+    float heading_correction_rate_gate_dps;
     VehiclePidConfig heading_pid;
     VehiclePidConfig yaw_rate_pid;
     VehiclePidConfig speed_left_pid;
@@ -73,6 +81,7 @@ typedef struct
     VehiclePidState yaw_rate_state;
     VehiclePidState speed_left_state;
     VehiclePidState speed_right_state;
+    uint8_t heading_reference_valid;
 } VehicleCascadeControl;
 
 /*
@@ -102,6 +111,11 @@ typedef struct
  */
 typedef struct
 {
+    float target_heading_deg;
+    float heading_reference_deg;
+    float heading_reference_rate_dps;
+    float heading_error_deg;
+    float heading_output_dps;
     float target_yaw_rate_dps;
     float yaw_error_dps;
     float yaw_feedforward_mm_s;
@@ -115,6 +129,7 @@ typedef struct
     float right_pid_percent;
     float left_motor_percent;
     float right_motor_percent;
+    uint8_t heading_active;
     uint8_t motor_output_valid;
 } VehicleCascadeOutput;
 
@@ -137,6 +152,10 @@ void VehicleCascade_ConfigurePid(VehicleCascadeControl *control,
 void VehicleCascade_SetMotorFeedforward(VehicleCascadeControl *control,
                                         const VehicleMotorFeedforward *left,
                                         const VehicleMotorFeedforward *right);
+
+/* 从当前实测航向重新起步参考角斜坡；切换目标或开始直行保持时调用。 */
+void VehicleCascade_ResetHeadingReference(VehicleCascadeControl *control,
+                                          float measured_heading_deg);
 
 /*
  * 按“方向角 -> 角速度 -> 左右轮速度”的顺序计算一次串级控制。

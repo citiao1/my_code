@@ -410,6 +410,16 @@
               <FilePath>..\Code\vehicle_motor.c</FilePath>
             </File>
             <File>
+              <FileName>vehicle_battery.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Code\vehicle_battery.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_battery.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Code\vehicle_battery.h</FilePath>
+            </File>
+            <File>
               <FileName>vehicle_motor.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Code\vehicle_motor.h</FilePath>
@@ -453,6 +463,16 @@
               <FileName>vehicle_line_control.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Code\vehicle_line_control.h</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_square_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Code\vehicle_square_test.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_square_test.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Code\vehicle_square_test.h</FilePath>
             </File>
             <File>
               <FileName>wheeltec_link.c</FileName>

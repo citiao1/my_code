@@ -12,7 +12,7 @@ void WheeltecLink_Init(void);
 /* 非阻塞读取 RX FIFO；每收到一个 CR/LF 结尾的完整命令便调用 handler。 */
 void WheeltecLink_Poll(WheeltecLineHandler handler);
 
-/* 将软件发送队列中的字节尽量填入 UART FIFO，不等待物理发送完成。 */
+/* 轮询 UART0 TX DMA 状态，并从软件环形队列提交下一段连续数据。 */
 void WheeltecLink_ServiceTx(void);
 
 /*

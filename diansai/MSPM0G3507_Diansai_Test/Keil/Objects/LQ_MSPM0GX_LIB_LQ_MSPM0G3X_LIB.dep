@@ -1,6 +1,6 @@
 Dependencies for Project 'LQ_MSPM0GX_LIB', Target 'LQ_MSPM0G3X_LIB': (DO NOT MODIFY !)
 CompilerVersion: 6190000::V6.19::ARMCLANG
-F (..\Code\diansai_app.c)(0x6A58F7B3)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/diansai_app.o -MD)
+F (..\Code\diansai_app.c)(0x6A5A1B45)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/diansai_app.o -MD)
 I (..\User\include.h)(0x6A54DABD)
 I (D:\Keil5\ARM\ARMCLANG\include\stdio.h)(0x63884908)
 I (D:\Keil5\ARM\ARMCLANG\include\stdint.h)(0x63884908)
@@ -115,22 +115,24 @@ I (..\LQ_Lib\LQ_Device\LQ_encoder.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Device\LQ_key.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Device\LQ_ccd.h)(0x6A54DABD)
 I (..\Code\diansai_app.h)(0x6A58D5FE)
-I (..\Code\board_io.h)(0x6A58DD08)
-I (..\Code\vehicle_cascade_control.h)(0x6A58EAC5)
+I (..\Code\board_io.h)(0x6A59FD52)
+I (..\Code\vehicle_battery.h)(0x6A59FB18)
+I (..\Code\vehicle_cascade_control.h)(0x6A5A0730)
 I (..\Code\vehicle_encoder.h)(0x6A58D5FE)
-I (..\Code\vehicle_gray.h)(0x6A58DA5C)
+I (..\Code\vehicle_gray.h)(0x6A5A00B7)
 I (..\Code\vehicle_imu.h)(0x6A58DA6F)
-I (..\Code\vehicle_line_control.h)(0x6A58F5EB)
+I (..\Code\vehicle_line_control.h)(0x6A59FFC6)
 I (..\Code\vehicle_motor.h)(0x6A58D5FE)
-I (..\Code\wheeltec_link.h)(0x6A58D5FE)
+I (..\Code\vehicle_square_test.h)(0x6A5A192A)
+I (..\Code\wheeltec_link.h)(0x6A5A1AC5)
 F (..\Code\diansai_app.h)(0x6A58D5FE)()
-F (..\Code\vehicle_cascade_control.c)(0x6A58EAC5)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/vehicle_cascade_control.o -MD)
-I (..\Code\vehicle_cascade_control.h)(0x6A58EAC5)
+F (..\Code\vehicle_cascade_control.c)(0x6A5A074A)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/vehicle_cascade_control.o -MD)
+I (..\Code\vehicle_cascade_control.h)(0x6A5A0730)
 I (D:\Keil5\ARM\ARMCLANG\include\stdint.h)(0x63884908)
 I (D:\Keil5\ARM\ARMCLANG\include\math.h)(0x63884908)
 I (D:\Keil5\ARM\ARMCLANG\include\stddef.h)(0x63884908)
 I (D:\Keil5\ARM\ARMCLANG\include\string.h)(0x63884908)
-F (..\Code\vehicle_cascade_control.h)(0x6A58EAC5)()
+F (..\Code\vehicle_cascade_control.h)(0x6A5A0730)()
 F (..\Code\vehicle_motor.c)(0x6A58D2D6)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/vehicle_motor.o -MD)
 I (..\Code\vehicle_motor.h)(0x6A58D5FE)
 I (D:\Keil5\ARM\ARMCLANG\include\stdint.h)(0x63884908)
@@ -236,6 +238,112 @@ I (..\LQ_Lib\LQ_Driver\LQ_adc.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Driver\LQ_soft_i2c.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Driver\LQ_soft_spi.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Device\LQ_1306_motor.h)(0x6A54DABD)
+F (..\Code\vehicle_battery.c)(0x6A59FB18)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/vehicle_battery.o -MD)
+I (..\Code\vehicle_battery.h)(0x6A59FB18)
+I (D:\Keil5\ARM\ARMCLANG\include\stdint.h)(0x63884908)
+I (..\User\include.h)(0x6A54DABD)
+I (D:\Keil5\ARM\ARMCLANG\include\stdio.h)(0x63884908)
+I (D:\Keil5\ARM\ARMCLANG\include\stdlib.h)(0x63884908)
+I (D:\Keil5\ARM\ARMCLANG\include\string.h)(0x63884908)
+I (D:\Keil5\ARM\ARMCLANG\include\math.h)(0x63884908)
+I (..\TI_SDK\ti\devices\msp\msp.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\DeviceFamily.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\m0p\mspm0g350x.h)(0x6A54DABD)
+I (D:\Keil5\ARM\ARMCLANG\include\stdbool.h)(0x63884908)
+I (..\TI_SDK\third_party\CMSIS\Core\Include\core_cm0plus.h)(0x6A54DABD)
+I (..\TI_SDK\third_party\CMSIS\Core\Include\cmsis_version.h)(0x6A54DABD)
+I (..\TI_SDK\third_party\CMSIS\Core\Include\cmsis_compiler.h)(0x6A54DABD)
+I (..\TI_SDK\third_party\CMSIS\Core\Include\cmsis_armclang.h)(0x6A54DABD)
+I (D:\Keil5\ARM\ARMCLANG\include\arm_compat.h)(0x63884908)
+I (D:\Keil5\ARM\ARMCLANG\include\arm_acle.h)(0x63884908)
+I (..\TI_SDK\third_party\CMSIS\Core\Include\mpu_armv7.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_adc12.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_aes.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_comp.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_crc.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_dac12.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_dma.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_flashctl.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_gpio.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_gptimer.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_i2c.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_iomux.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_mathacl.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_mcan.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_oa.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_rtc.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_spi.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_trng.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_uart.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_vref.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_wuc.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\hw_wwdt.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\m0p\hw_factoryregion.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\m0p\hw_cpuss.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\m0p\hw_debugss.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\m0p\hw_sysctl.h)(0x6A54DABD)
+I (..\TI_SDK\ti\devices\msp\peripherals\m0p\sysctl\hw_sysctl_mspm0g1x0x_g3x0x.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\driverlib.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_adc12.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_common.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\m0p\dl_factoryregion.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\m0p\dl_core.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_aes.h)(0x6A54DABD)
+I (D:\Keil5\ARM\ARMCLANG\include\stddef.h)(0x63884908)
+I (..\TI_SDK\ti\driverlib\dl_aesadv.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_comp.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_crc.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_crcp.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_dac12.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_dma.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_flashctl.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\m0p\dl_sysctl.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\m0p\sysctl\dl_sysctl_mspm0g1x0x_g3x0x.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_gpamp.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_gpio.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_i2c.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_iwdt.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_lfss.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_keystorectl.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_lcd.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_mathacl.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_mcan.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_opa.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_rtc.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_rtc_common.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_rtc_a.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_rtc_b.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_scratchpad.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_spi.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_tamperio.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_timera.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_timer.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_timerg.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_trng.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_uart_extend.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_uart.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_uart_main.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_vref.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\dl_wwdt.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\m0p\dl_interrupt.h)(0x6A54DABD)
+I (..\TI_SDK\ti\driverlib\m0p\dl_systick.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_clock.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_gpio.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_uart.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Common\LQ_common.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Common\LQ_utils.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Common\LQ_enums.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Common\LQ_types.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_exti.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_spi.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_time.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_pwm.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_dma.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_adc.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_soft_i2c.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Driver\LQ_soft_spi.h)(0x6A54DABD)
+I (..\LQ_Lib\LQ_Device\LQ_1306_motor.h)(0x6A54DABD)
+F (..\Code\vehicle_battery.h)(0x6A59FB18)()
 F (..\Code\vehicle_motor.h)(0x6A58D5FE)()
 F (..\Code\vehicle_encoder.c)(0x6A58D2D6)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/vehicle_encoder.o -MD)
 I (..\Code\vehicle_encoder.h)(0x6A58D5FE)
@@ -459,8 +567,8 @@ I (..\LQ_Lib\LQ_Driver\LQ_soft_i2c.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Driver\LQ_soft_spi.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Device\LQ_1306_motor.h)(0x6A54DABD)
 F (..\Code\vehicle_imu.h)(0x6A58DA6F)()
-F (..\Code\vehicle_gray.c)(0x6A58DA5C)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/vehicle_gray.o -MD)
-I (..\Code\vehicle_gray.h)(0x6A58DA5C)
+F (..\Code\vehicle_gray.c)(0x6A5A00B7)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/vehicle_gray.o -MD)
+I (..\Code\vehicle_gray.h)(0x6A5A00B7)
 I (D:\Keil5\ARM\ARMCLANG\include\stdint.h)(0x63884908)
 I (..\User\include.h)(0x6A54DABD)
 I (D:\Keil5\ARM\ARMCLANG\include\stdio.h)(0x63884908)
@@ -574,17 +682,24 @@ I (..\LQ_Lib\LQ_Device\LQ_tracking.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Device\LQ_encoder.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Device\LQ_key.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Device\LQ_ccd.h)(0x6A54DABD)
-F (..\Code\vehicle_gray.h)(0x6A58DA5C)()
-F (..\Code\vehicle_line_control.c)(0x6A58F6D4)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/vehicle_line_control.o -MD)
-I (..\Code\vehicle_line_control.h)(0x6A58F5EB)
+F (..\Code\vehicle_gray.h)(0x6A5A00B7)()
+F (..\Code\vehicle_line_control.c)(0x6A59FFC6)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/vehicle_line_control.o -MD)
+I (..\Code\vehicle_line_control.h)(0x6A59FFC6)
 I (D:\Keil5\ARM\ARMCLANG\include\stdint.h)(0x63884908)
-I (..\Code\vehicle_gray.h)(0x6A58DA5C)
+I (..\Code\vehicle_gray.h)(0x6A5A00B7)
 I (D:\Keil5\ARM\ARMCLANG\include\math.h)(0x63884908)
 I (D:\Keil5\ARM\ARMCLANG\include\stddef.h)(0x63884908)
 I (D:\Keil5\ARM\ARMCLANG\include\string.h)(0x63884908)
-F (..\Code\vehicle_line_control.h)(0x6A58F5EB)()
-F (..\Code\wheeltec_link.c)(0x6A58D3B0)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/wheeltec_link.o -MD)
-I (..\Code\wheeltec_link.h)(0x6A58D5FE)
+F (..\Code\vehicle_line_control.h)(0x6A59FFC6)()
+F (..\Code\vehicle_square_test.c)(0x6A5A19E5)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/vehicle_square_test.o -MD)
+I (..\Code\vehicle_square_test.h)(0x6A5A192A)
+I (D:\Keil5\ARM\ARMCLANG\include\stdint.h)(0x63884908)
+I (D:\Keil5\ARM\ARMCLANG\include\math.h)(0x63884908)
+I (D:\Keil5\ARM\ARMCLANG\include\stdlib.h)(0x63884908)
+I (D:\Keil5\ARM\ARMCLANG\include\string.h)(0x63884908)
+F (..\Code\vehicle_square_test.h)(0x6A5A192A)()
+F (..\Code\wheeltec_link.c)(0x6A5A1C13)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/wheeltec_link.o -MD)
+I (..\Code\wheeltec_link.h)(0x6A5A1AC5)
 I (D:\Keil5\ARM\ARMCLANG\include\stdint.h)(0x63884908)
 I (..\User\include.h)(0x6A54DABD)
 I (D:\Keil5\ARM\ARMCLANG\include\stdio.h)(0x63884908)
@@ -688,9 +803,9 @@ I (..\LQ_Lib\LQ_Driver\LQ_adc.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Driver\LQ_soft_i2c.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Driver\LQ_soft_spi.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Device\LQ_1306_motor.h)(0x6A54DABD)
-F (..\Code\wheeltec_link.h)(0x6A58D5FE)()
-F (..\Code\board_io.c)(0x6A58DD08)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/board_io.o -MD)
-I (..\Code\board_io.h)(0x6A58DD08)
+F (..\Code\wheeltec_link.h)(0x6A5A1AC5)()
+F (..\Code\board_io.c)(0x6A59FA9D)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/board_io.o -MD)
+I (..\Code\board_io.h)(0x6A59FD52)
 I (D:\Keil5\ARM\ARMCLANG\include\stdint.h)(0x63884908)
 I (..\User\include.h)(0x6A54DABD)
 I (D:\Keil5\ARM\ARMCLANG\include\stdio.h)(0x63884908)
@@ -794,7 +909,7 @@ I (..\LQ_Lib\LQ_Driver\LQ_adc.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Driver\LQ_soft_i2c.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Driver\LQ_soft_spi.h)(0x6A54DABD)
 I (..\LQ_Lib\LQ_Device\LQ_1306_motor.h)(0x6A54DABD)
-F (..\Code\board_io.h)(0x6A58DD08)()
+F (..\Code\board_io.h)(0x6A59FD52)()
 F (..\User\main_diansai.c)(0x6A57B43D)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../User -I ../Code -I ../Keil -I ../TI_SDK -I ../TI_SDK/third_party/CMSIS/Core/Include -I ../LQ_Lib -I ../LQ_Lib/LQ_Common -I ../LQ_Lib/LQ_Device -I ../LQ_Lib/LQ_Driver -I ../TI_SDK/ti-D__UVISION_VERSION="538" -D__MSPM0G3507__ -D__MSPM0G3507__-o ./objects/main_diansai.o -MD)
 I (..\User\include.h)(0x6A54DABD)
 I (D:\Keil5\ARM\ARMCLANG\include\stdio.h)(0x63884908)

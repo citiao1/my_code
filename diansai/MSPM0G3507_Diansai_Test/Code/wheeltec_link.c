@@ -1,13 +1,16 @@
 #include "wheeltec_link.h"
 
 #include "include.h"
+#include "LQ_dma.h"
 
 #define UART_LINE_SIZE       64U
 #define UART_TX_BUFFER_SIZE  1024U
+#define UART_TX_DMA_CHANNEL  DMA_Channel_0
 
 static uint8_t tx_buffer[UART_TX_BUFFER_SIZE];
 static uint16_t tx_head;
 static uint16_t tx_tail;
+static uint16_t tx_dma_length;
 static char rx_line[UART_LINE_SIZE];
 static uint8_t rx_line_length;
 
@@ -33,9 +36,19 @@ void WheeltecLink_Init(void)
         .FlowControl = DL_UART_FLOW_CONTROL_NONE,
         .WordLength = DL_UART_WORD_LENGTH_8_BITS,
     };
+    LQConfig_DMA_InitTypeDef_t dma = {
+        .trigger = (uint8_t)DMA_Trigger_UART0_TX,
+        .triggerType = DL_DMA_TRIGGER_TYPE_EXTERNAL,
+        .transferMode = DL_DMA_SINGLE_TRANSFER_MODE,
+        .srcWidth = DL_DMA_WIDTH_BYTE,
+        .destWidth = DL_DMA_WIDTH_BYTE,
+        .srcIncrement = DL_DMA_ADDR_INCREMENT,
+        .destIncrement = DL_DMA_ADDR_UNCHANGED,
+    };
 
     tx_head = 0U;
     tx_tail = 0U;
+    tx_dma_length = 0U;
     rx_line_length = 0U;
     LQ_UART_Init(LQ_UART0, &uart);
 
@@ -43,7 +56,14 @@ void WheeltecLink_Init(void)
     DL_UART_disable(UART0);
     DL_UART_enableFIFOs(UART0);
     DL_UART_setRXFIFOThreshold(UART0, DL_UART_RX_FIFO_LEVEL_ONE_ENTRY);
+    DL_UART_setTXFIFOThreshold(UART0, DL_UART_TX_FIFO_LEVEL_3_4_EMPTY);
     DL_UART_enable(UART0);
+
+    /* UART0 TX 请求逐字节触发 DMA0；DMA 完成状态由主循环轮询，无需中断。 */
+    LQ_DMA_Init(UART_TX_DMA_CHANNEL, &dma);
+    LQ_DMA_SetDstAddr(UART_TX_DMA_CHANNEL,
+                      LQ_UART_GetTXRegister(LQ_UART0));
+    LQ_UART_EnableDMATransmit(LQ_UART0);
 }
 
 uint8_t WheeltecLink_SendText(const char *text)
@@ -62,12 +82,28 @@ uint8_t WheeltecLink_SendText(const char *text)
 
 void WheeltecLink_ServiceTx(void)
 {
-    /* 每次只填充硬件 FIFO；真正发送由 UART 外设完成，不阻塞 10 ms 控制任务。 */
-    while (tx_tail != tx_head && !DL_UART_isTXFIFOFull(UART0))
+    /* DMA 完成一段连续内存后再推进环形队列，回绕部分留到下一次提交。 */
+    uint16_t length;
+
+    if (tx_dma_length > 0U)
     {
-        DL_UART_transmitData(UART0, tx_buffer[tx_tail]);
-        tx_tail = (uint16_t)((tx_tail + 1U) % UART_TX_BUFFER_SIZE);
+        if (DL_DMA_getTransferSize(DMA, UART_TX_DMA_CHANNEL) > 0U) return;
+        DL_DMA_disableChannel(DMA, UART_TX_DMA_CHANNEL);
+        tx_tail = (uint16_t)((tx_tail + tx_dma_length) % UART_TX_BUFFER_SIZE);
+        tx_dma_length = 0U;
     }
+
+    if (tx_tail == tx_head) return;
+    length = (tx_head > tx_tail) ?
+             (uint16_t)(tx_head - tx_tail) :
+             (uint16_t)(UART_TX_BUFFER_SIZE - tx_tail);
+
+    LQ_DMA_SetSrcAddr(UART_TX_DMA_CHANNEL,
+                      (uint32_t)&tx_buffer[tx_tail]);
+    LQ_DMA_SetTransferSize(UART_TX_DMA_CHANNEL, length);
+    tx_dma_length = length;
+    DL_DMA_enableChannel(DMA, UART_TX_DMA_CHANNEL);
+    DL_DMA_startTransfer(DMA, UART_TX_DMA_CHANNEL);
 }
 
 void WheeltecLink_Poll(WheeltecLineHandler handler)

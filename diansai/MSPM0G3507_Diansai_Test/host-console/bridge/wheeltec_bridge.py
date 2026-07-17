@@ -15,6 +15,8 @@ import websockets
 SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb"
 NOTIFY_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb"
 WRITE_UUID_FFE2 = "0000ffe2-0000-1000-8000-00805f9b34fb"
+BLE_WRITE_TIMEOUT_S = 2.0
+VOFA_CHANNEL_COUNT = 66
 
 
 @dataclass
@@ -39,6 +41,9 @@ class BleVofaBridge:
         self.ble_write_lock = asyncio.Lock()
         self.disconnected = asyncio.Event()
         self.loop = asyncio.get_running_loop()
+        # VOFA 的 I0/I1... 由每一行中的数值位置决定，文本前缀不会创建
+        # 独立通道组。因此 TEL/SPD/LIN 必须更新并发送同一个定长状态帧。
+        self.vofa_channels = [0.0] * VOFA_CHANNEL_COUNT
 
     async def scan(self):
         print(f"[BLE] scanning for FFE0 devices ({self.config.scan_timeout:.0f}s)...")
@@ -72,8 +77,10 @@ class BleVofaBridge:
             print("[BLE] no FFE0 device found; make sure the module is powered and not connected elsewhere")
             await asyncio.sleep(2)
 
-    def on_disconnected(self, _client: BleakClient) -> None:
-        self.loop.call_soon_threadsafe(self.disconnected.set)
+    def on_disconnected(self, client: BleakClient) -> None:
+        # Windows 偶尔会在下一次连接已经开始后才投递旧连接的回调。
+        if client is self.client:
+            self.loop.call_soon_threadsafe(self.disconnected.set)
 
     def on_notification(self, _characteristic, data: bytearray) -> None:
         payload = bytes(data)
@@ -94,8 +101,7 @@ class BleVofaBridge:
         if firewater:
             await self.broadcast_tcp(firewater)
 
-    @staticmethod
-    def to_firewater(line: str) -> Optional[bytes]:
+    def to_firewater(self, line: str) -> Optional[bytes]:
         fields = line.split(",")
         if fields[0] not in {"TEL", "SPD", "LIN"}:
             return None
@@ -103,6 +109,8 @@ class BleVofaBridge:
             values = list(map(int, fields[1:]))
         except ValueError:
             return None
+
+        channels = self.vofa_channels
 
         if fields[0] == "LIN":
             if len(values) < 16:
@@ -112,21 +120,21 @@ class BleVofaBridge:
              target_yaw10, actual_yaw10, correction_mm,
              target_l_mm, target_r_mm, base_speed_mm,
              diff_milli, normalized_sum) = values[:16]
-            channels = (
-                time_ms, active, normalized, visible, lost,
+            channels[0] = time_ms
+            channels[1] = active
+            channels[48:64] = (
+                active, normalized, visible, lost,
                 raw_error10 / 10, filtered_error10 / 10, pid_output,
                 target_yaw10 / 10, actual_yaw10 / 10,
                 correction_mm / 1000,
                 target_l_mm / 1000, target_r_mm / 1000,
                 base_speed_mm / 1000, diff_milli / 1000,
-                normalized_sum,
+                normalized_sum, 0,
             )
             if len(values) >= 19:
-                channels += (values[16], values[17], values[18])
-            text = "line:" + ",".join(f"{value:g}" for value in channels) + "\n"
-            return text.encode("utf-8")
+                channels[63:66] = values[16:19]
 
-        if fields[0] == "SPD":
+        elif fields[0] == "SPD":
             if len(values) < 20:
                 return None
             (time_ms, active, target_l_mm, actual_l_mm, error_l_mm,
@@ -134,61 +142,93 @@ class BleVofaBridge:
              target_r_mm, actual_r_mm, error_r_mm,
              feedforward_r10, feedback_r10, pwm_r,
              kp_l, ki_l, kd_l, kp_r, ki_r, kd_r) = values[:20]
-            channels = (
-                time_ms, active,
+            channels[0] = time_ms
+            channels[1] = active
+            channels[15:33] = (
                 target_l_mm / 1000, actual_l_mm / 1000, error_l_mm / 1000,
-                feedforward_l10 / 10, feedback_l10 / 10, pwm_l,
                 target_r_mm / 1000, actual_r_mm / 1000, error_r_mm / 1000,
+                feedforward_l10 / 10, feedback_l10 / 10, pwm_l,
                 feedforward_r10 / 10, feedback_r10 / 10, pwm_r,
                 kp_l, ki_l, kd_l, kp_r, ki_r, kd_r,
             )
-            text = "speed:" + ",".join(f"{value:g}" for value in channels) + "\n"
             if len(values) >= 32:
                 (target_yaw10, actual_yaw10, error_yaw10,
                  yaw_feedforward_mm, yaw_pid_mm, yaw_correction_mm,
                  yaw_enabled, max_yaw_rate,
                  yaw_kp, yaw_ki, yaw_kd, yaw_kff) = values[20:32]
-                yaw_channels = (
-                    time_ms, active, yaw_enabled,
+                channels[10] = actual_yaw10 / 10
+                channels[33:45] = (
+                    yaw_enabled,
                     target_yaw10 / 10, actual_yaw10 / 10, error_yaw10 / 10,
                     yaw_feedforward_mm / 1000, yaw_pid_mm / 1000,
                     yaw_correction_mm / 1000, max_yaw_rate,
-                    yaw_kp, yaw_ki, yaw_kd, yaw_kff,
+                    yaw_kp / 1000000, yaw_ki / 1000000,
+                    yaw_kd / 1000000, yaw_kff / 1000000,
                 )
-                text += "yaw:" + ",".join(f"{value:g}" for value in yaw_channels) + "\n"
-            return text.encode("utf-8")
+            if len(values) >= 44:
+                (target_heading10, reference_heading10, reference_rate10,
+                 actual_heading10, heading_error10, heading_output10,
+                 heading_enabled, heading_active, heading_max_rate,
+                 heading_kp, heading_kd, heading_kff) = values[32:44]
+                channels[2:15] = (
+                    heading_enabled, heading_active,
+                    target_heading10 / 10, reference_heading10 / 10,
+                    actual_heading10 / 10, heading_error10 / 10,
+                    reference_rate10 / 10, heading_output10 / 10,
+                    actual_yaw10 / 10, heading_max_rate,
+                    heading_kp / 1000, heading_kd / 1000,
+                    heading_kff / 1000,
+                )
 
-        if len(values) >= 36:
-            time_ms, enabled, link, yaw10 = values[:4]
-            left_mm, right_mm, target_l_mm, target_r_mm = values[6:10]
-            pwm_l, pwm_r = values[14:16]
-            target_yaw10, yaw_rate10, yaw_error10, yaw_correction_mm = values[22:26]
-            yaw_enabled, battery_mv, mpu_ok, yaw_feedforward_mm = values[26], values[27], values[29], values[30]
-            target_heading10, heading_error10, heading_output10 = values[31:34]
-            heading_enabled, heading_active = values[34:36]
-        elif len(values) >= 23:
-            (time_ms, enabled, link, yaw10, left_mm, right_mm, target_l_mm, target_r_mm,
-             pwm_l, pwm_r, target_yaw10, yaw_rate10, yaw_error10, yaw_correction_mm,
-             yaw_enabled, mpu_ok, yaw_feedforward_mm, target_heading10, heading_error10,
-             heading_output10, heading_enabled, heading_active, battery_mv) = values[:23]
         else:
-            return None
+            if len(values) >= 36:
+                time_ms, enabled, link, yaw10 = values[:4]
+                left_mm, right_mm, target_l_mm, target_r_mm = values[6:10]
+                pwm_l, pwm_r = values[14:16]
+                target_yaw10, yaw_rate10, yaw_error10, yaw_correction_mm = values[22:26]
+                yaw_enabled, battery_mv, mpu_ok, yaw_feedforward_mm = (
+                    values[26], values[27], values[29], values[30]
+                )
+                target_heading10, heading_error10, heading_output10 = values[31:34]
+                heading_enabled, heading_active = values[34:36]
+            elif len(values) >= 23:
+                (time_ms, enabled, link, yaw10, left_mm, right_mm,
+                 target_l_mm, target_r_mm, pwm_l, pwm_r,
+                 target_yaw10, yaw_rate10, yaw_error10, yaw_correction_mm,
+                 yaw_enabled, mpu_ok, yaw_feedforward_mm, target_heading10,
+                 heading_error10, heading_output10, heading_enabled,
+                 heading_active, battery_mv) = values[:23]
+            else:
+                return None
 
-        # FireWater accepts one optional prefix, followed only by CSV numbers.
-        channels = (
-            time_ms, enabled, link,
-            yaw10 / 10,
-            left_mm / 1000, right_mm / 1000,
-            target_l_mm / 1000, target_r_mm / 1000,
-            pwm_l, pwm_r,
-            target_yaw10 / 10, yaw_rate10 / 10, yaw_error10 / 10,
-            yaw_correction_mm / 1000, yaw_enabled, mpu_ok,
-            yaw_feedforward_mm / 1000,
-            target_heading10 / 10, heading_error10 / 10, heading_output10 / 10,
-            heading_enabled, heading_active,
-            battery_mv / 1000,
-        )
-        text = "vehicle:" + ",".join(f"{value:g}" for value in channels) + "\n"
+            channels[0] = time_ms
+            channels[1] = enabled
+            channels[2] = heading_enabled
+            channels[3] = heading_active
+            channels[4] = target_heading10 / 10
+            channels[6] = yaw10 / 10
+            channels[7] = heading_error10 / 10
+            channels[9] = heading_output10 / 10
+            channels[10] = yaw_rate10 / 10
+            channels[15:21] = (
+                target_l_mm / 1000, left_mm / 1000,
+                (target_l_mm - left_mm) / 1000,
+                target_r_mm / 1000, right_mm / 1000,
+                (target_r_mm - right_mm) / 1000,
+            )
+            channels[23] = pwm_l
+            channels[26] = pwm_r
+            channels[33] = yaw_enabled
+            channels[34] = target_yaw10 / 10
+            channels[35] = yaw_rate10 / 10
+            channels[36] = yaw_error10 / 10
+            channels[37] = yaw_feedforward_mm / 1000
+            channels[39] = yaw_correction_mm / 1000
+            channels[45] = link
+            channels[46] = mpu_ok
+            channels[47] = battery_mv / 1000
+
+        text = "tuning:" + ",".join(f"{value:g}" for value in channels) + "\n"
         return text.encode("utf-8")
 
     async def broadcast_tcp(self, payload: bytes) -> None:
@@ -213,13 +253,33 @@ class BleVofaBridge:
         for websocket in failed:
             self.ws_clients.discard(websocket)
 
-    async def send_ble(self, command: str) -> None:
-        if not self.client or not self.client.is_connected or not self.write_uuid:
+    async def send_ble(self, command: str) -> bool:
+        client = self.client
+        if (not client or not client.is_connected or not self.write_uuid or
+                self.disconnected.is_set()):
             await self.broadcast_web("STATUS,0,BLE disconnected\n")
-            return
+            return False
         payload = command.strip().encode("utf-8") + b"\n"
-        async with self.ble_write_lock:
-            await self.client.write_gatt_char(self.write_uuid, payload, response=self.write_response)
+        try:
+            async with self.ble_write_lock:
+                if client is not self.client or not client.is_connected:
+                    return False
+                await asyncio.wait_for(
+                    client.write_gatt_char(
+                        self.write_uuid,
+                        payload,
+                        response=self.write_response,
+                    ),
+                    timeout=BLE_WRITE_TIMEOUT_S,
+                )
+            return True
+        except Exception as error:
+            # 一次 GATT 写失败只重连 BLE，不应让异常关闭网页 WebSocket。
+            print(f"[BLE] write failed: {error}")
+            if client is self.client:
+                self.disconnected.set()
+            await self.broadcast_web(f"STATUS,0,BLE write failed: {error}\n")
+            return False
 
     async def handle_tcp(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         peer = writer.get_extra_info("peername")
@@ -254,11 +314,11 @@ class BleVofaBridge:
                 for command in message.replace("\r", "").split("\n"):
                     if command.strip():
                         await self.send_ble(command)
-        except Exception:
-            pass
+        except Exception as error:
+            print(f"[WS] web console error: {error}")
         finally:
             self.ws_clients.discard(websocket)
-            if not self.ws_clients:
+            if not self.ws_clients and self.client and self.client.is_connected:
                 await self.send_ble("STOP")
             print("[WS] web console disconnected")
 
@@ -268,6 +328,7 @@ class BleVofaBridge:
         if notify is None:
             raise RuntimeError("FFE1 notify characteristic not found")
         await self.client.start_notify(notify, self.on_notification)
+        self.ble_line_buffer = ""
 
         # WHEELTEC-IOS uses FFE1 for notifications and FFE2 for host writes.
         # Treat a partial Windows GATT discovery as a failed connection instead

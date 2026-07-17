@@ -11,7 +11,9 @@ It does not modify the original LQ library checkout.
 - Eight-channel grayscale sensor in OUT/S0/S1/S2 polling mode, raw 12-bit ADC
 - LQ OLED wiring retained; display disabled in V13 and later
 - 9AGM LSM6DSR six-axis readout and ID check (`WHO_AM_I = 0x6B`)
-- Three debounced onboard keys and a non-blocking onboard buzzer
+- Three debounced onboard keys, two debounced DIP switches and a non-blocking
+  onboard buzzer
+- PB19/ADC1_CH6 battery-divider measurement and browser voltage display
 - Browser host console over Web Serial or Web Bluetooth
 
 ## Wiring
@@ -41,6 +43,8 @@ AT8236 must share GND.
 | 9AGM | SCK / SPI data pair / CS | PA12 / PA13+PA14 auto-probed / PA2 |
 | Onboard K1 / K2 / K3 | Active-low keys | PB15 / PB14 / PB16 after real-board verification |
 | Onboard buzzer | Digital output | PA28, currently configured active high |
+| DIP switch SW1 / SW2 | Active-low switch inputs | PB6 / PB8, 2.2 kOhm pull-ups |
+| Battery monitor | `ADC_bat` divider input | PB19 / ADC1_CH6, 10 kOhm over 1.5 kOhm |
 
 The four AT8236 inputs use four independent PWM channels. V9 and later use the
 datasheet's slow-decay mode: positive output is `IN1=1, IN2=PWM`, negative
@@ -89,10 +93,15 @@ motors but does not stop the bridge process.
 | --- | --- |
 | `MOTOR,left,right` | Raw -100 to 100 percent PWM; bypass speed PID and mapping |
 | `DRV,throttle,steering` | Cascaded command; throttle maps to -600..600 mm/s and steering maps to the configured yaw-rate limit |
+| `SQUARE,1/2/0` | Start / keep alive / stop the four-side 1 m + left 90 degree square test |
 | `PID`, `PIDL`, `PIDR` | Speed gains are locked at `4000,800,0`; these commands return `ERR,SPEED_PID_LOCKED` |
 | `YAW,0/1` | Disable/enable yaw-rate PID; enable requires a working IMU |
 | `YAWRATE,dps` | Set maximum commanded yaw rate from 10 to 360 degrees/s |
 | `YAWPID,kp,ki,kd,kff` | Set yaw-rate gains in `diansai_test` micro-units |
+| `HEAD,0/1` | Disable/enable remote heading hold; enable requires the yaw-rate loop and IMU |
+| `HEADPID,...` | Remote heading gains are locked at `4000,300,1000,80`; returns `ERR,HEADING_PID_LOCKED` |
+| `HEADSET,target10` | Activate an absolute -180.0..180.0 degree heading target for step testing |
+| `HEADCFG` | Return heading enable, gains and maximum rate |
 | `LINEPID,kp,ki,kd` | Set line-direction gains as x1000 integers |
 | `LINEDIFF,ratio` | Store maximum differential ratio as x1000, from 0 to 1000 |
 | `LINECFG` | Return the stored line PID and differential ratio |
@@ -121,14 +130,21 @@ traffic therefore stops both motors even if the host UI closes unexpectedly.
 - `SPD,time,active,targetL,actualL,errorL,ffL10,pidL10,pwmL,targetR,actualR,`
   `errorR,ffR10,pidR10,pwmR,kpL,kiL,kdL,kpR,kiR,kdR,targetYaw10,actualYaw10,`
   `errorYaw10,yawFfMm,yawPidMm,yawCorrectionMm,yawEnabled,maxYawRate,`
-  `yawKp,yawKi,yawKd,yawKff`: 250 ms cascade tuning data while `DRV` is active.
+  `yawKp,yawKi,yawKd,yawKff,...heading`: 300 ms cascade tuning data while `DRV` is active.
   Wheel targets use mm/s, yaw rates use 0.1 degrees/s, and yaw correction uses
   mm/s.
+- `SQR,time,active,phase,leg,progressMm,remainingMm,targetHeading10`: square-test
+  state. Phases are idle/drive/turn/complete/error = 0/1/2/3/4.
 - `DBG,id,ax,ay,az,gx,gy,gz,mosi,miso`: raw LSM6DSR diagnostic values and
   the detected SPI data pin mapping.
-- `CAL,...`: eight white and eight black grayscale reference values.
-- `NRM,time,valid,n0,...,n7`: grayscale normalization result. White is 0,
-  black is 1000; `valid=1` requires adequate contrast on all eight channels.
+- `CAL,...,mode`: eight background and eight target-line reference values. The
+  old white/black field slots are retained on the wire for compatibility.
+- `NRM,time,valid,n0,...,n7,mode`: grayscale normalization result. Background
+  is always 0 and the target line is always 1000; `valid=1` requires adequate
+  contrast on all eight channels.
+- `MOD,time,mode,sw1Down,sw2Down,localRun,backgroundValid,lineValid,batteryMv`:
+  selected track-color mode, debounced switch states, local-run state,
+  calibration validity and measured battery voltage.
 - `KEY,time,pressed,released,short,long,held`: onboard-key event masks. Bit 0,
   bit 1 and bit 2 represent K1, K2 and K3 respectively.
 
@@ -156,7 +172,7 @@ UART0 RX is polled every millisecond in V8 and later instead of relying on the v
 interrupt wrapper. This makes WHEELTEC commands independent of FIFO interrupt
 index and threshold behavior.
 
-## V16-V18 module structure and onboard IO
+## V16-V24 module structure and onboard IO
 
 V16 replaces the former monolithic `diansai_app.c` hardware implementation with
 small modules that own their hardware state:
@@ -167,39 +183,63 @@ small modules that own their hardware state:
 | `vehicle_encoder.c/.h` | Encoder counting, 1867 count/m conversion and speed filtering |
 | `vehicle_imu.c/.h` | LSM6DSR probing, calibration, yaw-rate sign and attitude update |
 | `vehicle_gray.c/.h` | Eight-channel ADC sampling, references and 0..1000 normalization |
+| `vehicle_battery.c/.h` | PB19 ADC sampling, divider conversion and low-pass filtering |
 | `wheeltec_link.c/.h` | UART0 line parsing and the non-blocking 1024-byte TX queue |
-| `board_io.c/.h` | Key debounce/events and the non-blocking buzzer pattern queue |
+| `board_io.c/.h` | Key/switch debounce, events and the non-blocking buzzer pattern queue |
 | `vehicle_cascade_control.c/.h` | Prepared heading -> yaw-rate -> wheel-speed controller |
 | `diansai_app.c/.h` | Scheduling, command semantics, watchdogs and telemetry assembly |
 
-V18 applies the real-board key order: K1/PB15 stops the motors and captures
-white, K2/PB14 stops and captures black, and K3/PB16
-stops and recalibrates the gyroscope for about three seconds. White and black
-capture each produce one short beep. Once both references exist and every
-channel has at least 32 ADC counts of contrast, normalization becomes valid and
-produces a separate three-beep pattern. Gyroscope calibration success produces
-two short beeps; IMU failure produces three long warning beeps. Keep the car
-completely still while pressing and releasing K3.
+V22 keeps the verified real-board key order. K1/PB15 captures the current
+background and K2/PB14 captures the current target line. With SW1 down this is
+white background / black line; with SW1 up it is blue background / white line.
+K3/PB16 stops and recalibrates the gyroscope for about three seconds. Each
+reference capture produces one short beep. Once both references exist and every
+channel has at least 32 ADC counts of contrast, valid normalization produces a
+separate three-beep pattern. Gyroscope calibration success produces two short
+beeps; IMU failure produces three long warning beeps.
 
 Normalization is calculated independently for every channel as
-`(raw-white)*1000/(black-white)`, then clamped to 0..1000. This also works when
-one sensor revision reports black above white and another reports black below
-white. Calibration references currently live in RAM and must be captured again
-after every power cycle. Holding any key for 800 ms still stops the controller
-and motors without running the short-press calibration action.
+`(raw-background)*1000/(line-background)`, then clamped to 0..1000. The signed
+denominator is intentional. In blue/white mode the measured blue value is large
+and the white value is small, so the negative denominator still maps blue to 0
+and white to 1000. Calibration references live in RAM, are cleared whenever SW1
+changes mode, and must be captured again after every power cycle.
+
+After valid calibration, holding K1 or K2 for 500 ms starts local line following
+at 200 mm/s. The buzzer stays continuously on during the 500 ms arming interval.
+Local arming and running reject remote drive/configuration commands and bypass
+the remote 500 ms motor-command watchdog. Confirmed line loss or another K1/K2
+press stops the vehicle; changing SW1 also stops and clears incompatible
+calibration. SW2 is debounced and reported but has no vehicle function yet.
 
 All ordinary buzzer timing is advanced by the 10 ms scheduler. V17 also keeps
 the configured off-time between adjacent patterns, so the one-beep reference
 confirmation and three-beep normalization confirmation do not merge together.
 
-The board material identifies PA28 but does not state the buzzer's active
-level. V17 centralizes the current active-high assumption in
-`BOARD_BUZZER_ACTIVE_LEVEL`; verify the polarity on the board before relying on
-audible fault indication.
+The schematic drives the PA28 buzzer through an S8050 transistor. The fitted
+part behaves as an active buzzer: software can change duration and rhythm, but
+cannot reliably change pitch. Pitch control would require a passive buzzer and
+a timer PWM output. `BOARD_BUZZER_ACTIVE_LEVEL` centralizes the current
+active-high assumption.
 
-The unused heading-angle controller remains prepared but disabled. V21 still
-enables only `VEHICLE_LOOP_YAW_RATE | VEHICLE_LOOP_SPEED`; the independent
-grayscale module supplies a target yaw rate without enabling the heading loop.
+V23 enables the heading-angle controller only for remote straight-line hold and
+`HEADSET` tests. Nonzero remote steering still directly commands yaw rate;
+releasing steering while throttle remains nonzero captures the current yaw and
+holds it. Line following continues to supply target yaw rate directly and does
+not pass through heading hold.
+
+V24 locks the accepted remote heading parameters at `4.000/0.300/1.000` and
+80 degrees/s. `DRV` automatically enables this heading loop when steering is
+zero; nonzero steering still commands the yaw-rate loop directly. `LINE` clears
+heading hold and continues to use the independent grayscale direction PID
+`200/0/350` with differential ratio 0.65.
+
+V24 also adds a board-side square state machine. It drives each side to
+1000 mm using the measured 1867 count/m encoders, settles, turns left 90 degrees,
+and repeats four times. The browser sends `SQUARE,1` once and `SQUARE,2` every
+200 ms; loss of keepalive stops the test after 500 ms. UART0 transmission now
+uses DMA channel 0 from the existing 1024-byte software queue. Short variable
+length receive commands remain on the low-cost FIFO poll path.
 
 ## Motor mapping and speed PID
 
@@ -219,7 +259,7 @@ feedforward map before feedback: zero target remains exactly zero; a nonzero
 target starts at its measured 7 or 8 percent threshold and increases linearly
 to 100 percent at 600 mm/s. Only the wheel-speed loop is enabled.
 
-V12 through V21 disable this feedforward map for PID-only tuning. The measured
+V12 through V22 disable this feedforward map for PID-only tuning. The measured
 dead-zone constants remain in source, but `SPEED_FEEDFORWARD_ENABLED` is zero,
 reported feedforward stays at zero, and the incremental PID output is allowed
 to use the full `-100..100` percent range.
@@ -304,8 +344,10 @@ wheel speed by approximately four times. Both V11 speed conversions therefore
 use the directly measured `1867 counts/m`.
 
 `Code/vehicle_cascade_control.c` contains the staged heading -> yaw-rate ->
-wheel-speed cascade. V21 enables `VEHICLE_LOOP_YAW_RATE | VEHICLE_LOOP_SPEED`;
-`VEHICLE_LOOP_HEADING` remains disabled.
+wheel-speed cascade. V23 uses the reference `diansai_test` heading algorithm:
+a rate-limited reference angle followed by
+`Kff*reference_rate + Kp*tracking_error + Kd*(reference_rate-yaw_rate)`.
+Defaults are `4.000/0.300/1.000` with an 80 degree/s limit.
 
 ## Grayscale line-direction loop
 
@@ -333,48 +375,52 @@ The planned grayscale implementation is:
 3. Convert direction output to a target yaw rate and pass it through the already
    verified yaw-rate PID, then through the locked left/right speed PI loops.
 4. The current yaw-rate loop already outputs physical wheel correction in mm/s,
-   so it does not need the reference code's 0.01 unit conversion. V21 limits it
+   so it does not need the reference code's 0.01 unit conversion. V23 limits it
    to `abs(base_speed)*diff_ratio` and keeps the verified symmetric mix
    `left=base-correction`, `right=base+correction`. Longqiu's `+0.2*k` outer-wheel
    factor is chassis-specific and is not copied into the first tuning stage.
 
 Tune strictly from inside out: keep the verified speed PI locked, confirm the
 yaw-rate loop with step targets, then hold the differential structure fixed and
-tune the line direction loop at about 100 mm/s. Start with direction `Ki=Kd=0`,
+  tune the line direction loop at 200 mm/s. Start with direction `Ki=Kd=0`,
 raise Kp until it follows but begins to oscillate, then reduce Kp by 20 to 30
 percent. Add Kd in small steps until oscillation is damped. Keep Ki zero unless
 a repeatable steady offset remains; if needed, add only a small limited integral
 with anti-windup. Only after those three loops track correctly should 0.65 or
 the outer-wheel 0.2 factor be changed.
 
-V21 enables this direction loop. `LINEPID,400000,0,120000` represents
-`400.000/0.000/120.000`, `LINEDIFF,650` represents 0.650, and
-`LINE,1,100` starts line following at 100 mm/s. The browser repeats `LINE` every
-100 ms. Firmware stops after 500 ms without a motor command. A center-line gap
+V23 uses the confirmed defaults. `LINEPID,200000,0,350000` represents
+`200.000/0.000/350.000`, `LINEDIFF,650` represents 0.650, and
+`LINE,1,200` starts line following at 200 mm/s. The browser repeats `LINE` every
+200 ms. Firmware stops after 500 ms without a motor command. A center-line gap
 holds the previous target for 150 ms; loss immediately after a fresh edge/large
 error enters blind turn for at most 1200 ms at 90 degrees/s and temporarily
 raises the differential limit to 1.0. Two consecutive valid line samples return
 to normal PID; otherwise the vehicle stops when recovery times out.
 
 For VOFA+, start the normal bridge and connect a FireWater TCP client to
-`127.0.0.1:1347`. The `speed:` channels are time, active, left target/actual/
-error/feedforward/PID correction/PWM, right target/actual/error/feedforward/PID
-correction/PWM, then left and right `Kp/Ki/Kd`. Speeds are converted to m/s by
-the bridge. V14 also publishes `yaw:` as time, active, enabled, target, actual,
-error, feedforward, PID correction, final wheel correction, maximum yaw rate,
-then `Kp/Ki/Kd/Kff`. VOFA can send newline-terminated `YAWPID`, `YAWRATE`,
-`YAW` and `DRV` commands back through this TCP connection.
+`127.0.0.1:1347`. The bridge emits one fixed 66-value `tuning:` row. `TEL`,
+`SPD`, and `LIN` update that shared row instead of sending different-length rows
+that would reuse VOFA's `I0`, `I1`, ... indices. VOFA can send newline-terminated
+control commands back through this TCP connection.
 
-V21 also publishes `line:` as: time, active, normalization-valid, visible,
-lost, raw error, filtered error, direction PID output, target yaw rate, actual
-yaw rate, wheel correction, left/right target speed, base speed, differential
-ratio, normalized grayscale sum, recovery mode, recovery milliseconds and active
-black-channel count. With `CH0` numbering, direction tuning uses
-filtered error `CH6`, target yaw rate `CH8` and actual yaw rate `CH9`; `CH5` is
-the unfiltered error, `CH10` is the final wheel correction in m/s, and
-`CH16/CH17/CH18` are mode, recovery time and active-channel count.
+Heading tuning uses target/reference/actual at `I4/I5/I6`, heading error at
+`I7`, reference rate at `I8`, heading output at `I9`, and actual yaw rate at
+`I10`. Speed target/actual pairs are `I15/I16` and `I18/I19`; yaw-rate
+target/actual/error are `I34/I35/I36`. Line-control telemetry occupies
+`I48..I65`, including filtered error at `I53`, target/actual yaw rate at
+`I55/I56`, and wheel targets at `I58/I59`.
 
-With VOFA channels numbered from `CH0`, left target/actual are `CH2/CH3` and
-right target/actual are `CH8/CH9`. In the separate `yaw:` group, target/actual
-are `CH3/CH4`. The browser shows the locked speed gains and provides yaw-rate
-enable, limit and `Kp/Ki/Kd/Kff` controls.
+Battery voltage uses the schematic's `(10k+1.5k)/1.5k = 23/3` divider and an
+initial 3.300 V VDDA assumption. Compare the browser reading with a multimeter
+under load before using it for a low-voltage cutoff; resistor tolerance and the
+actual VDDA require a board-specific correction factor for precision.
+
+V23 lowers sustained 9600-baud load: normal `SPD` is 300 ms, line-mode `SPD` is
+1000 ms, `LIN` is 400 ms and debug is 4000 ms. Browser drive refresh is 200 ms.
+The BLE bridge now catches GATT write timeouts, keeps the browser WebSocket open,
+and asks the BLE loop to reconnect instead of propagating one write failure into
+a second apparent web-console disconnect.
+
+The browser shows the locked speed gains and provides yaw-rate enable, limit and
+`Kp/Ki/Kd/Kff` controls.

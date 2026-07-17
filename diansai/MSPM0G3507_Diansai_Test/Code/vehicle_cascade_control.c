@@ -179,6 +179,10 @@ void VehicleCascade_Init(VehicleCascadeControl *control)
     control->max_speed_mm_s = 600.0f;
     control->max_yaw_rate_dps = 150.0f;
     control->max_wheel_correction_mm_s = 600.0f;
+    control->heading_period_s = 0.030f;
+    control->heading_correction_deadband_deg = 0.50f;
+    control->heading_min_correction_dps = 8.0f;
+    control->heading_correction_rate_gate_dps = 5.0f;
     control->heading_pid.output_limit = control->max_yaw_rate_dps;
     control->yaw_rate_pid.output_limit = control->max_wheel_correction_mm_s;
     control->speed_left_pid.output_limit = 100.0f;
@@ -193,6 +197,9 @@ void VehicleCascade_Reset(VehicleCascadeControl *control)
     ResetPid(&control->yaw_rate_state);
     ResetPid(&control->speed_left_state);
     ResetPid(&control->speed_right_state);
+    control->heading_elapsed_s = 0.0f;
+    control->heading_reference_rate_dps = 0.0f;
+    control->heading_reference_valid = 0U;
 }
 
 void VehicleCascade_SetEnabledLoops(VehicleCascadeControl *control, uint8_t enabled_mask)
@@ -203,7 +210,13 @@ void VehicleCascade_SetEnabledLoops(VehicleCascadeControl *control, uint8_t enab
     enabled_mask &= VEHICLE_ALL_LOOPS;
     disabled = control->enabled_mask & (uint8_t)~enabled_mask;
     control->enabled_mask = enabled_mask;
-    if (disabled & VEHICLE_LOOP_HEADING) ResetPid(&control->heading_state);
+    if (disabled & VEHICLE_LOOP_HEADING)
+    {
+        ResetPid(&control->heading_state);
+        control->heading_elapsed_s = 0.0f;
+        control->heading_reference_rate_dps = 0.0f;
+        control->heading_reference_valid = 0U;
+    }
     if (disabled & VEHICLE_LOOP_YAW_RATE) ResetPid(&control->yaw_rate_state);
     if (disabled & VEHICLE_LOOP_SPEED)
     {
@@ -236,12 +249,24 @@ void VehicleCascade_SetMotorFeedforward(VehicleCascadeControl *control,
     control->right_feedforward = *right;
 }
 
+void VehicleCascade_ResetHeadingReference(VehicleCascadeControl *control,
+                                          float measured_heading_deg)
+{
+    if (control == NULL) return;
+    ResetPid(&control->heading_state);
+    control->heading_reference_deg = WrapAngle(measured_heading_deg);
+    control->heading_reference_rate_dps = 0.0f;
+    control->heading_elapsed_s = 0.0f;
+    control->heading_reference_valid = 1U;
+}
+
 void VehicleCascade_Step(VehicleCascadeControl *control,
                          const VehicleCascadeInput *input,
                          float dt_s,
                          VehicleCascadeOutput *output)
 {
     float target_yaw_rate;
+    float heading_error = 0.0f;
     float yaw_feedforward = 0.0f;
     float correction;
     float correction_limit;
@@ -252,24 +277,102 @@ void VehicleCascade_Step(VehicleCascadeControl *control,
     if (control == NULL || input == NULL || output == NULL) return;
     memset(output, 0, sizeof(*output));
 
-    /* 第一级：方向角环。关闭时直接透传上层给出的目标角速度。 */
+    /*
+     * 第一级：方向角环。算法与 diansai_test 的实车路径一致：
+     * 先按最大航向角速度生成斜坡参考角，再使用
+     * Kff*参考角速度 + Kp*跟踪误差 + Kd*(参考角速度-实际角速度)。
+     * 这里的 Kd 是角速度误差反馈，不再对角度误差做数值微分。
+     */
     target_yaw_rate = input->requested_yaw_rate_dps;
     if (control->enabled_mask & VEHICLE_LOOP_HEADING)
     {
-        target_yaw_rate = PidStep(&control->heading_pid,
-                                  &control->heading_state,
-                                  WrapAngle(input->requested_heading_deg -
-                                            input->measured_heading_deg),
-                                  0.0f,
-                                  dt_s);
+        float heading_dt;
+        float output_limit = fminf(fabsf(control->heading_pid.output_limit),
+                                   fabsf(control->max_yaw_rate_dps));
+
+        if (!control->heading_reference_valid)
+        {
+            VehicleCascade_ResetHeadingReference(control,
+                                                  input->measured_heading_deg);
+        }
+        heading_error = WrapAngle(input->requested_heading_deg -
+                                  input->measured_heading_deg);
+        heading_dt = (dt_s > 0.0f && dt_s <= 0.2f) ? dt_s : 0.01f;
+        control->heading_elapsed_s += heading_dt;
+        if (control->heading_elapsed_s >= control->heading_period_s &&
+            output_limit > 0.0f)
+        {
+            float reference_error;
+            float reference_step;
+            float tracking_error;
+            float derivative_error;
+
+            heading_dt = control->heading_elapsed_s;
+            control->heading_elapsed_s = 0.0f;
+            reference_error = WrapAngle(input->requested_heading_deg -
+                                        control->heading_reference_deg);
+            reference_step = output_limit * heading_dt;
+            if (fabsf(reference_error) <= reference_step)
+            {
+                control->heading_reference_rate_dps = reference_error / heading_dt;
+                control->heading_reference_deg =
+                    WrapAngle(input->requested_heading_deg);
+            }
+            else
+            {
+                control->heading_reference_rate_dps =
+                    reference_error > 0.0f ? output_limit : -output_limit;
+                control->heading_reference_deg = WrapAngle(
+                    control->heading_reference_deg +
+                    control->heading_reference_rate_dps * heading_dt);
+            }
+
+            tracking_error = WrapAngle(control->heading_reference_deg -
+                                       input->measured_heading_deg);
+            derivative_error = control->heading_reference_rate_dps -
+                               input->measured_yaw_rate_dps;
+            target_yaw_rate =
+                control->heading_feedforward *
+                    control->heading_reference_rate_dps +
+                control->heading_pid.kp * tracking_error +
+                control->heading_pid.kd * derivative_error;
+            target_yaw_rate = ClampFloat(target_yaw_rate,
+                                         -output_limit,
+                                         output_limit);
+
+            if (fabsf(WrapAngle(input->requested_heading_deg -
+                                control->heading_reference_deg)) < 0.01f &&
+                fabsf(heading_error) >
+                    fabsf(control->heading_correction_deadband_deg) &&
+                fabsf(input->measured_yaw_rate_dps) <
+                    fabsf(control->heading_correction_rate_gate_dps) &&
+                fabsf(target_yaw_rate) <
+                    fabsf(control->heading_min_correction_dps))
+            {
+                float minimum = fminf(
+                    fabsf(control->heading_min_correction_dps), output_limit);
+                target_yaw_rate = heading_error > 0.0f ? minimum : -minimum;
+            }
+            control->heading_state.output = target_yaw_rate;
+        }
+        target_yaw_rate = control->heading_state.output;
+        output->heading_active = 1U;
     }
     else
     {
         ResetPid(&control->heading_state);
+        control->heading_elapsed_s = 0.0f;
+        control->heading_reference_rate_dps = 0.0f;
+        control->heading_reference_valid = 0U;
     }
     target_yaw_rate = ClampFloat(target_yaw_rate,
                                  -fabsf(control->max_yaw_rate_dps),
                                  fabsf(control->max_yaw_rate_dps));
+    output->target_heading_deg = WrapAngle(input->requested_heading_deg);
+    output->heading_reference_deg = control->heading_reference_deg;
+    output->heading_reference_rate_dps = control->heading_reference_rate_dps;
+    output->heading_error_deg = heading_error;
+    output->heading_output_dps = target_yaw_rate;
 
     /* 第二级：角速度环。输出是作用于左右轮的差速修正量，单位 mm/s。 */
     correction_limit = fabsf(control->max_wheel_correction_mm_s);

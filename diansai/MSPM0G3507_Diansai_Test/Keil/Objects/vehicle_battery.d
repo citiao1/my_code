@@ -1,6 +1,7 @@
-./objects/diansai_app.o: ..\Code\diansai_app.c ..\User\include.h \
+./objects/vehicle_battery.o: ..\Code\vehicle_battery.c \
+  ..\Code\vehicle_battery.h \
+  D:\Keil5\ARM\ARMCLANG\Bin\..\include\stdint.h ..\User\include.h \
   D:\Keil5\ARM\ARMCLANG\Bin\..\include\stdio.h \
-  D:\Keil5\ARM\ARMCLANG\Bin\..\include\stdint.h \
   D:\Keil5\ARM\ARMCLANG\Bin\..\include\stdlib.h \
   D:\Keil5\ARM\ARMCLANG\Bin\..\include\string.h \
   D:\Keil5\ARM\ARMCLANG\Bin\..\include\math.h \
@@ -75,13 +76,4 @@
   ..\LQ_Lib\LQ_Driver\LQ_time.h ..\LQ_Lib\LQ_Driver\LQ_pwm.h \
   ..\LQ_Lib\LQ_Driver\LQ_dma.h ..\LQ_Lib\LQ_Driver\LQ_adc.h \
   ..\LQ_Lib\LQ_Driver\LQ_soft_i2c.h ..\LQ_Lib\LQ_Driver\LQ_soft_spi.h \
-  ..\LQ_Lib\LQ_Device\LQ_1306_motor.h ..\LQ_Lib\LQ_Device\LQ_device.h \
-  ..\LQ_Lib\LQ_Device\LQ_lsm6dsr.h ..\LQ_Lib\LQ_Device\LQ_mpu6050.h \
-  ..\LQ_Lib\LQ_Device\LQ_oled.h ..\LQ_Lib\LQ_Device\LQ_servo.h \
-  ..\LQ_Lib\LQ_Device\LQ_motor.h ..\LQ_Lib\LQ_Device\LQ_tracking.h \
-  ..\LQ_Lib\LQ_Device\LQ_encoder.h ..\LQ_Lib\LQ_Device\LQ_key.h \
-  ..\LQ_Lib\LQ_Device\LQ_ccd.h ..\Code\diansai_app.h ..\Code\board_io.h \
-  ..\Code\vehicle_battery.h ..\Code\vehicle_cascade_control.h \
-  ..\Code\vehicle_encoder.h ..\Code\vehicle_gray.h ..\Code\vehicle_imu.h \
-  ..\Code\vehicle_line_control.h ..\Code\vehicle_motor.h \
-  ..\Code\vehicle_square_test.h ..\Code\wheeltec_link.h
+  ..\LQ_Lib\LQ_Device\LQ_1306_motor.h

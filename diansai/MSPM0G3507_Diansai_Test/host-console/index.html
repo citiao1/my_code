@@ -80,20 +80,63 @@
         </div>
       </div>
 
+      <div class="tool-section" aria-labelledby="headingPidTitle">
+        <div class="tool-heading">
+          <div><span class="kicker">REMOTE HEADING LOOP</span><h3 id="headingPidTitle">遥控方向环</h3></div>
+          <span id="headingCurrent">4.000/0.300/1.000 · 80°/s</span>
+        </div>
+        <div class="yaw-options">
+          <label class="toggle-field"><span>遥控自动使用</span><input id="headingEnabled" type="checkbox" checked disabled></label>
+          <label>最大航向角速度<input id="headingMaxRate" type="number" value="80" readonly></label>
+        </div>
+        <div class="pid-inputs heading-pid-inputs">
+          <label>Kp<input id="headingKp" type="number" value="4.000" readonly></label>
+          <label>Kd<input id="headingKd" type="number" value="0.300" readonly></label>
+          <label>Kff<input id="headingKff" type="number" value="1.000" readonly></label>
+        </div>
+        <div class="button-row">
+          <button id="applyHeadingButton" class="command secondary" type="button" disabled>方向参数已锁定</button>
+        </div>
+        <div class="heading-test-options">
+          <label>阶跃角度<input id="headingTestAngle" type="number" min="5" max="90" step="5" value="45"></label>
+          <label>往返次数<input id="headingTestRepeats" type="number" min="1" max="5" step="1" value="1"></label>
+          <label>角度容差<input id="headingTestTolerance" type="number" min="0.5" max="10" step="0.5" value="2"></label>
+          <label>角速度容差<input id="headingTestRateTolerance" type="number" min="1" max="30" step="1" value="5"></label>
+          <label>稳定保持<input id="headingTestSettleMs" type="number" min="200" max="3000" step="100" value="600"></label>
+          <label>单步超时<input id="headingTestTimeoutMs" type="number" min="2000" max="20000" step="500" value="7000"></label>
+        </div>
+        <div class="button-row">
+          <button id="startHeadingTestButton" class="command primary" type="button">开始自动测试</button>
+          <button id="stopHeadingTestButton" class="command secondary danger-text" type="button">停止测试</button>
+        </div>
+        <div class="heading-test-status">
+          <span id="headingTestState">待机</span>
+          <strong id="headingTestResult">--</strong>
+        </div>
+        <div class="button-row">
+          <button id="startSquareTestButton" class="command primary" type="button">正方形测试</button>
+          <button id="stopSquareTestButton" class="command secondary danger-text" type="button">停止正方形</button>
+        </div>
+        <div class="heading-test-status">
+          <span>1 m直行 + 左转90° × 4</span>
+          <strong id="squareTestState">待机</strong>
+        </div>
+      </div>
+
       <div class="tool-section" aria-labelledby="linePidTitle">
         <div class="tool-heading">
           <div><span class="kicker">LINE DIRECTION LOOP</span><h3 id="linePidTitle">寻线方向环</h3></div>
-          <span id="lineCurrent">400.000/0.000/120.000 · 差速 0.650 · 未启用</span>
+          <span id="lineCurrent">200.000/0.000/350.000 · 差速 0.650 · 未启用</span>
         </div>
         <div class="pid-inputs line-pid-inputs">
-          <label>Kp<input id="lineKp" type="number" min="0" max="1000" step="0.001" value="400.000"></label>
+          <label>Kp<input id="lineKp" type="number" min="0" max="1000" step="0.001" value="200.000"></label>
           <label>Ki<input id="lineKi" type="number" min="0" max="1000" step="0.001" value="0.000"></label>
-          <label>Kd<input id="lineKd" type="number" min="0" max="1000" step="0.001" value="120.000"></label>
+          <label>Kd<input id="lineKd" type="number" min="0" max="1000" step="0.001" value="350.000"></label>
           <label>最大差速比例<input id="lineDiff" type="number" min="0" max="1" step="0.010" value="0.650"></label>
         </div>
         <div class="line-run-options">
           <label>基础速度
-            <span class="number-with-unit"><input id="lineSpeed" type="number" min="50" max="300" step="10" value="100"><span>mm/s</span></span>
+            <span class="number-with-unit"><input id="lineSpeed" type="number" min="50" max="300" step="10" value="200"><span>mm/s</span></span>
           </label>
         </div>
         <div class="button-row">
@@ -203,6 +246,12 @@
         <div class="data-row"><span>角速度 PID</span><strong id="yawPidCorrection">0 mm/s</strong></div>
         <div class="data-row"><span>差速修正</span><strong id="yawCorrection">0 mm/s</strong></div>
         <div class="data-row"><span>角速度环</span><strong id="yawLoopState">已启用</strong></div>
+        <div class="data-row"><span>目标航向</span><strong id="targetHeading">0.0°</strong></div>
+        <div class="data-row"><span>参考航向</span><strong id="headingReference">0.0°</strong></div>
+        <div class="data-row"><span>实际航向</span><strong id="headingActual">0.0°</strong></div>
+        <div class="data-row"><span>航向误差</span><strong id="headingError">0.0°</strong></div>
+        <div class="data-row"><span>方向环输出</span><strong id="headingOutput">0.0°/s</strong></div>
+        <div class="data-row"><span>方向保持</span><strong id="headingLoopState">待机</strong></div>
         <div class="data-row"><span>寻线状态</span><strong id="lineState">未运行</strong></div>
         <div class="data-row"><span>灰度原始偏差</span><strong id="lineRawError">0.0%</strong></div>
         <div class="data-row"><span>灰度滤波偏差</span><strong id="lineFilteredError">0.0%</strong></div>
@@ -223,6 +272,10 @@
         <div class="data-row"><span>右轮输出</span><strong id="rightPwm">0%</strong></div>
         <div class="data-row"><span>控制链路</span><strong id="linkValue">待机</strong></div>
         <div class="data-row"><span>WHEELTEC</span><strong id="wheeltecValue">桥接未连接</strong></div>
+        <div class="data-row"><span>电池电压</span><strong id="batteryVoltage">-- V</strong></div>
+        <div class="data-row"><span>赛道模式</span><strong id="trackModeState">白底黑线</strong></div>
+        <div class="data-row"><span>本地发车</span><strong id="localRunState">待机</strong></div>
+        <div class="data-row"><span>拨码开关</span><strong id="dipSwitchState">SW1 下 · SW2 --</strong></div>
         <div class="data-row"><span>LSM6DSR</span><strong id="imuState">未知</strong></div>
         <div class="data-row"><span>SPI 引脚</span><strong id="imuPins">--</strong></div>
       </div>
@@ -230,7 +283,7 @@
       <div class="line-panel">
         <div class="line-panel-heading"><div><span class="kicker">RAW 0–4095 · NORMALIZED 0–1000</span><h3>灰度传感器</h3></div><strong id="grayCalibrationState">未标定</strong></div>
         <div id="grayGrid" class="gray-grid" aria-label="八路灰度原始值与归一化值"></div>
-        <div class="calibration-line" id="grayCalibration">白底 -- · 黑线 --</div>
+        <div class="calibration-line" id="grayCalibration">背景 -- · 目标线 --</div>
         <div class="calibration-line normalized-line" id="grayNormalization">归一化 --</div>
       </div>
 
@@ -245,6 +298,10 @@
       <div class="chart-block">
         <div class="chart-heading"><span>轮速趋势</span><div class="legend"><span class="left-line">左实际</span><span class="right-line">右实际</span><span class="target-left-line">左目标</span><span class="target-right-line">右目标</span></div></div>
         <canvas id="speedChart" aria-label="左右轮速度趋势图"></canvas>
+      </div>
+      <div class="chart-block">
+        <div class="chart-heading"><span>航向阶跃</span><div class="legend"><span class="heading-actual-line">实际航向</span><span class="heading-target-line">目标航向</span></div></div>
+        <canvas id="headingChart" aria-label="目标航向与实际航向趋势图"></canvas>
       </div>
     </section>
   </main>

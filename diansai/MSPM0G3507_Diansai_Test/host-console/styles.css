@@ -98,6 +98,13 @@ input[type="range"] { width: 100%; accent-color: var(--green); }
 .toggle-field input { width: 18px; height: 18px; margin: 0; accent-color: var(--green); }
 .yaw-pid-inputs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 #yawCurrent { max-width: 54%; text-align: right; overflow-wrap: anywhere; }
+.heading-pid-inputs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#headingCurrent { max-width: 58%; text-align: right; overflow-wrap: anywhere; }
+.heading-test-options { margin-top: 12px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.heading-test-options label { display: grid; min-width: 0; gap: 5px; color: var(--muted); font-size: 11px; }
+.heading-test-options input { width: 100%; min-width: 0; height: 36px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); background: #fff; font: 13px Consolas, monospace; }
+.heading-test-status { min-height: 34px; margin-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 11px; }
+.heading-test-status strong { color: var(--ink); font: 650 11px Consolas, monospace; text-align: right; overflow-wrap: anywhere; }
 .line-pid-inputs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 #lineCurrent { max-width: 58%; text-align: right; overflow-wrap: anywhere; }
 .line-run-options { max-width: 180px; margin-top: 10px; }
@@ -176,19 +183,22 @@ input[type="range"] { width: 100%; accent-color: var(--green); }
 .right-line::before { background: var(--cyan); }
 .target-left-line::before { background: var(--amber); }
 .target-right-line::before { background: var(--red); }
-#speedChart { display: block; width: 100%; height: 190px; border: 1px solid var(--line); background: #fbfcfb; }
+.heading-actual-line::before { background: var(--cyan); }
+.heading-target-line::before { background: var(--amber); }
+#speedChart, #headingChart { display: block; width: 100%; height: 190px; border: 1px solid var(--line); background: #fbfcfb; }
 
 .statusbar { width: min(1180px, calc(100% - 32px)); min-height: 34px; margin: 0 auto 20px; padding: 7px 2px; display: flex; justify-content: space-between; gap: 16px; color: var(--muted); font: 11px Consolas, monospace; }
 
 @media (max-width: 880px) {
-  .workspace { grid-template-columns: 1fr; }
+  .workspace { grid-template-columns: minmax(0, 1fr); }
+  .workspace > * { min-width: 0; }
   .control-surface, .telemetry-surface { padding: 16px; }
 }
 @media (max-width: 560px) {
-  .topbar { align-items: flex-start; padding: 12px 14px; }
+  .topbar { align-items: flex-start; flex-wrap: wrap; padding: 12px 14px; gap: 10px; }
   h1 { font-size: 16px; }
   .subtitle { display: none; }
-  .connection-tools { align-items: stretch; flex-direction: column-reverse; gap: 5px; }
+  .connection-tools { width: 100%; align-items: stretch; flex-direction: column-reverse; gap: 5px; }
   .mode-select { min-height: 30px; }
   .workspace { width: calc(100% - 20px); margin: 10px auto; gap: 10px; }
   .drive-pad { width: 218px; height: 218px; grid-template-columns: repeat(3, 66px); grid-template-rows: repeat(3, 66px); gap: 10px; margin: 20px auto; }
@@ -199,8 +209,13 @@ input[type="range"] { width: 100%; accent-color: var(--green); }
   .metric strong { font-size: 21px; }
   .data-grid { grid-template-columns: 1fr; }
   .deadzone-fields { grid-template-columns: 1fr; }
-  .yaw-pid-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .line-pid-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pid-inputs, .yaw-pid-inputs, .heading-pid-inputs, .line-pid-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .heading-test-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .heading-test-status { align-items: flex-start; flex-direction: column; }
+  .button-row { align-items: stretch; flex-direction: column; }
+  .button-row .command { width: 100%; }
+  .tool-heading { align-items: flex-start; flex-direction: column; gap: 5px; }
+  #pidCurrent, #yawCurrent, #headingCurrent, #lineCurrent { max-width: 100%; text-align: left; }
   .gray-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .gray-channel:nth-child(4), .gray-channel:nth-child(8) { border-right: 0; }
   .gray-channel:nth-child(-n+4) { border-bottom: 1px solid var(--line); }

@@ -3,7 +3,8 @@
 #include "include.h"
 
 #define BOARD_KEY_DEBOUNCE_MS       30U
-#define BOARD_KEY_LONG_PRESS_MS    800U
+#define BOARD_KEY_LONG_PRESS_MS    500U
+#define BOARD_SWITCH_DEBOUNCE_MS    30U
 #define BOARD_BUZZER_PIN            GPIO_Pin_A_28
 
 /*
@@ -24,6 +25,13 @@ typedef struct
 
 typedef struct
 {
+    uint8_t raw_down;
+    uint8_t stable_down;
+    uint32_t raw_changed_ms;
+} SwitchState;
+
+typedef struct
+{
     uint16_t on_ms;
     uint16_t off_ms;
     uint8_t repeat_count;
@@ -40,8 +48,16 @@ static const LQEnum_GPIO_Pin_t key_pins[BOARD_KEY_COUNT] = {
     GPIO_Pin_B_16,
 };
 
+/* 原理图：第一位拨码接 PB6，第二位拨码接 PB8，均由 2.2k 电阻上拉。 */
+static const LQEnum_GPIO_Pin_t switch_pins[BOARD_SWITCH_COUNT] = {
+    GPIO_Pin_B_6,
+    GPIO_Pin_B_8,
+};
+
 static KeyState key_states[BOARD_KEY_COUNT];
+static SwitchState switch_states[BOARD_SWITCH_COUNT];
 static BoardKeyEvents pending_events;
+static uint8_t pending_switch_changed_mask;
 static BuzzerPattern buzzer_queue[BUZZER_QUEUE_SIZE];
 static BuzzerPattern current_pattern;
 static uint8_t buzzer_head;
@@ -50,12 +66,18 @@ static uint8_t buzzer_active;
 static uint8_t buzzer_phase_on;
 static uint8_t buzzer_repeats_left;
 static uint8_t buzzer_gap_active;
+static uint8_t buzzer_continuous;
 static uint32_t buzzer_deadline_ms;
 
 static uint8_t ReadPressed(uint8_t index)
 {
     /* 板载按键带上拉，按下时引脚接地，因此低电平表示按下。 */
     return LQ_GPIO_ReadPin(key_pins[index]) == 0 ? 1U : 0U;
+}
+
+static uint8_t ReadSwitchDown(uint8_t index)
+{
+    return LQ_GPIO_ReadPin(switch_pins[index]) == 0 ? 1U : 0U;
 }
 
 static uint8_t TimeReached(uint32_t now_ms, uint32_t deadline_ms)
@@ -95,6 +117,7 @@ static void StartNextBuzzerPattern(uint32_t now_ms)
 
 static void UpdateBuzzer(uint32_t now_ms)
 {
+    if (buzzer_continuous) return;
     if (!buzzer_active)
     {
         StartNextBuzzerPattern(now_ms);
@@ -143,6 +166,7 @@ void BoardIo_Init(uint32_t now_ms)
     };
 
     memset(key_states, 0, sizeof(key_states));
+    memset(switch_states, 0, sizeof(switch_states));
     memset(&pending_events, 0, sizeof(pending_events));
     memset(buzzer_queue, 0, sizeof(buzzer_queue));
     buzzer_head = 0U;
@@ -150,6 +174,8 @@ void BoardIo_Init(uint32_t now_ms)
     buzzer_active = 0U;
     buzzer_phase_on = 0U;
     buzzer_gap_active = 0U;
+    buzzer_continuous = 0U;
+    pending_switch_changed_mask = 0U;
     buzzer_deadline_ms = now_ms;
 
     /* 不调用 LQ_Key_Init：当前库版本把按键误配置成了推挽输出。 */
@@ -160,6 +186,13 @@ void BoardIo_Init(uint32_t now_ms)
         key_states[index].stable_pressed = key_states[index].raw_pressed;
         key_states[index].raw_changed_ms = now_ms;
         key_states[index].pressed_since_ms = now_ms;
+    }
+    for (index = 0U; index < BOARD_SWITCH_COUNT; index++)
+    {
+        LQ_GPIO_Init(switch_pins[index], &gpio);
+        switch_states[index].raw_down = ReadSwitchDown(index);
+        switch_states[index].stable_down = switch_states[index].raw_down;
+        switch_states[index].raw_changed_ms = now_ms;
     }
 
     gpio.Mode = GPIO_MODE_OUTPUT_PP;
@@ -207,6 +240,23 @@ void BoardIo_Update(uint32_t now_ms)
             pending_events.long_press_mask |= bit;
         }
     }
+    for (index = 0U; index < BOARD_SWITCH_COUNT; index++)
+    {
+        uint8_t raw = ReadSwitchDown(index);
+        SwitchState *state = &switch_states[index];
+
+        if (raw != state->raw_down)
+        {
+            state->raw_down = raw;
+            state->raw_changed_ms = now_ms;
+        }
+        else if (raw != state->stable_down &&
+                 now_ms - state->raw_changed_ms >= BOARD_SWITCH_DEBOUNCE_MS)
+        {
+            state->stable_down = raw;
+            pending_switch_changed_mask |= (uint8_t)(1U << index);
+        }
+    }
     UpdateBuzzer(now_ms);
 }
 
@@ -229,11 +279,33 @@ uint8_t BoardIo_GetPressedMask(void)
     return mask;
 }
 
+uint8_t BoardIo_TakeSwitchChangedMask(void)
+{
+    uint8_t changed = pending_switch_changed_mask;
+    pending_switch_changed_mask = 0U;
+    return changed;
+}
+
+uint8_t BoardIo_GetSwitchDownMask(void)
+{
+    uint8_t index;
+    uint8_t mask = 0U;
+
+    for (index = 0U; index < BOARD_SWITCH_COUNT; index++)
+    {
+        if (switch_states[index].stable_down)
+        {
+            mask |= (uint8_t)(1U << index);
+        }
+    }
+    return mask;
+}
+
 uint8_t BoardBuzzer_Play(uint16_t on_ms, uint16_t off_ms, uint8_t repeat_count)
 {
     uint8_t next_head;
 
-    if (on_ms == 0U || repeat_count == 0U) return 0U;
+    if (on_ms == 0U || repeat_count == 0U || buzzer_continuous) return 0U;
     next_head = (uint8_t)((buzzer_head + 1U) % BUZZER_QUEUE_SIZE);
     if (next_head == buzzer_tail) return 0U;
 
@@ -251,10 +323,26 @@ void BoardBuzzer_Stop(void)
     buzzer_active = 0U;
     buzzer_phase_on = 0U;
     buzzer_gap_active = 0U;
+    buzzer_continuous = 0U;
     WriteBuzzer(0U);
 }
 
 uint8_t BoardBuzzer_IsActive(void)
 {
-    return (buzzer_active || !BuzzerQueueEmpty()) ? 1U : 0U;
+    return (buzzer_continuous || buzzer_active || !BuzzerQueueEmpty()) ? 1U : 0U;
+}
+
+void BoardBuzzer_SetContinuous(uint8_t enabled)
+{
+    if (enabled)
+    {
+        BoardBuzzer_Stop();
+        buzzer_continuous = 1U;
+        WriteBuzzer(1U);
+    }
+    else if (buzzer_continuous)
+    {
+        buzzer_continuous = 0U;
+        WriteBuzzer(0U);
+    }
 }

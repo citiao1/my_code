@@ -3,12 +3,14 @@
 #include "diansai_app.h"
 
 #include "board_io.h"
+#include "vehicle_battery.h"
 #include "vehicle_cascade_control.h"
 #include "vehicle_encoder.h"
 #include "vehicle_gray.h"
 #include "vehicle_imu.h"
 #include "vehicle_line_control.h"
 #include "vehicle_motor.h"
+#include "vehicle_square_test.h"
 #include "wheeltec_link.h"
 
 /*
@@ -25,12 +27,13 @@
 
 #define APP_LOOP_MS                    10U
 #define TELEMETRY_PERIOD_MS           500U
-#define SPEED_MODE_TELEMETRY_MS      2000U
-#define SPEED_TELEMETRY_PERIOD_MS     250U
-#define LINE_SPEED_TELEMETRY_MS        500U
-#define LINE_TELEMETRY_PERIOD_MS      200U
-#define DEBUG_PERIOD_MS               2000U
+#define SPEED_MODE_TELEMETRY_MS      4000U
+#define SPEED_TELEMETRY_PERIOD_MS     300U
+#define LINE_SPEED_TELEMETRY_MS       1000U
+#define LINE_TELEMETRY_PERIOD_MS      400U
+#define DEBUG_PERIOD_MS               4000U
 #define GRAY_PERIOD_MS                  20U
+#define BATTERY_PERIOD_MS              100U
 #define COMMAND_TIMEOUT_MS             500U
 #define LINK_TIMEOUT_MS               1200U
 
@@ -58,14 +61,32 @@
 #define YAW_INTEGRAL_LIMIT_DPS_S    300.0f
 
 /*
+ * 遥控方向环完全沿用 diansai_test 的参数单位和默认值。它只在遥控转向归零
+ * 后的直行保持或 HEADSET 阶跃测试中启用；手动打方向仍直接控制目标角速度。
+ */
+#define HEADING_PID_DEFAULT_KP_MILLI  4000
+#define HEADING_PID_DEFAULT_KD_MILLI   300
+#define HEADING_PID_DEFAULT_KFF_MILLI 1000
+#define HEADING_DEFAULT_MAX_RATE_DPS    80
+#define HEADING_PID_KP_MAX_MILLI      20000
+#define HEADING_PID_KD_MAX_MILLI      10000
+#define HEADING_PID_KFF_MAX_MILLI      2000
+#define HEADING_RATE_MIN_DPS               5
+#define HEADING_RATE_MAX_DPS             360
+#define HEADING_PERIOD_S               0.030f
+#define HEADING_CORRECTION_DEADBAND_DEG 0.50f
+#define HEADING_MIN_CORRECTION_DPS       8.0f
+#define HEADING_CORRECTION_RATE_GATE_DPS 5.0f
+
+/*
  * V20 启用独立灰度方向外环；V21 在此基础上增加直角弯丢线恢复状态机。
  * 参数使用千分制整数传输：650 表示 0.650，避免 9600 波特率文本协议解析浮点。
- * 默认值取自实际参与编译的 UserCode/APP/chassis.c：方向 PID 为
- * 400/0/120，角速度环输出换算出的最大差速比例为 0.65。
+ * 当前实车确认的默认方向 PID 为 200/0/350，角速度环输出换算出的最大
+ * 差速比例为 0.65。网页仍可按千分制命令临时调整这些值。
  */
-#define LINE_PID_DEFAULT_KP_MILLI   400000
+#define LINE_PID_DEFAULT_KP_MILLI   200000
 #define LINE_PID_DEFAULT_KI_MILLI        0
-#define LINE_PID_DEFAULT_KD_MILLI   120000
+#define LINE_PID_DEFAULT_KD_MILLI   350000
 #define LINE_DIFF_DEFAULT_MILLI        650
 #define LINE_PID_GAIN_MAX_MILLI    1000000
 #define LINE_DIFF_MAX_MILLI           1000
@@ -77,7 +98,7 @@
 #define LINE_GAP_HOLD_MS                150U
 #define LINE_BLIND_TURN_MS             1200U
 #define LINE_TURN_MEMORY_MS             350U
-#define LINE_EDGE_BLACK_MIN             550U
+#define LINE_EDGE_TARGET_MIN            550U
 #define LINE_REACQUIRE_MAX_ACTIVE         4U
 #define LINE_REACQUIRE_CONFIRM_SAMPLES    2U
 #define LINE_TURN_MEMORY_ERROR_PERCENT   35.0f
@@ -85,6 +106,7 @@
 #define LINE_BLIND_DIFF_MILLI          1000
 #define LINE_SPEED_MIN_MM_S              50
 #define LINE_SPEED_MAX_MM_S             300
+#define LOCAL_LINE_SPEED_MM_S           200
 
 /*
  * 当前处于纯 PID 调试阶段，死区标定值保留但不加入电机输出。
@@ -101,6 +123,8 @@
 #define KEY_BEEP_OFF_MS                 80U
 #define WARNING_BEEP_ON_MS             250U
 #define WARNING_BEEP_OFF_MS            120U
+#define LOCAL_START_KEY_MASK \
+    ((uint8_t)((1U << BOARD_KEY_K1) | (1U << BOARD_KEY_K2)))
 
 typedef enum
 {
@@ -109,6 +133,12 @@ typedef enum
     MOTOR_MODE_SPEED,
     MOTOR_MODE_LINE
 } MotorControlMode;
+
+typedef enum
+{
+    TRACK_MODE_BLACK_ON_WHITE = 0,
+    TRACK_MODE_WHITE_ON_BLUE
+} TrackColorMode;
 
 /*
  * 这里只保存“应用语义”状态，不复制硬件模块的数据。
@@ -135,12 +165,24 @@ typedef struct
     int32_t yaw_pid_kd_micro;
     int32_t yaw_pid_kff_micro;
     int32_t max_yaw_rate_dps;
+    int32_t heading_pid_kp_milli;
+    int32_t heading_pid_kd_milli;
+    int32_t heading_pid_kff_milli;
+    int32_t max_heading_rate_dps;
     int32_t line_pid_kp_milli;
     int32_t line_pid_ki_milli;
     int32_t line_pid_kd_milli;
     int32_t line_diff_milli;
     uint8_t link_active;
     uint8_t yaw_control_enabled;
+    uint8_t heading_control_enabled;
+    uint8_t heading_hold_active;
+    uint8_t local_line_running;
+    uint8_t local_start_arming;
+    uint8_t local_start_key_mask;
+    uint8_t suppress_short_mask;
+    float target_heading_deg;
+    TrackColorMode track_color_mode;
     MotorControlMode motor_mode;
 } AppState;
 
@@ -159,12 +201,23 @@ static uint32_t last_speed_telemetry_ms;
 static uint32_t last_line_telemetry_ms;
 static uint32_t last_debug_ms;
 static uint32_t last_gray_ms;
+static uint32_t last_battery_ms;
+
+static void UpdateEnabledControlLoops(void);
+static void SendSquareTelemetry(void);
 
 static int32_t ClampInt32(int32_t value, int32_t low, int32_t high)
 {
     if (value < low) return low;
     if (value > high) return high;
     return value;
+}
+
+static float WrapAngleDegrees(float angle)
+{
+    while (angle > 180.0f) angle -= 360.0f;
+    while (angle < -180.0f) angle += 360.0f;
+    return angle;
 }
 
 static int32_t RoundFloatToInt32(float value)
@@ -193,10 +246,21 @@ static void ClearControlTargets(void)
 /* 所有主动停车路径最终都汇合到这里，保证控制器历史和 H 桥同步清零。 */
 static void StopControl(void)
 {
+    if (VehicleSquare_GetState()->active)
+    {
+        VehicleSquare_Stop(VEHICLE_SQUARE_IDLE);
+    }
+    app.heading_hold_active = 0U;
+    app.target_heading_deg = VehicleImu_GetState()->yaw_deg;
+    app.local_line_running = 0U;
+    app.local_start_arming = 0U;
+    app.local_start_key_mask = 0U;
+    BoardBuzzer_SetContinuous(0U);
     app.motor_mode = MOTOR_MODE_IDLE;
     ClearControlTargets();
     VehicleCascade_Reset(&vehicle_control);
     VehicleMotor_Stop();
+    UpdateEnabledControlLoops();
 }
 
 static void ConfigureSpeedPid(VehiclePidId pid_id,
@@ -251,6 +315,34 @@ static void ConfigureYawPid(int32_t kp_micro,
     app.yaw_pid_kff_micro = kff_micro;
 }
 
+static void ConfigureHeadingPid(int32_t kp_milli,
+                                int32_t kd_milli,
+                                int32_t kff_milli,
+                                int32_t max_rate_dps)
+{
+    VehiclePidConfig config = {
+        .kp = (float)kp_milli / 1000.0f,
+        .ki = 0.0f,
+        .kd = (float)kd_milli / 1000.0f,
+        .integral_limit = 0.0f,
+        .feedback_limit = (float)max_rate_dps,
+        .output_limit = (float)max_rate_dps,
+    };
+
+    VehicleCascade_ConfigurePid(&vehicle_control, VEHICLE_PID_HEADING, &config);
+    vehicle_control.heading_feedforward = (float)kff_milli / 1000.0f;
+    vehicle_control.heading_period_s = HEADING_PERIOD_S;
+    vehicle_control.heading_correction_deadband_deg =
+        HEADING_CORRECTION_DEADBAND_DEG;
+    vehicle_control.heading_min_correction_dps = HEADING_MIN_CORRECTION_DPS;
+    vehicle_control.heading_correction_rate_gate_dps =
+        HEADING_CORRECTION_RATE_GATE_DPS;
+    app.heading_pid_kp_milli = kp_milli;
+    app.heading_pid_kd_milli = kd_milli;
+    app.heading_pid_kff_milli = kff_milli;
+    app.max_heading_rate_dps = max_rate_dps;
+}
+
 /* 将网页千分制参数换算为方向模块使用的浮点系数。 */
 static void ConfigureLinePid(int32_t kp_milli,
                              int32_t ki_milli,
@@ -270,7 +362,7 @@ static void ConfigureLinePid(int32_t kp_milli,
         .gap_hold_ms = LINE_GAP_HOLD_MS,
         .blind_turn_ms = LINE_BLIND_TURN_MS,
         .turn_memory_ms = LINE_TURN_MEMORY_MS,
-        .edge_black_min = LINE_EDGE_BLACK_MIN,
+        .edge_line_min = LINE_EDGE_TARGET_MIN,
         .reacquire_max_active = LINE_REACQUIRE_MAX_ACTIVE,
         .reacquire_confirm_samples = LINE_REACQUIRE_CONFIRM_SAMPLES,
     };
@@ -287,11 +379,11 @@ static void UpdateEnabledControlLoops(void)
     uint8_t loops = VEHICLE_LOOP_SPEED;
 
     if (app.yaw_control_enabled && imu->ok) loops |= VEHICLE_LOOP_YAW_RATE;
-
-    /*
-     * 按当前调试计划，方向角环 VEHICLE_LOOP_HEADING 必须保持关闭。
-     * 控制器已经具备该级算法，但此处故意不把它加入 enabled_mask。
-     */
+    if (app.heading_control_enabled && app.heading_hold_active &&
+        app.yaw_control_enabled && imu->ok)
+    {
+        loops |= VEHICLE_LOOP_HEADING;
+    }
     VehicleCascade_SetEnabledLoops(&vehicle_control, loops);
 }
 
@@ -343,6 +435,10 @@ static void CascadeControlInit(void)
                     YAW_PID_DEFAULT_KI_MICRO,
                     YAW_PID_DEFAULT_KD_MICRO,
                     YAW_PID_DEFAULT_KFF_MICRO);
+    ConfigureHeadingPid(HEADING_PID_DEFAULT_KP_MILLI,
+                        HEADING_PID_DEFAULT_KD_MILLI,
+                        HEADING_PID_DEFAULT_KFF_MILLI,
+                        HEADING_DEFAULT_MAX_RATE_DPS);
 
     /* 只初始化寻线配置，不设置 VEHICLE_LOOP_HEADING，也不参与当前控制输出。 */
     ConfigureLinePid(LINE_PID_DEFAULT_KP_MILLI,
@@ -378,6 +474,31 @@ static void BeginSpeedControl(int32_t forward_mm_s,
                                                     MAX_TEST_SPEED_MM_S);
 }
 
+static void BeginHeadingControl(int32_t forward_mm_s,
+                                float target_heading_deg,
+                                uint8_t reset_reference)
+{
+    const VehicleImuState *imu = VehicleImu_GetState();
+
+    if (app.motor_mode != MOTOR_MODE_SPEED)
+    {
+        VehicleCascade_Reset(&vehicle_control);
+    }
+    app.motor_mode = MOTOR_MODE_SPEED;
+    app.target_forward_mm_s = ClampInt32(forward_mm_s,
+                                         -MAX_TEST_SPEED_MM_S,
+                                         MAX_TEST_SPEED_MM_S);
+    app.target_yaw_rate10 = 0;
+    app.fallback_wheel_correction_mm_s = 0;
+    app.target_heading_deg = WrapAngleDegrees(target_heading_deg);
+    app.heading_hold_active = 1U;
+    UpdateEnabledControlLoops();
+    if (reset_reference)
+    {
+        VehicleCascade_ResetHeadingReference(&vehicle_control, imu->yaw_deg);
+    }
+}
+
 /*
  * 进入灰度寻线模式。首次启动必须已经完成黑白归一化、IMU 正常且角速度环
  * 已启用；否则拒绝启动，不能退化成没有方向反馈的直行。
@@ -393,7 +514,8 @@ static uint8_t BeginLineControl(int32_t forward_mm_s)
         StopControl();
         VehicleLine_Reset();
     }
-    if (!gray->normalization_valid || !imu->ok || !app.yaw_control_enabled)
+    if (imu->ok) app.yaw_control_enabled = 1U;
+    if (!gray->normalization_valid || !imu->ok)
     {
         return 0U;
     }
@@ -406,6 +528,9 @@ static uint8_t BeginLineControl(int32_t forward_mm_s)
     }
 
     line = VehicleLine_GetState();
+    /* 寻线方向由灰度方向环给出，绝不叠加遥控航向保持环。 */
+    app.heading_hold_active = 0U;
+    UpdateEnabledControlLoops();
     app.motor_mode = MOTOR_MODE_LINE;
     app.target_forward_mm_s = forward_mm_s;
     app.target_yaw_rate10 =
@@ -431,42 +556,45 @@ static void SendGrayCalibration(void)
     char line[160];
 
     snprintf(line, sizeof(line),
-             "CAL,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u\r\n",
+             "CAL,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u\r\n",
              gray->white[0], gray->white[1], gray->white[2], gray->white[3],
              gray->white[4], gray->white[5], gray->white[6], gray->white[7],
              gray->black[0], gray->black[1], gray->black[2], gray->black[3],
-             gray->black[4], gray->black[5], gray->black[6], gray->black[7]);
+             gray->black[4], gray->black[5], gray->black[6], gray->black[7],
+             (unsigned int)app.track_color_mode);
     SendText(line);
 
     /*
      * NRM 是 V17 新增的低频标定结果帧，只在查询/重新标定时发送，不增加
-     * 常规 9600 波特率链路负担。数值 0=白底、1000=黑线。
+     * 常规 9600 波特率链路负担。无论赛道颜色如何，0=背景、1000=目标线。
      */
     snprintf(line, sizeof(line),
-             "NRM,%lu,%u,%u,%u,%u,%u,%u,%u,%u,%u\r\n",
+             "NRM,%lu,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u\r\n",
              (unsigned long)now_ms,
              (unsigned int)gray->normalization_valid,
              gray->normalized[0], gray->normalized[1],
              gray->normalized[2], gray->normalized[3],
              gray->normalized[4], gray->normalized[5],
-             gray->normalized[6], gray->normalized[7]);
+             gray->normalized[6], gray->normalized[7],
+             (unsigned int)app.track_color_mode);
     SendText(line);
 }
 
 /*
- * 捕获白底或黑线参考。标定动作会先停电机，避免车体移动改变采样位置。
+ * K1 捕获背景、K2 捕获目标线。白底黑线模式对应白/黑，蓝底白线模式对应
+ * 蓝/白。底层始终映射为背景=0、目标线=1000，因此允许蓝大白小的负分母。
  * 每次参考采集完成响 1 声；当两组参考均有效且八路对比度都足够时，
  * 再独立响 3 声表示 0..1000 归一化已经可供后续循迹算法使用。
  */
-static void CalibrateGrayReference(uint8_t capture_white)
+static void CalibrateGrayReference(uint8_t capture_background)
 {
     const VehicleGrayState *gray;
     uint8_t normalized;
 
     StopControl();
     BoardBuzzer_Stop();
-    normalized = capture_white ? VehicleGray_CaptureWhite() :
-                                 VehicleGray_CaptureBlack();
+    normalized = capture_background ? VehicleGray_CaptureBackground() :
+                                      VehicleGray_CaptureLine();
     gray = VehicleGray_GetState();
     SendGrayCalibration();
     (void)BoardBuzzer_Play(KEY_BEEP_ON_MS, KEY_BEEP_OFF_MS, 1U);
@@ -516,22 +644,144 @@ static void SendKeyFrame(BoardKeyEvents events)
     SendText(line);
 }
 
+static void SendModeFrame(void)
+{
+    const VehicleGrayState *gray = VehicleGray_GetState();
+    const VehicleBatteryState *battery = VehicleBattery_GetState();
+    uint8_t switches = BoardIo_GetSwitchDownMask();
+    char line[96];
+
+    snprintf(line, sizeof(line), "MOD,%lu,%u,%u,%u,%u,%u,%u,%lu\r\n",
+             (unsigned long)now_ms,
+             (unsigned int)app.track_color_mode,
+             (unsigned int)((switches >> BOARD_SWITCH_1) & 1U),
+             (unsigned int)((switches >> BOARD_SWITCH_2) & 1U),
+             (unsigned int)app.local_line_running,
+             (unsigned int)gray->white_valid,
+             (unsigned int)gray->black_valid,
+             (unsigned long)(battery->valid ? battery->voltage_mv : 0U));
+    SendText(line);
+}
+
+static void ApplyTrackModeFromSwitch(uint8_t reset_calibration)
+{
+    TrackColorMode mode =
+        (BoardIo_GetSwitchDownMask() & (uint8_t)(1U << BOARD_SWITCH_1)) ?
+        TRACK_MODE_BLACK_ON_WHITE : TRACK_MODE_WHITE_ON_BLUE;
+
+    if (!reset_calibration && mode == app.track_color_mode) return;
+    if (reset_calibration)
+    {
+        StopControl();
+        BoardBuzzer_Stop();
+        VehicleLine_Reset();
+        VehicleGray_ResetCalibration();
+    }
+    app.track_color_mode = mode;
+    SendModeFrame();
+    if (reset_calibration) SendGrayCalibration();
+}
+
+static uint8_t BeginLocalLineControl(void)
+{
+    if (!BeginLineControl(LOCAL_LINE_SPEED_MM_S))
+    {
+        BoardBuzzer_Stop();
+        (void)BoardBuzzer_Play(WARNING_BEEP_ON_MS,
+                               WARNING_BEEP_OFF_MS,
+                               3U);
+        SendText("ERR,LOCAL_LINE_NOT_READY\r\n");
+        SendModeFrame();
+        return 0U;
+    }
+
+    app.local_line_running = 1U;
+    SendText("ACK,LOCAL_LINE,1\r\n");
+    SendModeFrame();
+    return 1U;
+}
+
 static void HandleBoardIo(void)
 {
     BoardKeyEvents events;
+    const VehicleGrayState *gray;
+    uint8_t switch_changes;
+    uint8_t key_activity;
+    uint8_t pressed_start;
+    uint8_t released_start;
+    uint8_t long_start;
+    uint8_t short_mask;
+    uint8_t suppressed;
 
     BoardIo_Update(now_ms);
     events = BoardIo_TakeKeyEvents();
-    if ((events.pressed_mask | events.released_mask |
-         events.short_press_mask | events.long_press_mask) == 0U)
+    switch_changes = BoardIo_TakeSwitchChangedMask();
+    key_activity = events.pressed_mask | events.released_mask |
+                   events.short_press_mask | events.long_press_mask;
+    if (key_activity == 0U && switch_changes == 0U)
     {
         return;
     }
 
-    SendKeyFrame(events);
-    if (events.long_press_mask != 0U)
+    if (switch_changes & (uint8_t)(1U << BOARD_SWITCH_1))
     {
-        /* 任意按键长按都是本地急停，优先级高于提示音队列。 */
+        ApplyTrackModeFromSwitch(1U);
+    }
+    else if (switch_changes != 0U)
+    {
+        /* 第二位拨码已完成读取与上报，暂不绑定用户尚未指定的车辆功能。 */
+        SendModeFrame();
+    }
+    if (key_activity == 0U) return;
+
+    SendKeyFrame(events);
+    pressed_start = events.pressed_mask & LOCAL_START_KEY_MASK;
+    released_start = events.released_mask & LOCAL_START_KEY_MASK;
+    suppressed = app.suppress_short_mask;
+
+    /* 本地运行时 K1/K2 的按下沿立即停车，不等待释放或长按计时。 */
+    if (app.local_line_running && pressed_start != 0U)
+    {
+        app.suppress_short_mask |= pressed_start;
+        StopControl();
+        BoardBuzzer_Stop();
+        SendText("ACK,LOCAL_LINE,0\r\n");
+        SendModeFrame();
+        return;
+    }
+    if (app.local_line_running) return;
+
+    gray = VehicleGray_GetState();
+    if (pressed_start != 0U && gray->normalization_valid)
+    {
+        if (app.motor_mode != MOTOR_MODE_IDLE) StopControl();
+        app.local_start_arming = 1U;
+        app.local_start_key_mask |= pressed_start;
+        BoardBuzzer_SetContinuous(1U);
+    }
+
+    if (app.local_start_arming &&
+        (released_start & app.local_start_key_mask) != 0U)
+    {
+        app.local_start_arming = 0U;
+        app.local_start_key_mask = 0U;
+        BoardBuzzer_SetContinuous(0U);
+    }
+
+    long_start = events.long_press_mask & app.local_start_key_mask &
+                 (uint8_t)~suppressed;
+    if (app.local_start_arming && long_start != 0U)
+    {
+        app.local_start_arming = 0U;
+        app.local_start_key_mask = 0U;
+        BoardBuzzer_SetContinuous(0U);
+        (void)BeginLocalLineControl();
+        return;
+    }
+
+    /* K3 长按仍保留为本地急停；用于停车的 K1/K2 后续长按事件被抑制。 */
+    if ((events.long_press_mask & (uint8_t)~suppressed) != 0U)
+    {
         StopControl();
         BoardBuzzer_Stop();
         (void)BoardBuzzer_Play(WARNING_BEEP_ON_MS,
@@ -540,20 +790,17 @@ static void HandleBoardIo(void)
         return;
     }
 
-    /*
-     * BoardKeyId 与 board_io.c 的实测按键顺序严格一致：
-     * K1/PB15=白底，K2/PB14=黑线，K3/PB16=陀螺仪重标定。
-     * 使用 else-if 避免同时释放多个按键时连续执行互相冲突的标定动作。
-     */
-    if (events.short_press_mask & (uint8_t)(1U << BOARD_KEY_K1))
+    short_mask = events.short_press_mask & (uint8_t)~suppressed;
+    app.suppress_short_mask &= (uint8_t)~events.released_mask;
+    if (short_mask & (uint8_t)(1U << BOARD_KEY_K1))
     {
         CalibrateGrayReference(1U);
     }
-    else if (events.short_press_mask & (uint8_t)(1U << BOARD_KEY_K2))
+    else if (short_mask & (uint8_t)(1U << BOARD_KEY_K2))
     {
         CalibrateGrayReference(0U);
     }
-    else if (events.short_press_mask & (uint8_t)(1U << BOARD_KEY_K3))
+    else if (short_mask & (uint8_t)(1U << BOARD_KEY_K3))
     {
         (void)CalibrateGyroWithFeedback();
     }
@@ -572,27 +819,121 @@ static void ProcessCommand(char *line)
     int yaw_pid_fields;
     int yaw_enable;
     int max_yaw_rate;
+    int heading_enable;
+    int heading_kp_milli;
+    int heading_kd_milli;
+    int heading_kff_milli;
+    int heading_max_rate;
+    int heading_target10;
     int beep_ms;
     int line_diff;
     int line_enable;
     int line_speed;
+    int square_command;
     char response[96];
     const VehicleImuState *imu = VehicleImu_GetState();
 
     last_rx_ms = now_ms;
     app.link_active = 1U;
 
-    if (sscanf(line, "DRV,%d,%d", &throttle, &steering) == 2)
+    /*
+     * 本地发车倒计时和运行期间，蓝牙只允许 PING 维持链路显示；所有会改变
+     * 车辆状态的远程命令都被拒绝。这样网页尚未停下的周期 DRV/LINE 命令
+     * 不会打断 500 ms 蜂鸣倒计时，也不会干扰已经开始的本地寻线。
+     */
+    if (app.local_start_arming || app.local_line_running)
     {
+        if (strcmp(line, "PING") != 0) SendModeFrame();
+        return;
+    }
+
+    /* 正方形测试只接受续命、停止和心跳，避免残留 DRV/LINE 命令打断轨迹。 */
+    if (VehicleSquare_GetState()->active &&
+        strncmp(line, "SQUARE,", 7U) != 0 &&
+        strcmp(line, "STOP") != 0 && strcmp(line, "PING") != 0)
+    {
+        SendSquareTelemetry();
+        return;
+    }
+
+    if (sscanf(line, "SQUARE,%d", &square_command) == 1)
+    {
+        const VehicleEncoderState *encoder = VehicleEncoder_GetState();
+
+        if (square_command == 0)
+        {
+            StopControl();
+            SendText("ACK,SQUARE,0\r\n");
+            SendSquareTelemetry();
+        }
+        else if (square_command == 1)
+        {
+            if (!VehicleSquare_GetState()->active)
+            {
+                if (!imu->ok)
+                {
+                    SendText("ERR,SQUARE_NOT_READY\r\n");
+                    return;
+                }
+                StopControl();
+                app.yaw_control_enabled = 1U;
+                app.heading_control_enabled = 1U;
+                VehicleSquare_Start(now_ms, encoder->total_left,
+                                    encoder->total_right, imu->yaw_deg);
+                SendText("ACK,SQUARE,1,1000,90,4,200\r\n");
+                SendSquareTelemetry();
+                (void)VehicleSquare_TakeStatusChanged();
+            }
+            last_motor_command_ms = now_ms;
+        }
+        else if (square_command == 2)
+        {
+            /* 2 只续命，测试结束后不会因网页仍在发送而重新启动。 */
+            if (VehicleSquare_GetState()->active)
+                last_motor_command_ms = now_ms;
+        }
+        else
+        {
+            SendText("ERR,SQUARE_RANGE,0,1,2\r\n");
+        }
+    }
+    else if (sscanf(line, "DRV,%d,%d", &throttle, &steering) == 2)
+    {
+        int32_t forward_mm_s;
+
         throttle = (int)ClampInt32(throttle, -100, 100);
         steering = (int)ClampInt32(steering, -100, 100);
-        BeginSpeedControl(throttle * MAX_TEST_SPEED_MM_S / 100,
-                          -steering * app.max_yaw_rate_dps * 10 / 100,
-                          -steering * MAX_TEST_SPEED_MM_S / 100);
+        forward_mm_s = throttle * MAX_TEST_SPEED_MM_S / 100;
+        /* 遥控模式自动启用已锁定航向环；手动打方向时仍由角速度环直接接管。 */
+        if (imu->ok)
+        {
+            app.yaw_control_enabled = 1U;
+            app.heading_control_enabled = 1U;
+        }
+        if (steering == 0 && throttle != 0 && app.heading_control_enabled &&
+            app.yaw_control_enabled && imu->ok)
+        {
+            uint8_t reset_reference =
+                (!app.heading_hold_active || app.motor_mode != MOTOR_MODE_SPEED) ?
+                1U : 0U;
+            float target = reset_reference ? imu->yaw_deg : app.target_heading_deg;
+
+            BeginHeadingControl(forward_mm_s, target, reset_reference);
+        }
+        else
+        {
+            app.heading_hold_active = 0U;
+            UpdateEnabledControlLoops();
+            BeginSpeedControl(forward_mm_s,
+                              -steering * app.max_yaw_rate_dps * 10 / 100,
+                              -steering * MAX_TEST_SPEED_MM_S / 100);
+        }
         last_motor_command_ms = now_ms;
     }
     else if (sscanf(line, "MOTOR,%d,%d", &left, &right) == 2)
     {
+        app.heading_hold_active = 0U;
+        UpdateEnabledControlLoops();
         BeginRawControl(left, right);
         last_motor_command_ms = now_ms;
     }
@@ -612,6 +953,7 @@ static void ProcessCommand(char *line)
     {
         StopControl();
         app.yaw_control_enabled = (yaw_enable != 0 && imu->ok) ? 1U : 0U;
+        if (!app.yaw_control_enabled) app.heading_control_enabled = 0U;
         UpdateEnabledControlLoops();
         snprintf(response, sizeof(response), "ACK,YAW,%u\r\n",
                  (unsigned int)app.yaw_control_enabled);
@@ -652,6 +994,63 @@ static void ProcessCommand(char *line)
         {
             SendText("ERR,YAWPID_RANGE\r\n");
         }
+    }
+    else if (sscanf(line, "HEADPID,%d,%d,%d,%d",
+                    &heading_kp_milli, &heading_kd_milli,
+                    &heading_kff_milli, &heading_max_rate) == 4)
+    {
+        (void)heading_kp_milli;
+        (void)heading_kd_milli;
+        (void)heading_kff_milli;
+        (void)heading_max_rate;
+        SendText("ERR,HEADING_PID_LOCKED,4000,300,1000,80\r\n");
+    }
+    else if (sscanf(line, "HEADSET,%d", &heading_target10) == 1)
+    {
+        if (heading_target10 >= -1800 && heading_target10 <= 1800 &&
+            app.heading_control_enabled && app.yaw_control_enabled && imu->ok)
+        {
+            float target = (float)heading_target10 / 10.0f;
+            uint8_t reset_reference =
+                (!app.heading_hold_active || app.motor_mode != MOTOR_MODE_SPEED ||
+                 fabsf(WrapAngleDegrees(target - app.target_heading_deg)) >= 0.05f) ?
+                1U : 0U;
+
+            BeginHeadingControl(0, target, reset_reference);
+            last_motor_command_ms = now_ms;
+            if (reset_reference)
+            {
+                snprintf(response, sizeof(response),
+                         "ACK,HEADSET,%d\r\n", heading_target10);
+                SendText(response);
+            }
+        }
+        else
+        {
+            SendText("ERR,HEAD_NOT_READY\r\n");
+        }
+    }
+    else if (sscanf(line, "HEAD,%d", &heading_enable) == 1)
+    {
+        StopControl();
+        app.heading_control_enabled =
+            (heading_enable != 0 && app.yaw_control_enabled && imu->ok) ? 1U : 0U;
+        app.target_heading_deg = imu->yaw_deg;
+        UpdateEnabledControlLoops();
+        snprintf(response, sizeof(response), "ACK,HEAD,%u\r\n",
+                 (unsigned int)app.heading_control_enabled);
+        SendText(response);
+    }
+    else if (strcmp(line, "HEADCFG") == 0)
+    {
+        snprintf(response, sizeof(response),
+                 "ACK,HEADCFG,%u,%ld,%ld,%ld,%ld\r\n",
+                 (unsigned int)app.heading_control_enabled,
+                 (long)app.heading_pid_kp_milli,
+                 (long)app.heading_pid_kd_milli,
+                 (long)app.heading_pid_kff_milli,
+                 (long)app.max_heading_rate_dps);
+        SendText(response);
     }
     else if (sscanf(line, "LINEPID,%d,%d,%d", &kp, &ki, &kd) == 3)
     {
@@ -784,7 +1183,7 @@ static void ProcessCommand(char *line)
     }
     else if (strcmp(line, "HELP") == 0)
     {
-        SendText("ACK,DRV MOTOR LINE YAW YAWRATE YAWPID LINEPID LINEDIFF LINECFG PID_LOCKED STOP ZERO ENCZERO IMUZERO GRAY GRAYWHITE GRAYBLACK BEEP KEYS PING\r\n");
+        SendText("ACK,DRV MOTOR SQUARE LINE YAW YAWRATE YAWPID HEAD HEADPID_LOCKED HEADSET HEADCFG LINEPID LINEDIFF LINECFG PID_LOCKED STOP ZERO ENCZERO IMUZERO GRAY GRAYWHITE GRAYBLACK BEEP KEYS PING\r\n");
     }
     else
     {
@@ -839,16 +1238,72 @@ static void SendLineTelemetry(void)
 }
 
 /* 每次灰度更新后运行一次方向外环，并把输出写成角速度环目标。 */
+static void SendSquareTelemetry(void)
+{
+    const VehicleSquareState *square = VehicleSquare_GetState();
+    uint8_t displayed_leg = square->leg < 4U ? (uint8_t)(square->leg + 1U) : 4U;
+    char frame[112];
+
+    snprintf(frame, sizeof(frame),
+             "SQR,%lu,%u,%u,%u,%ld,%ld,%ld\r\n",
+             (unsigned long)now_ms,
+             (unsigned int)square->active,
+             (unsigned int)square->phase,
+             (unsigned int)displayed_leg,
+             (long)square->progress_mm,
+             (long)square->remaining_mm,
+             (long)RoundFloatToInt32(square->target_heading_deg * 10.0f));
+    SendText(frame);
+}
+
+/*
+ * 状态机只生成前进速度和绝对航向，执行仍统一经过
+ * 航向环 -> 角速度环 -> 左右轮速度环。
+ */
+static void UpdateSquareControl(void)
+{
+    const VehicleEncoderState *encoder = VehicleEncoder_GetState();
+    const VehicleImuState *imu = VehicleImu_GetState();
+    const VehicleSquareState *square;
+    uint8_t target_changed;
+    uint8_t status_changed;
+
+    if (!VehicleSquare_GetState()->active) return;
+    VehicleSquare_Update(now_ms,
+                         encoder->total_left, encoder->total_right,
+                         encoder->filtered_left_mm_s_float,
+                         encoder->filtered_right_mm_s_float,
+                         imu->yaw_deg, imu->yaw_rate_dps);
+    target_changed = VehicleSquare_TakeTargetChanged();
+    status_changed = VehicleSquare_TakeStatusChanged();
+    square = VehicleSquare_GetState();
+
+    if (!square->active)
+    {
+        StopControl();
+        if (status_changed) SendSquareTelemetry();
+        return;
+    }
+
+    BeginHeadingControl(square->forward_command_mm_s,
+                        square->target_heading_deg,
+                        target_changed);
+    if (status_changed) SendSquareTelemetry();
+}
+
 static uint8_t UpdateLineDirection(void)
 {
     const VehicleLineState *line;
+    uint8_t was_local;
 
     if (app.motor_mode != MOTOR_MODE_LINE) return 1U;
     if (!VehicleLine_Update(VehicleGray_GetState(), now_ms))
     {
+        was_local = app.local_line_running;
         SendLineTelemetry();
         StopControl();
         SendText("ERR,LINE_LOST\r\n");
+        if (was_local) SendModeFrame();
         return 0U;
     }
 
@@ -869,6 +1324,7 @@ static void UpdateSpeedControl(float dt_s)
 
     memset(&input, 0, sizeof(input));
     input.requested_forward_speed_mm_s = (float)app.target_forward_mm_s;
+    input.requested_heading_deg = app.target_heading_deg;
     input.requested_yaw_rate_dps = (float)app.target_yaw_rate10 / 10.0f;
     input.direct_wheel_correction_mm_s =
         (float)app.fallback_wheel_correction_mm_s;
@@ -904,12 +1360,13 @@ static void SendTelemetry(void)
     const VehicleEncoderState *encoder = VehicleEncoder_GetState();
     const VehicleImuState *imu = VehicleImu_GetState();
     const VehicleGrayState *gray = VehicleGray_GetState();
-    char line[320];
+    const VehicleBatteryState *battery = VehicleBattery_GetState();
+    char line[384];
     int32_t target_left = app.target_left_mm_s;
     int32_t target_right = app.target_right_mm_s;
     int32_t yaw_rate10 = RoundFloatToInt32(imu->yaw_rate_dps * 10.0f);
-    uint8_t active = VehicleGray_CountActive(2048U);
-
+    uint8_t active =
+        VehicleGray_CountLineChannels(LINE_EDGE_TARGET_MIN);
     if (app.motor_mode != MOTOR_MODE_SPEED &&
         app.motor_mode != MOTOR_MODE_LINE)
     {
@@ -919,7 +1376,7 @@ static void SendTelemetry(void)
 
     /* TEL 字段顺序必须保持兼容，网页依赖固定下标读取目标与实际速度。 */
     snprintf(line, sizeof(line),
-             "TEL,%lu,%u,%u,%d,%ld,%ld,%ld,%ld,%d,%d,%ld,%ld,%ld,%ld,%u,%u,%ld,0,0,0,0,0,0\r\n",
+             "TEL,%lu,%u,%u,%d,%ld,%ld,%ld,%ld,%d,%d,%ld,%ld,%ld,%ld,%u,%u,%ld,%ld,%ld,%ld,%u,%u,%lu\r\n",
              (unsigned long)now_ms,
              (unsigned int)((motor->left_percent != 0 ||
                              motor->right_percent != 0) ? 1U : 0U),
@@ -937,7 +1394,13 @@ static void SendTelemetry(void)
              (long)RoundFloatToInt32(vehicle_output.wheel_correction_mm_s),
              (unsigned int)app.yaw_control_enabled,
              (unsigned int)imu->ok,
-             (long)RoundFloatToInt32(vehicle_output.yaw_feedforward_mm_s));
+             (long)RoundFloatToInt32(vehicle_output.yaw_feedforward_mm_s),
+             (long)RoundFloatToInt32(app.target_heading_deg * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.heading_error_deg * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.heading_output_dps * 10.0f),
+             (unsigned int)app.heading_control_enabled,
+             (unsigned int)app.heading_hold_active,
+             (unsigned long)(battery->valid ? battery->voltage_mv : 0U));
     SendText(line);
 
     /* STA 同样保留 V15 的占位字段，避免旧网页状态页整体错位。 */
@@ -945,7 +1408,7 @@ static void SendTelemetry(void)
              "STA,%lu,%d,%d,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,0,0,0,0,0,0,0,0,30,%u,90,"
              "%u,%u,%u,%u,%u,%u,%u,%u,60,%u,%u,%u,900,500,"
              "%u,%u,%u,%u,%u,%u,%u,%u,%u,%ld,%ld,%ld,%ld,%ld,"
-             "%ld,%ld,%ld,%ld\r\n",
+             "%ld,%ld,%ld,%ld,%u,%ld,%ld,%ld,%ld\r\n",
              (unsigned long)now_ms,
              imu->pitch10,
              imu->roll10,
@@ -974,7 +1437,12 @@ static void SendTelemetry(void)
              (long)app.line_pid_kp_milli,
              (long)app.line_pid_ki_milli,
              (long)app.line_pid_kd_milli,
-             (long)app.line_diff_milli);
+             (long)app.line_diff_milli,
+             (unsigned int)app.heading_control_enabled,
+             (long)app.max_heading_rate_dps,
+             (long)app.heading_pid_kp_milli,
+             (long)app.heading_pid_kd_milli,
+             (long)app.heading_pid_kff_milli);
     SendText(line);
 }
 
@@ -983,12 +1451,13 @@ static void SendSpeedTelemetry(void)
     const VehicleMotorState *motor = VehicleMotor_GetState();
     const VehicleEncoderState *encoder = VehicleEncoder_GetState();
     const VehicleImuState *imu = VehicleImu_GetState();
-    char line[320];
+    char line[448];
 
     snprintf(line, sizeof(line),
              "SPD,%lu,1,%ld,%ld,%ld,%ld,%ld,%d,%ld,%ld,%ld,%ld,%ld,%d,"
              "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,"
-             "%u,%ld,%ld,%ld,%ld,%ld\r\n",
+             "%u,%ld,%ld,%ld,%ld,%ld,"
+             "%ld,%ld,%ld,%ld,%ld,%ld,%u,%u,%ld,%ld,%ld,%ld\r\n",
              (unsigned long)now_ms,
              (long)app.target_left_mm_s,
              (long)encoder->filtered_left_mm_s,
@@ -1019,7 +1488,19 @@ static void SendSpeedTelemetry(void)
              (long)app.yaw_pid_kp_micro,
              (long)app.yaw_pid_ki_micro,
              (long)app.yaw_pid_kd_micro,
-             (long)app.yaw_pid_kff_micro);
+             (long)app.yaw_pid_kff_micro,
+             (long)RoundFloatToInt32(app.target_heading_deg * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.heading_reference_deg * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.heading_reference_rate_dps * 10.0f),
+             (long)imu->yaw10,
+             (long)RoundFloatToInt32(vehicle_output.heading_error_deg * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.heading_output_dps * 10.0f),
+             (unsigned int)app.heading_control_enabled,
+             (unsigned int)app.heading_hold_active,
+             (long)app.max_heading_rate_dps,
+             (long)app.heading_pid_kp_milli,
+             (long)app.heading_pid_kd_milli,
+             (long)app.heading_pid_kff_milli);
     SendText(line);
 }
 
@@ -1061,16 +1542,24 @@ void DiansaiApp_Init(void)
 
     WheeltecLink_Init();
     BoardIo_Init(now_ms);
+    app.track_color_mode =
+        (BoardIo_GetSwitchDownMask() & (uint8_t)(1U << BOARD_SWITCH_1)) ?
+        TRACK_MODE_BLACK_ON_WHITE : TRACK_MODE_WHITE_ON_BLUE;
     VehicleMotor_Init();
     VehicleEncoder_Init();
+    VehicleSquare_Init();
     VehicleGray_Init();
     VehicleLine_Init();
+    VehicleBattery_Init();
+    VehicleBattery_Update();
     CascadeControlInit();
     StopControl();
 
     (void)VehicleImu_Init();
     imu = VehicleImu_GetState();
     app.yaw_control_enabled = imu->ok;
+    app.heading_control_enabled = imu->ok;
+    app.target_heading_deg = imu->yaw_deg;
     UpdateEnabledControlLoops();
     if (imu->ok && VehicleImu_CalibrateGyro())
     {
@@ -1084,6 +1573,7 @@ void DiansaiApp_Init(void)
     now_ms = app_tick_ms;
     last_loop_ms = now_ms;
     last_gray_ms = now_ms;
+    last_battery_ms = now_ms;
     last_motor_command_ms = now_ms;
     last_rx_ms = now_ms;
     /* 保持 V15 行为：IMU 标定结束后的第一轮立即发送状态和诊断帧。 */
@@ -1092,8 +1582,9 @@ void DiansaiApp_Init(void)
     last_line_telemetry_ms = 0U;
     last_debug_ms = 0U;
 
-    SendText("BOOT,MSPM0G3507_DIANSAI_TEST,V21,WHEELTEC,9600\r\n");
-    SendText("ACK,READY,V21,LINE_RECOVERY_STATE_MACHINE; send HELP for commands\r\n");
+    SendText("BOOT,MSPM0G3507_DIANSAI_TEST,V24,WHEELTEC,9600\r\n");
+    SendText("ACK,READY,V24,LOCKED_REMOTE_HEADING_SQUARE_DMA_TX; send HELP for commands\r\n");
+    SendModeFrame();
 }
 
 void SysTick_Handler(void)
@@ -1138,14 +1629,25 @@ void DiansaiApp_Run(void)
         VehicleGray_Update();
         (void)UpdateLineDirection();
     }
+    if (now_ms - last_battery_ms >= BATTERY_PERIOD_MS)
+    {
+        last_battery_ms = now_ms;
+        VehicleBattery_Update();
+    }
 
-    if (app.motor_mode != MOTOR_MODE_IDLE &&
+    if (app.motor_mode != MOTOR_MODE_IDLE && !app.local_line_running &&
         now_ms - last_motor_command_ms > COMMAND_TIMEOUT_MS)
     {
+        if (VehicleSquare_GetState()->active)
+        {
+            VehicleSquare_Stop(VEHICLE_SQUARE_ERROR);
+            SendSquareTelemetry();
+        }
         StopControl();
     }
     else
     {
+        UpdateSquareControl();
         UpdateSpeedControl((float)elapsed_ms / 1000.0f);
     }
 
@@ -1161,6 +1663,8 @@ void DiansaiApp_Run(void)
     {
         last_speed_telemetry_ms = now_ms;
         SendSpeedTelemetry();
+        if (VehicleSquare_GetState()->phase != VEHICLE_SQUARE_IDLE)
+            SendSquareTelemetry();
     }
     if (app.motor_mode == MOTOR_MODE_LINE &&
         now_ms - last_line_telemetry_ms >= LINE_TELEMETRY_PERIOD_MS)

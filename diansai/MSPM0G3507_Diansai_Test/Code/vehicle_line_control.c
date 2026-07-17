@@ -7,7 +7,7 @@
 #define LINE_DEFAULT_PERIOD_S 0.020f
 
 /*
- * 假定 G0 位于车辆左侧、G7 位于右侧。黑线落到左侧时误差为正，
+ * 假定 G0 位于车辆左侧、G7 位于右侧。目标线落到左侧时误差为正，
  * 对应本车“左转角速度为正”的坐标约定。首次架起车测试若符号相反，
  * 只需整体翻转这组权重，不能通过给 PID 填负 Kp 来掩盖接线方向。
  */
@@ -145,7 +145,7 @@ uint8_t VehicleLine_Update(const VehicleGrayState *gray, uint32_t now_ms)
         sum += gray->normalized[channel];
         weighted_sum += (int32_t)gray->normalized[channel] *
                         (int32_t)channel_weights[channel];
-        if (gray->normalized[channel] >= line_config.edge_black_min)
+        if (gray->normalized[channel] >= line_config.edge_line_min)
         {
             active_count++;
         }
@@ -179,8 +179,8 @@ uint8_t VehicleLine_Update(const VehicleGrayState *gray, uint32_t now_ms)
     line_state.raw_error_percent = error;
 
     /*
-     * 盲转时遇到五路以上同时发黑，通常仍在直角交叉区域而不是已经对准新线。
-     * 继续转到黑线收窄，并连续确认两次，防止一帧噪声过早退出恢复状态。
+     * 盲转时遇到五路以上同时检测到目标线，通常仍在直角交叉区域而不是已经
+     * 对准新线。继续转到目标线收窄，并连续确认两次，防止一帧噪声过早退出。
      */
     if (line_state.mode == VEHICLE_LINE_BLIND_TURN)
     {
@@ -257,15 +257,15 @@ uint8_t VehicleLine_Update(const VehicleGrayState *gray, uint32_t now_ms)
     line_state.target_yaw_rate_dps =
         output / line_config.output_limit * line_config.target_yaw_limit_dps;
 
-    /* G0/G7 边缘黑线优先；否则只有足够大的偏差才刷新短期转向记忆。 */
-    if (gray->normalized[0] >= line_config.edge_black_min &&
-        gray->normalized[VEHICLE_GRAY_CHANNELS - 1U] < line_config.edge_black_min)
+    /* G0/G7 边缘目标线优先；否则只有足够大的偏差才刷新短期转向记忆。 */
+    if (gray->normalized[0] >= line_config.edge_line_min &&
+        gray->normalized[VEHICLE_GRAY_CHANNELS - 1U] < line_config.edge_line_min)
     {
         turn_direction = 1;
     }
     else if (gray->normalized[VEHICLE_GRAY_CHANNELS - 1U] >=
-                 line_config.edge_black_min &&
-             gray->normalized[0] < line_config.edge_black_min)
+                 line_config.edge_line_min &&
+             gray->normalized[0] < line_config.edge_line_min)
     {
         turn_direction = -1;
     }

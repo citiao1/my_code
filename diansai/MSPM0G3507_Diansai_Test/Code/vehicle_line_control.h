@@ -26,7 +26,8 @@ typedef struct
     uint16_t gap_hold_ms;
     uint16_t blind_turn_ms;
     uint16_t turn_memory_ms;
-    uint16_t edge_black_min;
+    /* 单路归一化值达到该阈值时，认为目标线覆盖了该探头。 */
+    uint16_t edge_line_min;
     uint8_t reacquire_max_active;
     uint8_t reacquire_confirm_samples;
 } VehicleLineConfig;
