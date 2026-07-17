@@ -1,5 +1,13 @@
 --cpu Cortex-M0+
 ".\objects\diansai_app.o"
+".\objects\vehicle_cascade_control.o"
+".\objects\vehicle_motor.o"
+".\objects\vehicle_encoder.o"
+".\objects\vehicle_imu.o"
+".\objects\vehicle_gray.o"
+".\objects\vehicle_line_control.o"
+".\objects\wheeltec_link.o"
+".\objects\board_io.o"
 ".\objects\main_diansai.o"
 ".\objects\startup_mspm0g350x_uvision.o"
 ".\objects\dl_sysctl_mspm0g1x0x_g3x0x.o"

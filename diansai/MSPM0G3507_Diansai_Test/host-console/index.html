@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#f4f6f5">
   <title>MSPM0G3507 Vehicle Console</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -31,29 +32,135 @@
       </div>
 
       <div class="drive-pad" aria-label="方向控制">
-        <button class="drive-button up" data-direction="forward" type="button" title="前进" aria-label="前进">↑</button>
-        <button class="drive-button left" data-direction="left" type="button" title="原地左转" aria-label="原地左转">←</button>
+        <button class="drive-button up" data-direction="forward" data-key="w" type="button" title="前进 (W)" aria-label="前进，键盘 W">↑</button>
+        <button class="drive-button left" data-direction="left" data-key="a" type="button" title="原地左转 (A)" aria-label="原地左转，键盘 A">←</button>
         <button id="stopButton" class="drive-button stop" type="button" title="紧急停止" aria-label="紧急停止">■</button>
-        <button class="drive-button right" data-direction="right" type="button" title="原地右转" aria-label="原地右转">→</button>
-        <button class="drive-button down" data-direction="back" type="button" title="后退" aria-label="后退">↓</button>
+        <button class="drive-button right" data-direction="right" data-key="d" type="button" title="原地右转 (D)" aria-label="原地右转，键盘 D">→</button>
+        <button class="drive-button down" data-direction="back" data-key="s" type="button" title="后退 (S)" aria-label="后退，键盘 S">↓</button>
       </div>
 
       <div class="speed-control">
-        <div class="speed-label"><label for="speedSlider">手动驱动比例</label><output id="speedValue" for="speedSlider">25%</output></div>
-        <input id="speedSlider" type="range" min="10" max="60" step="5" value="25">
+        <div class="speed-label"><label for="speedSlider">目标速度比例</label><output id="speedValue" for="speedSlider">10% · 60 mm/s</output></div>
+        <input id="speedSlider" type="range" min="10" max="60" step="5" value="10">
         <div class="scale"><span>10</span><span>35</span><span>60</span></div>
+      </div>
+
+      <div class="tool-section" aria-labelledby="speedPidTitle">
+        <div class="tool-heading">
+          <div><span class="kicker">SPEED LOOP</span><h3 id="speedPidTitle">速度环 PID</h3></div>
+          <span id="pidCurrent">L 4000/800/0 · R 4000/800/0 · 已锁定</span>
+        </div>
+        <div class="pid-inputs">
+          <label>左 Kp<input id="pidLeftKp" type="number" value="4000" readonly></label>
+          <label>左 Ki<input id="pidLeftKi" type="number" value="800" readonly></label>
+          <label>左 Kd<input id="pidLeftKd" type="number" value="0" readonly></label>
+          <label>右 Kp<input id="pidRightKp" type="number" value="4000" readonly></label>
+          <label>右 Ki<input id="pidRightKi" type="number" value="800" readonly></label>
+          <label>右 Kd<input id="pidRightKd" type="number" value="0" readonly></label>
+        </div>
+      </div>
+
+      <div class="tool-section" aria-labelledby="yawPidTitle">
+        <div class="tool-heading">
+          <div><span class="kicker">YAW RATE LOOP</span><h3 id="yawPidTitle">角速度环 PID</h3></div>
+          <span id="yawCurrent">1000/2000/0/1205 · 150°/s</span>
+        </div>
+        <div class="yaw-options">
+          <label class="toggle-field"><span>启用角速度环</span><input id="yawEnabled" type="checkbox" checked></label>
+          <label>最大角速度<input id="yawMaxRate" type="number" min="10" max="360" step="5" value="150"></label>
+        </div>
+        <div class="pid-inputs yaw-pid-inputs">
+          <label>Kp · µ<input id="yawKp" type="number" min="0" max="100000" step="100" value="1000"></label>
+          <label>Ki · µ<input id="yawKi" type="number" min="0" max="100000" step="100" value="2000"></label>
+          <label>Kd · µ<input id="yawKd" type="number" min="0" max="100000" step="100" value="0"></label>
+          <label>Kff · µ<input id="yawKff" type="number" min="0" max="100000" step="5" value="1205"></label>
+        </div>
+        <div class="button-row">
+          <button id="applyYawButton" class="command secondary" type="button">应用角速度参数</button>
+        </div>
+      </div>
+
+      <div class="tool-section" aria-labelledby="linePidTitle">
+        <div class="tool-heading">
+          <div><span class="kicker">LINE DIRECTION LOOP</span><h3 id="linePidTitle">寻线方向环</h3></div>
+          <span id="lineCurrent">400.000/0.000/120.000 · 差速 0.650 · 未启用</span>
+        </div>
+        <div class="pid-inputs line-pid-inputs">
+          <label>Kp<input id="lineKp" type="number" min="0" max="1000" step="0.001" value="400.000"></label>
+          <label>Ki<input id="lineKi" type="number" min="0" max="1000" step="0.001" value="0.000"></label>
+          <label>Kd<input id="lineKd" type="number" min="0" max="1000" step="0.001" value="120.000"></label>
+          <label>最大差速比例<input id="lineDiff" type="number" min="0" max="1" step="0.010" value="0.650"></label>
+        </div>
+        <div class="line-run-options">
+          <label>基础速度
+            <span class="number-with-unit"><input id="lineSpeed" type="number" min="50" max="300" step="10" value="100"><span>mm/s</span></span>
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="applyLineButton" class="command secondary" type="button">应用寻线参数</button>
+          <button id="startLineButton" class="command primary" type="button">开始寻线</button>
+          <button id="stopLineButton" class="command secondary danger-text" type="button">停止</button>
+        </div>
       </div>
 
       <div class="tool-section">
         <div class="tool-heading"><div><span class="kicker">AT8236</span><h3>独立电机测试</h3></div><span id="motorCommand">L 0% · R 0%</span></div>
         <div class="motor-inputs">
-          <label>左电机<input id="leftMotor" type="range" min="-60" max="60" value="0"><output id="leftMotorValue">0%</output></label>
-          <label>右电机<input id="rightMotor" type="range" min="-60" max="60" value="0"><output id="rightMotorValue">0%</output></label>
+          <label>左电机<input id="leftMotor" type="range" min="-100" max="100" step="1" value="0"><output id="leftMotorValue">0%</output></label>
+          <label>右电机<input id="rightMotor" type="range" min="-100" max="100" step="1" value="0"><output id="rightMotorValue">0%</output></label>
         </div>
         <div class="button-row">
           <button id="runMotorsButton" class="command secondary" type="button">持续运行</button>
           <button id="stopMotorsButton" class="command secondary danger-text" type="button">停止</button>
         </div>
+      </div>
+
+      <div class="tool-section" aria-labelledby="deadzoneTitle">
+        <div class="tool-heading">
+          <div><span class="kicker">CALIBRATION</span><h3 id="deadzoneTitle">电机死区测量</h3></div>
+          <span id="deadzoneCommand">MOTOR,0,0</span>
+        </div>
+        <div class="deadzone-fields">
+          <label>测量工况
+            <select id="deadzoneTarget" class="compact-select">
+              <option value="leftForward">左电机 · 正转</option>
+              <option value="leftReverse">左电机 · 反转</option>
+              <option value="rightForward">右电机 · 正转</option>
+              <option value="rightReverse">右电机 · 反转</option>
+            </select>
+          </label>
+          <label>负载电压
+            <span class="number-with-unit"><input id="deadzoneVoltage" type="number" min="0" max="30" step="0.01" inputmode="decimal" placeholder="--"><span>V</span></span>
+          </label>
+        </div>
+        <div class="deadzone-duty">
+          <button id="deadzoneDecrease" class="step-button" type="button" title="降低 1%" aria-label="降低 1%">−</button>
+          <input id="deadzonePwm" type="range" min="0" max="100" step="1" value="0" aria-label="测试 PWM 百分比">
+          <button id="deadzoneIncrease" class="step-button" type="button" title="提高 1%" aria-label="提高 1%">+</button>
+          <output id="deadzonePwmValue" for="deadzonePwm">0%</output>
+        </div>
+        <div class="deadzone-live">
+          <div><span>实时速度</span><strong id="deadzoneSpeed">0 mm/s</strong></div>
+          <div><span>编码器增量</span><strong id="deadzoneEncoderDelta">0</strong></div>
+        </div>
+        <div class="button-row">
+          <button id="deadzoneRunButton" class="command secondary" type="button">持续输出</button>
+          <button id="deadzoneStopButton" class="command secondary danger-text" type="button">停止</button>
+        </div>
+        <div class="button-row">
+          <button id="recordStartButton" class="command secondary" type="button">记录启动值</button>
+          <button id="recordRunButton" class="command secondary" type="button">记录运行值</button>
+        </div>
+        <table class="deadzone-results">
+          <thead><tr><th>工况</th><th>启动值</th><th>运行值</th></tr></thead>
+          <tbody>
+            <tr><th>左 · 正</th><td id="leftForwardStart">--</td><td id="leftForwardRun">--</td></tr>
+            <tr><th>左 · 反</th><td id="leftReverseStart">--</td><td id="leftReverseRun">--</td></tr>
+            <tr><th>右 · 正</th><td id="rightForwardStart">--</td><td id="rightForwardRun">--</td></tr>
+            <tr><th>右 · 反</th><td id="rightReverseStart">--</td><td id="rightReverseRun">--</td></tr>
+          </tbody>
+        </table>
+        <button id="clearDeadzoneButton" class="text-command" type="button">清空测量记录</button>
       </div>
 
       <div class="tool-section">
@@ -87,6 +194,29 @@
       <div class="data-grid">
         <div class="data-row"><span>左轮速度</span><strong id="leftSpeed">0 mm/s</strong></div>
         <div class="data-row"><span>右轮速度</span><strong id="rightSpeed">0 mm/s</strong></div>
+        <div class="data-row"><span>左轮目标</span><strong id="leftTarget">0 mm/s</strong></div>
+        <div class="data-row"><span>右轮目标</span><strong id="rightTarget">0 mm/s</strong></div>
+        <div class="data-row"><span>目标角速度</span><strong id="yawTarget">0.0°/s</strong></div>
+        <div class="data-row"><span>实际角速度</span><strong id="yawRate">0.0°/s</strong></div>
+        <div class="data-row"><span>角速度误差</span><strong id="yawError">0.0°/s</strong></div>
+        <div class="data-row"><span>角速度前馈</span><strong id="yawFeedforward">0 mm/s</strong></div>
+        <div class="data-row"><span>角速度 PID</span><strong id="yawPidCorrection">0 mm/s</strong></div>
+        <div class="data-row"><span>差速修正</span><strong id="yawCorrection">0 mm/s</strong></div>
+        <div class="data-row"><span>角速度环</span><strong id="yawLoopState">已启用</strong></div>
+        <div class="data-row"><span>寻线状态</span><strong id="lineState">未运行</strong></div>
+        <div class="data-row"><span>灰度原始偏差</span><strong id="lineRawError">0.0%</strong></div>
+        <div class="data-row"><span>灰度滤波偏差</span><strong id="lineFilteredError">0.0%</strong></div>
+        <div class="data-row"><span>方向 PID 输出</span><strong id="linePidOutput">0</strong></div>
+        <div class="data-row"><span>寻线目标角速度</span><strong id="lineTargetYaw">0.0°/s</strong></div>
+        <div class="data-row"><span>寻线实际角速度</span><strong id="lineActualYaw">0.0°/s</strong></div>
+        <div class="data-row"><span>寻线差速修正</span><strong id="lineCorrection">0 mm/s</strong></div>
+        <div class="data-row"><span>归一化灰度总和</span><strong id="lineNormalizedSum">0</strong></div>
+        <div class="data-row"><span>左轮误差</span><strong id="leftError">0 mm/s</strong></div>
+        <div class="data-row"><span>右轮误差</span><strong id="rightError">0 mm/s</strong></div>
+        <div class="data-row"><span>左轮前馈</span><strong id="leftFeedforward">0.0%</strong></div>
+        <div class="data-row"><span>右轮前馈</span><strong id="rightFeedforward">0.0%</strong></div>
+        <div class="data-row"><span>左 PID 修正</span><strong id="leftPidCorrection">0.0%</strong></div>
+        <div class="data-row"><span>右 PID 修正</span><strong id="rightPidCorrection">0.0%</strong></div>
         <div class="data-row"><span>左编码器</span><strong id="leftEncoder">0</strong></div>
         <div class="data-row"><span>右编码器</span><strong id="rightEncoder">0</strong></div>
         <div class="data-row"><span>左轮输出</span><strong id="leftPwm">0%</strong></div>
@@ -98,9 +228,10 @@
       </div>
 
       <div class="line-panel">
-        <div class="line-panel-heading"><div><span class="kicker">8-CHANNEL · ADC 0–4095</span><h3>灰度传感器</h3></div><strong id="grayCalibrationState">未标定</strong></div>
-        <div id="grayGrid" class="gray-grid" aria-label="八路灰度原始值"></div>
+        <div class="line-panel-heading"><div><span class="kicker">RAW 0–4095 · NORMALIZED 0–1000</span><h3>灰度传感器</h3></div><strong id="grayCalibrationState">未标定</strong></div>
+        <div id="grayGrid" class="gray-grid" aria-label="八路灰度原始值与归一化值"></div>
         <div class="calibration-line" id="grayCalibration">白底 -- · 黑线 --</div>
+        <div class="calibration-line normalized-line" id="grayNormalization">归一化 --</div>
       </div>
 
       <div class="line-panel">
@@ -112,7 +243,7 @@
       </div>
 
       <div class="chart-block">
-        <div class="chart-heading"><span>轮速趋势</span><div class="legend"><span class="left-line">左轮</span><span class="right-line">右轮</span></div></div>
+        <div class="chart-heading"><span>轮速趋势</span><div class="legend"><span class="left-line">左实际</span><span class="right-line">右实际</span><span class="target-left-line">左目标</span><span class="target-right-line">右目标</span></div></div>
         <canvas id="speedChart" aria-label="左右轮速度趋势图"></canvas>
       </div>
     </section>

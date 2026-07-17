@@ -1,0 +1,2 @@
+cd D:\my_code\my_code\diansai\MSPM0G3507_Diansai_Test
+powershell -ExecutionPolicy Bypass -File .\host-console\bridge\start-wheeltec.ps1

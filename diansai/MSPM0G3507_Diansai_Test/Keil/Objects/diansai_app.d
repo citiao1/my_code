@@ -80,4 +80,8 @@
   ..\LQ_Lib\LQ_Device\LQ_oled.h ..\LQ_Lib\LQ_Device\LQ_servo.h \
   ..\LQ_Lib\LQ_Device\LQ_motor.h ..\LQ_Lib\LQ_Device\LQ_tracking.h \
   ..\LQ_Lib\LQ_Device\LQ_encoder.h ..\LQ_Lib\LQ_Device\LQ_key.h \
-  ..\LQ_Lib\LQ_Device\LQ_ccd.h ..\Code\diansai_app.h
+  ..\LQ_Lib\LQ_Device\LQ_ccd.h ..\Code\diansai_app.h ..\Code\board_io.h \
+  ..\Code\vehicle_cascade_control.h ..\Code\vehicle_encoder.h \
+  ..\Code\vehicle_gray.h ..\Code\vehicle_imu.h \
+  ..\Code\vehicle_line_control.h ..\Code\vehicle_motor.h \
+  ..\Code\wheeltec_link.h

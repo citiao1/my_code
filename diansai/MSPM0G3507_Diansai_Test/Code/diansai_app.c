@@ -2,110 +2,163 @@
 #include "LQ_device.h"
 #include "diansai_app.h"
 
-#define APP_LOOP_MS                 10U
-#define TELEMETRY_PERIOD_MS        500U
-#define DEBUG_PERIOD_MS            2000U
-#define OLED_PERIOD_MS             200U
-#define COMMAND_TIMEOUT_MS         500U
-#define MOTOR_PWM_FREQUENCY_HZ     20000U
-#define MOTOR1_PWM_TIMER           LQ_TIMERA_1
-#define MOTOR2_PWM_TIMER           LQ_TIMERG_0
-#define MOTOR1_IN1_PWM             LQ_TIMERA1_PWM_CH0_Pin_B_2
-#define MOTOR1_IN2_PWM             LQ_TIMERA1_PWM_CH1_Pin_B_3
-#define MOTOR2_IN1_PWM             LQ_TIMERG0_PWM_CH0_Pin_B_10
-#define MOTOR2_IN2_PWM             LQ_TIMERG0_PWM_CH1_Pin_B_11
-#define LEFT_COUNTS_PER_METER      7514
-#define RIGHT_COUNTS_PER_METER     7263
-#define MAX_TEST_SPEED_MM_S        600
-#define UART_LINE_SIZE             64U
-#define UART_TX_BUFFER_SIZE        1024U
+#include "board_io.h"
+#include "vehicle_cascade_control.h"
+#include "vehicle_encoder.h"
+#include "vehicle_gray.h"
+#include "vehicle_imu.h"
+#include "vehicle_line_control.h"
+#include "vehicle_motor.h"
+#include "wheeltec_link.h"
 
-#define IMU_SCK_PIN                GPIO_Pin_A_12
-#define IMU_CS_PIN                 GPIO_Pin_A_2
-#define IMU_WHO_AM_I_REG           0x0FU
-#define IMU_EXPECTED_ID            0x6BU
+/*
+ * V16 应用层只负责五件事：
+ *   1. 按固定周期调度各硬件模块；
+ *   2. 解释上位机命令并维护控制模式；
+ *   3. 配置并调用三级串级控制器；
+ *   4. 组装与 V15 完全兼容的 TEL/STA/SPD 遥测；
+ *   5. 执行通信看门狗和板载按键急停等安全逻辑。
+ *
+ * 电机、编码器、IMU、灰度、串口、按键和蜂鸣器的硬件细节全部位于
+ * 各自模块中。应用层只读取只读状态快照，避免同一硬件状态有两份副本。
+ */
 
+#define APP_LOOP_MS                    10U
+#define TELEMETRY_PERIOD_MS           500U
+#define SPEED_MODE_TELEMETRY_MS      2000U
+#define SPEED_TELEMETRY_PERIOD_MS     250U
+#define LINE_SPEED_TELEMETRY_MS        500U
+#define LINE_TELEMETRY_PERIOD_MS      200U
+#define DEBUG_PERIOD_MS               2000U
+#define GRAY_PERIOD_MS                  20U
+#define COMMAND_TIMEOUT_MS             500U
+#define LINK_TIMEOUT_MS               1200U
+
+#define MAX_TEST_SPEED_MM_S             600
+
+/*
+ * 速度 PI 参数沿用实车已经确认的 4000/800/0。
+ * 参考工程的参数作用于“m/s + 16799 计数 PWM”，本工程控制器使用
+ * “mm/s + 百分比”，因此只在配置入口进行一次等价单位换算。
+ */
+#define SPEED_PID_LEGACY_PERIOD     16799.0f
+#define SPEED_PID_GAIN_SCALE           (100.0f / (SPEED_PID_LEGACY_PERIOD * 1000.0f))
+#define SPEED_PID_DEFAULT_KP         4000
+#define SPEED_PID_DEFAULT_KI          800
+#define SPEED_PID_DEFAULT_KD            0
+#define SPEED_PID_OUTPUT_LIMIT       100.0f
+
+/* 角速度环参数使用 diansai_test 的微单位整数，便于网页和 VOFA+ 调参。 */
+#define DEFAULT_MAX_YAW_RATE_DPS      150
+#define YAW_PID_DEFAULT_KP_MICRO     1000
+#define YAW_PID_DEFAULT_KI_MICRO     2000
+#define YAW_PID_DEFAULT_KD_MICRO        0
+#define YAW_PID_DEFAULT_KFF_MICRO    1205
+#define YAW_PID_MICRO_TO_MM_S       0.001f
+#define YAW_INTEGRAL_LIMIT_DPS_S    300.0f
+
+/*
+ * V20 启用独立灰度方向外环；V21 在此基础上增加直角弯丢线恢复状态机。
+ * 参数使用千分制整数传输：650 表示 0.650，避免 9600 波特率文本协议解析浮点。
+ * 默认值取自实际参与编译的 UserCode/APP/chassis.c：方向 PID 为
+ * 400/0/120，角速度环输出换算出的最大差速比例为 0.65。
+ */
+#define LINE_PID_DEFAULT_KP_MILLI   400000
+#define LINE_PID_DEFAULT_KI_MILLI        0
+#define LINE_PID_DEFAULT_KD_MILLI   120000
+#define LINE_DIFF_DEFAULT_MILLI        650
+#define LINE_PID_GAIN_MAX_MILLI    1000000
+#define LINE_DIFF_MAX_MILLI           1000
+#define LINE_DIRECTION_OUTPUT_LIMIT  8000.0f
+#define LINE_TARGET_YAW_LIMIT_DPS       60.0f
+#define LINE_INTEGRAL_LIMIT_PERCENT_S   80.0f
+#define LINE_FILTER_NEW_WEIGHT           0.35f
+#define LINE_VISIBLE_SUM_MIN            200U
+#define LINE_GAP_HOLD_MS                150U
+#define LINE_BLIND_TURN_MS             1200U
+#define LINE_TURN_MEMORY_MS             350U
+#define LINE_EDGE_BLACK_MIN             550U
+#define LINE_REACQUIRE_MAX_ACTIVE         4U
+#define LINE_REACQUIRE_CONFIRM_SAMPLES    2U
+#define LINE_TURN_MEMORY_ERROR_PERCENT   35.0f
+#define LINE_BLIND_YAW_RATE_DPS          90.0f
+#define LINE_BLIND_DIFF_MILLI          1000
+#define LINE_SPEED_MIN_MM_S              50
+#define LINE_SPEED_MAX_MM_S             300
+
+/*
+ * 当前处于纯 PID 调试阶段，死区标定值保留但不加入电机输出。
+ * 重新启用前馈时，只需切换此宏，不需要改动控制器算法。
+ */
+#define SPEED_FEEDFORWARD_ENABLED       0U
+#define SPEED_PID_FEEDBACK_LIMIT       (SPEED_FEEDFORWARD_ENABLED ? 35.0f : 100.0f)
+#define LEFT_FORWARD_DEADZONE           8.0f
+#define LEFT_REVERSE_DEADZONE           7.0f
+#define RIGHT_FORWARD_DEADZONE          7.0f
+#define RIGHT_REVERSE_DEADZONE          7.0f
+
+#define KEY_BEEP_ON_MS                  80U
+#define KEY_BEEP_OFF_MS                 80U
+#define WARNING_BEEP_ON_MS             250U
+#define WARNING_BEEP_OFF_MS            120U
+
+typedef enum
+{
+    MOTOR_MODE_IDLE = 0,
+    MOTOR_MODE_RAW,
+    MOTOR_MODE_SPEED,
+    MOTOR_MODE_LINE
+} MotorControlMode;
+
+/*
+ * 这里只保存“应用语义”状态，不复制硬件模块的数据。
+ * 例如实际轮速始终来自 VehicleEncoder_GetState()，实际角速度始终来自
+ * VehicleImu_GetState()；这样复位编码器或重新标定 IMU 时不会产生状态分叉。
+ */
 typedef struct
 {
-    int8_t motor_left;
-    int8_t motor_right;
-    int32_t encoder_left;
-    int32_t encoder_right;
-    int32_t speed_left_mm_s;
-    int32_t speed_right_mm_s;
-    int16_t ax;
-    int16_t ay;
-    int16_t az;
-    int16_t gx;
-    int16_t gy;
-    int16_t gz;
-    int16_t yaw10;
-    int16_t pitch10;
-    int16_t roll10;
-    uint8_t imu_id;
-    uint8_t imu_ok;
-    uint8_t imu_mosi_number;
-    uint8_t imu_miso_number;
+    int32_t target_forward_mm_s;
+    int32_t target_yaw_rate10;
+    int32_t fallback_wheel_correction_mm_s;
+    int32_t target_left_mm_s;
+    int32_t target_right_mm_s;
+    int32_t error_left_mm_s;
+    int32_t error_right_mm_s;
+    int32_t pid_left_kp;
+    int32_t pid_left_ki;
+    int32_t pid_left_kd;
+    int32_t pid_right_kp;
+    int32_t pid_right_ki;
+    int32_t pid_right_kd;
+    int32_t yaw_pid_kp_micro;
+    int32_t yaw_pid_ki_micro;
+    int32_t yaw_pid_kd_micro;
+    int32_t yaw_pid_kff_micro;
+    int32_t max_yaw_rate_dps;
+    int32_t line_pid_kp_milli;
+    int32_t line_pid_ki_milli;
+    int32_t line_pid_kd_milli;
+    int32_t line_diff_milli;
     uint8_t link_active;
-    uint8_t gray_white_valid;
-    uint8_t gray_black_valid;
+    uint8_t yaw_control_enabled;
+    MotorControlMode motor_mode;
 } AppState;
 
 static AppState app;
-static LQConfig_Encoder_InitTypeDef_t encoder_left_cfg = {
-    .pinA = GPIO_Pin_A_7, .pinB = GPIO_Pin_A_3,
-    .encoder_cnt = 0, .count = 0, .gpio_flag = 0,
-};
-static LQConfig_Encoder_InitTypeDef_t encoder_right_cfg = {
-    .pinA = GPIO_Pin_A_8, .pinB = GPIO_Pin_B_7,
-    .encoder_cnt = 0, .count = 0, .gpio_flag = 0,
-};
+static VehicleCascadeControl vehicle_control;
+static VehicleCascadeOutput vehicle_output;
 
-static uint8_t uart_tx_buffer[UART_TX_BUFFER_SIZE];
-static uint16_t uart_tx_head;
-static uint16_t uart_tx_tail;
-static char uart_line[UART_LINE_SIZE];
-static uint8_t uart_line_length;
-static uint16_t gray_white[8];
-static uint16_t gray_black[8];
-static uint16_t gray_raw[8];
-static uint32_t now_ms;
+/* SysTick 中断只递增毫秒计数；所有业务都在主循环中执行。 */
 static volatile uint32_t app_tick_ms;
+static uint32_t now_ms;
 static uint32_t last_loop_ms;
-static uint32_t last_imu_ms;
 static uint32_t last_motor_command_ms;
 static uint32_t last_rx_ms;
 static uint32_t last_telemetry_ms;
+static uint32_t last_speed_telemetry_ms;
+static uint32_t last_line_telemetry_ms;
 static uint32_t last_debug_ms;
-static uint32_t last_oled_ms;
-static float gyro_x_bias;
-static float gyro_y_bias;
-static float gyro_z_bias;
-static float yaw_angle_deg;
-static float yaw_rate_filtered_dps;
-static uint16_t imu_still_samples;
-static LQEnum_GPIO_Pin_t imu_mosi_pin = GPIO_Pin_A_13;
-static LQEnum_GPIO_Pin_t imu_miso_pin = GPIO_Pin_A_14;
-
-static void WheeltecUartInit(void)
-{
-    LQConfig_UART_InitTypeDef_t uart = {
-        .Tx = UART0_TX_Pin_A_10,
-        .Rx = UART0_RX_Pin_A_11,
-        .BaudRate = 9600U,
-        .Mode = DL_UART_MODE_NORMAL,
-        .Direction = DL_UART_DIRECTION_TX_RX,
-        .StopBits = DL_UART_STOP_BITS_ONE,
-        .Parity = DL_UART_PARITY_NONE,
-        .FlowControl = DL_UART_FLOW_CONTROL_NONE,
-        .WordLength = DL_UART_WORD_LENGTH_8_BITS,
-    };
-    LQ_UART_Init(LQ_UART0, &uart);
-    DL_UART_disable(UART0);
-    DL_UART_enableFIFOs(UART0);
-    DL_UART_setRXFIFOThreshold(UART0, DL_UART_RX_FIFO_LEVEL_ONE_ENTRY);
-    DL_UART_enable(UART0);
-}
+static uint32_t last_gray_ms;
 
 static int32_t ClampInt32(int32_t value, int32_t low, int32_t high)
 {
@@ -114,298 +167,396 @@ static int32_t ClampInt32(int32_t value, int32_t low, int32_t high)
     return value;
 }
 
-static uint8_t ImuTransfer(uint8_t tx)
+static int32_t RoundFloatToInt32(float value)
 {
-    uint8_t bit;
-    uint8_t rx = 0U;
-    for (bit = 0U; bit < 8U; bit++)
-    {
-        LQ_GPIO_WritePin(imu_mosi_pin, (tx & 0x80U) ? 1 : 0);
-        LQ_GPIO_WritePin(IMU_SCK_PIN, 0);
-        tx <<= 1;
-        rx <<= 1;
-        LQ_GPIO_WritePin(IMU_SCK_PIN, 1);
-        if (LQ_GPIO_ReadPin(imu_miso_pin)) rx |= 1U;
-    }
-    return rx;
-}
-
-static void ImuWrite(uint8_t reg, uint8_t value)
-{
-    LQ_GPIO_WritePin(IMU_CS_PIN, 0);
-    ImuTransfer(reg & 0x7FU);
-    ImuTransfer(value);
-    LQ_GPIO_WritePin(IMU_CS_PIN, 1);
-}
-
-static void ImuRead(uint8_t reg, uint8_t *data, uint8_t length)
-{
-    uint8_t i;
-    LQ_GPIO_WritePin(IMU_CS_PIN, 0);
-    ImuTransfer(reg | 0x80U);
-    for (i = 0U; i < length; i++) data[i] = ImuTransfer(0xFFU);
-    LQ_GPIO_WritePin(IMU_CS_PIN, 1);
-}
-
-static void ImuConfigureDataPins(LQEnum_GPIO_Pin_t mosi, LQEnum_GPIO_Pin_t miso)
-{
-    LQConfig_GPIO_InitTypeDef_t gpio = {
-        .Mode = GPIO_MODE_OUTPUT_PP,
-        .Pull = GPIO_RESISTOR_NO_PULL,
-        .Speed = GPIO_SPEED_HIGH,
-    };
-
-    imu_mosi_pin = mosi;
-    imu_miso_pin = miso;
-    LQ_GPIO_Init(imu_mosi_pin, &gpio);
-    gpio.Mode = GPIO_MODE_INPUT;
-    gpio.Pull = GPIO_RESISTOR_PULL_DOWN;
-    LQ_GPIO_Init(imu_miso_pin, &gpio);
-}
-
-static uint8_t ImuProbePinMap(LQEnum_GPIO_Pin_t mosi, LQEnum_GPIO_Pin_t miso)
-{
-    uint8_t attempt;
-    uint8_t id = 0U;
-    ImuConfigureDataPins(mosi, miso);
-    for (attempt = 0U; attempt < 3U; attempt++)
-    {
-        ImuRead(IMU_WHO_AM_I_REG, &id, 1U);
-        if (id == IMU_EXPECTED_ID) break;
-        delay_ms(2);
-    }
-    return id;
-}
-
-static uint8_t ImuInit(void)
-{
-    uint8_t id;
-    LQConfig_GPIO_InitTypeDef_t gpio = {
-        .Mode = GPIO_MODE_OUTPUT_PP,
-        .Pull = GPIO_RESISTOR_NO_PULL,
-        .Speed = GPIO_SPEED_HIGH,
-    };
-
-    LQ_GPIO_Init(IMU_SCK_PIN, &gpio);
-    LQ_GPIO_Init(IMU_CS_PIN, &gpio);
-    LQ_GPIO_WritePin(IMU_CS_PIN, 1);
-    LQ_GPIO_WritePin(IMU_SCK_PIN, 1);
-    delay_ms(10);
-
-    id = ImuProbePinMap(GPIO_Pin_A_13, GPIO_Pin_A_14);
-    app.imu_mosi_number = 13U;
-    app.imu_miso_number = 14U;
-    if (id != IMU_EXPECTED_ID)
-    {
-        id = ImuProbePinMap(GPIO_Pin_A_14, GPIO_Pin_A_13);
-        app.imu_mosi_number = 14U;
-        app.imu_miso_number = 13U;
-    }
-    if (id != IMU_EXPECTED_ID) return id;
-
-    ImuWrite(0x12U, 0x44U); /* BDU, register auto increment. */
-    ImuWrite(0x10U, 0x20U); /* Accelerometer 52 Hz, 2 g. */
-    ImuWrite(0x18U, 0x38U); /* Enable accelerometer XYZ. */
-    ImuWrite(0x15U, 0x50U);
-    ImuWrite(0x16U, 0x80U);
-    ImuWrite(0x11U, 0x4CU); /* Gyroscope 104 Hz, 2000 dps, 70 mdps/LSB. */
-    ImuWrite(0x19U, 0x38U); /* Enable gyroscope XYZ. */
-    delay_ms(10);
-    return id;
-}
-
-static void ImuRead6Axis(void)
-{
-    uint8_t data[12];
-    ImuRead(0x22U, data, 12U);
-    app.gx = (int16_t)(((uint16_t)data[1] << 8) | data[0]);
-    app.gy = (int16_t)(((uint16_t)data[3] << 8) | data[2]);
-    app.gz = (int16_t)(((uint16_t)data[5] << 8) | data[4]);
-    app.ax = (int16_t)(((uint16_t)data[7] << 8) | data[6]);
-    app.ay = (int16_t)(((uint16_t)data[9] << 8) | data[8]);
-    app.az = (int16_t)(((uint16_t)data[11] << 8) | data[10]);
-}
-
-static void ImuCalibrateGyro(void)
-{
-    uint16_t sample;
-    int32_t sum_x = 0;
-    int32_t sum_y = 0;
-    int32_t sum_z = 0;
-    const uint16_t samples = 256U;
-
-    for (sample = 0U; sample < 32U; sample++)
-    {
-        ImuRead6Axis();
-        delay_ms(10);
-    }
-
-    for (sample = 0U; sample < samples; sample++)
-    {
-        ImuRead6Axis();
-        sum_x += app.gx;
-        sum_y += app.gy;
-        sum_z += app.gz;
-        delay_ms(10);
-    }
-    gyro_x_bias = (float)sum_x / (float)samples;
-    gyro_y_bias = (float)sum_y / (float)samples;
-    gyro_z_bias = (float)sum_z / (float)samples;
-    yaw_angle_deg = 0.0f;
-    yaw_rate_filtered_dps = 0.0f;
-    imu_still_samples = 0U;
-    app.yaw10 = 0;
-}
-
-static uint16_t UartTxFree(void)
-{
-    if (uart_tx_head >= uart_tx_tail)
-    {
-        return (uint16_t)(UART_TX_BUFFER_SIZE - (uart_tx_head - uart_tx_tail) - 1U);
-    }
-    return (uint16_t)(uart_tx_tail - uart_tx_head - 1U);
-}
-
-static void UartQueueText(const char *text)
-{
-    size_t length = strlen(text);
-    if (length > UartTxFree()) return;
-
-    while (length-- > 0U)
-    {
-        uart_tx_buffer[uart_tx_head] = (uint8_t)*text++;
-        uart_tx_head = (uint16_t)((uart_tx_head + 1U) % UART_TX_BUFFER_SIZE);
-    }
-}
-
-static void UartTxService(void)
-{
-    while (uart_tx_tail != uart_tx_head && !DL_UART_isTXFIFOFull(UART0))
-    {
-        DL_UART_transmitData(UART0, uart_tx_buffer[uart_tx_tail]);
-        uart_tx_tail = (uint16_t)((uart_tx_tail + 1U) % UART_TX_BUFFER_SIZE);
-    }
+    return (int32_t)(value >= 0.0f ? value + 0.5f : value - 0.5f);
 }
 
 static void SendText(const char *text)
 {
-    UartQueueText(text);
+    (void)WheeltecLink_SendText(text);
 }
 
-static void MotorPwmTimerInit(LQEnum_Timer_t timer,
-                              LQEnum_PWM_Pin_t input1,
-                              LQEnum_PWM_Pin_t input2)
+/* 清零所有目标与最近一次控制输出，防止停止后遥测继续显示旧目标。 */
+static void ClearControlTargets(void)
 {
-    PWM_ConfigTypeDef cfg = LQ_PWM_CalcOptimal(timer, MOTOR_PWM_FREQUENCY_HZ);
-    LQConfig_PWM_InitTypeDef_t pwm = {
-        .DivideRatio = (DL_TIMER_CLOCK_DIVIDE)(cfg.DivideRatio - 1U),
-        .Prescaler = cfg.Prescaler,
-        .Period = cfg.Period,
-        .PwmMode = DL_TIMER_PWM_MODE_EDGE_ALIGN_UP,
-        .startTimer = false,
+    app.target_forward_mm_s = 0;
+    app.target_yaw_rate10 = 0;
+    app.fallback_wheel_correction_mm_s = 0;
+    app.target_left_mm_s = 0;
+    app.target_right_mm_s = 0;
+    app.error_left_mm_s = 0;
+    app.error_right_mm_s = 0;
+    memset(&vehicle_output, 0, sizeof(vehicle_output));
+}
+
+/* 所有主动停车路径最终都汇合到这里，保证控制器历史和 H 桥同步清零。 */
+static void StopControl(void)
+{
+    app.motor_mode = MOTOR_MODE_IDLE;
+    ClearControlTargets();
+    VehicleCascade_Reset(&vehicle_control);
+    VehicleMotor_Stop();
+}
+
+static void ConfigureSpeedPid(VehiclePidId pid_id,
+                              int32_t kp,
+                              int32_t ki,
+                              int32_t kd)
+{
+    VehiclePidConfig config = {
+        .kp = (float)kp * SPEED_PID_GAIN_SCALE,
+        .ki = (float)ki * SPEED_PID_GAIN_SCALE,
+        .kd = (float)kd * SPEED_PID_GAIN_SCALE,
+        .integral_limit = 0.0f,
+        .feedback_limit = SPEED_PID_FEEDBACK_LIMIT,
+        .output_limit = SPEED_PID_OUTPUT_LIMIT,
     };
 
-    LQ_TIMER_PWMInit(timer, &pwm);
-    LQ_TIMER_EnablePWMChannel(input1);
-    LQ_TIMER_EnablePWMChannel(input2);
-    LQ_TIMER_PWMSetCaptureCompare(input1, 0U);
-    LQ_TIMER_PWMSetCaptureCompare(input2, 0U);
-    LQ_TIMER_PWM_Start(timer);
-}
-
-static void MotorSetOne(LQEnum_Timer_t timer, LQEnum_PWM_Pin_t in1_pwm,
-                        LQEnum_PWM_Pin_t in2_pwm, int32_t percent)
-{
-    uint32_t load = LQ_TIMER_Regs[timer]->COUNTERREGS.LOAD;
-    uint32_t compare;
-
-    percent = ClampInt32(percent, -100, 100);
-    compare = load * (uint32_t)abs(percent) / 100U;
-
-    /* Clear both bridge inputs before changing direction. */
-    LQ_TIMER_PWMSetCaptureCompare(in1_pwm, 0U);
-    LQ_TIMER_PWMSetCaptureCompare(in2_pwm, 0U);
-    if (percent == 0)
+    VehicleCascade_ConfigurePid(&vehicle_control, pid_id, &config);
+    if (pid_id == VEHICLE_PID_SPEED_LEFT)
     {
-        return;
-    }
-
-    delay_us(2);
-    if (percent > 0)
-    {
-        LQ_TIMER_PWMSetCaptureCompare(in1_pwm, compare);
+        app.pid_left_kp = kp;
+        app.pid_left_ki = ki;
+        app.pid_left_kd = kd;
     }
     else
     {
-        LQ_TIMER_PWMSetCaptureCompare(in2_pwm, compare);
+        app.pid_right_kp = kp;
+        app.pid_right_ki = ki;
+        app.pid_right_kd = kd;
     }
 }
 
-static void MotorSet(int32_t left_percent, int32_t right_percent)
+static void ConfigureYawPid(int32_t kp_micro,
+                            int32_t ki_micro,
+                            int32_t kd_micro,
+                            int32_t kff_micro)
 {
-    app.motor_left = (int8_t)ClampInt32(left_percent, -100, 100);
-    app.motor_right = (int8_t)ClampInt32(right_percent, -100, 100);
-    MotorSetOne(MOTOR1_PWM_TIMER, MOTOR1_IN1_PWM, MOTOR1_IN2_PWM, app.motor_left);
-    MotorSetOne(MOTOR2_PWM_TIMER, MOTOR2_IN1_PWM, MOTOR2_IN2_PWM, app.motor_right);
+    VehiclePidConfig config = {
+        .kp = (float)kp_micro * YAW_PID_MICRO_TO_MM_S,
+        .ki = (float)ki_micro * YAW_PID_MICRO_TO_MM_S,
+        .kd = (float)kd_micro * YAW_PID_MICRO_TO_MM_S,
+        .integral_limit = YAW_INTEGRAL_LIMIT_DPS_S,
+        .feedback_limit = (float)MAX_TEST_SPEED_MM_S,
+        .output_limit = (float)MAX_TEST_SPEED_MM_S,
+    };
+
+    VehicleCascade_ConfigurePid(&vehicle_control, VEHICLE_PID_YAW_RATE, &config);
+    vehicle_control.yaw_rate_feedforward_mm_s_per_dps =
+        (float)kff_micro * YAW_PID_MICRO_TO_MM_S;
+    app.yaw_pid_kp_micro = kp_micro;
+    app.yaw_pid_ki_micro = ki_micro;
+    app.yaw_pid_kd_micro = kd_micro;
+    app.yaw_pid_kff_micro = kff_micro;
 }
 
-static void MotorStop(void)
+/* 将网页千分制参数换算为方向模块使用的浮点系数。 */
+static void ConfigureLinePid(int32_t kp_milli,
+                             int32_t ki_milli,
+                             int32_t kd_milli)
 {
-    MotorSet(0, 0);
+    VehicleLineConfig config = {
+        .kp = (float)kp_milli / 1000.0f,
+        .ki = (float)ki_milli / 1000.0f,
+        .kd = (float)kd_milli / 1000.0f,
+        .integral_limit = LINE_INTEGRAL_LIMIT_PERCENT_S,
+        .output_limit = LINE_DIRECTION_OUTPUT_LIMIT,
+        .target_yaw_limit_dps = LINE_TARGET_YAW_LIMIT_DPS,
+        .blind_turn_yaw_rate_dps = LINE_BLIND_YAW_RATE_DPS,
+        .filter_new_weight = LINE_FILTER_NEW_WEIGHT,
+        .turn_memory_error_percent = LINE_TURN_MEMORY_ERROR_PERCENT,
+        .visible_sum_min = LINE_VISIBLE_SUM_MIN,
+        .gap_hold_ms = LINE_GAP_HOLD_MS,
+        .blind_turn_ms = LINE_BLIND_TURN_MS,
+        .turn_memory_ms = LINE_TURN_MEMORY_MS,
+        .edge_black_min = LINE_EDGE_BLACK_MIN,
+        .reacquire_max_active = LINE_REACQUIRE_MAX_ACTIVE,
+        .reacquire_confirm_samples = LINE_REACQUIRE_CONFIRM_SAMPLES,
+    };
+
+    app.line_pid_kp_milli = kp_milli;
+    app.line_pid_ki_milli = ki_milli;
+    app.line_pid_kd_milli = kd_milli;
+    VehicleLine_Configure(&config);
 }
 
-static void ReadGrayRaw(void)
+static void UpdateEnabledControlLoops(void)
 {
-    uint8_t channel;
-    uint8_t sample;
-    uint32_t sum;
+    const VehicleImuState *imu = VehicleImu_GetState();
+    uint8_t loops = VEHICLE_LOOP_SPEED;
 
-    for (channel = 0U; channel < 8U; channel++)
+    if (app.yaw_control_enabled && imu->ok) loops |= VEHICLE_LOOP_YAW_RATE;
+
+    /*
+     * 按当前调试计划，方向角环 VEHICLE_LOOP_HEADING 必须保持关闭。
+     * 控制器已经具备该级算法，但此处故意不把它加入 enabled_mask。
+     */
+    VehicleCascade_SetEnabledLoops(&vehicle_control, loops);
+}
+
+static void CascadeControlInit(void)
+{
+#if SPEED_FEEDFORWARD_ENABLED
+    VehicleMotorFeedforward left_feedforward = {
+        .forward_min_percent = LEFT_FORWARD_DEADZONE,
+        .reverse_min_percent = LEFT_REVERSE_DEADZONE,
+        .forward_percent_per_mm_s =
+            (SPEED_PID_OUTPUT_LIMIT - LEFT_FORWARD_DEADZONE) /
+            (float)MAX_TEST_SPEED_MM_S,
+        .reverse_percent_per_mm_s =
+            (SPEED_PID_OUTPUT_LIMIT - LEFT_REVERSE_DEADZONE) /
+            (float)MAX_TEST_SPEED_MM_S,
+    };
+    VehicleMotorFeedforward right_feedforward = {
+        .forward_min_percent = RIGHT_FORWARD_DEADZONE,
+        .reverse_min_percent = RIGHT_REVERSE_DEADZONE,
+        .forward_percent_per_mm_s =
+            (SPEED_PID_OUTPUT_LIMIT - RIGHT_FORWARD_DEADZONE) /
+            (float)MAX_TEST_SPEED_MM_S,
+        .reverse_percent_per_mm_s =
+            (SPEED_PID_OUTPUT_LIMIT - RIGHT_REVERSE_DEADZONE) /
+            (float)MAX_TEST_SPEED_MM_S,
+    };
+#else
+    VehicleMotorFeedforward left_feedforward = {0};
+    VehicleMotorFeedforward right_feedforward = {0};
+#endif
+
+    VehicleCascade_Init(&vehicle_control);
+    vehicle_control.max_speed_mm_s = (float)MAX_TEST_SPEED_MM_S;
+    vehicle_control.max_wheel_correction_mm_s = (float)MAX_TEST_SPEED_MM_S;
+    app.max_yaw_rate_dps = DEFAULT_MAX_YAW_RATE_DPS;
+    vehicle_control.max_yaw_rate_dps = (float)app.max_yaw_rate_dps;
+    VehicleCascade_SetMotorFeedforward(&vehicle_control,
+                                       &left_feedforward,
+                                       &right_feedforward);
+    ConfigureSpeedPid(VEHICLE_PID_SPEED_LEFT,
+                      SPEED_PID_DEFAULT_KP,
+                      SPEED_PID_DEFAULT_KI,
+                      SPEED_PID_DEFAULT_KD);
+    ConfigureSpeedPid(VEHICLE_PID_SPEED_RIGHT,
+                      SPEED_PID_DEFAULT_KP,
+                      SPEED_PID_DEFAULT_KI,
+                      SPEED_PID_DEFAULT_KD);
+    ConfigureYawPid(YAW_PID_DEFAULT_KP_MICRO,
+                    YAW_PID_DEFAULT_KI_MICRO,
+                    YAW_PID_DEFAULT_KD_MICRO,
+                    YAW_PID_DEFAULT_KFF_MICRO);
+
+    /* 只初始化寻线配置，不设置 VEHICLE_LOOP_HEADING，也不参与当前控制输出。 */
+    ConfigureLinePid(LINE_PID_DEFAULT_KP_MILLI,
+                     LINE_PID_DEFAULT_KI_MILLI,
+                     LINE_PID_DEFAULT_KD_MILLI);
+    app.line_diff_milli = LINE_DIFF_DEFAULT_MILLI;
+    UpdateEnabledControlLoops();
+}
+
+static void BeginSpeedControl(int32_t forward_mm_s,
+                              int32_t target_yaw_rate10,
+                              int32_t fallback_correction_mm_s)
+{
+    if (forward_mm_s == 0 && target_yaw_rate10 == 0 &&
+        fallback_correction_mm_s == 0)
     {
-        LQ_GPIO_WritePin(Tracking_S0_PIN, (channel & 0x01U) ? 1 : 0);
-        LQ_GPIO_WritePin(Tracking_S1_PIN, (channel & 0x02U) ? 1 : 0);
-        LQ_GPIO_WritePin(Tracking_S2_PIN, (channel & 0x04U) ? 1 : 0);
-        delay_us(5);
-
-        (void)LQ_ADC_GetValue(Tracking_ADC_CH);
-        sum = 0U;
-        for (sample = 0U; sample < 4U; sample++)
-        {
-            sum += LQ_ADC_GetValue(Tracking_ADC_CH);
-        }
-        gray_raw[channel] = (uint16_t)(sum / 4U);
+        StopControl();
+        return;
     }
+    if (app.motor_mode != MOTOR_MODE_SPEED)
+    {
+        VehicleCascade_Reset(&vehicle_control);
+    }
+    app.motor_mode = MOTOR_MODE_SPEED;
+    app.target_forward_mm_s = ClampInt32(forward_mm_s,
+                                         -MAX_TEST_SPEED_MM_S,
+                                         MAX_TEST_SPEED_MM_S);
+    app.target_yaw_rate10 = ClampInt32(target_yaw_rate10,
+                                       -app.max_yaw_rate_dps * 10,
+                                       app.max_yaw_rate_dps * 10);
+    app.fallback_wheel_correction_mm_s = ClampInt32(fallback_correction_mm_s,
+                                                    -MAX_TEST_SPEED_MM_S,
+                                                    MAX_TEST_SPEED_MM_S);
 }
 
-static void CaptureGray(uint16_t target[8])
+/*
+ * 进入灰度寻线模式。首次启动必须已经完成黑白归一化、IMU 正常且角速度环
+ * 已启用；否则拒绝启动，不能退化成没有方向反馈的直行。
+ */
+static uint8_t BeginLineControl(int32_t forward_mm_s)
 {
-    uint8_t i;
-    ReadGrayRaw();
-    for (i = 0U; i < 8U; i++) target[i] = gray_raw[i];
+    const VehicleGrayState *gray = VehicleGray_GetState();
+    const VehicleImuState *imu = VehicleImu_GetState();
+    const VehicleLineState *line;
+
+    if (app.motor_mode != MOTOR_MODE_LINE)
+    {
+        StopControl();
+        VehicleLine_Reset();
+    }
+    if (!gray->normalization_valid || !imu->ok || !app.yaw_control_enabled)
+    {
+        return 0U;
+    }
+    forward_mm_s = ClampInt32(forward_mm_s,
+                              LINE_SPEED_MIN_MM_S,
+                              LINE_SPEED_MAX_MM_S);
+    if (app.motor_mode != MOTOR_MODE_LINE)
+    {
+        if (!VehicleLine_Update(gray, now_ms)) return 0U;
+    }
+
+    line = VehicleLine_GetState();
+    app.motor_mode = MOTOR_MODE_LINE;
+    app.target_forward_mm_s = forward_mm_s;
+    app.target_yaw_rate10 =
+        RoundFloatToInt32(line->target_yaw_rate_dps * 10.0f);
+    app.fallback_wheel_correction_mm_s = 0;
+    return 1U;
+}
+
+static void BeginRawControl(int32_t left_percent, int32_t right_percent)
+{
+    if (app.motor_mode != MOTOR_MODE_RAW)
+    {
+        VehicleCascade_Reset(&vehicle_control);
+        ClearControlTargets();
+    }
+    app.motor_mode = MOTOR_MODE_RAW;
+    VehicleMotor_Set(left_percent, right_percent);
 }
 
 static void SendGrayCalibration(void)
 {
+    const VehicleGrayState *gray = VehicleGray_GetState();
     char line[160];
+
     snprintf(line, sizeof(line),
              "CAL,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u\r\n",
-             gray_white[0], gray_white[1], gray_white[2], gray_white[3],
-             gray_white[4], gray_white[5], gray_white[6], gray_white[7],
-             gray_black[0], gray_black[1], gray_black[2], gray_black[3],
-             gray_black[4], gray_black[5], gray_black[6], gray_black[7]);
-    UartQueueText(line);
+             gray->white[0], gray->white[1], gray->white[2], gray->white[3],
+             gray->white[4], gray->white[5], gray->white[6], gray->white[7],
+             gray->black[0], gray->black[1], gray->black[2], gray->black[3],
+             gray->black[4], gray->black[5], gray->black[6], gray->black[7]);
+    SendText(line);
+
+    /*
+     * NRM 是 V17 新增的低频标定结果帧，只在查询/重新标定时发送，不增加
+     * 常规 9600 波特率链路负担。数值 0=白底、1000=黑线。
+     */
+    snprintf(line, sizeof(line),
+             "NRM,%lu,%u,%u,%u,%u,%u,%u,%u,%u,%u\r\n",
+             (unsigned long)now_ms,
+             (unsigned int)gray->normalization_valid,
+             gray->normalized[0], gray->normalized[1],
+             gray->normalized[2], gray->normalized[3],
+             gray->normalized[4], gray->normalized[5],
+             gray->normalized[6], gray->normalized[7]);
+    SendText(line);
 }
 
-static void ResetEncoder(void)
+/*
+ * 捕获白底或黑线参考。标定动作会先停电机，避免车体移动改变采样位置。
+ * 每次参考采集完成响 1 声；当两组参考均有效且八路对比度都足够时，
+ * 再独立响 3 声表示 0..1000 归一化已经可供后续循迹算法使用。
+ */
+static void CalibrateGrayReference(uint8_t capture_white)
 {
-    __disable_irq();
-    encoder_left_cfg.encoder_cnt = 0;
-    encoder_left_cfg.count = 0;
-    encoder_right_cfg.encoder_cnt = 0;
-    encoder_right_cfg.count = 0;
-    app.encoder_left = 0;
-    app.encoder_right = 0;
-    __enable_irq();
+    const VehicleGrayState *gray;
+    uint8_t normalized;
+
+    StopControl();
+    BoardBuzzer_Stop();
+    normalized = capture_white ? VehicleGray_CaptureWhite() :
+                                 VehicleGray_CaptureBlack();
+    gray = VehicleGray_GetState();
+    SendGrayCalibration();
+    (void)BoardBuzzer_Play(KEY_BEEP_ON_MS, KEY_BEEP_OFF_MS, 1U);
+
+    if (normalized)
+    {
+        (void)BoardBuzzer_Play(KEY_BEEP_ON_MS, KEY_BEEP_OFF_MS, 3U);
+    }
+    else if (gray->white_valid && gray->black_valid)
+    {
+        SendText("ERR,GRAY_NORMALIZATION_RANGE\r\n");
+    }
+}
+
+/*
+ * K3 与 IMUZERO 共用同一条重标定路径。标定期间车辆已停止；成功响 2 声，
+ * IMU 未通过设备检查时响 3 次长警告音，绝不把失败误报成成功。
+ */
+static uint8_t CalibrateGyroWithFeedback(void)
+{
+    StopControl();
+    BoardBuzzer_Stop();
+    if (VehicleImu_CalibrateGyro())
+    {
+        (void)BoardBuzzer_Play(KEY_BEEP_ON_MS, 100U, 2U);
+        return 1U;
+    }
+
+    (void)BoardBuzzer_Play(WARNING_BEEP_ON_MS,
+                           WARNING_BEEP_OFF_MS,
+                           3U);
+    return 0U;
+}
+
+/* KEY 帧中的六个掩码均以 bit0/bit1/bit2 对应 K1/K2/K3。 */
+static void SendKeyFrame(BoardKeyEvents events)
+{
+    char line[96];
+
+    snprintf(line, sizeof(line), "KEY,%lu,%u,%u,%u,%u,%u\r\n",
+             (unsigned long)now_ms,
+             (unsigned int)events.pressed_mask,
+             (unsigned int)events.released_mask,
+             (unsigned int)events.short_press_mask,
+             (unsigned int)events.long_press_mask,
+             (unsigned int)BoardIo_GetPressedMask());
+    SendText(line);
+}
+
+static void HandleBoardIo(void)
+{
+    BoardKeyEvents events;
+
+    BoardIo_Update(now_ms);
+    events = BoardIo_TakeKeyEvents();
+    if ((events.pressed_mask | events.released_mask |
+         events.short_press_mask | events.long_press_mask) == 0U)
+    {
+        return;
+    }
+
+    SendKeyFrame(events);
+    if (events.long_press_mask != 0U)
+    {
+        /* 任意按键长按都是本地急停，优先级高于提示音队列。 */
+        StopControl();
+        BoardBuzzer_Stop();
+        (void)BoardBuzzer_Play(WARNING_BEEP_ON_MS,
+                               WARNING_BEEP_OFF_MS,
+                               3U);
+        return;
+    }
+
+    /*
+     * BoardKeyId 与 board_io.c 的实测按键顺序严格一致：
+     * K1/PB15=白底，K2/PB14=黑线，K3/PB16=陀螺仪重标定。
+     * 使用 else-if 避免同时释放多个按键时连续执行互相冲突的标定动作。
+     */
+    if (events.short_press_mask & (uint8_t)(1U << BOARD_KEY_K1))
+    {
+        CalibrateGrayReference(1U);
+    }
+    else if (events.short_press_mask & (uint8_t)(1U << BOARD_KEY_K2))
+    {
+        CalibrateGrayReference(0U);
+    }
+    else if (events.short_press_mask & (uint8_t)(1U << BOARD_KEY_K3))
+    {
+        (void)CalibrateGyroWithFeedback();
+    }
 }
 
 static void ProcessCommand(char *line)
@@ -414,6 +565,19 @@ static void ProcessCommand(char *line)
     int steering;
     int left;
     int right;
+    int kp;
+    int ki;
+    int kd;
+    int kff;
+    int yaw_pid_fields;
+    int yaw_enable;
+    int max_yaw_rate;
+    int beep_ms;
+    int line_diff;
+    int line_enable;
+    int line_speed;
+    char response[96];
+    const VehicleImuState *imu = VehicleImu_GetState();
 
     last_rx_ms = now_ms;
     app.link_active = 1U;
@@ -422,48 +586,197 @@ static void ProcessCommand(char *line)
     {
         throttle = (int)ClampInt32(throttle, -100, 100);
         steering = (int)ClampInt32(steering, -100, 100);
-        MotorSet(throttle + steering, throttle - steering);
+        BeginSpeedControl(throttle * MAX_TEST_SPEED_MM_S / 100,
+                          -steering * app.max_yaw_rate_dps * 10 / 100,
+                          -steering * MAX_TEST_SPEED_MM_S / 100);
         last_motor_command_ms = now_ms;
     }
     else if (sscanf(line, "MOTOR,%d,%d", &left, &right) == 2)
     {
-        MotorSet(left, right);
+        BeginRawControl(left, right);
         last_motor_command_ms = now_ms;
+    }
+    else if (sscanf(line, "PIDL,%d,%d,%d", &kp, &ki, &kd) == 3)
+    {
+        SendText("ERR,SPEED_PID_LOCKED,4000,800,0\r\n");
+    }
+    else if (sscanf(line, "PIDR,%d,%d,%d", &kp, &ki, &kd) == 3)
+    {
+        SendText("ERR,SPEED_PID_LOCKED,4000,800,0\r\n");
+    }
+    else if (sscanf(line, "PID,%d,%d,%d", &kp, &ki, &kd) == 3)
+    {
+        SendText("ERR,SPEED_PID_LOCKED,4000,800,0\r\n");
+    }
+    else if (sscanf(line, "YAW,%d", &yaw_enable) == 1)
+    {
+        StopControl();
+        app.yaw_control_enabled = (yaw_enable != 0 && imu->ok) ? 1U : 0U;
+        UpdateEnabledControlLoops();
+        snprintf(response, sizeof(response), "ACK,YAW,%u\r\n",
+                 (unsigned int)app.yaw_control_enabled);
+        SendText(response);
+    }
+    else if (sscanf(line, "YAWRATE,%d", &max_yaw_rate) == 1)
+    {
+        if (max_yaw_rate >= 10 && max_yaw_rate <= 360)
+        {
+            StopControl();
+            app.max_yaw_rate_dps = max_yaw_rate;
+            vehicle_control.max_yaw_rate_dps = (float)max_yaw_rate;
+            snprintf(response, sizeof(response),
+                     "ACK,YAWRATE,%d\r\n", max_yaw_rate);
+            SendText(response);
+        }
+        else
+        {
+            SendText("ERR,YAWRATE_RANGE\r\n");
+        }
+    }
+    else if (strncmp(line, "YAWPID,", 7U) == 0)
+    {
+        kff = app.yaw_pid_kff_micro;
+        yaw_pid_fields = sscanf(line, "YAWPID,%d,%d,%d,%d",
+                                &kp, &ki, &kd, &kff);
+        if ((yaw_pid_fields == 3 || yaw_pid_fields == 4) &&
+            kp >= 0 && kp <= 100000 && ki >= 0 && ki <= 100000 &&
+            kd >= 0 && kd <= 100000 && kff >= 0 && kff <= 100000)
+        {
+            StopControl();
+            ConfigureYawPid(kp, ki, kd, kff);
+            snprintf(response, sizeof(response),
+                     "ACK,YAWPID,%d,%d,%d,%d\r\n", kp, ki, kd, kff);
+            SendText(response);
+        }
+        else
+        {
+            SendText("ERR,YAWPID_RANGE\r\n");
+        }
+    }
+    else if (sscanf(line, "LINEPID,%d,%d,%d", &kp, &ki, &kd) == 3)
+    {
+        if (kp >= 0 && kp <= LINE_PID_GAIN_MAX_MILLI &&
+            ki >= 0 && ki <= LINE_PID_GAIN_MAX_MILLI &&
+            kd >= 0 && kd <= LINE_PID_GAIN_MAX_MILLI)
+        {
+            StopControl();
+            ConfigureLinePid(kp, ki, kd);
+            snprintf(response, sizeof(response),
+                     "ACK,LINEPID,%d,%d,%d\r\n", kp, ki, kd);
+            SendText(response);
+        }
+        else
+        {
+            SendText("ERR,LINEPID_RANGE\r\n");
+        }
+    }
+    else if (sscanf(line, "LINEDIFF,%d", &line_diff) == 1)
+    {
+        if (line_diff >= 0 && line_diff <= LINE_DIFF_MAX_MILLI)
+        {
+            StopControl();
+            app.line_diff_milli = line_diff;
+            snprintf(response, sizeof(response),
+                     "ACK,LINEDIFF,%d\r\n", line_diff);
+            SendText(response);
+        }
+        else
+        {
+            SendText("ERR,LINEDIFF_RANGE\r\n");
+        }
+    }
+    else if (strcmp(line, "LINECFG") == 0)
+    {
+        snprintf(response, sizeof(response),
+                 "ACK,LINECFG,%ld,%ld,%ld,%ld\r\n",
+                 (long)app.line_pid_kp_milli,
+                 (long)app.line_pid_ki_milli,
+                 (long)app.line_pid_kd_milli,
+                 (long)app.line_diff_milli);
+        SendText(response);
+    }
+    else if (sscanf(line, "LINE,%d,%d", &line_enable, &line_speed) == 2)
+    {
+        if (line_enable == 0)
+        {
+            StopControl();
+            SendText("ACK,LINE,0\r\n");
+        }
+        else if (line_enable == 1 &&
+                 line_speed >= LINE_SPEED_MIN_MM_S &&
+                 line_speed <= LINE_SPEED_MAX_MM_S)
+        {
+            if (BeginLineControl(line_speed))
+            {
+                last_motor_command_ms = now_ms;
+            }
+            else
+            {
+                SendText("ERR,LINE_NOT_READY\r\n");
+            }
+        }
+        else
+        {
+            StopControl();
+            SendText("ERR,LINE_RANGE\r\n");
+        }
+    }
+    else if (sscanf(line, "BEEP,%d", &beep_ms) == 1)
+    {
+        if (beep_ms < 10 || beep_ms > 5000)
+        {
+            SendText("ERR,BEEP_RANGE,10,5000\r\n");
+        }
+        else if (BoardBuzzer_Play((uint16_t)beep_ms, 0U, 1U))
+        {
+            snprintf(response, sizeof(response), "ACK,BEEP,%d\r\n", beep_ms);
+            SendText(response);
+        }
+        else
+        {
+            SendText("ERR,BUZZER_BUSY\r\n");
+        }
+    }
+    else if (strcmp(line, "KEYS") == 0)
+    {
+        BoardKeyEvents no_events = {0};
+        SendKeyFrame(no_events);
     }
     else if (strcmp(line, "STOP") == 0)
     {
-        MotorStop();
+        StopControl();
         app.link_active = 0U;
         SendText("ACK,STOP\r\n");
     }
     else if (strcmp(line, "PING") == 0)
     {
-        /* Heartbeat only. Avoid periodic replies on the low-bandwidth BLE link. */
+        /* 心跳只维护链路显示，不刷新 500 ms 电机命令看门狗。 */
     }
     else if (strcmp(line, "ZERO") == 0 || strcmp(line, "ENCZERO") == 0)
     {
-        ResetEncoder();
-        yaw_angle_deg = 0.0f;
-        app.yaw10 = 0;
+        StopControl();
+        VehicleEncoder_Reset();
+        VehicleImu_ResetYaw();
         SendText("ACK,ZERO\r\n");
     }
     else if (strcmp(line, "IMUZERO") == 0)
     {
-        MotorStop();
-        if (app.imu_ok) ImuCalibrateGyro();
-        SendText("ACK,IMUZERO\r\n");
+        if (CalibrateGyroWithFeedback())
+        {
+            SendText("ACK,IMUZERO\r\n");
+        }
+        else
+        {
+            SendText("ERR,IMU_NOT_READY\r\n");
+        }
     }
     else if (strcmp(line, "GRAYWHITE") == 0)
     {
-        CaptureGray(gray_white);
-        app.gray_white_valid = 1U;
-        SendGrayCalibration();
+        CalibrateGrayReference(1U);
     }
     else if (strcmp(line, "GRAYBLACK") == 0)
     {
-        CaptureGray(gray_black);
-        app.gray_black_valid = 1U;
-        SendGrayCalibration();
+        CalibrateGrayReference(0U);
     }
     else if (strcmp(line, "GRAYCAL") == 0 || strcmp(line, "GRAY") == 0)
     {
@@ -471,7 +784,7 @@ static void ProcessCommand(char *line)
     }
     else if (strcmp(line, "HELP") == 0)
     {
-        SendText("ACK,DRV MOTOR STOP ZERO ENCZERO IMUZERO GRAY GRAYWHITE GRAYBLACK PING\r\n");
+        SendText("ACK,DRV MOTOR LINE YAW YAWRATE YAWPID LINEPID LINEDIFF LINECFG PID_LOCKED STOP ZERO ENCZERO IMUZERO GRAY GRAYWHITE GRAYBLACK BEEP KEYS PING\r\n");
     }
     else
     {
@@ -479,211 +792,260 @@ static void ProcessCommand(char *line)
     }
 }
 
-static void ProcessUart(void)
+/* 盲转只临时放宽到单侧轮停转，不允许内轮反转；正常跟踪仍使用网页参数。 */
+static int32_t GetEffectiveLineDiffMilli(void)
 {
-    while (!DL_UART_isRXFIFOEmpty(UART0))
-    {
-        char byte = (char)DL_UART_receiveData(UART0);
-        if (byte == '\r' || byte == '\n')
-        {
-            if (uart_line_length > 0U)
-            {
-                uart_line[uart_line_length] = '\0';
-                ProcessCommand(uart_line);
-                uart_line_length = 0U;
-            }
-        }
-        else if (uart_line_length < UART_LINE_SIZE - 1U)
-        {
-            uart_line[uart_line_length++] = byte;
-        }
-        else
-        {
-            uart_line_length = 0U;
-        }
-    }
+    const VehicleLineState *line = VehicleLine_GetState();
+
+    return (line->mode == VEHICLE_LINE_BLIND_TURN) ?
+           LINE_BLIND_DIFF_MILLI : app.line_diff_milli;
 }
 
-static void UpdateEncoder(void)
+static void SendLineTelemetry(void)
 {
-    int32_t left_delta;
-    int32_t right_delta;
-    __disable_irq();
-    left_delta = encoder_left_cfg.encoder_cnt + encoder_left_cfg.count;
-    right_delta = encoder_right_cfg.encoder_cnt + encoder_right_cfg.count;
-    encoder_left_cfg.encoder_cnt = 0;
-    encoder_right_cfg.encoder_cnt = 0;
-    encoder_left_cfg.count = 0;
-    encoder_right_cfg.count = 0;
-    __enable_irq();
-    app.encoder_left += left_delta;
-    app.encoder_right += right_delta;
-    app.speed_left_mm_s = left_delta * 100000 / LEFT_COUNTS_PER_METER;
-    app.speed_right_mm_s = right_delta * 100000 / RIGHT_COUNTS_PER_METER;
+    const VehicleLineState *line = VehicleLine_GetState();
+    const VehicleGrayState *gray = VehicleGray_GetState();
+    const VehicleImuState *imu = VehicleImu_GetState();
+    uint32_t recovery_ms = 0U;
+    char frame[192];
+
+    if (line->mode == VEHICLE_LINE_GAP_HOLD ||
+        line->mode == VEHICLE_LINE_BLIND_TURN)
+    {
+        recovery_ms = now_ms - line->recovery_started_ms;
+    }
+    snprintf(frame, sizeof(frame),
+             "LIN,%lu,%u,%u,%u,%u,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%lu,%u,%lu,%u\r\n",
+             (unsigned long)now_ms,
+             (unsigned int)(app.motor_mode == MOTOR_MODE_LINE),
+             (unsigned int)gray->normalization_valid,
+             (unsigned int)line->visible,
+             (unsigned int)line->lost,
+             (long)RoundFloatToInt32(line->raw_error_percent * 10.0f),
+             (long)RoundFloatToInt32(line->filtered_error_percent * 10.0f),
+             (long)RoundFloatToInt32(line->pid_output),
+             (long)RoundFloatToInt32(line->target_yaw_rate_dps * 10.0f),
+             (long)RoundFloatToInt32(imu->yaw_rate_dps * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.wheel_correction_mm_s),
+             (long)app.target_left_mm_s,
+             (long)app.target_right_mm_s,
+             (long)app.target_forward_mm_s,
+             (long)GetEffectiveLineDiffMilli(),
+             (unsigned long)line->normalized_sum,
+             (unsigned int)line->mode,
+             (unsigned long)recovery_ms,
+             (unsigned int)line->active_count);
+    SendText(frame);
 }
 
-static void UpdateImu(void)
+/* 每次灰度更新后运行一次方向外环，并把输出写成角速度环目标。 */
+static uint8_t UpdateLineDirection(void)
 {
-    float ax;
-    float ay;
-    float az;
-    float pitch;
-    float roll;
-    float yaw_rate_dps;
-    float gx_rate_dps;
-    float gy_rate_dps;
-    float accel_norm;
-    float dt;
-    uint32_t elapsed_ms;
+    const VehicleLineState *line;
 
-    if (!app.imu_ok) return;
-    ImuRead6Axis();
-
-    gx_rate_dps = ((float)app.gx - gyro_x_bias) * 0.070f;
-    gy_rate_dps = ((float)app.gy - gyro_y_bias) * 0.070f;
-    yaw_rate_dps = ((float)app.gz - gyro_z_bias) * 0.070f;
-    ax = (float)app.ax;
-    ay = (float)app.ay;
-    az = (float)app.az;
-    accel_norm = sqrtf(ax * ax + ay * ay + az * az);
-
-    if (app.motor_left == 0 && app.motor_right == 0 &&
-        app.speed_left_mm_s == 0 && app.speed_right_mm_s == 0 &&
-        accel_norm > 14000.0f && accel_norm < 19000.0f &&
-        fabsf(gx_rate_dps) < 6.0f && fabsf(gy_rate_dps) < 6.0f &&
-        fabsf(yaw_rate_dps) < 6.0f)
+    if (app.motor_mode != MOTOR_MODE_LINE) return 1U;
+    if (!VehicleLine_Update(VehicleGray_GetState(), now_ms))
     {
-        if (imu_still_samples < 1000U) imu_still_samples++;
-        if (imu_still_samples >= 30U)
-        {
-            gyro_x_bias = 0.98f * gyro_x_bias + 0.02f * (float)app.gx;
-            gyro_y_bias = 0.98f * gyro_y_bias + 0.02f * (float)app.gy;
-            gyro_z_bias = 0.98f * gyro_z_bias + 0.02f * (float)app.gz;
-            yaw_rate_dps = ((float)app.gz - gyro_z_bias) * 0.070f;
-        }
+        SendLineTelemetry();
+        StopControl();
+        SendText("ERR,LINE_LOST\r\n");
+        return 0U;
     }
-    else
-    {
-        imu_still_samples = 0U;
-    }
-    if (fabsf(yaw_rate_dps) < 0.20f) yaw_rate_dps = 0.0f;
-    yaw_rate_filtered_dps = 0.80f * yaw_rate_filtered_dps + 0.20f * yaw_rate_dps;
 
-    elapsed_ms = (last_imu_ms == 0U) ? APP_LOOP_MS : (now_ms - last_imu_ms);
-    last_imu_ms = now_ms;
-    if (elapsed_ms == 0U) elapsed_ms = APP_LOOP_MS;
-    if (elapsed_ms > 100U) elapsed_ms = 100U;
-    dt = (float)elapsed_ms / 1000.0f;
-
-    pitch = atan2f(-ax, sqrtf(ay * ay + az * az)) * 57.29578f;
-    roll = atan2f(ay, az) * 57.29578f;
-    app.pitch10 = (int16_t)(pitch * 10.0f);
-    app.roll10 = (int16_t)(roll * 10.0f);
-    yaw_angle_deg += yaw_rate_filtered_dps * dt;
-    if (yaw_angle_deg > 180.0f) yaw_angle_deg -= 360.0f;
-    if (yaw_angle_deg < -180.0f) yaw_angle_deg += 360.0f;
-    app.yaw10 = (int16_t)(yaw_angle_deg * 10.0f);
+    line = VehicleLine_GetState();
+    app.target_yaw_rate10 =
+        RoundFloatToInt32(line->target_yaw_rate_dps * 10.0f);
+    return 1U;
 }
 
-static uint8_t CountActiveGray(void)
+static void UpdateSpeedControl(float dt_s)
 {
-    uint8_t i;
-    uint8_t count = 0U;
-    for (i = 0U; i < 8U; i++) if (gray_raw[i] >= 2048U) count++;
-    return count;
+    const VehicleEncoderState *encoder = VehicleEncoder_GetState();
+    const VehicleImuState *imu = VehicleImu_GetState();
+    VehicleCascadeInput input;
+
+    if (app.motor_mode != MOTOR_MODE_SPEED &&
+        app.motor_mode != MOTOR_MODE_LINE) return;
+
+    memset(&input, 0, sizeof(input));
+    input.requested_forward_speed_mm_s = (float)app.target_forward_mm_s;
+    input.requested_yaw_rate_dps = (float)app.target_yaw_rate10 / 10.0f;
+    input.direct_wheel_correction_mm_s =
+        (float)app.fallback_wheel_correction_mm_s;
+    input.measured_left_speed_mm_s = encoder->filtered_left_mm_s_float;
+    input.measured_right_speed_mm_s = encoder->filtered_right_mm_s_float;
+    input.measured_heading_deg = imu->yaw_deg;
+    input.measured_yaw_rate_dps = imu->yaw_rate_dps;
+    if (app.motor_mode == MOTOR_MODE_LINE)
+    {
+        input.max_wheel_correction_mm_s =
+            fabsf((float)app.target_forward_mm_s) *
+            (float)GetEffectiveLineDiffMilli() / 1000.0f;
+        input.wheel_correction_limit_valid = 1U;
+    }
+    VehicleCascade_Step(&vehicle_control, &input, dt_s, &vehicle_output);
+
+    app.target_left_mm_s =
+        RoundFloatToInt32(vehicle_output.target_left_speed_mm_s);
+    app.target_right_mm_s =
+        RoundFloatToInt32(vehicle_output.target_right_speed_mm_s);
+    app.error_left_mm_s = app.target_left_mm_s - encoder->filtered_left_mm_s;
+    app.error_right_mm_s = app.target_right_mm_s - encoder->filtered_right_mm_s;
+    if (vehicle_output.motor_output_valid)
+    {
+        VehicleMotor_Set(RoundFloatToInt32(vehicle_output.left_motor_percent),
+                         RoundFloatToInt32(vehicle_output.right_motor_percent));
+    }
 }
 
 static void SendTelemetry(void)
 {
+    const VehicleMotorState *motor = VehicleMotor_GetState();
+    const VehicleEncoderState *encoder = VehicleEncoder_GetState();
+    const VehicleImuState *imu = VehicleImu_GetState();
+    const VehicleGrayState *gray = VehicleGray_GetState();
     char line[320];
-    int32_t target_left = app.motor_left * MAX_TEST_SPEED_MM_S / 100;
-    int32_t target_right = app.motor_right * MAX_TEST_SPEED_MM_S / 100;
-    int32_t yaw_rate10 = (int32_t)(yaw_rate_filtered_dps * 10.0f);
-    uint8_t active = CountActiveGray();
+    int32_t target_left = app.target_left_mm_s;
+    int32_t target_right = app.target_right_mm_s;
+    int32_t yaw_rate10 = RoundFloatToInt32(imu->yaw_rate_dps * 10.0f);
+    uint8_t active = VehicleGray_CountActive(2048U);
 
+    if (app.motor_mode != MOTOR_MODE_SPEED &&
+        app.motor_mode != MOTOR_MODE_LINE)
+    {
+        target_left = motor->left_percent * MAX_TEST_SPEED_MM_S / 100;
+        target_right = motor->right_percent * MAX_TEST_SPEED_MM_S / 100;
+    }
+
+    /* TEL 字段顺序必须保持兼容，网页依赖固定下标读取目标与实际速度。 */
     snprintf(line, sizeof(line),
-             "TEL,%lu,%u,%u,%d,%ld,%ld,%ld,%ld,%d,%d,0,%ld,0,0,0,%u,0,0,0,0,0,0,0\r\n",
+             "TEL,%lu,%u,%u,%d,%ld,%ld,%ld,%ld,%d,%d,%ld,%ld,%ld,%ld,%u,%u,%ld,0,0,0,0,0,0\r\n",
              (unsigned long)now_ms,
-             (unsigned int)((app.motor_left != 0 || app.motor_right != 0) ? 1U : 0U),
-             (unsigned int)app.link_active, app.yaw10,
-             (long)app.speed_left_mm_s, (long)app.speed_right_mm_s,
-             (long)target_left, (long)target_right,
-             app.motor_left * 168, app.motor_right * 168,
-             (long)yaw_rate10, (unsigned int)app.imu_ok);
-    UartQueueText(line);
+             (unsigned int)((motor->left_percent != 0 ||
+                             motor->right_percent != 0) ? 1U : 0U),
+             (unsigned int)app.link_active,
+             imu->yaw10,
+             (long)encoder->filtered_left_mm_s,
+             (long)encoder->filtered_right_mm_s,
+             (long)target_left,
+             (long)target_right,
+             motor->left_percent * 168,
+             motor->right_percent * 168,
+             (long)RoundFloatToInt32(vehicle_output.target_yaw_rate_dps * 10.0f),
+             (long)yaw_rate10,
+             (long)RoundFloatToInt32(vehicle_output.yaw_error_dps * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.wheel_correction_mm_s),
+             (unsigned int)app.yaw_control_enabled,
+             (unsigned int)imu->ok,
+             (long)RoundFloatToInt32(vehicle_output.yaw_feedforward_mm_s));
+    SendText(line);
+
+    /* STA 同样保留 V15 的占位字段，避免旧网页状态页整体错位。 */
+    snprintf(line, sizeof(line),
+             "STA,%lu,%d,%d,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,0,0,0,0,0,0,0,0,30,%u,90,"
+             "%u,%u,%u,%u,%u,%u,%u,%u,60,%u,%u,%u,900,500,"
+             "%u,%u,%u,%u,%u,%u,%u,%u,%u,%ld,%ld,%ld,%ld,%ld,"
+             "%ld,%ld,%ld,%ld\r\n",
+             (unsigned long)now_ms,
+             imu->pitch10,
+             imu->roll10,
+             (long)encoder->total_left,
+             (long)encoder->total_right,
+             (long)app.pid_left_kp,
+             (long)app.pid_left_ki,
+             (long)app.pid_left_kd,
+             (long)app.pid_right_kp,
+             (long)app.pid_right_ki,
+             (long)app.pid_right_kd,
+             (unsigned int)active,
+             gray->raw[0], gray->raw[1], gray->raw[2], gray->raw[3],
+             gray->raw[4], gray->raw[5], gray->raw[6], gray->raw[7],
+             (unsigned int)active,
+             (unsigned int)gray->white_valid,
+             (unsigned int)gray->black_valid,
+             gray->raw[0], gray->raw[1], gray->raw[2], gray->raw[3],
+             gray->raw[4], gray->raw[5], gray->raw[6], gray->raw[7],
+             (unsigned int)app.yaw_control_enabled,
+             (long)app.max_yaw_rate_dps,
+             (long)app.yaw_pid_kp_micro,
+             (long)app.yaw_pid_ki_micro,
+             (long)app.yaw_pid_kd_micro,
+             (long)app.yaw_pid_kff_micro,
+             (long)app.line_pid_kp_milli,
+             (long)app.line_pid_ki_milli,
+             (long)app.line_pid_kd_milli,
+             (long)app.line_diff_milli);
+    SendText(line);
+}
+
+static void SendSpeedTelemetry(void)
+{
+    const VehicleMotorState *motor = VehicleMotor_GetState();
+    const VehicleEncoderState *encoder = VehicleEncoder_GetState();
+    const VehicleImuState *imu = VehicleImu_GetState();
+    char line[320];
 
     snprintf(line, sizeof(line),
-             "STA,%lu,%d,%d,%ld,%ld,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,%u,90,"
-             "%u,%u,%u,%u,%u,%u,%u,%u,60,%u,%u,%u,900,500,"
-             "%u,%u,%u,%u,%u,%u,%u,%u\r\n",
-             (unsigned long)now_ms, app.pitch10, app.roll10,
-             (long)app.encoder_left, (long)app.encoder_right,
-             (unsigned int)active,
-             gray_raw[0], gray_raw[1], gray_raw[2], gray_raw[3],
-             gray_raw[4], gray_raw[5], gray_raw[6], gray_raw[7],
-             (unsigned int)active,
-             (unsigned int)app.gray_white_valid,
-             (unsigned int)app.gray_black_valid,
-             gray_raw[0], gray_raw[1], gray_raw[2], gray_raw[3],
-             gray_raw[4], gray_raw[5], gray_raw[6], gray_raw[7]);
-    UartQueueText(line);
+             "SPD,%lu,1,%ld,%ld,%ld,%ld,%ld,%d,%ld,%ld,%ld,%ld,%ld,%d,"
+             "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,"
+             "%u,%ld,%ld,%ld,%ld,%ld\r\n",
+             (unsigned long)now_ms,
+             (long)app.target_left_mm_s,
+             (long)encoder->filtered_left_mm_s,
+             (long)app.error_left_mm_s,
+             (long)RoundFloatToInt32(vehicle_output.left_feedforward_percent * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.left_pid_percent * 10.0f),
+             motor->left_percent,
+             (long)app.target_right_mm_s,
+             (long)encoder->filtered_right_mm_s,
+             (long)app.error_right_mm_s,
+             (long)RoundFloatToInt32(vehicle_output.right_feedforward_percent * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.right_pid_percent * 10.0f),
+             motor->right_percent,
+             (long)app.pid_left_kp,
+             (long)app.pid_left_ki,
+             (long)app.pid_left_kd,
+             (long)app.pid_right_kp,
+             (long)app.pid_right_ki,
+             (long)app.pid_right_kd,
+             (long)RoundFloatToInt32(vehicle_output.target_yaw_rate_dps * 10.0f),
+             (long)RoundFloatToInt32(imu->yaw_rate_dps * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.yaw_error_dps * 10.0f),
+             (long)RoundFloatToInt32(vehicle_output.yaw_feedforward_mm_s),
+             (long)RoundFloatToInt32(vehicle_output.yaw_pid_mm_s),
+             (long)RoundFloatToInt32(vehicle_output.wheel_correction_mm_s),
+             (unsigned int)app.yaw_control_enabled,
+             (long)app.max_yaw_rate_dps,
+             (long)app.yaw_pid_kp_micro,
+             (long)app.yaw_pid_ki_micro,
+             (long)app.yaw_pid_kd_micro,
+             (long)app.yaw_pid_kff_micro);
+    SendText(line);
 }
 
 static void SendDebug(void)
 {
+    const VehicleImuState *imu = VehicleImu_GetState();
     char line[96];
+
     snprintf(line, sizeof(line), "DBG,%u,%d,%d,%d,%d,%d,%d,%u,%u\r\n",
-             app.imu_id, app.ax, app.ay, app.az, app.gx, app.gy, app.gz,
-             app.imu_mosi_number, app.imu_miso_number);
-    UartQueueText(line);
-}
-
-static void OledShowLine(uint8_t row, const char *text)
-{
-    uint8_t i = 0U;
-    unsigned char padded[22];
-    memset(padded, ' ', 21U);
-    while (i < 21U && text[i] != '\0')
-    {
-        padded[i] = (unsigned char)text[i];
-        i++;
-    }
-    padded[21] = '\0';
-    LQ_OLED_ShowString(row, 0, padded, 8);
-}
-
-static void UpdateOled(void)
-{
-    char line[32];
-    snprintf(line, sizeof(line), "WT 9600 %s", app.link_active ? "LINK" : "IDLE");
-    OledShowLine(0, line);
-    snprintf(line, sizeof(line), "M L%d R%d", app.motor_left, app.motor_right);
-    OledShowLine(1, line);
-    snprintf(line, sizeof(line), "E %ld %ld", (long)app.encoder_left, (long)app.encoder_right);
-    OledShowLine(2, line);
-    snprintf(line, sizeof(line), "G0 %u G1 %u", gray_raw[0], gray_raw[1]);
-    OledShowLine(3, line);
-    snprintf(line, sizeof(line), "G2 %u G3 %u", gray_raw[2], gray_raw[3]);
-    OledShowLine(4, line);
-    snprintf(line, sizeof(line), "G4 %u G5 %u", gray_raw[4], gray_raw[5]);
-    OledShowLine(5, line);
-    snprintf(line, sizeof(line), "G6 %u G7 %u", gray_raw[6], gray_raw[7]);
-    OledShowLine(6, line);
-    if (app.imu_ok)
-    {
-        snprintf(line, sizeof(line), "IMU %02X M%u I%u", app.imu_id,
-                 app.imu_mosi_number, app.imu_miso_number);
-    }
-    else
-    {
-        snprintf(line, sizeof(line), "IMU %02X AUTO FAIL", app.imu_id);
-    }
-    OledShowLine(7, line);
-    LQ_OLED_Refresh();
+             imu->id,
+             imu->ax,
+             imu->ay,
+             imu->az,
+             imu->gx,
+             imu->gy,
+             imu->gz,
+             imu->mosi_pin_number,
+             imu->miso_pin_number);
+    SendText(line);
 }
 
 void DiansaiApp_Init(void)
 {
+    const VehicleImuState *imu;
+
+    /* 将 SysTick 配成 1 ms，后续调度均使用无符号时间差，允许计数自然回绕。 */
     DL_SYSTICK_disable();
     DL_SYSTICK_init(80000U);
     DL_SYSTICK_enableInterrupt();
@@ -691,33 +1053,47 @@ void DiansaiApp_Init(void)
     __disable_irq();
     app_tick_ms = 0U;
     __enable_irq();
-    last_loop_ms = 0U;
+
     memset(&app, 0, sizeof(app));
-    memset(gray_white, 0, sizeof(gray_white));
-    memset(gray_black, 0, sizeof(gray_black));
-    memset(gray_raw, 0, sizeof(gray_raw));
-    WheeltecUartInit();
-    MotorPwmTimerInit(MOTOR1_PWM_TIMER, MOTOR1_IN1_PWM, MOTOR1_IN2_PWM);
-    MotorPwmTimerInit(MOTOR2_PWM_TIMER, MOTOR2_IN1_PWM, MOTOR2_IN2_PWM);
-    MotorStop();
-    LQ_Encoder_Init(500U, &encoder_left_cfg);
-    LQ_Encoder_Init(500U, &encoder_right_cfg);
-    LQ_Tracking_Polling_Init();
-    LQ_OLED_Init();
-    app.imu_id = ImuInit();
-    app.imu_ok = (app.imu_id == IMU_EXPECTED_ID) ? 1U : 0U;
-    if (app.imu_ok)
+    memset(&vehicle_output, 0, sizeof(vehicle_output));
+    now_ms = 0U;
+    last_loop_ms = 0U;
+
+    WheeltecLink_Init();
+    BoardIo_Init(now_ms);
+    VehicleMotor_Init();
+    VehicleEncoder_Init();
+    VehicleGray_Init();
+    VehicleLine_Init();
+    CascadeControlInit();
+    StopControl();
+
+    (void)VehicleImu_Init();
+    imu = VehicleImu_GetState();
+    app.yaw_control_enabled = imu->ok;
+    UpdateEnabledControlLoops();
+    if (imu->ok && VehicleImu_CalibrateGyro())
     {
-        OledShowLine(0, "IMU CAL HOLD STILL");
-        OledShowLine(1, "ABOUT 3 SECONDS");
-        LQ_OLED_Refresh();
-        ImuCalibrateGyro();
+        (void)BoardBuzzer_Play(80U, 100U, 2U);
     }
+    else
+    {
+        (void)BoardBuzzer_Play(300U, 150U, 3U);
+    }
+
     now_ms = app_tick_ms;
-    last_imu_ms = 0U;
-    UpdateOled();
-    SendText("BOOT,MSPM0G3507_DIANSAI_TEST,V8,WHEELTEC,9600\r\n");
-    SendText("ACK,READY,V8,WHEELTEC; send HELP for commands\r\n");
+    last_loop_ms = now_ms;
+    last_gray_ms = now_ms;
+    last_motor_command_ms = now_ms;
+    last_rx_ms = now_ms;
+    /* 保持 V15 行为：IMU 标定结束后的第一轮立即发送状态和诊断帧。 */
+    last_telemetry_ms = 0U;
+    last_speed_telemetry_ms = 0U;
+    last_line_telemetry_ms = 0U;
+    last_debug_ms = 0U;
+
+    SendText("BOOT,MSPM0G3507_DIANSAI_TEST,V21,WHEELTEC,9600\r\n");
+    SendText("ACK,READY,V21,LINE_RECOVERY_STATE_MACHINE; send HELP for commands\r\n");
 }
 
 void SysTick_Handler(void)
@@ -727,24 +1103,75 @@ void SysTick_Handler(void)
 
 void DiansaiApp_Run(void)
 {
+    const VehicleMotorState *motor;
+    const VehicleEncoderState *encoder;
     uint32_t tick;
-    UartTxService();
-    ProcessUart();
-    tick = app_tick_ms;
-    if (tick - last_loop_ms < APP_LOOP_MS) return;
-    last_loop_ms = tick;
+    uint32_t elapsed_ms;
+    uint8_t stationary;
 
+    /* 串口收发不受 10 ms 控制周期限制，降低 9600 波特率链路的接收延迟。 */
+    WheeltecLink_ServiceTx();
+    WheeltecLink_Poll(ProcessCommand);
+
+    tick = app_tick_ms;
+    elapsed_ms = tick - last_loop_ms;
+    if (elapsed_ms < APP_LOOP_MS) return;
+    last_loop_ms = tick;
     now_ms = tick;
-    UpdateEncoder();
-    UpdateImu();
-    if ((now_ms % 20U) == 0U) ReadGrayRaw();
-    if ((app.motor_left != 0 || app.motor_right != 0) &&
-        (now_ms - last_motor_command_ms > COMMAND_TIMEOUT_MS))
+
+    HandleBoardIo();
+    VehicleEncoder_Update(elapsed_ms);
+    motor = VehicleMotor_GetState();
+    encoder = VehicleEncoder_GetState();
+    stationary = (motor->left_percent == 0 && motor->right_percent == 0 &&
+                  encoder->filtered_left_mm_s == 0 &&
+                  encoder->filtered_right_mm_s == 0) ? 1U : 0U;
+    VehicleImu_Update(now_ms, stationary);
+
+    /*
+     * 灰度方向环必须先于角速度环和速度环更新。这样同一控制周期中，
+     * 新灰度偏差先生成目标角速度，随后角速度环立即把它换成左右轮差速。
+     */
+    if (now_ms - last_gray_ms >= GRAY_PERIOD_MS)
     {
-        MotorStop();
+        last_gray_ms = now_ms;
+        VehicleGray_Update();
+        (void)UpdateLineDirection();
     }
-    if (app.link_active && (now_ms - last_rx_ms > 1200U)) app.link_active = 0U;
-    if (now_ms - last_telemetry_ms >= TELEMETRY_PERIOD_MS)
+
+    if (app.motor_mode != MOTOR_MODE_IDLE &&
+        now_ms - last_motor_command_ms > COMMAND_TIMEOUT_MS)
+    {
+        StopControl();
+    }
+    else
+    {
+        UpdateSpeedControl((float)elapsed_ms / 1000.0f);
+    }
+
+    if (app.link_active && now_ms - last_rx_ms > LINK_TIMEOUT_MS)
+    {
+        app.link_active = 0U;
+    }
+    if ((app.motor_mode == MOTOR_MODE_SPEED ||
+         app.motor_mode == MOTOR_MODE_LINE) &&
+        now_ms - last_speed_telemetry_ms >=
+            (app.motor_mode == MOTOR_MODE_LINE ? LINE_SPEED_TELEMETRY_MS :
+                                                 SPEED_TELEMETRY_PERIOD_MS))
+    {
+        last_speed_telemetry_ms = now_ms;
+        SendSpeedTelemetry();
+    }
+    if (app.motor_mode == MOTOR_MODE_LINE &&
+        now_ms - last_line_telemetry_ms >= LINE_TELEMETRY_PERIOD_MS)
+    {
+        last_line_telemetry_ms = now_ms;
+        SendLineTelemetry();
+    }
+    if (now_ms - last_telemetry_ms >=
+        ((app.motor_mode == MOTOR_MODE_SPEED ||
+          app.motor_mode == MOTOR_MODE_LINE) ? SPEED_MODE_TELEMETRY_MS :
+                                               TELEMETRY_PERIOD_MS))
     {
         last_telemetry_ms = now_ms;
         SendTelemetry();
@@ -754,10 +1181,5 @@ void DiansaiApp_Run(void)
         last_debug_ms = now_ms;
         SendDebug();
     }
-    if (now_ms - last_oled_ms >= OLED_PERIOD_MS)
-    {
-        last_oled_ms = now_ms;
-        UpdateOled();
-    }
-    UartTxService();
+    WheeltecLink_ServiceTx();
 }

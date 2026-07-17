@@ -97,12 +97,66 @@ class BleVofaBridge:
     @staticmethod
     def to_firewater(line: str) -> Optional[bytes]:
         fields = line.split(",")
-        if fields[0] != "TEL":
+        if fields[0] not in {"TEL", "SPD", "LIN"}:
             return None
         try:
             values = list(map(int, fields[1:]))
         except ValueError:
             return None
+
+        if fields[0] == "LIN":
+            if len(values) < 16:
+                return None
+            (time_ms, active, normalized, visible, lost,
+             raw_error10, filtered_error10, pid_output,
+             target_yaw10, actual_yaw10, correction_mm,
+             target_l_mm, target_r_mm, base_speed_mm,
+             diff_milli, normalized_sum) = values[:16]
+            channels = (
+                time_ms, active, normalized, visible, lost,
+                raw_error10 / 10, filtered_error10 / 10, pid_output,
+                target_yaw10 / 10, actual_yaw10 / 10,
+                correction_mm / 1000,
+                target_l_mm / 1000, target_r_mm / 1000,
+                base_speed_mm / 1000, diff_milli / 1000,
+                normalized_sum,
+            )
+            if len(values) >= 19:
+                channels += (values[16], values[17], values[18])
+            text = "line:" + ",".join(f"{value:g}" for value in channels) + "\n"
+            return text.encode("utf-8")
+
+        if fields[0] == "SPD":
+            if len(values) < 20:
+                return None
+            (time_ms, active, target_l_mm, actual_l_mm, error_l_mm,
+             feedforward_l10, feedback_l10, pwm_l,
+             target_r_mm, actual_r_mm, error_r_mm,
+             feedforward_r10, feedback_r10, pwm_r,
+             kp_l, ki_l, kd_l, kp_r, ki_r, kd_r) = values[:20]
+            channels = (
+                time_ms, active,
+                target_l_mm / 1000, actual_l_mm / 1000, error_l_mm / 1000,
+                feedforward_l10 / 10, feedback_l10 / 10, pwm_l,
+                target_r_mm / 1000, actual_r_mm / 1000, error_r_mm / 1000,
+                feedforward_r10 / 10, feedback_r10 / 10, pwm_r,
+                kp_l, ki_l, kd_l, kp_r, ki_r, kd_r,
+            )
+            text = "speed:" + ",".join(f"{value:g}" for value in channels) + "\n"
+            if len(values) >= 32:
+                (target_yaw10, actual_yaw10, error_yaw10,
+                 yaw_feedforward_mm, yaw_pid_mm, yaw_correction_mm,
+                 yaw_enabled, max_yaw_rate,
+                 yaw_kp, yaw_ki, yaw_kd, yaw_kff) = values[20:32]
+                yaw_channels = (
+                    time_ms, active, yaw_enabled,
+                    target_yaw10 / 10, actual_yaw10 / 10, error_yaw10 / 10,
+                    yaw_feedforward_mm / 1000, yaw_pid_mm / 1000,
+                    yaw_correction_mm / 1000, max_yaw_rate,
+                    yaw_kp, yaw_ki, yaw_kd, yaw_kff,
+                )
+                text += "yaw:" + ",".join(f"{value:g}" for value in yaw_channels) + "\n"
+            return text.encode("utf-8")
 
         if len(values) >= 36:
             time_ms, enabled, link, yaw10 = values[:4]
