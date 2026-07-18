@@ -5,24 +5,25 @@
 #include "board_io.h"
 #include "vehicle_battery.h"
 #include "vehicle_cascade_control.h"
+#include "vehicle_command.h"
 #include "vehicle_encoder.h"
 #include "vehicle_gray.h"
 #include "vehicle_imu.h"
 #include "vehicle_line_control.h"
 #include "vehicle_motor.h"
 #include "vehicle_square_test.h"
+#include "vehicle_telemetry.h"
 #include "wheeltec_link.h"
 
 /*
- * V16 应用层只负责五件事：
+ * V24 应用层只负责四件事：
  *   1. 按固定周期调度各硬件模块；
- *   2. 解释上位机命令并维护控制模式；
+ *   2. 根据已解析命令维护控制模式和安全权限；
  *   3. 配置并调用三级串级控制器；
- *   4. 组装与 V15 完全兼容的 TEL/STA/SPD 遥测；
- *   5. 执行通信看门狗和板载按键急停等安全逻辑。
+ *   4. 执行通信看门狗和板载按键急停等安全逻辑。
  *
- * 电机、编码器、IMU、灰度、串口、按键和蜂鸣器的硬件细节全部位于
- * 各自模块中。应用层只读取只读状态快照，避免同一硬件状态有两份副本。
+ * 电机、编码器、IMU、灰度、串口、命令语法、遥测、按键和蜂鸣器的细节
+ * 全部位于各自模块中。应用层只读取只读状态快照，避免同一状态有两份副本。
  */
 
 #define APP_LOOP_MS                    10U
@@ -205,6 +206,7 @@ static uint32_t last_battery_ms;
 
 static void UpdateEnabledControlLoops(void);
 static void SendSquareTelemetry(void);
+static int32_t GetEffectiveLineDiffMilli(void);
 
 static int32_t ClampInt32(int32_t value, int32_t low, int32_t high)
 {
@@ -228,6 +230,63 @@ static int32_t RoundFloatToInt32(float value)
 static void SendText(const char *text)
 {
     (void)WheeltecLink_SendText(text);
+}
+
+/*
+ * 遥测层只接收这一时刻的值快照，不持有控制状态。协议格式因此可以独立维护，
+ * 而应用层仍是运行模式、参数和控制目标的唯一所有者。
+ */
+static VehicleTelemetrySnapshot CaptureTelemetrySnapshot(void)
+{
+    VehicleTelemetrySnapshot snapshot;
+
+    memset(&snapshot, 0, sizeof(snapshot));
+    snapshot.now_ms = now_ms;
+    snapshot.max_test_speed_mm_s = MAX_TEST_SPEED_MM_S;
+    snapshot.line_edge_target_min = LINE_EDGE_TARGET_MIN;
+    snapshot.closed_loop_active =
+        (app.motor_mode == MOTOR_MODE_SPEED || app.motor_mode == MOTOR_MODE_LINE);
+    snapshot.line_mode_active = (app.motor_mode == MOTOR_MODE_LINE);
+    snapshot.track_color_mode = (uint8_t)app.track_color_mode;
+    snapshot.local_line_running = app.local_line_running;
+    snapshot.link_active = app.link_active;
+    snapshot.yaw_control_enabled = app.yaw_control_enabled;
+    snapshot.heading_control_enabled = app.heading_control_enabled;
+    snapshot.heading_hold_active = app.heading_hold_active;
+
+    snapshot.target_forward_mm_s = app.target_forward_mm_s;
+    snapshot.target_yaw_rate10 = app.target_yaw_rate10;
+    snapshot.target_left_mm_s = app.target_left_mm_s;
+    snapshot.target_right_mm_s = app.target_right_mm_s;
+    snapshot.error_left_mm_s = app.error_left_mm_s;
+    snapshot.error_right_mm_s = app.error_right_mm_s;
+
+    snapshot.pid_left_kp = app.pid_left_kp;
+    snapshot.pid_left_ki = app.pid_left_ki;
+    snapshot.pid_left_kd = app.pid_left_kd;
+    snapshot.pid_right_kp = app.pid_right_kp;
+    snapshot.pid_right_ki = app.pid_right_ki;
+    snapshot.pid_right_kd = app.pid_right_kd;
+
+    snapshot.yaw_pid_kp_micro = app.yaw_pid_kp_micro;
+    snapshot.yaw_pid_ki_micro = app.yaw_pid_ki_micro;
+    snapshot.yaw_pid_kd_micro = app.yaw_pid_kd_micro;
+    snapshot.yaw_pid_kff_micro = app.yaw_pid_kff_micro;
+    snapshot.max_yaw_rate_dps = app.max_yaw_rate_dps;
+
+    snapshot.heading_pid_kp_milli = app.heading_pid_kp_milli;
+    snapshot.heading_pid_kd_milli = app.heading_pid_kd_milli;
+    snapshot.heading_pid_kff_milli = app.heading_pid_kff_milli;
+    snapshot.max_heading_rate_dps = app.max_heading_rate_dps;
+    snapshot.target_heading_deg = app.target_heading_deg;
+
+    snapshot.line_pid_kp_milli = app.line_pid_kp_milli;
+    snapshot.line_pid_ki_milli = app.line_pid_ki_milli;
+    snapshot.line_pid_kd_milli = app.line_pid_kd_milli;
+    snapshot.line_diff_milli = app.line_diff_milli;
+    snapshot.effective_line_diff_milli = GetEffectiveLineDiffMilli();
+    snapshot.control_output = vehicle_output;
+    return snapshot;
 }
 
 /* 清零所有目标与最近一次控制输出，防止停止后遥测继续显示旧目标。 */
@@ -552,32 +611,8 @@ static void BeginRawControl(int32_t left_percent, int32_t right_percent)
 
 static void SendGrayCalibration(void)
 {
-    const VehicleGrayState *gray = VehicleGray_GetState();
-    char line[160];
-
-    snprintf(line, sizeof(line),
-             "CAL,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u\r\n",
-             gray->white[0], gray->white[1], gray->white[2], gray->white[3],
-             gray->white[4], gray->white[5], gray->white[6], gray->white[7],
-             gray->black[0], gray->black[1], gray->black[2], gray->black[3],
-             gray->black[4], gray->black[5], gray->black[6], gray->black[7],
-             (unsigned int)app.track_color_mode);
-    SendText(line);
-
-    /*
-     * NRM 是 V17 新增的低频标定结果帧，只在查询/重新标定时发送，不增加
-     * 常规 9600 波特率链路负担。无论赛道颜色如何，0=背景、1000=目标线。
-     */
-    snprintf(line, sizeof(line),
-             "NRM,%lu,%u,%u,%u,%u,%u,%u,%u,%u,%u,%u\r\n",
-             (unsigned long)now_ms,
-             (unsigned int)gray->normalization_valid,
-             gray->normalized[0], gray->normalized[1],
-             gray->normalized[2], gray->normalized[3],
-             gray->normalized[4], gray->normalized[5],
-             gray->normalized[6], gray->normalized[7],
-             (unsigned int)app.track_color_mode);
-    SendText(line);
+    VehicleTelemetrySnapshot snapshot = CaptureTelemetrySnapshot();
+    VehicleTelemetry_SendGrayCalibration(&snapshot);
 }
 
 /*
@@ -632,35 +667,14 @@ static uint8_t CalibrateGyroWithFeedback(void)
 /* KEY 帧中的六个掩码均以 bit0/bit1/bit2 对应 K1/K2/K3。 */
 static void SendKeyFrame(BoardKeyEvents events)
 {
-    char line[96];
-
-    snprintf(line, sizeof(line), "KEY,%lu,%u,%u,%u,%u,%u\r\n",
-             (unsigned long)now_ms,
-             (unsigned int)events.pressed_mask,
-             (unsigned int)events.released_mask,
-             (unsigned int)events.short_press_mask,
-             (unsigned int)events.long_press_mask,
-             (unsigned int)BoardIo_GetPressedMask());
-    SendText(line);
+    VehicleTelemetrySnapshot snapshot = CaptureTelemetrySnapshot();
+    VehicleTelemetry_SendKey(&snapshot, events);
 }
 
 static void SendModeFrame(void)
 {
-    const VehicleGrayState *gray = VehicleGray_GetState();
-    const VehicleBatteryState *battery = VehicleBattery_GetState();
-    uint8_t switches = BoardIo_GetSwitchDownMask();
-    char line[96];
-
-    snprintf(line, sizeof(line), "MOD,%lu,%u,%u,%u,%u,%u,%u,%lu\r\n",
-             (unsigned long)now_ms,
-             (unsigned int)app.track_color_mode,
-             (unsigned int)((switches >> BOARD_SWITCH_1) & 1U),
-             (unsigned int)((switches >> BOARD_SWITCH_2) & 1U),
-             (unsigned int)app.local_line_running,
-             (unsigned int)gray->white_valid,
-             (unsigned int)gray->black_valid,
-             (unsigned long)(battery->valid ? battery->voltage_mv : 0U));
-    SendText(line);
+    VehicleTelemetrySnapshot snapshot = CaptureTelemetrySnapshot();
+    VehicleTelemetry_SendMode(&snapshot);
 }
 
 static void ApplyTrackModeFromSwitch(uint8_t reset_calibration)
@@ -808,6 +822,7 @@ static void HandleBoardIo(void)
 
 static void ProcessCommand(char *line)
 {
+    VehicleCommand command;
     int throttle;
     int steering;
     int left;
@@ -833,6 +848,7 @@ static void ProcessCommand(char *line)
     char response[96];
     const VehicleImuState *imu = VehicleImu_GetState();
 
+    VehicleCommand_Parse(line, &command);
     last_rx_ms = now_ms;
     app.link_active = 1U;
 
@@ -856,9 +872,10 @@ static void ProcessCommand(char *line)
         return;
     }
 
-    if (sscanf(line, "SQUARE,%d", &square_command) == 1)
+    if (command.type == VEHICLE_COMMAND_SQUARE)
     {
         const VehicleEncoderState *encoder = VehicleEncoder_GetState();
+        square_command = (int)command.argument[0];
 
         if (square_command == 0)
         {
@@ -897,10 +914,12 @@ static void ProcessCommand(char *line)
             SendText("ERR,SQUARE_RANGE,0,1,2\r\n");
         }
     }
-    else if (sscanf(line, "DRV,%d,%d", &throttle, &steering) == 2)
+    else if (command.type == VEHICLE_COMMAND_DRIVE)
     {
         int32_t forward_mm_s;
 
+        throttle = (int)command.argument[0];
+        steering = (int)command.argument[1];
         throttle = (int)ClampInt32(throttle, -100, 100);
         steering = (int)ClampInt32(steering, -100, 100);
         forward_mm_s = throttle * MAX_TEST_SPEED_MM_S / 100;
@@ -930,27 +949,22 @@ static void ProcessCommand(char *line)
         }
         last_motor_command_ms = now_ms;
     }
-    else if (sscanf(line, "MOTOR,%d,%d", &left, &right) == 2)
+    else if (command.type == VEHICLE_COMMAND_MOTOR)
     {
+        left = (int)command.argument[0];
+        right = (int)command.argument[1];
         app.heading_hold_active = 0U;
         UpdateEnabledControlLoops();
         BeginRawControl(left, right);
         last_motor_command_ms = now_ms;
     }
-    else if (sscanf(line, "PIDL,%d,%d,%d", &kp, &ki, &kd) == 3)
+    else if (command.type == VEHICLE_COMMAND_SPEED_PID)
     {
         SendText("ERR,SPEED_PID_LOCKED,4000,800,0\r\n");
     }
-    else if (sscanf(line, "PIDR,%d,%d,%d", &kp, &ki, &kd) == 3)
+    else if (command.type == VEHICLE_COMMAND_YAW_ENABLE)
     {
-        SendText("ERR,SPEED_PID_LOCKED,4000,800,0\r\n");
-    }
-    else if (sscanf(line, "PID,%d,%d,%d", &kp, &ki, &kd) == 3)
-    {
-        SendText("ERR,SPEED_PID_LOCKED,4000,800,0\r\n");
-    }
-    else if (sscanf(line, "YAW,%d", &yaw_enable) == 1)
-    {
+        yaw_enable = (int)command.argument[0];
         StopControl();
         app.yaw_control_enabled = (yaw_enable != 0 && imu->ok) ? 1U : 0U;
         if (!app.yaw_control_enabled) app.heading_control_enabled = 0U;
@@ -959,8 +973,9 @@ static void ProcessCommand(char *line)
                  (unsigned int)app.yaw_control_enabled);
         SendText(response);
     }
-    else if (sscanf(line, "YAWRATE,%d", &max_yaw_rate) == 1)
+    else if (command.type == VEHICLE_COMMAND_YAW_RATE)
     {
+        max_yaw_rate = (int)command.argument[0];
         if (max_yaw_rate >= 10 && max_yaw_rate <= 360)
         {
             StopControl();
@@ -975,11 +990,14 @@ static void ProcessCommand(char *line)
             SendText("ERR,YAWRATE_RANGE\r\n");
         }
     }
-    else if (strncmp(line, "YAWPID,", 7U) == 0)
+    else if (command.type == VEHICLE_COMMAND_YAW_PID)
     {
-        kff = app.yaw_pid_kff_micro;
-        yaw_pid_fields = sscanf(line, "YAWPID,%d,%d,%d,%d",
-                                &kp, &ki, &kd, &kff);
+        kp = (int)command.argument[0];
+        ki = (int)command.argument[1];
+        kd = (int)command.argument[2];
+        kff = (command.argument_count == 4U) ?
+              (int)command.argument[3] : app.yaw_pid_kff_micro;
+        yaw_pid_fields = command.argument_count;
         if ((yaw_pid_fields == 3 || yaw_pid_fields == 4) &&
             kp >= 0 && kp <= 100000 && ki >= 0 && ki <= 100000 &&
             kd >= 0 && kd <= 100000 && kff >= 0 && kff <= 100000)
@@ -995,18 +1013,21 @@ static void ProcessCommand(char *line)
             SendText("ERR,YAWPID_RANGE\r\n");
         }
     }
-    else if (sscanf(line, "HEADPID,%d,%d,%d,%d",
-                    &heading_kp_milli, &heading_kd_milli,
-                    &heading_kff_milli, &heading_max_rate) == 4)
+    else if (command.type == VEHICLE_COMMAND_HEADING_PID)
     {
+        heading_kp_milli = (int)command.argument[0];
+        heading_kd_milli = (int)command.argument[1];
+        heading_kff_milli = (int)command.argument[2];
+        heading_max_rate = (int)command.argument[3];
         (void)heading_kp_milli;
         (void)heading_kd_milli;
         (void)heading_kff_milli;
         (void)heading_max_rate;
         SendText("ERR,HEADING_PID_LOCKED,4000,300,1000,80\r\n");
     }
-    else if (sscanf(line, "HEADSET,%d", &heading_target10) == 1)
+    else if (command.type == VEHICLE_COMMAND_HEADING_SET)
     {
+        heading_target10 = (int)command.argument[0];
         if (heading_target10 >= -1800 && heading_target10 <= 1800 &&
             app.heading_control_enabled && app.yaw_control_enabled && imu->ok)
         {
@@ -1030,8 +1051,9 @@ static void ProcessCommand(char *line)
             SendText("ERR,HEAD_NOT_READY\r\n");
         }
     }
-    else if (sscanf(line, "HEAD,%d", &heading_enable) == 1)
+    else if (command.type == VEHICLE_COMMAND_HEADING_ENABLE)
     {
+        heading_enable = (int)command.argument[0];
         StopControl();
         app.heading_control_enabled =
             (heading_enable != 0 && app.yaw_control_enabled && imu->ok) ? 1U : 0U;
@@ -1041,7 +1063,7 @@ static void ProcessCommand(char *line)
                  (unsigned int)app.heading_control_enabled);
         SendText(response);
     }
-    else if (strcmp(line, "HEADCFG") == 0)
+    else if (command.type == VEHICLE_COMMAND_HEADING_CONFIG)
     {
         snprintf(response, sizeof(response),
                  "ACK,HEADCFG,%u,%ld,%ld,%ld,%ld\r\n",
@@ -1052,8 +1074,11 @@ static void ProcessCommand(char *line)
                  (long)app.max_heading_rate_dps);
         SendText(response);
     }
-    else if (sscanf(line, "LINEPID,%d,%d,%d", &kp, &ki, &kd) == 3)
+    else if (command.type == VEHICLE_COMMAND_LINE_PID)
     {
+        kp = (int)command.argument[0];
+        ki = (int)command.argument[1];
+        kd = (int)command.argument[2];
         if (kp >= 0 && kp <= LINE_PID_GAIN_MAX_MILLI &&
             ki >= 0 && ki <= LINE_PID_GAIN_MAX_MILLI &&
             kd >= 0 && kd <= LINE_PID_GAIN_MAX_MILLI)
@@ -1069,8 +1094,9 @@ static void ProcessCommand(char *line)
             SendText("ERR,LINEPID_RANGE\r\n");
         }
     }
-    else if (sscanf(line, "LINEDIFF,%d", &line_diff) == 1)
+    else if (command.type == VEHICLE_COMMAND_LINE_DIFF)
     {
+        line_diff = (int)command.argument[0];
         if (line_diff >= 0 && line_diff <= LINE_DIFF_MAX_MILLI)
         {
             StopControl();
@@ -1084,7 +1110,7 @@ static void ProcessCommand(char *line)
             SendText("ERR,LINEDIFF_RANGE\r\n");
         }
     }
-    else if (strcmp(line, "LINECFG") == 0)
+    else if (command.type == VEHICLE_COMMAND_LINE_CONFIG)
     {
         snprintf(response, sizeof(response),
                  "ACK,LINECFG,%ld,%ld,%ld,%ld\r\n",
@@ -1094,8 +1120,10 @@ static void ProcessCommand(char *line)
                  (long)app.line_diff_milli);
         SendText(response);
     }
-    else if (sscanf(line, "LINE,%d,%d", &line_enable, &line_speed) == 2)
+    else if (command.type == VEHICLE_COMMAND_LINE)
     {
+        line_enable = (int)command.argument[0];
+        line_speed = (int)command.argument[1];
         if (line_enable == 0)
         {
             StopControl();
@@ -1120,8 +1148,9 @@ static void ProcessCommand(char *line)
             SendText("ERR,LINE_RANGE\r\n");
         }
     }
-    else if (sscanf(line, "BEEP,%d", &beep_ms) == 1)
+    else if (command.type == VEHICLE_COMMAND_BEEP)
     {
+        beep_ms = (int)command.argument[0];
         if (beep_ms < 10 || beep_ms > 5000)
         {
             SendText("ERR,BEEP_RANGE,10,5000\r\n");
@@ -1136,29 +1165,29 @@ static void ProcessCommand(char *line)
             SendText("ERR,BUZZER_BUSY\r\n");
         }
     }
-    else if (strcmp(line, "KEYS") == 0)
+    else if (command.type == VEHICLE_COMMAND_KEYS)
     {
         BoardKeyEvents no_events = {0};
         SendKeyFrame(no_events);
     }
-    else if (strcmp(line, "STOP") == 0)
+    else if (command.type == VEHICLE_COMMAND_STOP)
     {
         StopControl();
         app.link_active = 0U;
         SendText("ACK,STOP\r\n");
     }
-    else if (strcmp(line, "PING") == 0)
+    else if (command.type == VEHICLE_COMMAND_PING)
     {
         /* 心跳只维护链路显示，不刷新 500 ms 电机命令看门狗。 */
     }
-    else if (strcmp(line, "ZERO") == 0 || strcmp(line, "ENCZERO") == 0)
+    else if (command.type == VEHICLE_COMMAND_ZERO)
     {
         StopControl();
         VehicleEncoder_Reset();
         VehicleImu_ResetYaw();
         SendText("ACK,ZERO\r\n");
     }
-    else if (strcmp(line, "IMUZERO") == 0)
+    else if (command.type == VEHICLE_COMMAND_IMU_ZERO)
     {
         if (CalibrateGyroWithFeedback())
         {
@@ -1169,19 +1198,19 @@ static void ProcessCommand(char *line)
             SendText("ERR,IMU_NOT_READY\r\n");
         }
     }
-    else if (strcmp(line, "GRAYWHITE") == 0)
+    else if (command.type == VEHICLE_COMMAND_GRAY_WHITE)
     {
         CalibrateGrayReference(1U);
     }
-    else if (strcmp(line, "GRAYBLACK") == 0)
+    else if (command.type == VEHICLE_COMMAND_GRAY_BLACK)
     {
         CalibrateGrayReference(0U);
     }
-    else if (strcmp(line, "GRAYCAL") == 0 || strcmp(line, "GRAY") == 0)
+    else if (command.type == VEHICLE_COMMAND_GRAY_QUERY)
     {
         SendGrayCalibration();
     }
-    else if (strcmp(line, "HELP") == 0)
+    else if (command.type == VEHICLE_COMMAND_HELP)
     {
         SendText("ACK,DRV MOTOR SQUARE LINE YAW YAWRATE YAWPID HEAD HEADPID_LOCKED HEADSET HEADCFG LINEPID LINEDIFF LINECFG PID_LOCKED STOP ZERO ENCZERO IMUZERO GRAY GRAYWHITE GRAYBLACK BEEP KEYS PING\r\n");
     }
@@ -1202,58 +1231,15 @@ static int32_t GetEffectiveLineDiffMilli(void)
 
 static void SendLineTelemetry(void)
 {
-    const VehicleLineState *line = VehicleLine_GetState();
-    const VehicleGrayState *gray = VehicleGray_GetState();
-    const VehicleImuState *imu = VehicleImu_GetState();
-    uint32_t recovery_ms = 0U;
-    char frame[192];
-
-    if (line->mode == VEHICLE_LINE_GAP_HOLD ||
-        line->mode == VEHICLE_LINE_BLIND_TURN)
-    {
-        recovery_ms = now_ms - line->recovery_started_ms;
-    }
-    snprintf(frame, sizeof(frame),
-             "LIN,%lu,%u,%u,%u,%u,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%lu,%u,%lu,%u\r\n",
-             (unsigned long)now_ms,
-             (unsigned int)(app.motor_mode == MOTOR_MODE_LINE),
-             (unsigned int)gray->normalization_valid,
-             (unsigned int)line->visible,
-             (unsigned int)line->lost,
-             (long)RoundFloatToInt32(line->raw_error_percent * 10.0f),
-             (long)RoundFloatToInt32(line->filtered_error_percent * 10.0f),
-             (long)RoundFloatToInt32(line->pid_output),
-             (long)RoundFloatToInt32(line->target_yaw_rate_dps * 10.0f),
-             (long)RoundFloatToInt32(imu->yaw_rate_dps * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.wheel_correction_mm_s),
-             (long)app.target_left_mm_s,
-             (long)app.target_right_mm_s,
-             (long)app.target_forward_mm_s,
-             (long)GetEffectiveLineDiffMilli(),
-             (unsigned long)line->normalized_sum,
-             (unsigned int)line->mode,
-             (unsigned long)recovery_ms,
-             (unsigned int)line->active_count);
-    SendText(frame);
+    VehicleTelemetrySnapshot snapshot = CaptureTelemetrySnapshot();
+    VehicleTelemetry_SendLine(&snapshot);
 }
 
 /* 每次灰度更新后运行一次方向外环，并把输出写成角速度环目标。 */
 static void SendSquareTelemetry(void)
 {
-    const VehicleSquareState *square = VehicleSquare_GetState();
-    uint8_t displayed_leg = square->leg < 4U ? (uint8_t)(square->leg + 1U) : 4U;
-    char frame[112];
-
-    snprintf(frame, sizeof(frame),
-             "SQR,%lu,%u,%u,%u,%ld,%ld,%ld\r\n",
-             (unsigned long)now_ms,
-             (unsigned int)square->active,
-             (unsigned int)square->phase,
-             (unsigned int)displayed_leg,
-             (long)square->progress_mm,
-             (long)square->remaining_mm,
-             (long)RoundFloatToInt32(square->target_heading_deg * 10.0f));
-    SendText(frame);
+    VehicleTelemetrySnapshot snapshot = CaptureTelemetrySnapshot();
+    VehicleTelemetry_SendSquare(&snapshot);
 }
 
 /*
@@ -1356,170 +1342,19 @@ static void UpdateSpeedControl(float dt_s)
 
 static void SendTelemetry(void)
 {
-    const VehicleMotorState *motor = VehicleMotor_GetState();
-    const VehicleEncoderState *encoder = VehicleEncoder_GetState();
-    const VehicleImuState *imu = VehicleImu_GetState();
-    const VehicleGrayState *gray = VehicleGray_GetState();
-    const VehicleBatteryState *battery = VehicleBattery_GetState();
-    char line[384];
-    int32_t target_left = app.target_left_mm_s;
-    int32_t target_right = app.target_right_mm_s;
-    int32_t yaw_rate10 = RoundFloatToInt32(imu->yaw_rate_dps * 10.0f);
-    uint8_t active =
-        VehicleGray_CountLineChannels(LINE_EDGE_TARGET_MIN);
-    if (app.motor_mode != MOTOR_MODE_SPEED &&
-        app.motor_mode != MOTOR_MODE_LINE)
-    {
-        target_left = motor->left_percent * MAX_TEST_SPEED_MM_S / 100;
-        target_right = motor->right_percent * MAX_TEST_SPEED_MM_S / 100;
-    }
-
-    /* TEL 字段顺序必须保持兼容，网页依赖固定下标读取目标与实际速度。 */
-    snprintf(line, sizeof(line),
-             "TEL,%lu,%u,%u,%d,%ld,%ld,%ld,%ld,%d,%d,%ld,%ld,%ld,%ld,%u,%u,%ld,%ld,%ld,%ld,%u,%u,%lu\r\n",
-             (unsigned long)now_ms,
-             (unsigned int)((motor->left_percent != 0 ||
-                             motor->right_percent != 0) ? 1U : 0U),
-             (unsigned int)app.link_active,
-             imu->yaw10,
-             (long)encoder->filtered_left_mm_s,
-             (long)encoder->filtered_right_mm_s,
-             (long)target_left,
-             (long)target_right,
-             motor->left_percent * 168,
-             motor->right_percent * 168,
-             (long)RoundFloatToInt32(vehicle_output.target_yaw_rate_dps * 10.0f),
-             (long)yaw_rate10,
-             (long)RoundFloatToInt32(vehicle_output.yaw_error_dps * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.wheel_correction_mm_s),
-             (unsigned int)app.yaw_control_enabled,
-             (unsigned int)imu->ok,
-             (long)RoundFloatToInt32(vehicle_output.yaw_feedforward_mm_s),
-             (long)RoundFloatToInt32(app.target_heading_deg * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.heading_error_deg * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.heading_output_dps * 10.0f),
-             (unsigned int)app.heading_control_enabled,
-             (unsigned int)app.heading_hold_active,
-             (unsigned long)(battery->valid ? battery->voltage_mv : 0U));
-    SendText(line);
-
-    /* STA 同样保留 V15 的占位字段，避免旧网页状态页整体错位。 */
-    snprintf(line, sizeof(line),
-             "STA,%lu,%d,%d,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,0,0,0,0,0,0,0,0,30,%u,90,"
-             "%u,%u,%u,%u,%u,%u,%u,%u,60,%u,%u,%u,900,500,"
-             "%u,%u,%u,%u,%u,%u,%u,%u,%u,%ld,%ld,%ld,%ld,%ld,"
-             "%ld,%ld,%ld,%ld,%u,%ld,%ld,%ld,%ld\r\n",
-             (unsigned long)now_ms,
-             imu->pitch10,
-             imu->roll10,
-             (long)encoder->total_left,
-             (long)encoder->total_right,
-             (long)app.pid_left_kp,
-             (long)app.pid_left_ki,
-             (long)app.pid_left_kd,
-             (long)app.pid_right_kp,
-             (long)app.pid_right_ki,
-             (long)app.pid_right_kd,
-             (unsigned int)active,
-             gray->raw[0], gray->raw[1], gray->raw[2], gray->raw[3],
-             gray->raw[4], gray->raw[5], gray->raw[6], gray->raw[7],
-             (unsigned int)active,
-             (unsigned int)gray->white_valid,
-             (unsigned int)gray->black_valid,
-             gray->raw[0], gray->raw[1], gray->raw[2], gray->raw[3],
-             gray->raw[4], gray->raw[5], gray->raw[6], gray->raw[7],
-             (unsigned int)app.yaw_control_enabled,
-             (long)app.max_yaw_rate_dps,
-             (long)app.yaw_pid_kp_micro,
-             (long)app.yaw_pid_ki_micro,
-             (long)app.yaw_pid_kd_micro,
-             (long)app.yaw_pid_kff_micro,
-             (long)app.line_pid_kp_milli,
-             (long)app.line_pid_ki_milli,
-             (long)app.line_pid_kd_milli,
-             (long)app.line_diff_milli,
-             (unsigned int)app.heading_control_enabled,
-             (long)app.max_heading_rate_dps,
-             (long)app.heading_pid_kp_milli,
-             (long)app.heading_pid_kd_milli,
-             (long)app.heading_pid_kff_milli);
-    SendText(line);
+    VehicleTelemetrySnapshot snapshot = CaptureTelemetrySnapshot();
+    VehicleTelemetry_SendState(&snapshot);
 }
 
 static void SendSpeedTelemetry(void)
 {
-    const VehicleMotorState *motor = VehicleMotor_GetState();
-    const VehicleEncoderState *encoder = VehicleEncoder_GetState();
-    const VehicleImuState *imu = VehicleImu_GetState();
-    char line[448];
-
-    snprintf(line, sizeof(line),
-             "SPD,%lu,1,%ld,%ld,%ld,%ld,%ld,%d,%ld,%ld,%ld,%ld,%ld,%d,"
-             "%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,"
-             "%u,%ld,%ld,%ld,%ld,%ld,"
-             "%ld,%ld,%ld,%ld,%ld,%ld,%u,%u,%ld,%ld,%ld,%ld\r\n",
-             (unsigned long)now_ms,
-             (long)app.target_left_mm_s,
-             (long)encoder->filtered_left_mm_s,
-             (long)app.error_left_mm_s,
-             (long)RoundFloatToInt32(vehicle_output.left_feedforward_percent * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.left_pid_percent * 10.0f),
-             motor->left_percent,
-             (long)app.target_right_mm_s,
-             (long)encoder->filtered_right_mm_s,
-             (long)app.error_right_mm_s,
-             (long)RoundFloatToInt32(vehicle_output.right_feedforward_percent * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.right_pid_percent * 10.0f),
-             motor->right_percent,
-             (long)app.pid_left_kp,
-             (long)app.pid_left_ki,
-             (long)app.pid_left_kd,
-             (long)app.pid_right_kp,
-             (long)app.pid_right_ki,
-             (long)app.pid_right_kd,
-             (long)RoundFloatToInt32(vehicle_output.target_yaw_rate_dps * 10.0f),
-             (long)RoundFloatToInt32(imu->yaw_rate_dps * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.yaw_error_dps * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.yaw_feedforward_mm_s),
-             (long)RoundFloatToInt32(vehicle_output.yaw_pid_mm_s),
-             (long)RoundFloatToInt32(vehicle_output.wheel_correction_mm_s),
-             (unsigned int)app.yaw_control_enabled,
-             (long)app.max_yaw_rate_dps,
-             (long)app.yaw_pid_kp_micro,
-             (long)app.yaw_pid_ki_micro,
-             (long)app.yaw_pid_kd_micro,
-             (long)app.yaw_pid_kff_micro,
-             (long)RoundFloatToInt32(app.target_heading_deg * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.heading_reference_deg * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.heading_reference_rate_dps * 10.0f),
-             (long)imu->yaw10,
-             (long)RoundFloatToInt32(vehicle_output.heading_error_deg * 10.0f),
-             (long)RoundFloatToInt32(vehicle_output.heading_output_dps * 10.0f),
-             (unsigned int)app.heading_control_enabled,
-             (unsigned int)app.heading_hold_active,
-             (long)app.max_heading_rate_dps,
-             (long)app.heading_pid_kp_milli,
-             (long)app.heading_pid_kd_milli,
-             (long)app.heading_pid_kff_milli);
-    SendText(line);
+    VehicleTelemetrySnapshot snapshot = CaptureTelemetrySnapshot();
+    VehicleTelemetry_SendSpeed(&snapshot);
 }
 
 static void SendDebug(void)
 {
-    const VehicleImuState *imu = VehicleImu_GetState();
-    char line[96];
-
-    snprintf(line, sizeof(line), "DBG,%u,%d,%d,%d,%d,%d,%d,%u,%u\r\n",
-             imu->id,
-             imu->ax,
-             imu->ay,
-             imu->az,
-             imu->gx,
-             imu->gy,
-             imu->gz,
-             imu->mosi_pin_number,
-             imu->miso_pin_number);
-    SendText(line);
+    VehicleTelemetry_SendDebug();
 }
 
 void DiansaiApp_Init(void)

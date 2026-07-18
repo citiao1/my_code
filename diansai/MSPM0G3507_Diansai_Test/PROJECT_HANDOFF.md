@@ -1,6 +1,6 @@
 # MSPM0G3507 vehicle project handoff
 
-Last updated: 2026-07-17
+Last updated: 2026-07-18
 
 ## Current status
 
@@ -49,8 +49,8 @@ to DMA channel 0.
 
 ## Repository layout
 
-- `Code/diansai_app.c/.h`: 10 ms scheduler, command semantics, watchdogs and
-  telemetry assembly; it no longer contains peripheral drivers.
+- `Code/diansai_app.c/.h`: 10 ms scheduler, typed-command semantics, mode
+  ownership and watchdogs; it no longer contains peripheral or protocol formatting.
 - `Code/vehicle_motor.c/.h`: dual AT8236 slow-decay PWM and direction protection.
 - `Code/vehicle_encoder.c/.h`: encoder ownership, calibrated conversion and
   wheel-speed filtering.
@@ -59,11 +59,15 @@ to DMA channel 0.
   and background=0/target-line=1000 normalization.
 - `Code/vehicle_battery.c/.h`: PB19 ADC1_CH6 sampling, divider conversion and
   low-pass filtering.
+- `Code/vehicle_command.c/.h`: pure conversion of UART text into typed commands;
+  it deliberately owns no motors, parameters or mode state.
+- `Code/vehicle_telemetry.c/.h`: compatible TEL/STA/SPD/LIN/SQR/MOD/KEY/CAL/NRM/DBG
+  formatting from an application-owned read-only snapshot.
 - `Code/vehicle_line_control.c/.h`: normalized grayscale error, filtering,
   direction PID, target-yaw mapping and lost-line protection.
 - `Code/vehicle_square_test.c/.h`: encoder-distance square-test state machine,
   phase settling and timeout protection.
-- `Code/wheeltec_link.c/.h`: UART0 line parser and non-blocking TX queue.
+- `Code/wheeltec_link.c/.h`: UART0 RX line assembly and DMA0-driven 1024-byte TX queue.
 - `Code/board_io.c/.h`: verified K1/K2/K3 mapping, SW1/SW2 debounce and PA28
   buzzer patterns/continuous arming output.
 - `Code/vehicle_cascade_control.c/.h`: staged control logic; V20 accepts the
@@ -76,6 +80,10 @@ to DMA channel 0.
 - `host-console/bridge/wheeltec_bridge.py`: PC BLE/WebSocket/VOFA bridge.
 - `host-console/bridge/start-wheeltec.ps1`: normal bridge launcher.
 - `README.md`: wiring, commands, telemetry and build instructions.
+- `documentation/MSPM0G3507_智能车完整说明书.md`: complete Chinese AI/reference manual.
+- `output/pdf/MSPM0G3507_智能车完整说明书.pdf`: rendered human manual.
+- `documentation/manual_artifacts/`: PDF scripts, extracted text, rendered pages,
+  contact sheets and QA summary; keep future documentation byproducts here.
 
 The project was created as an independent copy based on the Longqiu
 `LQ_MSPM0GX_LIB_V2.0.0` architecture. The original Longqiu library and the
@@ -142,8 +150,10 @@ mapping based only on one conflicting pin diagram.
 - UART0 runs at 9600 8N1 on PA10/PA11. V8 and later poll its RX FIFO every millisecond
   before the slower 10 ms task guard. Do not restore the earlier vendor RX
   interrupt/ring-buffer path; it allowed telemetry uplink but lost commands.
-- UART TX uses a non-blocking 1024-byte queue so 9600-baud telemetry does not
-  stall IMU integration or the motor watchdog.
+- UART TX uses DMA channel 0 behind a non-blocking 1024-byte queue, so 9600-baud
+  telemetry does not stall IMU integration or the motor watchdog. RX remains a
+  low-cost FIFO poll because commands are short and variably delimited; RX DMA
+  would require an idle-line/ring-buffer boundary layer without meaningful load reduction.
 - SysTick is a real 1 ms interrupt. IMU integration uses measured elapsed time.
 - LSM6DSR is configured for 104 Hz and 2000 dps with 70 mdps/LSB sensitivity.
   All gyro axes are calibrated at boot and bias is slowly tracked only while
@@ -307,8 +317,9 @@ flash `Keil/Objects/LQ_MSPM0GX_LIB.hex`. The known command-line build is:
 ```
 
 The latest V24 build result is `0 Error(s), 0 Warning(s)` and its boot signature
-is `BOOT,MSPM0G3507_DIANSAI_TEST,V24,WHEELTEC,9600`. Program size is
-`Code=38028 RO-data=2864 RW-data=48 ZI-data=22592`. This is build verification;
+is `BOOT,MSPM0G3507_DIANSAI_TEST,V24,WHEELTEC,9600`. After extracting command
+parsing and telemetry formatting, program size is
+`Code=39892 RO-data=2680 RW-data=48 ZI-data=22592`. This is build verification;
 the line sensor order and steering sign still require the lifted-wheel check.
 
 ## Motor dead-zone calibration
@@ -392,24 +403,15 @@ old STM32 values 7514/7263 used a different encoder counting multiplier and
 made current-firmware speed feedback approximately four times too small. Do not
 reuse those old constants in the MSPM0 project.
 
-## Recommended structure work after measurement
+## Current module-boundary rule
 
-`Code/diansai_app.c` currently owns the scheduler, shared state, UART queue and
-protocol, motor PWM, encoders, grayscale acquisition, IMU integration,
-telemetry and OLED output. Refactor it in behavior-preserving stages:
+The staged refactor is complete. Hardware ownership is in the motor, encoder,
+IMU, grayscale, battery and board-I/O modules; control math is in the cascade,
+line and square modules; UART transport, command syntax and telemetry formatting
+are separate modules. `diansai_app.c` intentionally remains the single owner of
+mode transitions, safety permissions, targets and the 10 ms schedule. Do not move
+those values into protocol modules or create a second copy of vehicle state.
 
-1. Extract `motor_control.c/.h` with PWM initialization, direction switching,
-   raw percent output and a four-direction calibration structure. Keep zero as
-   an unconditional stop.
-2. Extract `wheeltec_protocol.c/.h` with the UART TX queue, line receiver and
-   command dispatch. Preserve the 1 ms RX polling and 500 ms motor watchdog.
-3. Extract sensor modules only after motor and protocol regression tests pass;
-   keep `diansai_app.c` as the 10 ms scheduler and top-level state coordinator.
-4. Apply measured start/run thresholds first. Add a start kick only when the
-   measured start threshold is materially higher than the sustained-run value.
-5. Add encoder closed-loop speed control as a separate operating mode rather
-   than changing the semantics of the existing raw `MOTOR` diagnostic command.
-
-After each stage, rebuild with zero warnings and repeat `HELP`, `ENCZERO`,
-lifted motor direction/watchdog, encoder polarity, IMU rotation and grayscale
-checks before continuing.
+After future structural changes, rebuild with zero warnings and repeat `HELP`,
+`ENCZERO`, lifted motor direction/watchdog, encoder polarity, IMU rotation and
+grayscale checks before continuing.

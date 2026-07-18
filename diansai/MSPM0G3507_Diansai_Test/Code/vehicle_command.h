@@ -1,0 +1,50 @@
+#ifndef VEHICLE_COMMAND_H
+#define VEHICLE_COMMAND_H
+
+#include <stdint.h>
+
+/*
+ * 上位机命令的语法类型。这里只描述“收到什么”，不执行电机、PID 或标定动作；
+ * 运行权限和安全条件仍由应用层判断，避免协议模块暗中修改车辆状态。
+ */
+typedef enum
+{
+    VEHICLE_COMMAND_UNKNOWN = 0,
+    VEHICLE_COMMAND_SQUARE,
+    VEHICLE_COMMAND_DRIVE,
+    VEHICLE_COMMAND_MOTOR,
+    VEHICLE_COMMAND_SPEED_PID,
+    VEHICLE_COMMAND_YAW_ENABLE,
+    VEHICLE_COMMAND_YAW_RATE,
+    VEHICLE_COMMAND_YAW_PID,
+    VEHICLE_COMMAND_HEADING_PID,
+    VEHICLE_COMMAND_HEADING_SET,
+    VEHICLE_COMMAND_HEADING_ENABLE,
+    VEHICLE_COMMAND_HEADING_CONFIG,
+    VEHICLE_COMMAND_LINE_PID,
+    VEHICLE_COMMAND_LINE_DIFF,
+    VEHICLE_COMMAND_LINE,
+    VEHICLE_COMMAND_LINE_CONFIG,
+    VEHICLE_COMMAND_BEEP,
+    VEHICLE_COMMAND_KEYS,
+    VEHICLE_COMMAND_STOP,
+    VEHICLE_COMMAND_PING,
+    VEHICLE_COMMAND_ZERO,
+    VEHICLE_COMMAND_IMU_ZERO,
+    VEHICLE_COMMAND_GRAY_WHITE,
+    VEHICLE_COMMAND_GRAY_BLACK,
+    VEHICLE_COMMAND_GRAY_QUERY,
+    VEHICLE_COMMAND_HELP
+} VehicleCommandType;
+
+typedef struct
+{
+    VehicleCommandType type;
+    int32_t argument[4];
+    uint8_t argument_count;
+} VehicleCommand;
+
+/* 将一行零结尾 ASCII 文本解析为定长结构；未知或参数不足时返回 UNKNOWN。 */
+void VehicleCommand_Parse(const char *line, VehicleCommand *command);
+
+#endif

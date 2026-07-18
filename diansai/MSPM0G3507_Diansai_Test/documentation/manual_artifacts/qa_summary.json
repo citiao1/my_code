@@ -1,0 +1,237 @@
+{
+  "pdf": "D:\\my_code\\my_code\\diansai\\MSPM0G3507_Diansai_Test\\output\\pdf\\MSPM0G3507_智能车完整说明书.pdf",
+  "pages": 19,
+  "characters_extracted": 26571,
+  "missing_safety_lines": [],
+  "missing_required_text": [],
+  "page_metrics": [
+    {
+      "page": 1,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        86,
+        148,
+        890,
+        829
+      ],
+      "nonwhite_ratio": 0.04506
+    },
+    {
+      "page": 2,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        85,
+        40,
+        907,
+        1357
+      ],
+      "nonwhite_ratio": 0.035
+    },
+    {
+      "page": 3,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        85,
+        40,
+        907,
+        1357
+      ],
+      "nonwhite_ratio": 0.0262
+    },
+    {
+      "page": 4,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.09242
+    },
+    {
+      "page": 5,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.0794
+    },
+    {
+      "page": 6,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.07259
+    },
+    {
+      "page": 7,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.10254
+    },
+    {
+      "page": 8,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.11237
+    },
+    {
+      "page": 9,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.07993
+    },
+    {
+      "page": 10,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        85,
+        40,
+        907,
+        1357
+      ],
+      "nonwhite_ratio": 0.0805
+    },
+    {
+      "page": 11,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.07277
+    },
+    {
+      "page": 12,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.08243
+    },
+    {
+      "page": 13,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.07507
+    },
+    {
+      "page": 14,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        85,
+        40,
+        907,
+        1357
+      ],
+      "nonwhite_ratio": 0.07796
+    },
+    {
+      "page": 15,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.07957
+    },
+    {
+      "page": 16,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.08136
+    },
+    {
+      "page": 17,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        84,
+        40,
+        908,
+        1357
+      ],
+      "nonwhite_ratio": 0.09233
+    },
+    {
+      "page": 18,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        85,
+        40,
+        907,
+        1357
+      ],
+      "nonwhite_ratio": 0.08665
+    },
+    {
+      "page": 19,
+      "width": 993,
+      "height": 1404,
+      "ink_bbox": [
+        85,
+        40,
+        907,
+        1357
+      ],
+      "nonwhite_ratio": 0.01582
+    }
+  ]
+}

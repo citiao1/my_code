@@ -475,6 +475,26 @@
               <FilePath>..\Code\vehicle_square_test.h</FilePath>
             </File>
             <File>
+              <FileName>vehicle_telemetry.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Code\vehicle_telemetry.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_telemetry.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Code\vehicle_telemetry.h</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_command.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Code\vehicle_command.c</FilePath>
+            </File>
+            <File>
+              <FileName>vehicle_command.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Code\vehicle_command.h</FilePath>
+            </File>
+            <File>
               <FileName>wheeltec_link.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Code\wheeltec_link.c</FilePath>

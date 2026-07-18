@@ -3,6 +3,13 @@
 This is an independent Keil project based on `LQ_MSPM0GX_LIB_V2.0.0`.
 It does not modify the original LQ library checkout.
 
+Complete Chinese operation, architecture and tuning manuals:
+
+- AI/reference version: `documentation/MSPM0G3507_智能车完整说明书.md`
+- Human/PDF version: `output/pdf/MSPM0G3507_智能车完整说明书.pdf`
+- PDF generation, rendered-page and extraction artifacts:
+  `documentation/manual_artifacts/`
+
 ## Included tests
 
 - WHEELTEC-IOS UART/BLE command and telemetry link at 9600 8N1
@@ -184,10 +191,12 @@ small modules that own their hardware state:
 | `vehicle_imu.c/.h` | LSM6DSR probing, calibration, yaw-rate sign and attitude update |
 | `vehicle_gray.c/.h` | Eight-channel ADC sampling, references and 0..1000 normalization |
 | `vehicle_battery.c/.h` | PB19 ADC sampling, divider conversion and low-pass filtering |
-| `wheeltec_link.c/.h` | UART0 line parsing and the non-blocking 1024-byte TX queue |
+| `vehicle_command.c/.h` | Pure text-command parsing into typed commands; no control-state ownership |
+| `vehicle_telemetry.c/.h` | All compatible TEL/STA/SPD/LIN/SQR/MOD/KEY/CAL/NRM/DBG formatting |
+| `wheeltec_link.c/.h` | UART0 RX line assembly plus DMA0-driven 1024-byte TX queue |
 | `board_io.c/.h` | Key/switch debounce, events and the non-blocking buzzer pattern queue |
 | `vehicle_cascade_control.c/.h` | Prepared heading -> yaw-rate -> wheel-speed controller |
-| `diansai_app.c/.h` | Scheduling, command semantics, watchdogs and telemetry assembly |
+| `diansai_app.c/.h` | Scheduling, typed-command semantics, mode ownership and watchdogs |
 
 V22 keeps the verified real-board key order. K1/PB15 captures the current
 background and K2/PB14 captures the current target line. With SW1 down this is
@@ -366,9 +375,11 @@ the senior developer's “set differential first, then fine tune” structure.
 
 The planned grayscale implementation is:
 
-1. Use normalized black intensity 0..1000 and channel weights
-   `[-7,-5,-3,-1,1,3,5,7]` to calculate a centroid error in -1..1. Verify the
-   physical channel order before fixing the sign.
+1. Use normalized target-line intensity 0..1000 and the verified G0-left to
+   G7-right weights `[7,5,3,1,-1,-3,-5,-7]` to calculate a centroid error.
+   A line under G0 must produce positive error and positive (left-turn) target
+   yaw rate; if the physical harness is reversed, reverse the weights once in
+   firmware instead of hiding the wiring sign with a negative Kp.
 2. Run a dedicated 20 ms line-direction PID on error x100. Its output is target
    yaw rate, not left/right wheel speed. Begin as PD with `Ki=0` and explicit
    lost-line handling.

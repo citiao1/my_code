@@ -8,6 +8,8 @@
 ".\objects\vehicle_gray.o"
 ".\objects\vehicle_line_control.o"
 ".\objects\vehicle_square_test.o"
+".\objects\vehicle_telemetry.o"
+".\objects\vehicle_command.o"
 ".\objects\wheeltec_link.o"
 ".\objects\board_io.o"
 ".\objects\main_diansai.o"
