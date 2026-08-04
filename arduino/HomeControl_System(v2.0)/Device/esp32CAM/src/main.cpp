@@ -19,8 +19,8 @@
 // ===========================
 // 2. 填写你的 WiFi 账号密码
 // ===========================
-const char* ssid = "CMCC-6Ftg";
-const char* password = "a9u64egf";
+const char* ssid = "abc";
+const char* password = "fsx20060809";
 
 void startCameraServer();
 void setupLedFlash(int pin);
@@ -30,7 +30,7 @@ void setup() {
   Serial.setDebugOutput(true);
   Serial.println();
 
-  camera_config_t config;
+  camera_config_t config = {};
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
   config.pin_d0 = Y2_GPIO_NUM;
@@ -61,19 +61,21 @@ void setup() {
   
   config.pixel_format = PIXFORMAT_JPEG; 
   config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
-  config.fb_location = CAMERA_FB_IN_PSRAM;
+  config.fb_location = CAMERA_FB_IN_DRAM;
   config.jpeg_quality = 12; // 质量适中
   config.fb_count = 1;
 
-  // 如果有 PSRAM (AI Thinker 都有)，开启高性能模式
+  const bool hasPsram = psramFound();
+  Serial.printf("PSRAM: %s, size: %u bytes\n",
+                hasPsram ? "found" : "not found",
+                hasPsram ? ESP.getPsramSize() : 0);
+
+  // 先用单缓冲稳定模式验证摄像头，避免双缓冲占用过多 PSRAM。
   if(config.pixel_format == PIXFORMAT_JPEG){
-    if(psramFound()){
-      config.jpeg_quality = 10; // 质量更好一点
-      config.fb_count = 2;      // 开启双缓冲！！这是流畅的关键
-      config.grab_mode = CAMERA_GRAB_LATEST; // 总是抓取最新帧，降低延迟
+    if(hasPsram){
+      config.fb_location = CAMERA_FB_IN_PSRAM;
     } else {
-      // 没有 PSRAM 的备用方案
-      config.frame_size = FRAMESIZE_SVGA;
+      // 没有 PSRAM 时保持 QVGA，避免 DRAM 帧缓冲过大。
       config.fb_location = CAMERA_FB_IN_DRAM;
     }
   } else {
@@ -96,6 +98,7 @@ void setup() {
   }
 
   sensor_t * s = esp_camera_sensor_get();
+  Serial.printf("Camera sensor PID: 0x%04x\n", s->id.PID);
   // 修正部分摄像头的色偏和翻转问题
   if (s->id.PID == OV3660_PID) {
     s->set_vflip(s, 1);
@@ -106,6 +109,15 @@ void setup() {
   // 这里再强制设置一下 QVGA，双重保险
   if(config.pixel_format == PIXFORMAT_JPEG){
     s->set_framesize(s, FRAMESIZE_QVGA);
+  }
+
+  camera_fb_t *testFrame = esp_camera_fb_get();
+  if (testFrame) {
+    Serial.printf("Initial camera capture OK: %ux%u, %u bytes\n",
+                  testFrame->width, testFrame->height, testFrame->len);
+    esp_camera_fb_return(testFrame);
+  } else {
+    Serial.println("Initial camera capture FAILED: check 5V power, camera ribbon cable, and OV2640 module");
   }
 
 #if defined(CAMERA_MODEL_M5STACK_WIDE) || defined(CAMERA_MODEL_M5STACK_ESP32CAM)
