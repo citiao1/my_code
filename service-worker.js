@@ -1,10 +1,10 @@
-const CACHE_NAME = "c30d-console-v2";
+const CACHE_NAME = "c30d-console-v3";
 const APP_ASSETS = [
   "./",
   "./?mobile=1",
   "./index.html",
-  "./styles.css?v=9",
-  "./app.js?v=14",
+  "./styles.css?v=10",
+  "./app.js?v=15",
   "./manifest.webmanifest",
   "./app-icon.svg",
   "./app-icon-192.png",

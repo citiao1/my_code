@@ -65,6 +65,7 @@ const ui = {
   commandForm: document.querySelector('#commandForm'),
   commandInput: document.querySelector('#commandInput'),
   eventText: document.querySelector('#eventText'),
+  mobileEventText: document.querySelector('#mobileEventText'),
   driveButtons: [...document.querySelectorAll('[data-motion]')],
   jogButtons: [...document.querySelectorAll('[data-jog]')],
   wheelCards: Object.fromEntries([...document.querySelectorAll('[data-wheel]')]
@@ -139,6 +140,7 @@ const joystickState = {
 };
 
 if (MOBILE_DIRECT) {
+  document.documentElement.classList.add('mobile-direct-root');
   document.body.classList.add('mobile-direct');
   [...ui.connectionMode.options].forEach((option) => {
     if (option.value !== 'ble') option.remove();
@@ -153,6 +155,7 @@ function nowTime() {
 
 function setEvent(message) {
   ui.eventText.textContent = `${nowTime()}  ${message}`;
+  if (ui.mobileEventText) ui.mobileEventText.textContent = message;
 }
 
 function appendLog(direction, message, kind = '') {

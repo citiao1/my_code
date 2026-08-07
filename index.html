@@ -2,18 +2,18 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#eef2f1">
   <meta name="mobile-web-app-capable" content="yes">
   <title>C30D 麦轮底盘控制台</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="app-icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <h1>C30D 麦轮底盘控制台</h1>
+      <h1><span class="desktop-title">C30D 麦轮底盘控制台</span><span class="mobile-title">C30D DRIVE</span></h1>
       <p>STM32F407VET6 · 四驱 MG513 · USART2 9600</p>
     </div>
 
@@ -54,7 +54,6 @@
           <button class="drive-key key-a" data-motion="A" type="button"><kbd>A</kbd><span>左移</span></button>
           <button class="drive-key key-s" data-motion="S" type="button"><kbd>S</kbd><span>后退</span></button>
           <button class="drive-key key-d" data-motion="D" type="button"><kbd>D</kbd><span>右移</span></button>
-          <button id="stopButton" class="stop-key" type="button">STOP</button>
         </div>
 
         <div class="drive-settings">
@@ -63,6 +62,8 @@
             <strong><output id="speedValue">30</output> RPM / °/s</strong>
           </label>
           <input id="speedSlider" type="range" min="5" max="120" step="1" value="30">
+          <button id="stopButton" class="stop-key drive-stop" type="button">STOP</button>
+          <span id="mobileEventText" class="mobile-event">未连接</span>
           <div class="connection-note">
             <span>网页</span><strong id="webPath">ws://127.0.0.1:8766</strong>
             <span>VOFA</span><strong>TCP 127.0.0.1:1347</strong>
@@ -71,7 +72,7 @@
       </div>
 
       <div class="joystick-panel" aria-label="手机双摇杆控制">
-        <div class="joystick-control">
+        <div class="joystick-control translation">
           <div class="joystick-heading">
             <strong>平移</strong>
             <output id="translationJoystickValue">前后 0 · 左右 0</output>
@@ -81,7 +82,7 @@
             <span class="joystick-knob"></span>
           </div>
         </div>
-        <div class="joystick-control">
+        <div class="joystick-control rotation-control">
           <div class="joystick-heading">
             <strong>旋转</strong>
             <output id="rotationJoystickValue">角速度 0°/s</output>
@@ -239,6 +240,6 @@
     <span>CONTROL 20 ms · WATCHDOG 300 ms</span>
   </footer>
 
-  <script src="app.js?v=14"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>

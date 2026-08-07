@@ -47,6 +47,7 @@ button:disabled { cursor: not-allowed; opacity: 0.42; }
 .brand h1, h2, h3, p { margin: 0; }
 .brand h1 { font-size: 21px; line-height: 1.2; }
 .brand p { margin-top: 5px; color: var(--muted); font: 12px/1.3 Consolas, monospace; }
+.mobile-title { display: none; }
 
 .connection-tools { display: flex; align-items: end; gap: 9px; }
 .connection-tools label { display: grid; gap: 4px; color: var(--muted); font-size: 11px; }
@@ -131,7 +132,7 @@ main { width: min(1380px, 100%); margin: 0 auto; }
   width: min(100%, 430px);
   display: grid;
   grid-template-columns: repeat(3, minmax(82px, 1fr));
-  grid-template-rows: repeat(2, 76px) 48px;
+  grid-template-rows: repeat(2, 76px);
   gap: 9px;
 }
 .drive-key, .stop-key {
@@ -152,8 +153,10 @@ main { width: min(1380px, 100%); margin: 0 auto; }
 .key-a { grid-column: 1; grid-row: 2; }
 .key-s { grid-column: 2; grid-row: 2; }
 .key-d { grid-column: 3; grid-row: 2; }
-.stop-key { grid-column: 1 / -1; grid-row: 3; color: var(--red); border-color: #d9969c; font: 700 14px/1 Consolas, monospace; }
+.stop-key { color: var(--red); border-color: #d9969c; font: 700 14px/1 Consolas, monospace; }
 .stop-key:hover:not(:disabled) { color: #fff; background: var(--red); border-color: var(--red); }
+.drive-stop { width: 100%; min-height: 46px; margin-top: 4px; box-shadow: none; }
+.mobile-event { display: none; }
 
 .drive-settings { min-width: 0; }
 .speed-control { display: flex; align-items: baseline; justify-content: space-between; }
@@ -390,4 +393,131 @@ main { width: min(1380px, 100%); margin: 0 auto; }
   .joystick-panel { gap: 14px; }
   .joystick-heading { align-items: center; flex-direction: column; gap: 4px; }
   .joystick-knob { width: 48px; height: 48px; }
+}
+
+html.mobile-direct-root, html.mobile-direct-root body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+.mobile-direct { background: #edf2f0; }
+.mobile-direct .desktop-title,
+.mobile-direct .brand p,
+.mobile-direct .connection-tools label,
+.mobile-direct .status-band,
+.mobile-direct .pid-section,
+.mobile-direct .heading-section,
+.mobile-direct .test-section,
+.mobile-direct .wheel-section,
+.mobile-direct .log-section,
+.mobile-direct .statusbar,
+.mobile-direct .section-heading,
+.mobile-direct .direction-pad,
+.mobile-direct .connection-note {
+  display: none;
+}
+.mobile-direct .mobile-title { display: inline; }
+.mobile-direct .topbar {
+  height: 62px;
+  min-height: 62px;
+  padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  border-bottom-color: #bac6c1;
+}
+.mobile-direct .brand { min-width: 0; }
+.mobile-direct .brand h1 { white-space: nowrap; font: 800 17px/1 Consolas, monospace; }
+.mobile-direct .connection-tools {
+  width: auto;
+  min-width: 0;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mobile-direct .connection-tools .button { min-width: 70px; min-height: 42px; }
+.mobile-direct .connection-tools .badge {
+  min-width: 96px;
+  max-width: 150px;
+  min-height: 42px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mobile-direct main {
+  width: 100%;
+  height: calc(100dvh - 62px);
+  margin: 0;
+}
+.mobile-direct .drive-section {
+  width: 100%;
+  height: 100%;
+  padding: 14px max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px 20px;
+}
+.mobile-direct .drive-layout, .mobile-direct .joystick-panel { display: contents; }
+.mobile-direct .drive-settings {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  width: min(100%, 520px);
+  min-width: 0;
+  justify-self: center;
+}
+.mobile-direct .speed-control { align-items: center; }
+.mobile-direct .speed-control strong { font-size: 22px; }
+.mobile-direct #speedSlider { height: 30px; margin: 8px 0 10px; }
+.mobile-direct .drive-stop { min-height: 46px; margin: 0; background: #fff; }
+.mobile-direct .mobile-event {
+  display: block;
+  min-height: 18px;
+  margin-top: 7px;
+  overflow: hidden;
+  color: var(--muted);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 11px/18px Consolas, monospace;
+}
+.mobile-direct .joystick-control { align-self: center; gap: 9px; }
+.mobile-direct .joystick-control.translation { grid-column: 1; grid-row: 2; }
+.mobile-direct .joystick-control.rotation-control { grid-column: 2; grid-row: 2; }
+.mobile-direct .joystick-heading { width: min(100%, 200px); }
+.mobile-direct .joystick-base { width: clamp(126px, 38vw, 190px); }
+
+@media (orientation: landscape) and (max-height: 600px) {
+  .mobile-direct .topbar { height: 54px; min-height: 54px; padding-top: 6px; padding-bottom: 6px; }
+  .mobile-direct .connection-tools .button,
+  .mobile-direct .connection-tools .badge { min-height: 40px; }
+  .mobile-direct main { height: calc(100dvh - 54px); }
+  .mobile-direct .drive-section {
+    padding-top: 10px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    grid-template-columns: minmax(190px, 1fr) minmax(160px, 0.68fr) minmax(190px, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .mobile-direct .joystick-control.translation { grid-column: 1; grid-row: 1; }
+  .mobile-direct .drive-settings { grid-column: 2; grid-row: 1; width: 100%; }
+  .mobile-direct .joystick-control.rotation-control { grid-column: 3; grid-row: 1; }
+  .mobile-direct .speed-control { display: grid; justify-items: center; gap: 4px; }
+  .mobile-direct .speed-control strong { font-size: 20px; }
+  .mobile-direct #speedSlider { margin: 7px 0 9px; }
+  .mobile-direct .drive-stop { min-height: 54px; }
+  .mobile-direct .joystick-base { width: min(43vh, 24vw, 190px); }
+  .mobile-direct .joystick-heading { justify-content: center; gap: 14px; }
+}
+
+@media (max-width: 420px) and (orientation: portrait) {
+  .mobile-direct .topbar { gap: 7px; }
+  .mobile-direct .brand h1 { font-size: 15px; }
+  .mobile-direct .connection-tools { gap: 6px; }
+  .mobile-direct .connection-tools .button { min-width: 62px; padding-left: 9px; padding-right: 9px; }
+  .mobile-direct .connection-tools .badge { min-width: 36px; max-width: 104px; padding-left: 8px; padding-right: 8px; }
+  .mobile-direct .drive-section { gap: 10px 12px; }
+  .mobile-direct .joystick-heading { flex-direction: column; gap: 3px; }
 }
