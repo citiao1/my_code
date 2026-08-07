@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#eef2f1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>C30D 麦轮底盘控制台</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="app-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=9">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>C30D 麦轮底盘控制台</h1>
+      <p>STM32F407VET6 · 四驱 MG513 · USART2 9600</p>
+    </div>
+
+    <div class="connection-tools">
+      <label>
+        <span>连接方式</span>
+        <select id="connectionMode">
+          <option value="bridge">本地桥接 + VOFA</option>
+          <option value="serial">浏览器直连串口</option>
+          <option value="ble">浏览器直连 BLE</option>
+        </select>
+      </label>
+      <button id="connectButton" class="button primary" type="button">连接</button>
+      <span id="connectionBadge" class="badge offline"><span class="dot"></span>未连接</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="status-band" aria-label="车辆状态">
+      <div><span>运动模式</span><strong id="modeValue">STOP</strong></div>
+      <div><span>驱动使能 PD3</span><strong id="enableValue">--</strong></div>
+      <div><span>电池电压</span><strong id="batteryValue">--</strong></div>
+      <div><span>MPU6050</span><strong id="gyroValue">--</strong></div>
+      <div><span>运行时间</span><strong id="timeValue">--</strong></div>
+      <div><span>遥测状态</span><strong id="telemetryValue">等待数据</strong></div>
+    </section>
+
+    <section class="drive-section">
+      <div class="section-heading">
+        <div><span class="kicker">DRIVE</span><h2>底盘控制</h2></div>
+      </div>
+
+      <div class="drive-layout">
+        <div class="direction-pad" aria-label="麦轮方向控制">
+          <button class="drive-key key-q" data-motion="Q" type="button" title="原地左旋"><kbd>Q</kbd><span>左旋</span></button>
+          <button class="drive-key key-w" data-motion="W" type="button"><kbd>W</kbd><span>前进</span></button>
+          <button class="drive-key key-e" data-motion="E" type="button" title="原地右旋"><kbd>E</kbd><span>右旋</span></button>
+          <button class="drive-key key-a" data-motion="A" type="button"><kbd>A</kbd><span>左移</span></button>
+          <button class="drive-key key-s" data-motion="S" type="button"><kbd>S</kbd><span>后退</span></button>
+          <button class="drive-key key-d" data-motion="D" type="button"><kbd>D</kbd><span>右移</span></button>
+          <button id="stopButton" class="stop-key" type="button">STOP</button>
+        </div>
+
+        <div class="drive-settings">
+          <label class="speed-control" for="speedSlider">
+            <span>速度档位</span>
+            <strong><output id="speedValue">30</output> RPM / °/s</strong>
+          </label>
+          <input id="speedSlider" type="range" min="5" max="120" step="1" value="30">
+          <div class="connection-note">
+            <span>网页</span><strong id="webPath">ws://127.0.0.1:8766</strong>
+            <span>VOFA</span><strong>TCP 127.0.0.1:1347</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="joystick-panel" aria-label="手机双摇杆控制">
+        <div class="joystick-control">
+          <div class="joystick-heading">
+            <strong>平移</strong>
+            <output id="translationJoystickValue">前后 0 · 左右 0</output>
+          </div>
+          <div id="translationJoystick" class="joystick-base" role="application"
+               aria-label="平移摇杆" aria-disabled="true">
+            <span class="joystick-knob"></span>
+          </div>
+        </div>
+        <div class="joystick-control">
+          <div class="joystick-heading">
+            <strong>旋转</strong>
+            <output id="rotationJoystickValue">角速度 0°/s</output>
+          </div>
+          <div id="rotationJoystick" class="joystick-base rotation" role="application"
+               aria-label="旋转摇杆" aria-disabled="true">
+            <span class="joystick-knob"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pid-section">
+      <div class="section-heading">
+        <div><span class="kicker">YAW RATE</span><h2>位置式角速度环</h2></div>
+        <label class="pid-switch">
+          <input id="yawPidEnabled" type="checkbox" checked>
+          <span>角速度环</span><b id="yawPidState">ON</b>
+        </label>
+      </div>
+
+      <div class="yaw-stats">
+        <div><span>目标角速度</span><strong id="yawTargetValue">0.00 °/s</strong></div>
+        <div><span>实际角速度</span><strong id="yawRateValue">0.00 °/s</strong></div>
+        <div><span>旋转输出</span><strong id="yawOutputValue">0.00 RPM</strong></div>
+        <div><span>相对航向</span><strong id="yawAngleValue">0.00°</strong></div>
+      </div>
+
+      <div class="yaw-actions">
+        <button id="resetYawPidButton" class="button secondary" type="button">清空积分</button>
+        <button id="calibrateGyroButton" class="button secondary" type="button">校准陀螺仪</button>
+        <button id="zeroYawButton" class="button quiet" type="button">航向清零</button>
+      </div>
+    </section>
+
+    <section class="heading-section">
+      <div class="section-heading">
+        <div><span class="kicker">HEADING HOLD</span><h2>位置式航向角外环</h2></div>
+        <label class="pid-switch">
+          <input id="headingEnabled" type="checkbox" checked>
+          <span>航向保持</span><b id="headingState">ON</b>
+        </label>
+      </div>
+
+      <div class="heading-stats">
+        <div><span>目标航向</span><strong id="headingTargetValue">0.00°</strong></div>
+        <div><span>实际航向</span><strong id="headingFeedbackValue">0.00°</strong></div>
+        <div><span>航向误差</span><strong id="headingErrorValue">0.00°</strong></div>
+        <div><span>外环输出</span><strong id="headingOutputValue">0.00 °/s</strong></div>
+      </div>
+
+      <div class="heading-actions">
+        <button id="captureHeadingButton" class="button quiet" type="button">重新捕获航向</button>
+      </div>
+    </section>
+
+    <section class="test-section">
+      <div class="section-heading">
+        <div><span class="kicker">AUTO TEST</span><h2>波形自动测试</h2></div>
+        <strong id="autoTestState" class="test-state">IDLE</strong>
+      </div>
+      <div class="test-controls">
+        <label><span>测试模式</span><select id="autoTestMode"><option value="route">折线路径</option><option value="yaw">角速度正反阶跃</option><option value="disturbance">0°抗扰保持</option></select></label>
+        <label data-motion-test-field><span id="autoTestValueLabel">直行速度 (RPM)</span><input id="autoTestValue" type="number" min="5" max="120" step="1" value="15"></label>
+        <label><span id="autoTestDurationLabel">每段直行时间 (s)</span><input id="autoTestDuration" type="number" min="0.5" max="15" step="0.5" value="2"></label>
+        <label data-motion-test-field><span id="autoTestCyclesLabel">直线段数</span><input id="autoTestCycles" type="number" min="2" max="8" step="1" value="3"></label>
+        <label data-route-test-field><span>每次转角 (°)</span><input id="autoTestTurnAngle" type="number" min="10" max="170" step="5" value="45"></label>
+        <label data-route-test-field><span>转角超时 (s)</span><input id="autoTestTurnTimeout" type="number" min="2" max="30" step="1" value="10"></label>
+        <label data-route-test-field><span>转向方向</span><select id="autoTestTurnDirection"><option value="1">左转</option><option value="-1">右转</option></select></label>
+        <button id="startAutoTestButton" class="button primary" type="button">开始测试</button>
+        <button id="stopAutoTestButton" class="button quiet" type="button" disabled>中止并停车</button>
+      </div>
+    </section>
+
+    <section class="wheel-section">
+      <div class="section-heading">
+        <div><span class="kicker">WHEEL FEEDBACK</span><h2>四轮实时数据</h2></div>
+        <button id="zeroButton" class="button secondary" type="button">编码器清零</button>
+      </div>
+
+      <div class="wheel-grid">
+        <article class="wheel-card" data-wheel="D">
+          <header><span class="wheel-id">D</span><div><h3>左前轮</h3><p>TIM5</p></div></header>
+          <div class="encoder-block"><span>累计计数</span><strong data-encoder="D">0</strong></div>
+          <dl class="wheel-stats">
+            <div><dt>实测</dt><dd><b data-rpm="D">0</b> RPM</dd></div>
+            <div><dt>目标</dt><dd><b data-target="D">0</b> RPM</dd></div>
+            <div><dt>PWM</dt><dd><b data-pwm="D">0</b>%</dd></div>
+          </dl>
+          <div class="jog-controls">
+            <button data-jog="D-" type="button" title="左前轮反转">−</button>
+            <button data-jog="D+" type="button" title="左前轮正转">+</button>
+          </div>
+        </article>
+
+        <article class="wheel-card" data-wheel="C">
+          <header><span class="wheel-id">C</span><div><h3>右前轮</h3><p>TIM4</p></div></header>
+          <div class="encoder-block"><span>累计计数</span><strong data-encoder="C">0</strong></div>
+          <dl class="wheel-stats">
+            <div><dt>实测</dt><dd><b data-rpm="C">0</b> RPM</dd></div>
+            <div><dt>目标</dt><dd><b data-target="C">0</b> RPM</dd></div>
+            <div><dt>PWM</dt><dd><b data-pwm="C">0</b>%</dd></div>
+          </dl>
+          <div class="jog-controls">
+            <button data-jog="C-" type="button" title="右前轮反转">−</button>
+            <button data-jog="C+" type="button" title="右前轮正转">+</button>
+          </div>
+        </article>
+
+        <article class="wheel-card" data-wheel="B">
+          <header><span class="wheel-id">B</span><div><h3>左后轮</h3><p>TIM3</p></div></header>
+          <div class="encoder-block"><span>累计计数</span><strong data-encoder="B">0</strong></div>
+          <dl class="wheel-stats">
+            <div><dt>实测</dt><dd><b data-rpm="B">0</b> RPM</dd></div>
+            <div><dt>目标</dt><dd><b data-target="B">0</b> RPM</dd></div>
+            <div><dt>PWM</dt><dd><b data-pwm="B">0</b>%</dd></div>
+          </dl>
+          <div class="jog-controls">
+            <button data-jog="B-" type="button" title="左后轮反转">−</button>
+            <button data-jog="B+" type="button" title="左后轮正转">+</button>
+          </div>
+        </article>
+
+        <article class="wheel-card" data-wheel="A">
+          <header><span class="wheel-id">A</span><div><h3>右后轮</h3><p>TIM2</p></div></header>
+          <div class="encoder-block"><span>累计计数</span><strong data-encoder="A">0</strong></div>
+          <dl class="wheel-stats">
+            <div><dt>实测</dt><dd><b data-rpm="A">0</b> RPM</dd></div>
+            <div><dt>目标</dt><dd><b data-target="A">0</b> RPM</dd></div>
+            <div><dt>PWM</dt><dd><b data-pwm="A">0</b>%</dd></div>
+          </dl>
+          <div class="jog-controls">
+            <button data-jog="A-" type="button" title="右后轮反转">−</button>
+            <button data-jog="A+" type="button" title="右后轮正转">+</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="log-section">
+      <div class="section-heading compact">
+        <div><span class="kicker">SERIAL LOG</span><h2>通信记录</h2></div>
+        <button id="clearLogButton" class="button quiet" type="button">清空</button>
+      </div>
+      <div id="terminal" class="terminal" role="log" aria-live="polite"></div>
+      <form id="commandForm" class="command-line">
+        <input id="commandInput" type="text" maxlength="63" autocomplete="off" placeholder="STATUS / DRV,30,15,10 / STOP">
+        <button class="button secondary" type="submit">发送</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="statusbar">
+    <span id="eventText">等待连接</span>
+    <span>CONTROL 20 ms · WATCHDOG 300 ms</span>
+  </footer>
+
+  <script src="app.js?v=14"></script>
+</body>
+</html>
