@@ -1,10 +1,9 @@
-const CACHE_NAME = "c30d-console-v3";
+const CACHE_NAME = "c30d-console-v12";
 const APP_ASSETS = [
   "./",
-  "./?mobile=1",
   "./index.html",
-  "./styles.css?v=10",
-  "./app.js?v=15",
+  "./touch-remote.css?v=2",
+  "./touch-remote.js?v=2",
   "./manifest.webmanifest",
   "./app-icon.svg",
   "./app-icon-192.png",
@@ -33,7 +32,7 @@ self.addEventListener("fetch", (event) => {
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return response;
       })
-      .catch(() => caches.match("./?mobile=1")));
+      .catch(() => caches.match("./index.html")));
     return;
   }
 

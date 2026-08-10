@@ -1,12 +1,14 @@
 {
   "name": "C30D 麦轮底盘遥控器",
   "short_name": "C30D 遥控",
-  "start_url": "./?mobile=1",
+  "start_url": "./",
+  "id": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#eef2f1",
-  "theme_color": "#087d78",
+  "display_override": ["standalone", "fullscreen"],
+  "orientation": "landscape",
+  "background_color": "#101715",
+  "theme_color": "#101715",
   "icons": [
     {
       "src": "app-icon-192.png",
