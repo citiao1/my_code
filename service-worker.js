@@ -1,9 +1,9 @@
-const CACHE_NAME = "c30d-console-v12";
+const CACHE_NAME = "c30d-console-v14";
 const APP_ASSETS = [
   "./",
   "./index.html",
-  "./touch-remote.css?v=2",
-  "./touch-remote.js?v=2",
+  "./touch-remote.css?v=4",
+  "./touch-remote.js?v=4",
   "./manifest.webmanifest",
   "./app-icon.svg",
   "./app-icon-192.png",

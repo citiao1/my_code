@@ -28,8 +28,8 @@ function buildRemoteEndpoints() {
     const target = new URL(savedTarget);
     return {
       ready: true,
-      bridge: `${target.protocol === 'https:' ? 'wss:' : 'ws:'}//${target.host}/ws`,
-      camera: `${target.origin}/camera`,
+      bridge: `${target.protocol === 'https:' ? 'wss:' : 'ws:'}//${target.hostname}:8443`,
+      camera: `${target.protocol}//${target.hostname}:10000/camera`,
     };
   }
 
@@ -41,8 +41,8 @@ function buildRemoteEndpoints() {
   if (window.location.protocol === 'https:') {
     return {
       ready: true,
-      bridge: `wss://${window.location.host}/ws`,
-      camera: `${window.location.origin}/camera`,
+      bridge: `wss://${window.location.hostname}:8443`,
+      camera: `https://${window.location.hostname}:10000/camera`,
     };
   }
 
