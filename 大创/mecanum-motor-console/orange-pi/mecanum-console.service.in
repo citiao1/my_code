@@ -1,0 +1,21 @@
+[Unit]
+Description=Mecanum motor web console, UART bridge and WebRTC camera
+Wants=network-online.target
+After=network-online.target tailscaled.service
+
+[Service]
+Type=simple
+User=@SERVICE_USER@
+Group=@SERVICE_GROUP@
+SupplementaryGroups=dialout video
+WorkingDirectory=@PROJECT_DIR@
+Environment=HOME=@SERVICE_HOME@
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/bash @PROJECT_DIR@/orange-pi/start.sh
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=10
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

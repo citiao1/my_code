@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#101715">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>C30D 遥控上位机</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="app-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="touch-remote.css?v=5">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>C30D REMOTE</h1>
+      <p>麦轮底盘遥控上位机</p>
+    </div>
+    <div class="connection-tools">
+      <span id="connectionBadge" class="badge offline"><span class="dot"></span>正在连接</span>
+      <button id="connectButton" class="button connect" type="button">连接</button>
+    </div>
+  </header>
+
+  <main class="remote-layout">
+    <section class="camera-section" aria-label="实时图传">
+      <div class="section-heading">
+        <div><span>CAMERA</span><h2>实时图传</h2></div>
+        <div class="camera-actions">
+          <strong id="cameraState">连接中</strong>
+          <button id="cameraReloadButton" class="button secondary" type="button">重连图传</button>
+        </div>
+      </div>
+      <div class="camera-view">
+        <iframe id="cameraFrame" title="香橙派 USB 摄像头画面"
+                allow="autoplay; fullscreen; picture-in-picture"></iframe>
+        <div id="cameraPlaceholder" class="camera-placeholder">等待摄像头画面</div>
+      </div>
+    </section>
+
+    <section class="control-section" aria-label="底盘遥控">
+      <div class="speed-panel">
+        <label for="speedSlider">
+          <span>速度</span>
+          <strong><output id="speedValue">30</output><small>RPM / °/s</small></strong>
+        </label>
+        <input id="speedSlider" type="range" min="5" max="120" step="1" value="30">
+      </div>
+
+      <div class="joystick-panel">
+        <div class="joystick-control">
+          <div class="joystick-heading">
+            <strong>平移</strong>
+            <output id="translationJoystickValue">前后 0 · 左右 0</output>
+          </div>
+          <div id="translationJoystick" class="joystick-base" role="application"
+               aria-label="平移摇杆" aria-disabled="true">
+            <span class="joystick-knob"></span>
+          </div>
+        </div>
+
+        <div class="joystick-control">
+          <div class="joystick-heading">
+            <strong>旋转</strong>
+            <output id="rotationJoystickValue">角速度 0°/s</output>
+          </div>
+          <div id="rotationJoystick" class="joystick-base rotation" role="application"
+               aria-label="旋转摇杆" aria-disabled="true">
+            <span class="joystick-knob"></span>
+          </div>
+        </div>
+      </div>
+
+      <button id="stopButton" class="stop-button" type="button" disabled>STOP</button>
+      <p id="eventText" class="event-text" aria-live="polite">等待控制链路</p>
+    </section>
+  </main>
+
+  <script src="touch-remote.js?v=5"></script>
+</body>
+</html>
