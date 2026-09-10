@@ -1,0 +1,3 @@
+source C:\msre_exp\msre_ef3244b355794a17\circuit.cir
+op
+write C:\msre_exp\msre_ef3244b355794a17\result.raw

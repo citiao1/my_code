@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" font-family="Segoe UI, Arial, sans-serif">
+<text x="480.0" y="28" text-anchor="middle" font-size="19" font-weight="600">5V voltage divider</text>
+<line x1="76.0" y1="46" x2="76.0" y2="504" stroke="#e5e7eb" stroke-width="1"/>
+<text x="76.0" y="522" text-anchor="middle" font-size="12" fill="#6b7280">4.5</text>
+<line x1="248.0" y1="46" x2="248.0" y2="504" stroke="#e5e7eb" stroke-width="1"/>
+<text x="248.0" y="522" text-anchor="middle" font-size="12" fill="#6b7280">4.7</text>
+<line x1="420.0" y1="46" x2="420.0" y2="504" stroke="#e5e7eb" stroke-width="1"/>
+<text x="420.0" y="522" text-anchor="middle" font-size="12" fill="#6b7280">4.9</text>
+<line x1="592.0" y1="46" x2="592.0" y2="504" stroke="#e5e7eb" stroke-width="1"/>
+<text x="592.0" y="522" text-anchor="middle" font-size="12" fill="#6b7280">5.1</text>
+<line x1="764.0" y1="46" x2="764.0" y2="504" stroke="#e5e7eb" stroke-width="1"/>
+<text x="764.0" y="522" text-anchor="middle" font-size="12" fill="#6b7280">5.3</text>
+<line x1="936.0" y1="46" x2="936.0" y2="504" stroke="#e5e7eb" stroke-width="1"/>
+<text x="936.0" y="522" text-anchor="middle" font-size="12" fill="#6b7280">5.5</text>
+<line x1="76" y1="46.0" x2="936" y2="46.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="68" y="50.0" text-anchor="end" font-size="12" fill="#6b7280">2.625</text>
+<line x1="76" y1="137.6" x2="936" y2="137.6" stroke="#e5e7eb" stroke-width="1"/>
+<text x="68" y="141.6" text-anchor="end" font-size="12" fill="#6b7280">2.075</text>
+<line x1="76" y1="229.2" x2="936" y2="229.2" stroke="#e5e7eb" stroke-width="1"/>
+<text x="68" y="233.2" text-anchor="end" font-size="12" fill="#6b7280">1.525</text>
+<line x1="76" y1="320.8" x2="936" y2="320.8" stroke="#e5e7eb" stroke-width="1"/>
+<text x="68" y="324.8" text-anchor="end" font-size="12" fill="#6b7280">0.9748</text>
+<line x1="76" y1="412.4" x2="936" y2="412.4" stroke="#e5e7eb" stroke-width="1"/>
+<text x="68" y="416.4" text-anchor="end" font-size="12" fill="#6b7280">0.4248</text>
+<line x1="76" y1="504.0" x2="936" y2="504.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="68" y="508.0" text-anchor="end" font-size="12" fill="#6b7280">-0.1253</text>
+<rect x="76" y="46" width="860" height="458" fill="none" stroke="#9ca3af" stroke-width="1"/>
+<text x="76" y="546" font-size="13" fill="#374151">V(in)</text>
+<text x="14" y="280.0" font-size="13" fill="#374151" transform="rotate(-90 14 280.0)" text-anchor="middle">value</text>
+<polyline points="506.0,66.8" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="506.0" cy="66.8" r="3" fill="#2563eb"/>
+<polyline points="506.0,483.2" fill="none" stroke="#dc2626" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="506.0" cy="483.2" r="3" fill="#dc2626"/>
+<line x1="88" y1="64" x2="114" y2="64" stroke="#2563eb" stroke-width="3"/>
+<text x="122" y="68" font-size="13" fill="#374151">V(out)</text>
+<line x1="88" y1="86" x2="114" y2="86" stroke="#dc2626" stroke-width="3"/>
+<text x="122" y="90" font-size="13" fill="#374151">I(v1)</text>
+</svg>

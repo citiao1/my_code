@@ -1,0 +1,96 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [4 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 1468 >>
+stream
+BT
+/F1 11 Tf
+50 800 Td
+15 TL
+(Multisim Circuit Experiment Report) Tj
+T*
+() Tj
+T*
+(Generated automatically by Multisim MCP) Tj
+T*
+() Tj
+T*
+(Experiment overview) Tj
+T*
+(5V voltage divider Reproducibility - Multisim design: circuit.ms14 - Analysis commands: op -) Tj
+T*
+( Simulation succeeded: True - Points: 1 - Columns: V\(in\), V\(out\), I\(v1\) Circuit netlist spic) Tj
+T*
+(e V1 in 0 5 R1 in out 10k R2 out 0 10k .end Artifacts - Editable circuit: circuit.ms14 - Sch) Tj
+T*
+(ematic: ![schematic]\(schematic.png\) - Data: data.csv - Plot: ![plot]\(plot.svg\) Data preview ) Tj
+T*
+(V\(in\) V\(out\) I\(v1\) --- --- --- 5 2.5 -0.00025 Automatic measurements signal first last min m) Tj
+T*
+(ax mean --- ---: ---: ---: ---: ---: V\(in\) 5 5 5 5 5 V\(out\) 2.5 2.5 2.5 2.5 2.5 I\(v1\) -0.000) Tj
+T*
+(25 -0.00025 -0.00025 -0.00025 -0.00025 Diagnostics - Timed out: False - Last error: Generate) Tj
+T*
+(d by the unofficial Multisim MCP. Verify safety-critical results independently.) Tj
+T*
+() Tj
+T*
+(Data summary) Tj
+T*
+(V\(in\): N=1, min=5, max=5, mean=5) Tj
+T*
+(V\(out\): N=1, min=2.5, max=2.5, mean=2.5) Tj
+T*
+(I\(v1\): N=1, min=-0.00025, max=-0.00025, mean=-0.00025) Tj
+T*
+() Tj
+T*
+(Requirement verification) Tj
+T*
+(No verification requirements were provided.) Tj
+T*
+() Tj
+T*
+(Circuit netlist) Tj
+T*
+(V1 in 0 5) Tj
+T*
+(R1 in out 10k) Tj
+T*
+(R2 out 0 10k) Tj
+T*
+(.end) Tj
+T*
+() Tj
+T*
+(Reproducibility) Tj
+T*
+(manifest.json contains SHA-256 hashes for all artifacts.) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000121 00000 n 
+0000000191 00000 n 
+0000000317 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1837
+%%EOF

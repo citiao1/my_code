@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "experiment_id": "exp-324ed7abfc45e5244e3352cc",
+  "generator": {
+    "name": "multisim-mcp",
+    "version": "1.1.0"
+  },
+  "runtime": {
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.22631-SP0"
+  },
+  "artifacts": [
+    {
+      "filename": "circuit.cir",
+      "size": 46,
+      "sha256": "66a65839e74c331fb74edaca20f5b2140dbb4a386334a9b4e84980938adb1cd1"
+    },
+    {
+      "filename": "circuit.ms14",
+      "size": 60586,
+      "sha256": "14f0ec0abedb61c8ce912426e4d8610572d3ca8b4b02d0354205e7cc022d84da"
+    },
+    {
+      "filename": "circuit.ms14.xml",
+      "size": 386368,
+      "sha256": "3d4d8f2e6ea7a9a95dd6d1f9d8a80f7e622539a20b99e5fa8854315a139a54cb"
+    },
+    {
+      "filename": "data.csv",
+      "size": 38,
+      "sha256": "509e0c46a3e4b71a5edac07ff01c57539cfcbefce21794d28447cc9d0526abc2"
+    },
+    {
+      "filename": "plot.svg",
+      "size": 3178,
+      "sha256": "fca66d9936d614252474cd6952b3d77bbae2cc56bb62b3203a6426c3dae589db"
+    },
+    {
+      "filename": "report.en.html",
+      "size": 3693704,
+      "sha256": "788c94b2e67c8ee615143591b70d34f6aa5dd17ee0e35468630ec84e21ebf427"
+    },
+    {
+      "filename": "report.en.pdf",
+      "size": 2021,
+      "sha256": "a9cc276f6e017ab150887b2683e1902f2756d5e223b7f40f9dc031ad0c5f8c3d"
+    },
+    {
+      "filename": "report.md",
+      "size": 913,
+      "sha256": "8acbfbaec20896e7b68da79d93e1f88a49e18192942ddd6145ea0e1757f9cdc4"
+    },
+    {
+      "filename": "report.zh-CN.html",
+      "size": 3693665,
+      "sha256": "56318b4b106588ff082ddc9f1d56933dccd58655fbbb7f6ced3c13bdfe6f189e"
+    },
+    {
+      "filename": "report.zh-CN.pdf",
+      "size": 5336,
+      "sha256": "f4b9bf450c07e2bd16860a37e56dcc62d70f7211374d44f388e898431cf42112"
+    },
+    {
+      "filename": "result.raw",
+      "size": 289,
+      "sha256": "702d3ac3492fccbe48f08c562a893f3d13998e1360388408f271cf4b3ce58c63"
+    },
+    {
+      "filename": "run.log",
+      "size": 613,
+      "sha256": "5703fe856951bb5b1877561ff4ec3bf1630fcd5a6fb2694b067f3b2bdf49faf9"
+    },
+    {
+      "filename": "run.txt",
+      "size": 110,
+      "sha256": "8754b3079e69eee6b18c3d16584cbf80b2fb7c3518430d290495c2f8b389527c"
+    },
+    {
+      "filename": "schematic.png",
+      "size": 2764854,
+      "sha256": "ff3fb5a950d21865a58bc5a1cd270cb3e7181972ee0ceabf4dc4c7137ff23b23"
+    }
+  ],
+  "reproduce": {
+    "netlist": "circuit.cir",
+    "commands": "run.txt",
+    "raw_data": "result.raw"
+  }
+}
