@@ -1,0 +1,3 @@
+config load "D:\my_code\my_code\大创\vgt6_module_test\vgt6_module_test.ioc"
+project generate
+exit

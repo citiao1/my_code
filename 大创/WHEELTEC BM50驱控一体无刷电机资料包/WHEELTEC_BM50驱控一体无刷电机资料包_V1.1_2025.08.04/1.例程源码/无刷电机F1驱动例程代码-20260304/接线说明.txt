@@ -1,0 +1,4 @@
+本例程使用STM32F103C8T6核心板
+电机接入的12V电源需要STM32F103C8T6核心板共地
+PA6连接BTAK引脚、PA8连接PWM引脚、PA7连接DIR引脚
+E-A接PA1引脚、E-B接PA0引脚

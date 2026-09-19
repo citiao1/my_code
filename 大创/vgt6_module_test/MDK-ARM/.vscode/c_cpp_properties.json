@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "vgt6_module_test",
+            "includePath": [
+                "${workspaceFolder}/../Core/Inc",
+                "${workspaceFolder}/../App/Inc",
+                "${workspaceFolder}/../Bsp/Inc",
+                "${workspaceFolder}/../Drivers/STM32F4xx_HAL_Driver/Inc",
+                "${workspaceFolder}/../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy",
+                "${workspaceFolder}/../Drivers/CMSIS/Device/ST/STM32F4xx/Include",
+                "${workspaceFolder}/../Drivers/CMSIS/Include",
+                "${workspaceFolder}/.."
+            ],
+            "defines": [
+                "USE_HAL_DRIVER",
+                "STM32F407xx",
+                "__CC_ARM"
+            ],
+            "intelliSenseMode": "${default}",
+            "cStandard": "c99"
+        }
+    ],
+    "version": 4
+}

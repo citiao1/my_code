@@ -1,0 +1,119 @@
+[submodule "IMU660RA/【例程】各单片机例程/CYT2BL3"]
+	path = IMU660RA/【例程】各单片机例程/CYT2BL3
+	url  = https://gitee.com/seekfree/CYT2BL3_Library
+
+[submodule "IMU660RA/【例程】各单片机例程/CYT4BB7"]
+	path = IMU660RA/【例程】各单片机例程/CYT4BB7
+	url  = https://gitee.com/seekfree/CYT4BB7_Library
+
+[submodule "IMU660RA/【例程】各单片机例程/RT1021_MicroPython"]
+	path = IMU660RA/【例程】各单片机例程/RT1021_MicroPython
+	url  = https://gitee.com/seekfree/RT1021_MicroPython_Library
+
+[submodule "IMU660RA/【例程】各单片机例程/RT1064"]
+	path = IMU660RA/【例程】各单片机例程/RT1064
+	url  = https://gitee.com/seekfree/RT1064_Library
+
+[submodule "IMU660RA/【例程】各单片机例程/STC AI8051U"]
+	path = IMU660RA/【例程】各单片机例程/STC AI8051U
+	url  = https://gitee.com/seekfree/STCAI8051U_Library
+
+[submodule "IMU660RA/【例程】各单片机例程/STC32G12K128"]
+	path = IMU660RA/【例程】各单片机例程/STC32G12K128
+	url  = https://gitee.com/seekfree/STC32G12K128_Library
+
+[submodule "IMU660RA/【例程】各单片机例程/TC264"]
+	path = IMU660RA/【例程】各单片机例程/TC264
+	url  = https://gitee.com/seekfree/TC264_Library
+
+[submodule "IMU660RA/【例程】各单片机例程/TC364"]
+	path = IMU660RA/【例程】各单片机例程/TC364
+	url  = https://gitee.com/seekfree/TC364_Library
+
+[submodule "IMU660RA/【例程】各单片机例程/TC377"]
+	path = IMU660RA/【例程】各单片机例程/TC377
+	url  = https://gitee.com/seekfree/TC377_Library
+
+[submodule "IMU660RA/【例程】各单片机例程/TC387"]
+	path = IMU660RA/【例程】各单片机例程/TC387
+	url  = https://gitee.com/seekfree/TC387_Library
+
+[submodule "IMU660RB/【例程】各单片机例程/CYT2BL3"]
+	path = IMU660RB/【例程】各单片机例程/CYT2BL3
+	url  = https://gitee.com/seekfree/CYT2BL3_Library
+
+[submodule "IMU660RB/【例程】各单片机例程/CYT4BB7"]
+	path = IMU660RB/【例程】各单片机例程/CYT4BB7
+	url  = https://gitee.com/seekfree/CYT4BB7_Library
+
+[submodule "IMU660RB/【例程】各单片机例程/RT1021 MicroPython"]
+	path = IMU660RB/【例程】各单片机例程/RT1021 MicroPython
+	url  = https://gitee.com/seekfree/RT1021_MicroPython_Library
+
+[submodule "IMU660RB/【例程】各单片机例程/RT1064"]
+	path = IMU660RB/【例程】各单片机例程/RT1064
+	url  = https://gitee.com/seekfree/RT1064_Library
+
+[submodule "IMU660RB/【例程】各单片机例程/STC AI8051U"]
+	path = IMU660RB/【例程】各单片机例程/STC AI8051U
+	url  = https://gitee.com/seekfree/STCAI8051U_Library
+
+[submodule "IMU660RB/【例程】各单片机例程/STC32G12K128"]
+	path = IMU660RB/【例程】各单片机例程/STC32G12K128
+	url  = https://gitee.com/seekfree/STC32G12K128_Library
+
+[submodule "IMU660RB/【例程】各单片机例程/TC264"]
+	path = IMU660RB/【例程】各单片机例程/TC264
+	url  = https://gitee.com/seekfree/TC264_Library
+
+[submodule "IMU660RB/【例程】各单片机例程/TC364"]
+	path = IMU660RB/【例程】各单片机例程/TC364
+	url  = https://gitee.com/seekfree/TC364_Library
+
+[submodule "IMU660RB/【例程】各单片机例程/TC377"]
+	path = IMU660RB/【例程】各单片机例程/TC377
+	url  = https://gitee.com/seekfree/TC377_Library
+
+[submodule "IMU660RB/【例程】各单片机例程/TC387"]
+	path = IMU660RB/【例程】各单片机例程/TC387
+	url  = https://gitee.com/seekfree/TC387_Library
+
+[submodule "IMU660RC/【例程】各单片机例程/1064"]
+	path = IMU660RC/【例程】各单片机例程/1064
+	url  = https://gitee.com/seekfree/RT1064_Library
+
+[submodule "IMU660RC/【例程】各单片机例程/TC264"]
+	path = IMU660RC/【例程】各单片机例程/TC264
+	url  = https://gitee.com/seekfree/TC264_Library
+
+[submodule "IMU660RC/【例程】各单片机例程/TC364"]
+	path = IMU660RC/【例程】各单片机例程/TC364
+	url  = https://gitee.com/seekfree/TC364_Library
+
+[submodule "IMU660RC/【例程】各单片机例程/TC377"]
+	path = IMU660RC/【例程】各单片机例程/TC377
+	url  = https://gitee.com/seekfree/TC377_Library
+
+[submodule "IMU660RC/【例程】各单片机例程/TC387"]
+	path = IMU660RC/【例程】各单片机例程/TC387
+	url  = https://gitee.com/seekfree/TC387_Library
+
+[submodule "IMU660RC/【例程】各单片机例程/CYT2BL3"]
+	path = IMU660RC/【例程】各单片机例程/CYT2BL3
+	url  = https://gitee.com/seekfree/CYT2BL3_Library
+
+[submodule "IMU660RC/【例程】各单片机例程/CYT4BB7"]
+	path = IMU660RC/【例程】各单片机例程/CYT4BB7
+	url  = https://gitee.com/seekfree/CYT4BB7_Library
+
+[submodule "IMU660RC/【例程】各单片机例程/STC32G144K"]
+	path = IMU660RC/【例程】各单片机例程/STC32G144K
+	url  = https://gitee.com/seekfree/STC32G144K246_100Pin_Library
+
+[submodule "IMU660RC/【例程】各单片机例程/STCAI8051U"]
+	path = IMU660RC/【例程】各单片机例程/STCAI8051U
+	url  = https://gitee.com/seekfree/STCAI8051U_Library
+
+[submodule "IMU660RC/【例程】各单片机例程/STC32G12K128"]
+	path = IMU660RC/【例程】各单片机例程/STC32G12K128
+	url  = https://gitee.com/seekfree/STC32G12K128_Library
