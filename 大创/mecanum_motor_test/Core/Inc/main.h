@@ -77,6 +77,14 @@ void Error_Handler(void);
 #define MOTOR_EN_GPIO_Port GPIOD
 #define USER_KEY_Pin GPIO_PIN_0
 #define USER_KEY_GPIO_Port GPIOE
+#define PS2_CLK_Pin GPIO_PIN_8
+#define PS2_CLK_GPIO_Port GPIOE
+#define PS2_CS_Pin GPIO_PIN_10
+#define PS2_CS_GPIO_Port GPIOE
+#define PS2_CMD_Pin GPIO_PIN_12
+#define PS2_CMD_GPIO_Port GPIOE
+#define PS2_DAT_Pin GPIO_PIN_15
+#define PS2_DAT_GPIO_Port GPIOE
 
 /* USER CODE BEGIN Private defines */
 

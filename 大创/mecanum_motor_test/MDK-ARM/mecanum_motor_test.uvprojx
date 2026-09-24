@@ -503,6 +503,11 @@
               <FilePath>../App/Src/app.c</FilePath>
             </File>
             <File>
+              <FileName>ps2_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/ps2_control.c</FilePath>
+            </File>
+            <File>
               <FileName>command.c</FileName>
               <FileType>1</FileType>
               <FilePath>../App/Src/command.c</FilePath>
@@ -561,6 +566,11 @@
               <FileName>serial_dma.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Bsp/Src/serial_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>ps2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Bsp/Src/ps2.c</FilePath>
             </File>
             <File>
               <FileName>oled.c</FileName>

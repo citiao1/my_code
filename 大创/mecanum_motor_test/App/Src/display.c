@@ -6,6 +6,7 @@
 #include "gyro.h"
 #include "motor.h"
 #include "oled.h"
+#include "ps2_control.h"
 #include "speed_control.h"
 #include "stm32f4xx_hal.h"
 #include "vehicle.h"
@@ -50,10 +51,11 @@ void Display_Process(void)
   Display_PrintLine(16U, line);
   (void)snprintf(line, sizeof(line), "C:%4d D:%4d", speed.rpm[MOTOR_C], speed.rpm[MOTOR_D]);
   Display_PrintLine(32U, line);
-  (void)snprintf(line, sizeof(line), "BAT:%2u.%02uV EN:%u G:%c",
+  (void)snprintf(line, sizeof(line), "BAT:%2u.%02u EN:%u G:%c P:%c",
                  Battery_GetMillivolts() / 1000U,
                  (Battery_GetMillivolts() % 1000U) / 10U,
-                 Motor_IsEnabled(), gyro_status);
+                 Motor_IsEnabled(), gyro_status,
+                 Ps2Control_GetStatusChar());
   Display_PrintLine(48U, line);
   OLED_ShowFrame();
 }

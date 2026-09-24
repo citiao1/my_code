@@ -64,6 +64,9 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOE, PS2_CLK_Pin|PS2_CS_Pin|PS2_CMD_Pin, GPIO_PIN_SET);
+
   /*Configure GPIO pins : GRAY_SEL_A_Pin GRAY_SEL_B_Pin GRAY_SEL_C_Pin */
   GPIO_InitStruct.Pin = GRAY_SEL_A_Pin|GRAY_SEL_B_Pin|GRAY_SEL_C_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -96,6 +99,19 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(USER_KEY_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PS2_CLK_Pin PS2_CS_Pin PS2_CMD_Pin */
+  GPIO_InitStruct.Pin = PS2_CLK_Pin|PS2_CS_Pin|PS2_CMD_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PS2_DAT_Pin */
+  GPIO_InitStruct.Pin = PS2_DAT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(PS2_DAT_GPIO_Port, &GPIO_InitStruct);
 
 }
 
