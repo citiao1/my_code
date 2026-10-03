@@ -1,4 +1,5 @@
 ~$*
+**/.codegraph/
 **/ProgramLogs.txt
 **/MDK-ARM/build.log
 **/MDK-ARM/.vscode/*.log

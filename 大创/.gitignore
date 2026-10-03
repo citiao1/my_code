@@ -23,3 +23,8 @@ RM_Li/RM/MDK-ARM/RM/
 *.log
 *.log.lock
 *.iex
+.venv-vision/
+__pycache__/
+**/__pycache__/
+vision/outputs/*
+!vision/outputs/.gitkeep

@@ -1,0 +1,19 @@
+Set-Location : Cannot find path 'D:\妗岄潰\My_ele_contest2\LQ_MSPM0GX_LIB_V2.0.0\Keil' because it does not exist.
+At D:\桌面\My_ele_contest2\LQ_MSPM0GX_LIB_V2.0.0\Keil\run_build2.ps1:6 char:1
++ Set-Location $baseDir
++ ~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (D:\妗岄潰\My_ele_c...LIB_V2.0.0\Keil:String) [Set-Location], ItemNotFoundE 
+   xception
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SetLocationCommand
+ 
+Exception calling "WriteAllText" with "3" argument(s): "Could not find a part of the path 'd:\妗岄潰\My_ele_contest2\LQ_MS
+PM0GX_LIB_V2.0.0\Keil\build_log.txt'."
+At D:\桌面\My_ele_contest2\LQ_MSPM0GX_LIB_V2.0.0\Keil\run_build2.ps1:20 char:1
++ [System.IO.File]::WriteAllText($logPath, $combined, [System.Text.Enco ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:) [], MethodInvocationException
+    + FullyQualifiedErrorId : DirectoryNotFoundException
+ 
+ExitCode: 15
+---OUTPUT---
+

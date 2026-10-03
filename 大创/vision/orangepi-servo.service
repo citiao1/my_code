@@ -1,0 +1,17 @@
+[Unit]
+Description=Orange Pi two-servo browser controller
+After=network-online.target mecanum-console.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/orangepi/mecanum-motor-console
+ExecStart=/home/orangepi/.venvs/orange-pi-vision/bin/python vision/servo_server.py --host 0.0.0.0 --port 8091
+Restart=on-failure
+RestartSec=2
+Environment=PYTHONUNBUFFERED=1
+Environment=VISION_RTSP_TRANSPORT=udp
+
+[Install]
+WantedBy=multi-user.target

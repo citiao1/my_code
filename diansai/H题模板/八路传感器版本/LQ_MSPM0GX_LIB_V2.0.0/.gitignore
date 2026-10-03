@@ -1,0 +1,50 @@
+# Keil build outputs
+Keil/Objects/
+Keil/LST/
+*.hex
+*.axf
+*.o
+*.d
+*.htm
+*.lnp
+*.map
+
+# Keil JLink / build logs
+JLinkLog.txt
+JLinkSettings.ini
+*.build_log.htm
+build_*.txt
+build_log*.txt
+build_output*.txt
+build_check.txt
+build_sflp_bank.txt
+build_imu_check.txt
+build_gyro_plot*.txt
+build_gb2312.txt
+rebuild_log.txt
+build_now.txt
+build_stderr.txt
+build_stdout.txt
+
+# IDE
+.vscode/
+.idea/
+.trae/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Temp / scripts (transient)
+check_*.ps1
+convert.ps1
+tmp_*.c
+tmp_*.h
+_*.ps1
+_*.c
+_*.h
+
+# Library duplicates (use LQ-M0G3507_Library-master/ as source)
+LQ_Lib/
+TI_SDK/
+LQ-M0G3507_Library-master/

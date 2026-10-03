@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Orange Pi Servo Debug</title>
+  <link rel="stylesheet" href="/servo_ui.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">ORANGE PI / SERVO DEBUG</div>
+        <h1>双舵机上位机</h1>
+      </div>
+      <div class="connection" id="connection">
+        <span class="connection-dot"></span>
+        <span id="connection-text">连接中</span>
+      </div>
+    </header>
+
+    <section class="toolbar" aria-label="全局控制">
+      <div class="toolbar-group">
+        <span class="toolbar-label">步进</span>
+        <div class="segmented" id="step-picker">
+          <button type="button" data-step="5">5</button>
+          <button type="button" data-step="10" class="selected">10</button>
+          <button type="button" data-step="25">25</button>
+        </div>
+        <span class="unit">us</span>
+      </div>
+      <div class="toolbar-actions">
+        <button class="action-button center-button" id="center-button" type="button" title="两个舵机回到中位">
+          <span aria-hidden="true">◎</span> 回中
+        </button>
+        <button class="action-button stop-button" id="stop-button" type="button" title="停止 PWM 并回中">
+          <span aria-hidden="true">■</span> 停止
+        </button>
+      </div>
+    </section>
+
+    <section class="monitor-section">
+      <div class="monitor-main">
+        <div class="monitor-heading">
+          <div>
+            <span class="axis-kicker">CAMERA / YUNET</span>
+            <h2>人脸跟踪画面</h2>
+          </div>
+          <button class="action-button auto-button" id="auto-button" type="button" title="开启或关闭人脸锁定">
+            <span aria-hidden="true">◎</span> 自动跟踪
+          </button>
+        </div>
+        <div class="video-frame">
+          <img id="vision-frame" alt="人脸跟踪实时画面">
+          <div class="video-placeholder" id="video-placeholder">等待摄像头画面</div>
+        </div>
+      </div>
+      <div class="monitor-debug">
+        <div class="debug-title">实时诊断</div>
+        <div class="debug-row"><span>检测</span><strong id="vision-status">启动中</strong></div>
+        <div class="debug-row"><span>FPS</span><strong id="vision-fps">-</strong></div>
+        <div class="debug-row"><span>水平误差（左+）</span><strong id="vision-horizontal">-</strong></div>
+        <div class="debug-row"><span>垂直误差（上+）</span><strong id="vision-vertical">-</strong></div>
+        <div class="debug-row"><span>置信度</span><strong id="vision-confidence">-</strong></div>
+      </div>
+    </section>
+
+    <section class="tuning-section">
+      <div class="tuning-heading">
+        <div>
+          <span class="axis-kicker">TRACKING / LIVE TUNING</span>
+          <h2>跟踪参数</h2>
+        </div>
+        <div class="tuning-actions">
+          <button class="action-button" id="tuning-reset" type="button" title="恢复跟踪默认参数">
+            <span aria-hidden="true">↺</span> 默认
+          </button>
+          <button class="action-button auto-button" id="tuning-apply" type="button" title="应用跟踪参数">
+            <span aria-hidden="true">✓</span> 应用
+          </button>
+        </div>
+      </div>
+      <div class="tuning-grid">
+        <label class="tuning-control">
+          <span>控制模式</span>
+          <select id="tuning-control-mode">
+            <option value="pid" selected>PID</option>
+            <option value="p">P（原算法）</option>
+          </select>
+        </label>
+        <label class="tuning-control">
+          <span>死区 / px</span>
+          <input id="tuning-deadband" type="number" min="0" max="100" step="1" value="5">
+        </label>
+        <label class="tuning-control">
+          <span>最大步进 / us</span>
+          <input id="tuning-max-step" type="number" min="1" max="50" step="1" value="50">
+        </label>
+        <label class="tuning-control">
+          <span>回中步进 / us</span>
+          <input id="tuning-return-step" type="number" min="1" max="30" step="1" value="5">
+        </label>
+        <label class="tuning-control">
+          <span>Kp</span>
+          <input id="tuning-kp" type="number" min="0" max="3000" step="10" value="500">
+        </label>
+        <label class="tuning-control">
+          <span>Ki</span>
+          <input id="tuning-ki" type="number" min="0" max="1000" step="1" value="0">
+        </label>
+        <label class="tuning-control">
+          <span>Kd</span>
+          <input id="tuning-kd" type="number" min="0" max="500" step="1" value="200">
+        </label>
+        <label class="tuning-control">
+          <span>积分上限</span>
+          <input id="tuning-integral-limit" type="number" min="0.05" max="2" step="0.05" value="0.5">
+        </label>
+        <label class="tuning-control">
+          <span>微分滤波</span>
+          <input id="tuning-derivative-alpha" type="number" min="0.05" max="1" step="0.05" value="0.35">
+        </label>
+        <label class="tuning-control">
+          <span>平滑系数</span>
+          <input id="tuning-smooth-alpha" type="number" min="0.05" max="1" step="0.05" value="0.35">
+        </label>
+        <label class="tuning-control">
+          <span>检测间隔 / 帧</span>
+          <input id="tuning-detect-every" type="number" min="1" max="4" step="1" value="1">
+        </label>
+        <label class="tuning-control">
+          <span>处理上限 / FPS</span>
+          <input id="tuning-max-fps" type="number" min="5" max="30" step="1" value="30">
+        </label>
+      </div>
+    </section>
+
+    <section class="axis-grid">
+      <article class="axis-card" data-axis="pan">
+        <div class="axis-heading">
+          <div>
+            <span class="axis-kicker">PWM3 / PH0</span>
+            <h2>水平舵机</h2>
+          </div>
+          <span class="axis-state" id="pan-state">待机</span>
+        </div>
+        <div class="readout">
+          <strong id="pan-angle">0.0°</strong>
+          <span id="pan-pulse">1500 us</span>
+        </div>
+        <div class="position-track">
+          <span class="track-min">−90°</span>
+          <div class="track">
+            <span class="track-center"></span>
+            <span class="track-marker" id="pan-marker"></span>
+          </div>
+          <span class="track-max">+90°</span>
+        </div>
+        <input class="pulse-slider" id="pan-slider" type="range" min="500" max="2500" step="1" value="1500" aria-label="水平舵机脉宽">
+        <div class="axis-controls">
+          <button class="nudge-button" data-axis="pan" data-direction="-1" type="button" title="水平向左">
+            <span aria-hidden="true">←</span>
+          </button>
+          <button class="axis-center" data-axis="pan" type="button" title="水平舵机回中">水平回中</button>
+          <button class="nudge-button" data-axis="pan" data-direction="1" type="button" title="水平向右">
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </article>
+
+      <article class="axis-card" data-axis="tilt">
+        <div class="axis-heading">
+          <div>
+            <span class="axis-kicker">PWM4 / PH1</span>
+            <h2>垂直舵机</h2>
+          </div>
+          <span class="axis-state" id="tilt-state">待机</span>
+        </div>
+        <div class="readout">
+          <strong id="tilt-angle">0.0°</strong>
+          <span id="tilt-pulse">1500 us</span>
+        </div>
+        <div class="position-track">
+          <span class="track-min">−90°</span>
+          <div class="track">
+            <span class="track-center"></span>
+            <span class="track-marker" id="tilt-marker"></span>
+          </div>
+          <span class="track-max">+90°</span>
+        </div>
+        <input class="pulse-slider" id="tilt-slider" type="range" min="500" max="2500" step="1" value="1500" aria-label="垂直舵机脉宽">
+        <div class="axis-controls">
+          <button class="nudge-button" data-axis="tilt" data-direction="1" type="button" title="垂直向上">
+            <span aria-hidden="true">↑</span>
+          </button>
+          <button class="axis-center" data-axis="tilt" type="button" title="垂直舵机回中">垂直回中</button>
+          <button class="nudge-button" data-axis="tilt" data-direction="-1" type="button" title="垂直向下">
+            <span aria-hidden="true">↓</span>
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <section class="status-strip">
+      <div>
+        <span class="status-label">PWM</span>
+        <strong id="pwm-status">未启动</strong>
+      </div>
+      <div>
+        <span class="status-label">频率</span>
+        <strong id="frequency-status">50 Hz</strong>
+      </div>
+      <div>
+        <span class="status-label">最后指令</span>
+        <strong id="last-command">startup_center</strong>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>方向键控制 · R 回中 · Space 停止</span>
+      <span id="message">等待连接</span>
+    </footer>
+  </main>
+  <script src="/servo_ui.js"></script>
+</body>
+</html>
