@@ -1,0 +1,137 @@
+/*******************************************************************************
+ * @file    main.c
+ * @brief   ���������?- ���ٵ��������� PID ����
+ *
+ * @note    �ϵ��ʼ�����̣�? *          1. ϵͳ��ʼ����80MHz ��Ƶ��
+ *          2. ��ʼ��ȫ�ֲ�����PID Ĭ��ֵ + Ĭ�ϼ�ͣ״̬��
+ *          3. ��ʼ�����Դ��ڣ�UART0 @ 9600 �����ʣ�VOFA+ �ã�
+ *          4. ��ʼ�����?PWM��10kHz��
+ *          5. ��ʼ�������� + ����
+ *          6. ��ʼ���Ҷȣ�8 ·Ѳ�� ADC��
+ *          7. ��ʼ�� LSM6DSV16X��SPI �ӿڣ�ȫ���� mid_imu �м��? *          8. ��ʼ�� SFLP 6 ����̬�ں� + ��¼�ϵ� yaw ��λ
+ *          9. ��ʼ������ PID ״̬
+ *         10. ��ʼ����������SysTick 1ms �ж� + 5ms ���ȣ�
+ *         11. �������ϵ���ʾ��2 ��"��"�����?0.5s��
+ *         12. ��ѭ����ServiceTx + PollRx + Scheduler_Run + PollPlot
+ *
+ *          ��ѭ������"��Ƶ��ѯ + __WFI ʡ��"ģʽ��
+ *          - SysTick ÿ 1ms �жϻ��� CPU
+ *          - APP_DEBUG_ServiceTx    ���ƽ� TX DMA���ѻ����ͳ�ȥ
+ *          - APP_DEBUG_PollRx       ����ѯ RX FIFO��ƴװ FireWater Э������
+ *          - APP_Scheduler_Run      ���ڲ��ж� 5ms �����Ƿ񵽣�δ��ֱ�ӷ���
+ *          - APP_DEBUG_PollPlot     ���ڲ��� 20ms ���ڷ��ͻ�ͼ����
+ *
+ *          �ϵ�Ĭ�ϼ�ͣ��ʹ��λȫ 0 + �ٶ� 0 + ���ͣת��? *          �� K1 �̰� = mid_key.c ����У׼�����ǣ����������̡�
+ *          �ٰ� K1 = ��ͣ���� PID + ������ + �ٶ����� + ���ͣ����? *******************************************************************************/
+
+#include "include.h"
+#include "LQ_device.h"
+#include "LQ_tracking.h"
+#include "mid_motor.h"
+#include "mid_encoder.h"
+#include "mid_chassis.h"
+#include "mid_pid.h"
+#include "mid_imu.h"
+#include "app_debug.h"
+#include "app_scheduler.h"
+#include "mid_beep.h"
+#include "mid_key.h"
+#include "mid_oled.h"             /* OLED 0.96 �� ��ʾ�м�㣨��Ƭˢ�£�?*/
+
+int main(void)
+{
+    /* 1. ϵͳ��ʼ����80MHz ��Ƶ�� */
+    LQ_System_Init();
+    delay_ms(10);
+
+    /* 2. ȫ�ֲ�����ʼ����PID Ĭ��ֵ + �ϵ�Ĭ�ϼ�ͣ״̬�� */
+    MID_Param_Init();
+
+    /* 3. ���Դ��� UART0 @ 9600 ��ʼ�� */
+    APP_DEBUG_Init();
+
+    /* 4. ���?PWM ��ʼ����10kHz�� */
+    MID_Motor_Init(10000);
+
+    /* 5. ��������ʼ�� + �����м���ʼ�� */
+    MID_Encoder_Init();
+    MID_Key_Init();
+
+    /* 6. �Ҷȳ�ʼ����8 ·Ѳ�� ADC�� */
+    LQ_Tracking_Polling_Init();
+
+    /* 7. LSM6DSV16X ��ʼ����SPI �ӿڣ�ȫ���� mid_imu �м��?*/
+    if (MID_IMU_Init() != MID_IMU_OK) {
+        /* IMU ��ʼ��ʧ�ܣ���������ӡ���󣬷����ֳ��Ų� */
+        while (1) {
+            APP_DEBUG_Printf("IMU Init FAIL, ID=0x%02X\r\n", 0);
+            APP_DEBUG_ServiceTx();
+            delay_ms(500);
+        }
+    }
+    delay_ms(100);  /* �ϵ���Ӳ���ȶ����ο��ٷ� demo�� */
+
+    /* ������ Z ����ƫУ׼��
+     *   �ϵ�Ĭ�ϲ��Զ�У׼�����⳵һ�ϵ��?����"��ȥ��
+     *   �״ΰ� K1 ʱ�� mid_key.c ����У׼ */
+
+    /* ��ʼ�� SFLP 6 ����̬�ںϣ�����¼��ǰ yaw ��λ */
+    if (MID_IMU_SFLPInitAndCalibrateYaw() != MID_IMU_OK) {
+        while (1) {
+            APP_DEBUG_Printf("IMU SFLP Init FAIL\r\n");
+            APP_DEBUG_ServiceTx();
+            delay_ms(500);
+        }
+    }
+    /* SFLP Ӳ����Լ 1s ������main ѭ������Ȼˢ�� */
+
+    /* 8. ���� PID ״̬��ʼ��������������ʷ�� */
+    MID_Chassis_Init();
+
+    /* 9. ��������ʼ����SysTick 1ms �ж� + 5ms ���ȣ� */
+    APP_Scheduler_Init();
+
+    /* 10. OLED 0.96 ����ʼ��
+     *     - 5 �� GPIO �������?+ ��λ + SSD1306 ����
+     *     - �� 100ms ���ң��ڼ� main loop δ����
+     *     - ��ʼ����ɺ���ʾһ���ϵ���ʾ��?STOP K1=Start"��
+     *       dirty=1 + page=0���´� MID_OLED_Task() �� 8 ҳȫˢ */
+    MID_OLED_Init();
+    MID_OLED_ShowString(0, 0, "STOP K1=Start", 8);
+
+    /* 11. �������ϵ���ʾ��2 ��"��"�����?0.5s
+     *     ÿ���ϵ�/��λʱ��һ�Σ�ȷ��Ӳ������
+     *     ��ʾ��Լ 2.6s���ڼ䲻������ѭ��
+     *     ��������������߼�δ�Ⱦ��ܳ��쳣����?     */
+    MID_Beep_Init();
+    MID_Beep_Beep(2, 0.7f, 0.5f);
+
+    /* 11. ��ѭ������Ƶ��ѯ + __WFI ʡ�� */
+    while (1) {
+        /* TX DMA �ƽ����ѻ�������ύһ֡���ݵ� DMA */
+        APP_DEBUG_ServiceTx();
+
+        /* RX ��ѯ��ÿ�ζ� RX FIFO��ƴװ FireWater Э������ */
+        APP_DEBUG_PollRx();
+
+        /* ���Ƶ��ȣ��ڲ��� 5ms ����ִ�У�δ����ֱ�ӷ��� */
+        APP_Scheduler_Run();
+
+        /* ��ͼ���ڲ��� 20ms ���� */
+        APP_DEBUG_PollPlot();
+
+        /* �ٴ��ƽ� TX DMA��ȷ�����������ݼ�ʱ����ȥ */
+        APP_DEBUG_ServiceTx();
+
+        /* ������ѯ��20ms һ�Σ� */
+        MID_Key_Scan();
+
+        /* OLED ��Ƭˢ�£�ÿ��ֻˢ 1 ҳ 128B �� ~0.5ms ���ڣ�dirty=0 ʱ 0 ����
+         *   5ms ���Ȳ� �� 0.5ms �� 10% ռ�ձȣ���ʱ 5ms tick
+         *   8 ҳȫˢ 8 �� main loop = 40ms = 25Hz ��Ļˢ���� */
+        MID_OLED_Task();
+
+        /* ʡ�磺����һ�� SysTick �жϣ�1ms�����ѣ����͹��� */
+        __WFI();
+    }
+}

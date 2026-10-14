@@ -1,0 +1,67 @@
+Load "d:\\×ÀÃæ\\My_ele_contest2\\LQ_MSPM0GX_LIB_V2.0.0\\Keil\\Objects\\LQ_MSPM0GX_LIB.axf" 
+Set JLink Project File to "d:\×ÀÃæ\My_ele_contest2\LQ_MSPM0GX_LIB_V2.0.0\Keil\JLinkSettings.ini"* JLink Info: Device "MSPM0G3507" selected.
+
+JLink info:
+------------
+DLL: V9.60 , compiled Jul 15 2026 14:37:57
+Firmware: J-Link V9 compiled May  7 2021 16:26:12
+Hardware: V9.20
+S/N : 20260715 
+Feature(s) : GDB, RDI, FlashBP, FlashDL, JFlash 
+
+* JLink Info: InitTarget() start
+* JLink Info: DAP initialized successfully.
+* JLink Info: Setting up LPM debug bits
+* JLink Info: PWR_AP_DPREC0v: 0x0019002F
+* JLink Info: InitTarget() end - Took 11.4ms
+* JLink Info: Found SW-DP with ID 0x6BA02477
+* JLink Info: DPIDR: 0x6BA02477
+* JLink Info: CoreSight SoC-400 or earlier
+* JLink Info: Scanning AP map to find all available APs
+* JLink Info: AP[5]: Stopped AP scan as end of AP map has been reached
+* JLink Info: AP[0]: AHB-AP (IDR: 0x84770001, ADDR: 0x00000000)
+* JLink Info: AP[1]: MEM-AP (IDR: 0x002E0001, ADDR: 0x01000000)
+* JLink Info: AP[2]: JTAG-AP (IDR: 0x002E0000, ADDR: 0x02000000)
+* JLink Info: AP[3]: MEM-AP (IDR: 0x002E0003, ADDR: 0x03000000)
+* JLink Info: AP[4]: MEM-AP (IDR: 0x002E0002, ADDR: 0x04000000)
+* JLink Info: Iterating through AP map to find AHB-AP to use
+* JLink Info: AP[0]: Core found
+* JLink Info: AP[0]: AHB-AP ROM base: 0xF0000000
+* JLink Info: CPUID register: 0x410CC601. Implementer code: 0x41 (ARM)
+* JLink Info: Found Cortex-M0 r0p1, Little endian.
+* JLink Info: FPUnit: 4 code (BP) slots and 0 literal slots
+* JLink Info: CoreSight components:
+* JLink Info: ROMTbl[0] @ F0000000
+* JLink Info: [0][0]: E00FF000 CID B105100D PID 000BB4C0 ROM Table
+* JLink Info: ROMTbl[1] @ E00FF000
+* JLink Info: [1][0]: E000E000 CID B105E00D PID 000BB008 SCS
+* JLink Info: [1][1]: E0001000 CID B105E00D PID 000BB00A DWT
+* JLink Info: [1][2]: E0002000 CID B105E00D PID 000BB00B FPB
+* JLink Info: [0][2]: 40402000 CID B105900D PID 001BB932 MTB-M0+
+ROMTableAddr = 0xF0000000
+* JLink Info: ResetTarget() start
+* JLink Info: DAP initialized successfully.
+* JLink Info: ResetTarget() end - Took 5.96ms
+* JLink Info: Device specific reset executed.
+
+Target info:
+------------
+Device: MSPM0G3507
+VTarget = 3.330V
+State of Pins: TCK: 0, TDI: 1, TDO: 0, TMS: 1, TRES: 1, TRST: 0
+Hardware-Breakpoints: 4
+Software-Breakpoints: 8192
+Watchpoints:          2
+JTAG speed: 4000 kHz
+
+* JLink Info: Memory map 'after startup completion point' is active
+Full Chip Erase Done.Programming Done.Verify OK.* JLink Info: Memory map 'before startup completion point' is active
+* JLink Info: ResetTarget() start
+* JLink Info: DAP initialized successfully.
+* JLink Info: ResetTarget() end - Took 6.19ms
+* JLink Info: Device specific reset executed.
+* JLink Info: Memory map 'after startup completion point' is active
+Application running ...
+* JLink Info: OnDisconnectTarget() start
+* JLink Info: OnDisconnectTarget() end - Took 595us
+Flash Load finished at 23:00:12

@@ -1,0 +1,6 @@
+numpy>=1.26,<3
+opencv-python>=4.9,<5
+
+# 后续确认传统 OpenCV 流程稳定后再启用目标检测模型：
+# ultralytics>=8.3,<9
+

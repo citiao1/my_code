@@ -1,0 +1,18 @@
+[Unit]
+Description=Orange Pi read-only vision recognition
+After=network-online.target mecanum-console.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=orangepi
+WorkingDirectory=/home/orangepi/mecanum-motor-console
+ExecStart=/home/orangepi/.venvs/orange-pi-vision/bin/python vision/run_face_tracking.py --source rtsp://127.0.0.1:8554/camera --headless
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+# This service intentionally has no serial or WebSocket control command.
+
+[Install]
+WantedBy=multi-user.target
