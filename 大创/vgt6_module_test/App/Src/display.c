@@ -79,9 +79,10 @@ void Display_Process(void)
                  (long)(encoder.rpm_x10[2] / 10L),
                  (long)(encoder.rpm_x10[3] / 10L));
   Display_PrintLine(48U, line);
-  (void)snprintf(line, sizeof(line), "Y:%6ld W:%02X F:%u",
-                 (long)(gyro.yaw_deg * 10.0f), gyro.who_am_i,
-                 gyro.read_failures);
+  /* R7 marker: this text is emitted by the new image after boot. */
+  (void)snprintf(line, sizeof(line), "R7 F:%u Y:%4ld W:%02X",
+                 gyro.read_failures, (long)(gyro.yaw_deg * 10.0f),
+                 gyro.who_am_i);
   Display_PrintLine(56U, line);
   OLED_ShowFrame();
 }

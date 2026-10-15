@@ -1,0 +1,28 @@
+{
+  "model": {
+    "step_time_s": 122.4,
+    "input_step": 50.0,
+    "process_step": 50.68,
+    "process_gain": 1.0136,
+    "dead_time_s": 0.0,
+    "time_constant_s": 1e-09,
+    "baseline_process": 30.9,
+    "final_process": 81.58,
+    "saturated": false
+  },
+  "candidates": [
+    {
+      "mode": "PI",
+      "form": "incremental",
+      "kp": 1.973164956590371e-08,
+      "ki": 0.19731649565903708,
+      "kd": 0.0,
+      "sample_time_s": 0.01,
+      "output_limit": 60.0,
+      "notes": [
+        "gains converted from continuous parallel form to discrete incremental coefficients",
+        "candidate is not written to firmware automatically"
+      ]
+    }
+  ]
+}

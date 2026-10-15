@@ -1,0 +1,551 @@
+
+========================================================================
+
+** ELF Header Information
+
+    File Name: D:\my_code\my_code\´ó´´\vgt6_module_test\MDK-ARM\vgt6_module_test\vgt6_module_test.axf
+
+    Machine class: ELFCLASS32 (32-bit)
+    Data encoding: ELFDATA2LSB (Little endian)
+    Header version: EV_CURRENT (Current version)
+    Operating System ABI: none
+    ABI Version: 0
+    File Type: ET_EXEC (Executable) (2)
+    Machine: EM_ARM (ARM)
+
+    Image Entry point: 0x08000189
+    Flags: EF_ARM_HASENTRY + EF_ARM_ABI_FLOAT_HARD (0x05000402)
+
+    ARM ELF revision: 5 (ABI version 2)
+
+    Conforms to Hard float procedure-call standard
+
+    Built with
+    Component: ARM Compiler 5.06 update 5 (build 528) Tool: armasm [4d35e1]
+    Component: ARM Compiler 5.06 update 5 (build 528) Tool: armlink [4d35e2]
+
+    Header size: 52 bytes (0x34)
+    Program header entry size: 32 bytes (0x20)
+    Section header entry size: 40 bytes (0x28)
+
+    Program header entries: 1
+    Section header entries: 16
+
+    Program header offset: 1035812 (0x000fce24)
+    Section header offset: 1035844 (0x000fce44)
+
+    Section header string table index: 15
+
+========================================================================
+
+** Program header #0 (PT_LOAD) [PF_X + PF_W + PF_R + PF_ARM_ENTRY]
+    Size : 45752 bytes (37328 bytes in file)
+    Virtual address: 0x08000000 (Alignment 8)
+
+
+========================================================================
+
+** Section #1 'ER_IROM1' (SHT_PROGBITS) [SHF_ALLOC + SHF_EXECINSTR]
+    Size   : 37224 bytes (alignment 8)
+    Address: 0x08000000
+
+
+** Section #2 'RW_IRAM1' (SHT_PROGBITS) [SHF_ALLOC + SHF_WRITE]
+    Size   : 104 bytes (alignment 4)
+    Address: 0x20000000
+
+
+** Section #3 'RW_IRAM1' (SHT_NOBITS) [SHF_ALLOC + SHF_WRITE]
+    Size   : 8424 bytes (alignment 8)
+    Address: 0x20000068
+
+
+** Section #4 '.debug_abbrev' (SHT_PROGBITS)
+    Size   : 1476 bytes
+
+
+** Section #5 '.debug_frame' (SHT_PROGBITS)
+    Size   : 10004 bytes
+
+
+** Section #6 '.debug_info' (SHT_PROGBITS)
+    Size   : 102644 bytes
+
+
+** Section #7 '.debug_line' (SHT_PROGBITS)
+    Size   : 41872 bytes
+
+
+** Section #8 '.debug_loc' (SHT_PROGBITS)
+    Size   : 18428 bytes
+
+
+** Section #9 '.debug_macinfo' (SHT_PROGBITS)
+    Size   : 722828 bytes
+
+
+** Section #10 '.debug_pubnames' (SHT_PROGBITS)
+    Size   : 7152 bytes
+
+
+** Section #11 '.symtab' (SHT_SYMTAB)
+    Size   : 24896 bytes (alignment 4)
+    String table #12 '.strtab'
+    Last local symbol no. 1097
+
+
+** Section #12 '.strtab' (SHT_STRTAB)
+    Size   : 20528 bytes
+
+
+** Section #13 '.note' (SHT_NOTE)
+    Size   : 28 bytes (alignment 4)
+
+
+** Section #14 '.comment' (SHT_PROGBITS)
+    Size   : 48412 bytes
+
+
+** Section #15 '.shstrtab' (SHT_STRTAB)
+    Size   : 164 bytes
+
+
+address     size       variable name                            type
+0x08008e2c  0x10       AHBPrescTable                            array[16] of const uint8_t
+
+address     size       variable name                            type
+0x08008e3c  0x8        APBPrescTable                            array[8] of const uint8_t
+
+address     size       variable name                            type
+0x20000064  0x4        SystemCoreClock                          uint32_t
+
+address     size       variable name                            type
+0x20000060  0x4        uwTick                                   volatile uint32_t
+
+address     size       variable name                            type
+0x20000058  0x1        uwTickFreq                               HAL_TickFreqTypeDef
+
+address     size       variable name                            type
+0x2000005c  0x4        uwTickPrio                               uint32_t
+
+address     size       variable name                            type
+0x20000050  0x8        battery_snapshot                         BatterySnapshot
+0x20000050  0x2        battery_snapshot.raw_adc                 uint16_t
+0x20000052  0x2        battery_snapshot.voltage_mv              uint16_t
+0x20000054  0x2        battery_snapshot.read_failures           uint16_t
+0x20000056  0x1        battery_snapshot.ready                   uint8_t
+
+address     size       variable name                            type
+0x20000048  0x4        battery_tick                             uint32_t
+
+address     size       variable name                            type
+0x2000004c  0x4        filtered_mv                              uint32_t
+
+address     size       variable name                            type
+0x20000040  0x4        encoder3_isr_count                       volatile int32_t
+
+address     size       variable name                            type
+0x20000034  0x1        encoder3_previous_state                  volatile uint8_t
+
+address     size       variable name                            type
+0x20001ab8  0x34       encoder_snapshot                         EncoderSnapshot
+0x20001ab8  0x10       encoder_snapshot.total                   array[4] of int32_t
+0x20001ac8  0x10       encoder_snapshot.delta                   array[4] of int32_t
+0x20001ad8  0x10       encoder_snapshot.rpm_x10                 array[4] of int32_t
+0x20001ae8  0x2        encoder_snapshot.counts_per_revolution   uint16_t
+0x20001aea  0x1        encoder_snapshot.ready                   uint8_t
+
+address     size       variable name                            type
+0x20000044  0x4        previous_encoder3                        int32_t
+
+address     size       variable name                            type
+0x20000036  0x2        previous_tim1                            uint16_t
+
+address     size       variable name                            type
+0x2000003c  0x4        previous_tim2                            uint32_t
+
+address     size       variable name                            type
+0x20000038  0x2        previous_tim4                            uint16_t
+
+address     size       variable name                            type
+0x08008e14  0x10       quadrature_table                         array[16] of const int8_t
+
+address     size       variable name                            type
+0x08008dc4  0x50       motor_hardware                           array[4] of const MotorHardware
+
+address     size       variable name                            type
+0x20000030  0x1        motor_ready                              uint8_t
+
+address     size       variable name                            type
+0x2000002c  0x4        imu_diagnostics                          Imu660rcDiagnostics
+0x2000002c  0x1        imu_diagnostics.who_am_i                 uint8_t
+0x2000002d  0x1        imu_diagnostics.status_reg               uint8_t
+0x2000002e  0x1        imu_diagnostics.transfer_ok              uint8_t
+0x2000002f  0x1        imu_diagnostics.hal_status               uint8_t
+
+address     size       variable name                            type
+0x00000000  0x8        afont12x6                                const ASCIIFont
+0x00000000  0x1        afont12x6.h                              uint8_t
+0x00000001  0x1      * afont12x6.w                              uint8_t
+0x00000004  0x4        afont12x6.chars                          pointer to uint8_t
+
+address     size       variable name                            type
+0x00000000  0x8        afont16x8                                const ASCIIFont
+0x00000000  0x1        afont16x8.h                              uint8_t
+0x00000001  0x1      * afont16x8.w                              uint8_t
+0x00000004  0x4        afont16x8.chars                          pointer to uint8_t
+
+address     size       variable name                            type
+0x00000000  0x8        afont24x12                               const ASCIIFont
+0x00000000  0x1        afont24x12.h                             uint8_t
+0x00000001  0x1      * afont24x12.w                             uint8_t
+0x00000004  0x4        afont24x12.chars                         pointer to uint8_t
+
+address     size       variable name                            type
+0x08008dbc  0x8        afont8x6                                 const ASCIIFont
+0x08008dbc  0x1        afont8x6.h                               uint8_t
+0x08008dbd  0x1      * afont8x6.w                               uint8_t
+0x08008dc0  0x4        afont8x6.chars                           pointer to uint8_t
+
+address     size       variable name                            type
+0x00000000  0x474      ascii_12x6                               array[95] of array[12] of const unsigned char
+
+address     size       variable name                            type
+0x00000000  0x5f0      ascii_16x8                               array[95] of array[16] of const unsigned char
+
+address     size       variable name                            type
+0x00000000  0xd5c      ascii_24x12                              array[95] of array[36] of const unsigned char
+
+address     size       variable name                            type
+0x08008b94  0x228      ascii_8x6                                array[92] of array[6] of const unsigned char
+
+address     size       variable name                            type
+0x00000000  0x132      bilibiliData                             array[306] of const uint8_t
+
+address     size       variable name                            type
+0x00000000  0x8        bilibiliImg                              const Image
+0x00000000  0x1        bilibiliImg.w                            uint8_t
+0x00000001  0x1      * bilibiliImg.h                            uint8_t
+0x00000004  0x4        bilibiliImg.data                         pointer to const uint8_t
+
+address     size       variable name                            type
+0x00000000  0x10       font16x16                                const Font
+0x00000000  0x1        font16x16.h                              uint8_t
+0x00000001  0x1      * font16x16.w                              uint8_t
+0x00000004  0x4        font16x16.chars                          pointer to const uint8_t
+0x00000008  0x1      * font16x16.len                            uint8_t
+0x0000000c  0x4        font16x16.ascii                          pointer to const ASCIIFont
+
+address     size       variable name                            type
+0x00000000  0x90       zh16x16                                  array[4] of array[36] of const uint8_t
+
+address     size       variable name                            type
+0x200016b7  0x400      OLED_GRAM                                array[8] of array[128] of uint8_t
+
+address     size       variable name                            type
+0x20000024  0x4        line_callback                            SerialLineCallback
+
+address     size       variable name                            type
+0x2000048c  0x11aa     serial_port                              SerialPortState
+0x2000048c  0x40       serial_port.rx_dma_buffer                array[64] of uint8_t
+0x200004cc  0x100      serial_port.rx_ring                      array[256] of uint8_t
+0x200005cc  0x2        serial_port.rx_head                      volatile uint16_t
+0x200005ce  0x2        serial_port.rx_tail                      volatile uint16_t
+0x200005d0  0x1        serial_port.rx_restart_needed            volatile uint8_t
+0x200005d1  0x40       serial_port.rx_line                      array[64] of char
+0x20000611  0x1        serial_port.rx_line_length               uint8_t
+0x20000612  0x1000     serial_port.tx_queue                     array[16] of array[256] of uint8_t
+0x20001612  0x20       serial_port.tx_length                    array[16] of uint16_t
+0x20001632  0x1        serial_port.tx_head                      volatile uint8_t
+0x20001633  0x1        serial_port.tx_tail                      volatile uint8_t
+0x20001634  0x1        serial_port.tx_busy                      volatile uint8_t
+0x20001635  0x1        serial_port.ready                        volatile uint8_t
+
+address     size       variable name                            type
+0x2000001c  0x1        drive_watchdog_enabled                   uint8_t
+
+address     size       variable name                            type
+0x2000047c  0x10       filtered_rpm                             array[4] of float
+
+address     size       variable name                            type
+0x20000020  0x4        last_drive_tick                          uint32_t
+
+address     size       variable name                            type
+0x2000040c  0x70       speed_pid                                array[4] of PidController
+
+address     size       variable name                            type
+0x20000398  0x74       speed_state                              SpeedControlSnapshot
+0x20000398  0x10       speed_state.target_rpm                   array[4] of int32_t
+0x200003a8  0x10       speed_state.actual_rpm                   array[4] of int32_t
+0x200003b8  0x10       speed_state.actual_rpm_x10               array[4] of int32_t
+0x200003c8  0x10       speed_state.output_percent               array[4] of int32_t
+0x200003d8  0x10       speed_state.kp                           array[4] of float
+0x200003e8  0x10       speed_state.ki                           array[4] of float
+0x200003f8  0x10       speed_state.kd                           array[4] of float
+0x20000408  0x2        speed_state.target_limit_rpm             uint16_t
+0x2000040a  0x1        speed_state.enabled                      uint8_t
+0x2000040b  0x1        speed_state.armed                        uint8_t
+
+address     size       variable name                            type
+0x2000038c  0xc        chassis_state                            ChassisTestSnapshot
+0x2000038c  0x1        chassis_state.motor_ready                uint8_t
+0x2000038d  0x1        chassis_state.armed                      uint8_t
+0x2000038e  0x1        chassis_state.active                     uint8_t
+0x2000038f  0x1        chassis_state.channel                    MotorChannel
+0x20000390  0x1        chassis_state.direction                  int8_t
+0x20000391  0x1      * chassis_state.duty_percent               uint8_t
+0x20000394  0x4        chassis_state.remaining_ms               uint32_t
+
+address     size       variable name                            type
+0x20000018  0x4        stop_tick                                uint32_t
+
+address     size       variable name                            type
+0x20000380  0xc        calibration_mean                         array[3] of float
+
+address     size       variable name                            type
+0x20000330  0x50       gyro_state                               GyroSnapshot
+0x20000330  0x1        gyro_state.connected                     uint8_t
+0x20000331  0x1        gyro_state.ready                         uint8_t
+0x20000332  0x1        gyro_state.calibrating                   uint8_t
+0x20000333  0x1        gyro_state.who_am_i                      uint8_t
+0x20000334  0x1        gyro_state.spi_transfer_ok               uint8_t
+0x20000335  0x1        gyro_state.spi_hal_status                uint8_t
+0x20000336  0x1      * gyro_state.sensor_status                 uint8_t
+0x20000338  0x2        gyro_state.calibration_samples           uint16_t
+0x2000033a  0x2        gyro_state.read_failures                 uint16_t
+0x2000033c  0x6        gyro_state.raw_gyro                      array[3] of int16_t
+0x20000342  0x6        gyro_state.raw_accel                     array[3] of int16_t
+0x20000348  0xc        gyro_state.gyro_mdps                     array[3] of int32_t
+0x20000354  0xc        gyro_state.accel_mg                      array[3] of int32_t
+0x20000360  0xc        gyro_state.bias                          array[3] of float
+0x2000036c  0x2      * gyro_state.raw_z                         int16_t
+0x20000370  0x4        gyro_state.bias_z                        float
+0x20000374  0x4        gyro_state.raw_rate_dps                  float
+0x20000378  0x4        gyro_state.rate_dps                      float
+0x2000037c  0x4        gyro_state.yaw_deg                       float
+
+address     size       variable name                            type
+0x20000014  0x4        reconnect_tick                           uint32_t
+
+address     size       variable name                            type
+0x20000010  0x2        warmup_remaining                         uint16_t
+
+address     size       variable name                            type
+0x20000008  0x1        telemetry_periodic                       uint8_t
+
+address     size       variable name                            type
+0x2000000c  0x4        telemetry_tick                           uint32_t
+
+address     size       variable name                            type
+0x20000004  0x4        display_tick                             uint32_t
+
+address     size       variable name                            type
+0x20000000  0x4        imu_tick                                 uint32_t
+
+address     size       variable name                            type
+0x20000068  0x48       hadc1                                    ADC_HandleTypeDef
+0x20000068  0x4        hadc1.Instance                           pointer to ADC_TypeDef
+0x2000006c  0x30       hadc1.Init                               ADC_InitTypeDef
+0x2000006c  0x4        hadc1.Init.ClockPrescaler                uint32_t
+0x20000070  0x4        hadc1.Init.Resolution                    uint32_t
+0x20000074  0x4        hadc1.Init.DataAlign                     uint32_t
+0x20000078  0x4        hadc1.Init.ScanConvMode                  uint32_t
+0x2000007c  0x4        hadc1.Init.EOCSelection                  uint32_t
+0x20000080  0x1      * hadc1.Init.ContinuousConvMode            FunctionalState
+0x20000084  0x4        hadc1.Init.NbrOfConversion               uint32_t
+0x20000088  0x1      * hadc1.Init.DiscontinuousConvMode         FunctionalState
+0x2000008c  0x4        hadc1.Init.NbrOfDiscConversion           uint32_t
+0x20000090  0x4        hadc1.Init.ExternalTrigConv              uint32_t
+0x20000094  0x4        hadc1.Init.ExternalTrigConvEdge          uint32_t
+0x20000098  0x1      * hadc1.Init.DMAContinuousRequests         FunctionalState
+0x2000009c  0x4        hadc1.NbrOfCurrentConversionRank         volatile uint32_t
+0x200000a0  0x4        hadc1.DMA_Handle                         pointer to DMA_HandleTypeDef
+0x200000a4  0x1      * hadc1.Lock                               HAL_LockTypeDef
+0x200000a8  0x4        hadc1.State                              volatile uint32_t
+0x200000ac  0x4        hadc1.ErrorCode                          volatile uint32_t
+
+address     size       variable name                            type
+0x20000270  0x60       hdma_usart2_rx                           DMA_HandleTypeDef
+0x20000270  0x4        hdma_usart2_rx.Instance                  pointer to DMA_Stream_TypeDef
+0x20000274  0x30       hdma_usart2_rx.Init                      DMA_InitTypeDef
+0x20000274  0x4        hdma_usart2_rx.Init.Channel              uint32_t
+0x20000278  0x4        hdma_usart2_rx.Init.Direction            uint32_t
+0x2000027c  0x4        hdma_usart2_rx.Init.PeriphInc            uint32_t
+0x20000280  0x4        hdma_usart2_rx.Init.MemInc               uint32_t
+0x20000284  0x4        hdma_usart2_rx.Init.PeriphDataAlignment  uint32_t
+0x20000288  0x4        hdma_usart2_rx.Init.MemDataAlignment     uint32_t
+0x2000028c  0x4        hdma_usart2_rx.Init.Mode                 uint32_t
+0x20000290  0x4        hdma_usart2_rx.Init.Priority             uint32_t
+0x20000294  0x4        hdma_usart2_rx.Init.FIFOMode             uint32_t
+0x20000298  0x4        hdma_usart2_rx.Init.FIFOThreshold        uint32_t
+0x2000029c  0x4        hdma_usart2_rx.Init.MemBurst             uint32_t
+0x200002a0  0x4        hdma_usart2_rx.Init.PeriphBurst          uint32_t
+0x200002a4  0x1        hdma_usart2_rx.Lock                      HAL_LockTypeDef
+0x200002a5  0x1      * hdma_usart2_rx.State                     volatile HAL_DMA_StateTypeDef
+0x200002a8  0x4        hdma_usart2_rx.Parent                    pointer to unknown Type 
+0x200002ac  0x4        hdma_usart2_rx.XferCpltCallback          pointer to function 
+0x200002b0  0x4        hdma_usart2_rx.XferHalfCpltCallback      pointer to function 
+0x200002b4  0x4        hdma_usart2_rx.XferM1CpltCallback        pointer to function 
+0x200002b8  0x4        hdma_usart2_rx.XferM1HalfCpltCallback    pointer to function 
+0x200002bc  0x4        hdma_usart2_rx.XferErrorCallback         pointer to function 
+0x200002c0  0x4        hdma_usart2_rx.XferAbortCallback         pointer to function 
+0x200002c4  0x4        hdma_usart2_rx.ErrorCode                 volatile uint32_t
+0x200002c8  0x4        hdma_usart2_rx.StreamBaseAddress         uint32_t
+0x200002cc  0x4        hdma_usart2_rx.StreamIndex               uint32_t
+
+address     size       variable name                            type
+0x200002d0  0x60       hdma_usart2_tx                           DMA_HandleTypeDef
+0x200002d0  0x4        hdma_usart2_tx.Instance                  pointer to DMA_Stream_TypeDef
+0x200002d4  0x30       hdma_usart2_tx.Init                      DMA_InitTypeDef
+0x200002d4  0x4        hdma_usart2_tx.Init.Channel              uint32_t
+0x200002d8  0x4        hdma_usart2_tx.Init.Direction            uint32_t
+0x200002dc  0x4        hdma_usart2_tx.Init.PeriphInc            uint32_t
+0x200002e0  0x4        hdma_usart2_tx.Init.MemInc               uint32_t
+0x200002e4  0x4        hdma_usart2_tx.Init.PeriphDataAlignment  uint32_t
+0x200002e8  0x4        hdma_usart2_tx.Init.MemDataAlignment     uint32_t
+0x200002ec  0x4        hdma_usart2_tx.Init.Mode                 uint32_t
+0x200002f0  0x4        hdma_usart2_tx.Init.Priority             uint32_t
+0x200002f4  0x4        hdma_usart2_tx.Init.FIFOMode             uint32_t
+0x200002f8  0x4        hdma_usart2_tx.Init.FIFOThreshold        uint32_t
+0x200002fc  0x4        hdma_usart2_tx.Init.MemBurst             uint32_t
+0x20000300  0x4        hdma_usart2_tx.Init.PeriphBurst          uint32_t
+0x20000304  0x1        hdma_usart2_tx.Lock                      HAL_LockTypeDef
+0x20000305  0x1      * hdma_usart2_tx.State                     volatile HAL_DMA_StateTypeDef
+0x20000308  0x4        hdma_usart2_tx.Parent                    pointer to unknown Type 
+0x2000030c  0x4        hdma_usart2_tx.XferCpltCallback          pointer to function 
+0x20000310  0x4        hdma_usart2_tx.XferHalfCpltCallback      pointer to function 
+0x20000314  0x4        hdma_usart2_tx.XferM1CpltCallback        pointer to function 
+0x20000318  0x4        hdma_usart2_tx.XferM1HalfCpltCallback    pointer to function 
+0x2000031c  0x4        hdma_usart2_tx.XferErrorCallback         pointer to function 
+0x20000320  0x4        hdma_usart2_tx.XferAbortCallback         pointer to function 
+0x20000324  0x4        hdma_usart2_tx.ErrorCode                 volatile uint32_t
+0x20000328  0x4        hdma_usart2_tx.StreamBaseAddress         uint32_t
+0x2000032c  0x4        hdma_usart2_tx.StreamIndex               uint32_t
+
+address     size       variable name                            type
+0x200000b0  0x58       hspi1                                    SPI_HandleTypeDef
+0x200000b0  0x4        hspi1.Instance                           pointer to SPI_TypeDef
+0x200000b4  0x2c       hspi1.Init                               SPI_InitTypeDef
+0x200000b4  0x4        hspi1.Init.Mode                          uint32_t
+0x200000b8  0x4        hspi1.Init.Direction                     uint32_t
+0x200000bc  0x4        hspi1.Init.DataSize                      uint32_t
+0x200000c0  0x4        hspi1.Init.CLKPolarity                   uint32_t
+0x200000c4  0x4        hspi1.Init.CLKPhase                      uint32_t
+0x200000c8  0x4        hspi1.Init.NSS                           uint32_t
+0x200000cc  0x4        hspi1.Init.BaudRatePrescaler             uint32_t
+0x200000d0  0x4        hspi1.Init.FirstBit                      uint32_t
+0x200000d4  0x4        hspi1.Init.TIMode                        uint32_t
+0x200000d8  0x4        hspi1.Init.CRCCalculation                uint32_t
+0x200000dc  0x4        hspi1.Init.CRCPolynomial                 uint32_t
+0x200000e0  0x4        hspi1.pTxBuffPtr                         pointer to const uint8_t
+0x200000e4  0x2        hspi1.TxXferSize                         uint16_t
+0x200000e6  0x2        hspi1.TxXferCount                        volatile uint16_t
+0x200000e8  0x4        hspi1.pRxBuffPtr                         pointer to uint8_t
+0x200000ec  0x2        hspi1.RxXferSize                         uint16_t
+0x200000ee  0x2        hspi1.RxXferCount                        volatile uint16_t
+0x200000f0  0x4        hspi1.RxISR                              pointer to function 
+0x200000f4  0x4        hspi1.TxISR                              pointer to function 
+0x200000f8  0x4        hspi1.hdmatx                             pointer to DMA_HandleTypeDef
+0x200000fc  0x4        hspi1.hdmarx                             pointer to DMA_HandleTypeDef
+0x20000100  0x1        hspi1.Lock                               HAL_LockTypeDef
+0x20000101  0x1      * hspi1.State                              volatile HAL_SPI_StateTypeDef
+0x20000104  0x4        hspi1.ErrorCode                          volatile uint32_t
+
+address     size       variable name                            type
+0x20000108  0x48       htim1                                    TIM_HandleTypeDef
+0x20000108  0x4        htim1.Instance                           pointer to TIM_TypeDef
+0x2000010c  0x18       htim1.Init                               TIM_Base_InitTypeDef
+0x2000010c  0x4        htim1.Init.Prescaler                     uint32_t
+0x20000110  0x4        htim1.Init.CounterMode                   uint32_t
+0x20000114  0x4        htim1.Init.Period                        uint32_t
+0x20000118  0x4        htim1.Init.ClockDivision                 uint32_t
+0x2000011c  0x4        htim1.Init.RepetitionCounter             uint32_t
+0x20000120  0x4        htim1.Init.AutoReloadPreload             uint32_t
+0x20000124  0x1      * htim1.Channel                            HAL_TIM_ActiveChannel
+0x20000128  0x1c       htim1.hdma                               array[7] of pointer to DMA_HandleTypeDef
+0x20000144  0x1        htim1.Lock                               HAL_LockTypeDef
+0x20000145  0x1        htim1.State                              volatile HAL_TIM_StateTypeDef
+0x20000146  0x4        htim1.ChannelState                       array[4] of volatile HAL_TIM_ChannelStateTypeDef
+0x2000014a  0x4        htim1.ChannelNState                      array[4] of volatile HAL_TIM_ChannelStateTypeDef
+0x2000014e  0x1        htim1.DMABurstState                      volatile HAL_TIM_DMABurstStateTypeDef
+
+address     size       variable name                            type
+0x20000150  0x48       htim2                                    TIM_HandleTypeDef
+0x20000150  0x4        htim2.Instance                           pointer to TIM_TypeDef
+0x20000154  0x18       htim2.Init                               TIM_Base_InitTypeDef
+0x20000154  0x4        htim2.Init.Prescaler                     uint32_t
+0x20000158  0x4        htim2.Init.CounterMode                   uint32_t
+0x2000015c  0x4        htim2.Init.Period                        uint32_t
+0x20000160  0x4        htim2.Init.ClockDivision                 uint32_t
+0x20000164  0x4        htim2.Init.RepetitionCounter             uint32_t
+0x20000168  0x4        htim2.Init.AutoReloadPreload             uint32_t
+0x2000016c  0x1      * htim2.Channel                            HAL_TIM_ActiveChannel
+0x20000170  0x1c       htim2.hdma                               array[7] of pointer to DMA_HandleTypeDef
+0x2000018c  0x1        htim2.Lock                               HAL_LockTypeDef
+0x2000018d  0x1        htim2.State                              volatile HAL_TIM_StateTypeDef
+0x2000018e  0x4        htim2.ChannelState                       array[4] of volatile HAL_TIM_ChannelStateTypeDef
+0x20000192  0x4        htim2.ChannelNState                      array[4] of volatile HAL_TIM_ChannelStateTypeDef
+0x20000196  0x1        htim2.DMABurstState                      volatile HAL_TIM_DMABurstStateTypeDef
+
+address     size       variable name                            type
+0x20000198  0x48       htim4                                    TIM_HandleTypeDef
+0x20000198  0x4        htim4.Instance                           pointer to TIM_TypeDef
+0x2000019c  0x18       htim4.Init                               TIM_Base_InitTypeDef
+0x2000019c  0x4        htim4.Init.Prescaler                     uint32_t
+0x200001a0  0x4        htim4.Init.CounterMode                   uint32_t
+0x200001a4  0x4        htim4.Init.Period                        uint32_t
+0x200001a8  0x4        htim4.Init.ClockDivision                 uint32_t
+0x200001ac  0x4        htim4.Init.RepetitionCounter             uint32_t
+0x200001b0  0x4        htim4.Init.AutoReloadPreload             uint32_t
+0x200001b4  0x1      * htim4.Channel                            HAL_TIM_ActiveChannel
+0x200001b8  0x1c       htim4.hdma                               array[7] of pointer to DMA_HandleTypeDef
+0x200001d4  0x1        htim4.Lock                               HAL_LockTypeDef
+0x200001d5  0x1        htim4.State                              volatile HAL_TIM_StateTypeDef
+0x200001d6  0x4        htim4.ChannelState                       array[4] of volatile HAL_TIM_ChannelStateTypeDef
+0x200001da  0x4        htim4.ChannelNState                      array[4] of volatile HAL_TIM_ChannelStateTypeDef
+0x200001de  0x1        htim4.DMABurstState                      volatile HAL_TIM_DMABurstStateTypeDef
+
+address     size       variable name                            type
+0x200001e0  0x48       htim8                                    TIM_HandleTypeDef
+0x200001e0  0x4        htim8.Instance                           pointer to TIM_TypeDef
+0x200001e4  0x18       htim8.Init                               TIM_Base_InitTypeDef
+0x200001e4  0x4        htim8.Init.Prescaler                     uint32_t
+0x200001e8  0x4        htim8.Init.CounterMode                   uint32_t
+0x200001ec  0x4        htim8.Init.Period                        uint32_t
+0x200001f0  0x4        htim8.Init.ClockDivision                 uint32_t
+0x200001f4  0x4        htim8.Init.RepetitionCounter             uint32_t
+0x200001f8  0x4        htim8.Init.AutoReloadPreload             uint32_t
+0x200001fc  0x1      * htim8.Channel                            HAL_TIM_ActiveChannel
+0x20000200  0x1c       htim8.hdma                               array[7] of pointer to DMA_HandleTypeDef
+0x2000021c  0x1        htim8.Lock                               HAL_LockTypeDef
+0x2000021d  0x1        htim8.State                              volatile HAL_TIM_StateTypeDef
+0x2000021e  0x4        htim8.ChannelState                       array[4] of volatile HAL_TIM_ChannelStateTypeDef
+0x20000222  0x4        htim8.ChannelNState                      array[4] of volatile HAL_TIM_ChannelStateTypeDef
+0x20000226  0x1        htim8.DMABurstState                      volatile HAL_TIM_DMABurstStateTypeDef
+
+address     size       variable name                            type
+0x20000228  0x48       huart2                                   UART_HandleTypeDef
+0x20000228  0x4        huart2.Instance                          pointer to USART_TypeDef
+0x2000022c  0x1c       huart2.Init                              UART_InitTypeDef
+0x2000022c  0x4        huart2.Init.BaudRate                     uint32_t
+0x20000230  0x4        huart2.Init.WordLength                   uint32_t
+0x20000234  0x4        huart2.Init.StopBits                     uint32_t
+0x20000238  0x4        huart2.Init.Parity                       uint32_t
+0x2000023c  0x4        huart2.Init.Mode                         uint32_t
+0x20000240  0x4        huart2.Init.HwFlowCtl                    uint32_t
+0x20000244  0x4        huart2.Init.OverSampling                 uint32_t
+0x20000248  0x4        huart2.pTxBuffPtr                        pointer to const uint8_t
+0x2000024c  0x2        huart2.TxXferSize                        uint16_t
+0x2000024e  0x2        huart2.TxXferCount                       volatile uint16_t
+0x20000250  0x4        huart2.pRxBuffPtr                        pointer to uint8_t
+0x20000254  0x2        huart2.RxXferSize                        uint16_t
+0x20000256  0x2        huart2.RxXferCount                       volatile uint16_t
+0x20000258  0x4        huart2.ReceptionType                     volatile HAL_UART_RxTypeTypeDef
+0x2000025c  0x4        huart2.RxEventType                       volatile HAL_UART_RxEventTypeTypeDef
+0x20000260  0x4        huart2.hdmatx                            pointer to DMA_HandleTypeDef
+0x20000264  0x4        huart2.hdmarx                            pointer to DMA_HandleTypeDef
+0x20000268  0x1        huart2.Lock                              HAL_LockTypeDef
+0x20000269  0x1        huart2.gState                            volatile HAL_UART_StateTypeDef
+0x2000026a  0x1      * huart2.RxState                           volatile HAL_UART_StateTypeDef
+0x2000026c  0x4        huart2.ErrorCode                         volatile uint32_t
+

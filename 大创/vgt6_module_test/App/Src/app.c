@@ -1,4 +1,5 @@
 #include "app.h"
+#include "attitude_control.h"
 
 #include "battery.h"
 #include "chassis_test.h"
@@ -8,6 +9,8 @@
 #include "gyro.h"
 #include "main.h"
 #include "serial_dma.h"
+#include "speed_control.h"
+#include "stack_usage.h"
 #include "stm32f4xx_hal.h"
 #include "telemetry.h"
 
@@ -22,11 +25,14 @@ void App_Init(void)
   uint8_t motor_ready;
   uint8_t serial_ready;
 
+  StackUsage_Init();
   imu_ready = Gyro_Init();
   serial_ready = SerialDma_Init(Command_HandleLine);
   encoder_ready = Encoder_Init();
   Battery_Init();
   motor_ready = ChassisTest_Init();
+  SpeedControl_Init();
+  AttitudeControl_Init();
   Display_Init();
   Telemetry_Init();
   imu_tick = HAL_GetTick();
@@ -45,10 +51,22 @@ void App_Process(void)
   uint32_t elapsed;
   float dt_seconds;
   GyroSnapshot gyro;
+  SpeedControlSnapshot speed;
+  EncoderSnapshot enc;
+  uint8_t stationary;
+  uint32_t i;
 
+  if (StackUsage_IsHealthy() == 0U)
+  {
+    ChassisTest_Disarm();
+    Telemetry_SetPeriodic(0U);
+    SerialDma_Process();
+    return;
+  }
   SerialDma_Process();
   ChassisTest_Process();
   Battery_Process();
+  Telemetry_Process();
   now = HAL_GetTick();
   elapsed = now - imu_tick;
   if (elapsed >= APP_IMU_PERIOD_MS)
@@ -60,8 +78,16 @@ void App_Process(void)
     imu_tick = now;
     dt_seconds = (float)elapsed / 1000.0f;
     Encoder_Process(elapsed);
-    Gyro_Process(dt_seconds,
-                 (ChassisTest_IsMotorActive() == 0U) ? 1U : 0U);
+    speed = SpeedControl_GetSnapshot();
+    enc = Encoder_GetSnapshot();
+    stationary = ChassisTest_IsMotorActive() == 0U;
+    for (i = 0; i < 4U; ++i)
+      if (speed.target_rpm[i] || speed.output_percent[i] ||
+          enc.rpm_x10[i] > 20 || enc.rpm_x10[i] < -20)
+        stationary = 0U;
+    Gyro_Process(dt_seconds, stationary);
+    AttitudeControl_Process(elapsed);
+    SpeedControl_Process(elapsed);
     gyro = Gyro_GetSnapshot();
     HAL_GPIO_WritePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin,
                       (gyro.connected != 0U) ? GPIO_PIN_SET : GPIO_PIN_RESET);

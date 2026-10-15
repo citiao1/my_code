@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+#include "speed_control.h"
+#include "attitude_control.h"
 #include "stm32f4xx_hal.h"
 
 #define CHASSIS_MAX_DUTY_PERCENT 30U
@@ -51,6 +53,8 @@ void ChassisTest_Disarm(void)
 
 void ChassisTest_Stop(void)
 {
+  AttitudeControl_Stop();
+  SpeedControl_Stop();
   Motor_StopAll();
   chassis_state.active = 0U;
   chassis_state.duty_percent = 0U;

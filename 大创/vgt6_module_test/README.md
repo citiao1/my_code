@@ -51,6 +51,9 @@ Send one ASCII line ending in `CR`, `LF` or `CRLF`:
 
 ```text
 PING
+VER
+UART
+STACK
 STATUS
 ARM
 DISARM
@@ -70,6 +73,16 @@ ENCZERO
 CPR,380
 BAT
 RECOVER,A
+SPEED,1
+SPEED,0
+SPEED,120
+SPD,A,30
+DRV,30,0,0
+PID,A,1.2,0.2,0
+PIDGET
+SPEEDSTATUS
+TEL,1
+TEL,0
 CAL
 ZERO
 WHO
@@ -107,6 +120,122 @@ DRV,tick,motor_ready,armed,active,channel,direction,duty,remaining_ms
 
 Periodic telemetry is disabled in the current motor-test image. The four
 formats above are emitted only when `STATUS`, `ENC` or `BAT` is requested.
+When enabled with `TEL,1`, the speed stream uses the compact 27-field
+`TEL` format consumed by the pure BM50 console and VOFA bridge. It contains
+tick, four targets, four PWM outputs, four actual RPM×10 values, battery
+voltage and basic gyro/status fields, and remains below the UART TX message
+limit.
+
+`SPEED,1`/`SPEED,0` enable or disable the four-wheel speed loop after `ARM`.
+`SPEED,<rpm>` sets the target limit (except the special value `1`), `SPD`
+sets one wheel target RPM, and `DRV` sets mecanum forward/left/rotate RPM.
+`PIDGET` reports the four fixed wheel gains. R7 accepts finite `PID,<A-D>,Kp,Ki,Kd`
+writes in the 0..100 range and resets the selected controller state. `SPEEDLIMIT`
+returns the current target ceiling.
+`TEL,1` enables a 300 ms `TEL` stream for
+the web console and VOFA bridge; it is off by default.
+
+### BLE line-framing revision
+
+`VER` returns `VER,VGT6_BM50_ATTITUDE_R7`. UART IDLE ends only a DMA
+burst, never a command; the receive ring assembles BLE fragments until an
+explicit CR or LF. Manual serial terminals must send a line terminator.
+
+`LINK` reports RX bytes, complete commands, RX overflow count, TX dropped
+count, UART error count and periodic-telemetry enable state. Unknown commands
+are echoed as `ERR,UNKNOWN_COMMAND,<received-command>`, followed by
+`RXHEX,<original-byte-hex>`.
+
+The R3 startup reserved only 1024 bytes while Keil reported an already-known
+1808-byte call path, before full indirect-call and interrupt overhead.
+R4 sets `ProjectManager.StackSize=0x1000` in CubeMX and imports the verified
+generated startup difference, reserving 4096 bytes. Telemetry formatting
+buffers are also moved out of nested stack frames. The actual UART corruption
+still requires physical verification; this fixes a confirmed memory-budget
+defect, not a proven exclusive cause of every receive error.
+
+`STACK` returns allocated/observed-used/free bytes and a guard flag.
+`UART` reports configured baud, software PCLK, BRR, last HAL error flags,
+and PE/NE/FE/ORE/DMA error counts. The bridge prefixes commands with LF;
+after UART faults the firmware discards partial reception until a real line
+terminator. It never guesses corrections to corrupted motor commands.
+Stack-guard failures disarm/brake the motors and disable telemetry; only
+lightweight diagnostic commands remain available. The guard does not replace
+instrumented stack and control-loop validation.
+
+Prefer `SPDLIMIT,<rpm>` for limit writes, including 1 RPM. `SPEED,0/1`
+remain the loop-disable/enable commands. STOP disables the loop and stream
+but preserves ARM; enabling the loop again does not require a BLE reconnect.
+
+`tests/host/run-tests.ps1` compiles the real transport, parser, telemetry and
+speed-control modules with mock HAL/board I/O using GCC. It checks every
+command split point, bytewise PID reception, malformed input recovery,
+STOP/restart and telemetry timing. This is a protocol regression, not a
+physical motor or radio test.
+
+After a Keil build, `node tests/check-stack-budget.cjs` checks that `.ioc`,
+startup, the linked map and runtime monitor agree, and compares the known
+static depth with the reserved margin. Indirect/unknown paths still need
+on-board STACK watermark checks.
+
+The four wheel controllers are inner-loop incremental PID controllers. Each
+cycle applies
+`u(k)=u(k-1)+Kp[e(k)-e(k-1)]+Ki*e(k)+Kd[e(k)-2e(k-1)+e(k-2)]`,
+then limits the accumulated PWM command to 60%. The 10 ms encoder speed
+measurement is filtered with a 0.7/0.3 first-order low-pass filter before the
+PID calculation. The legacy integral-limit parameter is retained only for
+command/API compatibility and does not limit the incremental update.
+
+### R7 runtime gains and shaft-speed ceiling
+
+All four channels start with Kp=1.2, Ki=0.2, Kd=0 at the existing 10 ms
+control period. R7 validates finite `PID,<A-D>,Kp,Ki,Kd` writes against the
+per-wheel gains and rejects changes, so the calibrated gains remain fixed.
+The pure console page only writes targets; the live
+整定器 performs guarded PID updates and readback checks.
+
+The supplied `BM50电机规格书与使用说明书(2026.01.16).pdf`, PDF pages 4--5
+(printed pages 2--3), lists a 19:1 gearbox / 380 transitions per output
+revolution, motor-body rated speed 4462 RPM (+/-10%) and no-load speed
+5199 RPM (+/-10%). With the project's existing 19:1 gearbox assumption,
+these correspond to about 235 RPM rated and 274 RPM no-load at the output
+shaft. The chosen default and maximum configurable target limit is 200 RPM,
+below even the 10%-low rated reference (about 211 RPM). `SPDLIMIT` may lower
+the ceiling to 1--200 RPM; higher writes are rejected, while `SPD` targets
+are clamped symmetrically to the current ceiling. If the actual gearbox
+differs, this limit and the encoder CPR must both be reconsidered.
+
+This is a target clamp, not an actual-speed trip. The separate incremental
+PID output cap remains +/-60% PWM. `Motor_Run` converts the duty directly
+to TIM8 compare and permits up to 100%; it does not multiply by another
+60%. The 30% jog limit belongs only to open-loop `JOG`. If the actual speed
+lags a higher target while VOFA I9--I12 stays at +/-60, the speed loop is
+output-saturated; raising Ki will not overcome this cap. Supply/load and
+encoder scaling must also be checked before increasing drive capability.
+
+### R7 attitude cascade
+
+R7 adds an angular-velocity inner PI loop and a heading outer PD loop. Both run
+at 20 ms. The angular-velocity loop uses the IMU660RC measured yaw rate and
+outputs a rotation RPM command limited to +/-60 RPM. The heading loop wraps its
+error to +/-180 degrees, uses measured yaw rate for damping, and limits the
+generated angular-velocity target to +/-80 degrees/s. `YAW,<deg/s>` starts the
+inner loop; `HEAD,<deg>` starts the heading cascade; `MOVE,<forward>,<left>,<deg/s>`
+combines translation with the inner loop. `YAWPID`, `HEADPID`, `YAWGET`,
+`HEADGET`, `KEEP`, `ATEL,1/0`, and `ANGLESTATUS` configure and observe the
+loops. A 1.5 s command watchdog stops the cascade if `KEEP` is not received.
+
+`ATEL` fields are:
+
+```text
+ATEL,tick,mode,imu_ready,target_rate_mdps,actual_rate_mdps,
+output_rpm_milli,target_heading_mdeg,actual_heading_mdeg,
+heading_error_mdeg,output_dps_milli,saturated,speed_enabled,battery_mv
+```
+
+The OLED bottom line contains the `R7` marker, IMU read-failure count, yaw
+tenths of a degree, and IMU `WHO_AM_I` value. It is a quick confirmation that
+the flashed image is the R7 build.
 
 ## First bench test order
 
@@ -130,6 +259,22 @@ Open `vgt6_module_test.ioc` in STM32CubeMX 6.17, keep MDK-ARM V5 selected,
 and regenerate when pin/peripheral settings change. Then build
 `MDK-ARM/vgt6_module_test.uvprojx` in Keil.
 
-On September 14, 2026, the checked-in image was built with Keil MDK-ARM
-5.38 / Arm Compiler 5.06: 0 errors and 0 warnings. The `.axf` and `.hex`
-outputs are under `MDK-ARM/vgt6_module_test/`.
+The `.axf` and `.hex` outputs are under `MDK-ARM/vgt6_module_test/`.
+R4 stack regeneration used the existing STM32CubeMX 6.17 / F4 V1.28.3
+configuration in an isolated temporary project; only the one-line generated
+startup stack-size difference was imported, preserving custom Keil groups.
+The generator reported installed-plugin/schema and TIM metadata warnings;
+no unrelated generated initialization changes were imported.
+
+On October 9, 2026, R4 was compiled and linked with the active Keil
+Arm Compiler 5.06 update 5 target: 0 errors, 0 warnings. The map reserves
+4096 stack bytes and the known static call depth is 1108 bytes. The AXF
+contains the R4 version string. The host protocol suite passed 187
+assertions, the bridge passed 12 tests and the page passed 14 tests.
+These results do not constitute a flash or physical UART/motor test.
+
+R5 was subsequently built on October 9, 2026 with the same active target:
+0 errors and 0 warnings. Regression results: 209 protocol checks,
+18 page tests, 12 bridge tests. The 4096-byte stack budget check passed;
+known static depth remains 1108 bytes. No flashing or physical motor test
+was performed for R5.

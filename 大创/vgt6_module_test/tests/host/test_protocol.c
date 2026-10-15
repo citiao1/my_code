@@ -1,0 +1,374 @@
+/* Host regression: real transport, commands, telemetry and speed-loop code.
+ * Only HAL and board I/O are stubbed. No board/probe is accessed. */
+#include <assert.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "stm32f4xx_hal.h"
+#include "usart.h"
+#include "serial_dma.h"
+#include "command.h"
+#include "chassis_test.h"
+#include "speed_control.h"
+#include "telemetry.h"
+#include "gyro.h"
+#include "encoder.h"
+#include "battery.h"
+#include "stack_usage.h"
+#include "attitude_control.h"
+
+static DMA_HandleTypeDef mock_dma;
+static USART_TypeDef mock_usart = {4375U};
+UART_HandleTypeDef huart2 = { &mock_dma, {9600U}, &mock_usart, 0U };
+static uint8_t *rx_buffer;
+static uint16_t rx_capacity;
+static uint32_t tick;
+static char transmitted[8192];
+static size_t tx_length;
+static unsigned cases;
+static EncoderSnapshot encoder;
+static uint8_t stack_healthy = 1U;
+static GyroSnapshot gyro_mock;
+
+uint32_t HAL_GetTick(void) { return tick; }
+uint32_t HAL_RCC_GetPCLK1Freq(void) { return 42000000U; }
+uint8_t StackUsage_IsHealthy(void) { return stack_healthy; }
+StackUsageSnapshot StackUsage_GetSnapshot(void)
+{ StackUsageSnapshot value = {4096U, 1200U, 2896U, stack_healthy}; return value; }
+HAL_StatusTypeDef HAL_UARTEx_ReceiveToIdle_DMA(UART_HandleTypeDef *uart,
+                                              uint8_t *data, uint16_t size)
+{
+  assert(uart == &huart2);
+  rx_buffer = data;
+  rx_capacity = size;
+  return HAL_OK;
+}
+HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *uart,
+                                       uint8_t *data, uint16_t size)
+{
+  assert(tx_length + size < sizeof(transmitted));
+  memcpy(transmitted + tx_length, data, size);
+  tx_length += size;
+  transmitted[tx_length] = '\0';
+  /* Deliberately preempt StartTx before it returns to test busy ownership. */
+  HAL_UART_TxCpltCallback(uart);
+  return HAL_OK;
+}
+HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *uart)
+{ (void)uart; return HAL_OK; }
+uint8_t Motor_Init(void) { return 1U; }
+void Motor_Stop(MotorChannel channel) { (void)channel; }
+void Motor_StopAll(void) {}
+uint8_t Motor_Run(MotorChannel channel, int8_t direction, uint8_t duty)
+{ (void)channel; (void)direction; (void)duty; return 1U; }
+uint8_t Motor_Recover(MotorChannel channel) { (void)channel; return 1U; }
+void Encoder_Zero(void) { memset(&encoder, 0, sizeof(encoder)); }
+uint8_t Encoder_SetCountsPerRevolution(uint16_t cpr) { return cpr >= 4U; }
+EncoderSnapshot Encoder_GetSnapshot(void) { return encoder; }
+BatterySnapshot Battery_GetSnapshot(void)
+{ BatterySnapshot value = { 1000U, 12000U, 0U, 1U }; return value; }
+GyroSnapshot Gyro_GetSnapshot(void)
+{ return gyro_mock; }
+uint8_t Gyro_StartCalibration(void) { return 1U; }
+void Gyro_ZeroYaw(void) {}
+
+static void drain(void)
+{
+  unsigned i;
+  for (i = 0U; i < 32U; ++i) SerialDma_Process();
+}
+static void clear_tx(void)
+{ tx_length = 0U; transmitted[0] = '\0'; }
+static void init(void)
+{
+  tick = 100U;
+  clear_tx();
+  memset(&encoder, 0, sizeof(encoder));
+  stack_healthy = 1U;
+  huart2.ErrorCode = 0U;
+  assert(ChassisTest_Init() == 1U);
+  SpeedControl_Init();
+  AttitudeControl_Init();
+  memset(&gyro_mock, 0, sizeof(gyro_mock));
+  gyro_mock.ready = 1U;
+  Telemetry_Init();
+  assert(SerialDma_Init(Command_HandleLine) == 1U);
+}
+static void burst(const char *data, size_t size, int process)
+{
+  assert(size <= rx_capacity);
+  memcpy(rx_buffer, data, size);
+  HAL_UARTEx_RxEventCallback(&huart2, (uint16_t)size);
+  if (process) drain();
+}
+static void line(const char *command)
+{
+  clear_tx();
+  burst(command, strlen(command), 1);
+}
+static void expect(const char *reply)
+{
+  if (strcmp(transmitted, reply) != 0)
+  {
+    fprintf(stderr, "expected [%s], got [%s]\n", reply, transmitted);
+    assert(0);
+  }
+  ++cases;
+}
+static void test_every_split(void)
+{
+  static const char *commands[] = {
+    "VER\n", "ARM\n", "SPDLIMIT,120\n", "SPEED,1\n",
+    "PID,A,1.2,0.0991,0\n", "SPD,A,60\n", "TEL,1\n",
+    "SPEED,0\n", "SPEED,120\n", "STOP\n", "PING\r\n"
+  };
+  static const char *replies[] = {
+    "VER,VGT6_BM50_ATTITUDE_R7\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
+    "ACK,SPDLIMIT\r\n", "ACK,SPEED,1\r\n", "ACK,PID\r\n",
+    "ACK,SPD\r\n", "ACK,TEL,1\r\n", "ACK,SPEED,0\r\n",
+    "ACK,SPEED,LIMIT\r\n", "ACK,STOP\r\n", "PONG\r\n"
+  };
+  size_t c, split, length;
+  for (c = 0U; c < sizeof(commands) / sizeof(commands[0]); ++c)
+  {
+    length = strlen(commands[c]);
+    for (split = 1U; split < length; ++split)
+    {
+      init();
+      ChassisTest_Arm();
+      burst(commands[c], split, 1);
+      /* CR itself is an explicit terminator, unlike IDLE. */
+      if (commands[c][split - 1U] != '\r') expect("");
+      burst(commands[c] + split, length - split, 1);
+      expect(replies[c]);
+    }
+  }
+  init();
+  ChassisTest_Arm();
+  for (split = 0U; split < strlen(commands[4]); ++split)
+    burst(commands[4] + split, 1U, 1);
+  expect("ACK,PID\r\n");
+}
+static void test_stop_restart_and_tel(void)
+{
+  init();
+  line("SPEED,1\n"); expect("ERR,SPEED,ARM_FIRST\r\n");
+  line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+  line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
+  line("SPD,A,60\n"); expect("ACK,SPD\r\n");
+  encoder.rpm_x10[0] = 500;
+  SpeedControl_Process(10U);
+  assert(SpeedControl_GetSnapshot().actual_rpm_x10[0] == 150);
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  assert(SpeedControl_GetSnapshot().enabled == 0U);
+  assert(SpeedControl_GetSnapshot().target_rpm[0] == 0);
+  assert(Telemetry_IsPeriodic() == 0U);
+  assert(ChassisTest_GetSnapshot().armed == 1U);
+  clear_tx();
+  tick += 4000U; Telemetry_Process(); drain(); expect("");
+  line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
+  line("SPD,A,60\n"); expect("ACK,SPD\r\n");
+  assert(SpeedControl_GetSnapshot().target_rpm[0] == 60);
+  line("SPEED,120\n"); expect("ACK,SPEED,LIMIT\r\n");
+  assert(SpeedControl_GetSnapshot().enabled == 1U);
+  line("SPDLIMIT,1\n"); expect("ACK,SPDLIMIT\r\n");
+  assert(SpeedControl_GetSnapshot().target_limit_rpm == 1U);
+  line("SPEEDLIMIT\n"); expect("SPEEDLIMIT,1\r\n");
+  line("TEL,0\n"); expect("ACK,TEL,0\r\n");
+  clear_tx(); tick += 4000U; Telemetry_Process(); drain(); expect("");
+  line("TEL,1\n"); expect("ACK,TEL,1\r\n");
+  clear_tx(); tick += 299U; Telemetry_Process(); drain(); expect("");
+  tick += 1U; Telemetry_Process(); drain();
+  assert(strncmp(transmitted, "TEL,", 4U) == 0);
+  assert(strstr(transmitted, "\r\n") != NULL);
+  { unsigned commas = 0U; const char *p = transmitted;
+    while (*p != '\0') { if (*p++ == ',') ++commas; }
+    assert(commas == 26U); ++cases; }
+}
+static void test_bad_lines_and_recovery(void)
+{
+  char long_line[64];
+  char full_burst[64];
+  init();
+  line("NOTREAL\n"); expect("ERR,UNKNOWN_COMMAND,NOTREAL\r\nRXHEX,4E4F545245414C\r\n");
+  clear_tx();
+  memset(long_line, 'X', sizeof(long_line));
+  burst(long_line, sizeof(long_line), 1);
+  burst("\nPING\n", 6U, 1);
+  expect("ERR,LINE_TOO_LONG\r\nPONG\r\n");
+  clear_tx();
+  burst("PI\x80NG\nPING\n", 11U, 1);
+  expect("ERR,NON_ASCII\r\nPONG\r\n");
+  clear_tx();
+  memset(full_burst, 'X', sizeof(full_burst));
+  for (unsigned i = 0U; i < 5U; ++i) burst(full_burst, sizeof(full_burst), 0);
+  drain(); burst("\nPING\n", 6U, 1);
+  expect("ERR,RX_OVERFLOW\r\nPONG\r\n");
+  assert(SerialDma_GetSnapshot().rx_overflows > 0U);
+  HAL_UART_ErrorCallback(&huart2); drain();
+  line("\nPING\n"); expect("PONG\r\n");
+  assert(SerialDma_GetSnapshot().uart_errors == 1U);
+}
+static void test_uart_fault_drops_partial_targets(void)
+{
+  init();
+  ChassisTest_Arm();
+  burst("SPD,A,", 6U, 1);
+  huart2.ErrorCode = HAL_UART_ERROR_FE | HAL_UART_ERROR_ORE;
+  HAL_UART_ErrorCallback(&huart2);
+  drain();
+  expect("ERR,UART_RX,QUERY_UART\r\n");
+  clear_tx();
+  burst("30\n", 3U, 1);
+  expect("");
+  assert(SpeedControl_GetSnapshot().target_rpm[0] == 0);
+  line("\nSPD,A,30\n"); expect("ACK,SPD\r\n");
+  assert(SpeedControl_GetSnapshot().target_rpm[0] == 30);
+  line("\nUART\n");
+  expect("UART,9600,42000000,4375,0x0C,0,0,1,1,0\r\n");
+}
+static void test_stack_guard_and_diagnostics(void)
+{
+  init();
+  line("STACK\n"); expect("STACK,4096,1200,2896,1\r\n");
+  line("UART\n"); expect("UART,9600,42000000,4375,0x00,0,0,0,0,0\r\n");
+  line("STATUS\n");
+  assert(strstr(transmitted, "IMU,") != NULL);
+  assert(strstr(transmitted, "TEL,") != NULL);
+  ++cases;
+  stack_healthy = 0U;
+  line("ARM\n"); expect("ERR,STACK_GUARD,MOTORS_DISABLED\r\n");
+  assert(ChassisTest_GetSnapshot().armed == 0U);
+  line("SPD,A,30\n"); expect("ERR,STACK_GUARD,MOTORS_DISABLED\r\n");
+  assert(SpeedControl_GetSnapshot().target_rpm[0] == 0);
+  line("STATUS\n"); expect("ERR,STACK_GUARD,MOTORS_DISABLED\r\n");
+  line("STACK\n"); expect("STACK,4096,1200,2896,0\r\n");
+}
+
+static void test_fixed_gains_and_target_ceiling(void)
+{
+  unsigned index;
+  SpeedControlSnapshot speed;
+  const float ki[4] = {0.0991f,0.0998f,0.0998f,0.1008f};
+  init();
+  speed = SpeedControl_GetSnapshot();
+  assert(speed.target_limit_rpm == 200U);
+  for (index = 0U; index < SPEED_CONTROL_CHANNEL_COUNT; ++index)
+  {
+    assert(speed.kp[index] == 1.2f);
+    assert(speed.ki[index] == ki[index]);
+    assert(speed.kd[index] == 0.0f);
+    assert(SpeedControl_SetPid((MotorChannel)index, 0.8f, 0.1f, 0.0f) == 0U);
+    assert(SpeedControl_SetPid((MotorChannel)index, 1.2f, ki[index], 0.0f) == 1U);
+    ++cases;
+  }
+  assert(SpeedControl_SetPid(MOTOR_CHANNEL_A, NAN, 0.2f, 0.0f) == 0U);
+  assert(SpeedControl_SetPid(MOTOR_CHANNEL_A, 1.2f, INFINITY, 0.0f) == 0U);
+  line("PIDGET\n");
+  expect("PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000\r\n");
+  line("PID,A,0.8,0.1,0\n"); expect("ERR,PID,SPEED_FIXED_R7\r\n");
+  line("PID,B,1.2,0.2,1\n"); expect("ERR,PID,SPEED_FIXED_R7\r\n");
+  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_FIXED_R7\r\n");
+  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_FIXED_R7\r\n");
+  line("SPDLIMIT,201\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
+  line("SPDLIMIT,65736\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
+  line("SPEED,1000\n"); expect("ERR,SPEED,RANGE_1_200\r\n");
+  assert(SpeedControl_GetSnapshot().target_limit_rpm == 200U);
+  line("SPD,A,999\n"); expect("ACK,SPD\r\n");
+  line("SPD,B,-999\n"); expect("ACK,SPD\r\n");
+  speed = SpeedControl_GetSnapshot();
+  assert(speed.target_rpm[0] == 200);
+  assert(speed.target_rpm[1] == -200);
+  line("SPDLIMIT,180\n"); expect("ACK,SPDLIMIT\r\n");
+  speed = SpeedControl_GetSnapshot();
+  assert(speed.target_rpm[0] == 180);
+  assert(speed.target_rpm[1] == -180);
+  line("SPDLIMIT,200\n"); expect("ACK,SPDLIMIT\r\n");
+  line("SPEEDLIMIT\n"); expect("SPEEDLIMIT,200\r\n");
+  line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+  line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
+  line("SPD,A,60\n"); expect("ACK,SPD\r\n");
+  encoder.rpm_x10[0] = 500;
+  SpeedControl_Process(10U);
+  line("PID,A,1.2,0.0991,0\n"); expect("ACK,PID\r\n");
+  SpeedControl_Process(10U);
+  assert(SpeedControl_GetSnapshot().actual_rpm_x10[0] == 255);
+  /* Matching legacy PID writes must not reset the active feedback filter. */
+  line("SPD,A,200\n"); expect("ACK,SPD\r\n");
+  line("SPD,B,-200\n"); expect("ACK,SPD\r\n");
+  encoder.rpm_x10[0] = 0;
+  for (index = 0U; index < 100U; ++index)
+  {
+    SpeedControl_Process(10U);
+    speed = SpeedControl_GetSnapshot();
+    assert(abs(speed.output_percent[0]) <= 60);
+    assert(abs(speed.output_percent[1]) <= 60);
+  }
+  assert(speed.output_percent[0] == 60);
+  assert(speed.output_percent[1] == -60);
+  ++cases;
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  assert(SpeedControl_GetSnapshot().kp[0] == 1.2f);
+  SpeedControl_Init();
+  assert(SpeedControl_GetSnapshot().target_limit_rpm == 200U);
+  assert(SpeedControl_GetSnapshot().ki[0] == ki[0]);
+}
+static void test_attitude_cascade_and_stop(void)
+{
+  AttitudeControlSnapshot a;
+  init();
+  line("CAPS\n"); expect("CAPS,ATTITUDE_R7,20,10,200,60,60,80,SPEED_FIXED\r\n");
+  line("YAW,15\n"); expect("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
+  line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+  line("HEAD,-179\n"); expect("ACK,HEAD\r\n");
+  gyro_mock.yaw_deg = 179.0f;
+  AttitudeControl_Process(20);
+  a=AttitudeControl_GetSnapshot();
+  assert(a.error_deg==2.0f && a.output_dps==10.0f);
+  gyro_mock.rate_dps=2.0f;
+  AttitudeControl_Process(20);
+  assert(AttitudeControl_GetSnapshot().output_dps==7.5f);
+  line("YAWPID,0.25,1.2\n"); expect("ACK,YAWPID\r\n");
+  line("YAWGET\n"); expect("YAWPID,0.2500,1.2000,60,80,20\r\n");
+  line("HEADPID,3,0.5\n"); expect("ACK,HEADPID\r\n");
+  line("HEADGET\n"); expect("HEADPID,3.0000,0.5000,80,20,D_MEAS\r\n");
+  line("HEADPID,NAN,1\n"); expect("ERR,ANGLEPID,RANGE_0_100\r\n");
+  line("YAW,81\n"); expect("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  AttitudeControl_Process(20);
+  assert(!SpeedControl_GetSnapshot().enabled && !AttitudeControl_GetSnapshot().mode);
+  line("YAW,15\n"); expect("ACK,YAW\r\n");
+  AttitudeControl_Process(20);
+  assert(SpeedControl_GetSnapshot().enabled);
+  line("KEEP\n"); expect("ACK,KEEP\r\n");
+  tick += 1501;
+  AttitudeControl_Process(20);
+  assert(!SpeedControl_GetSnapshot().enabled && !AttitudeControl_GetSnapshot().mode);
+  line("YAW,15\n"); expect("ACK,YAW\r\n");
+  gyro_mock.read_failures=1;
+  AttitudeControl_Process(20);
+  assert(!SpeedControl_GetSnapshot().enabled);
+  gyro_mock.read_failures=0;
+  line("YAW,15\n"); expect("ACK,YAW\r\n");
+  clear_tx(); tick+=200; Telemetry_Process(); drain();
+  assert(strncmp(transmitted,"ATEL,",5)==0 && tx_length<256);
+  line("TEL,1\n"); expect("ACK,TEL,1\r\n");
+  clear_tx(); tick+=300; Telemetry_Process(); drain();
+  assert(strncmp(transmitted,"TEL,",4)==0);
+  line("CAL\n"); expect("ACK,CAL,KEEP_STILL\r\n");
+  assert(!AttitudeControl_GetSnapshot().mode && !SpeedControl_GetSnapshot().enabled);
+  ++cases;
+}
+int main(void)
+{
+  test_every_split();
+  test_stop_restart_and_tel();
+  test_bad_lines_and_recovery();
+  test_uart_fault_drops_partial_targets();
+  test_stack_guard_and_diagnostics();
+  test_fixed_gains_and_target_ceiling();
+  test_attitude_cascade_and_stop();
+  printf("PASS: %u real-firmware protocol assertions\n", cases);
+  return 0;
+}

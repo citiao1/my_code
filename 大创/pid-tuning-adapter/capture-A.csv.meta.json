@@ -1,0 +1,23 @@
+{
+  "loop_name": "bm50-wheel-speed",
+  "motor": "A",
+  "controller_form": "incremental",
+  "control_period_s": 0.01,
+  "telemetry_period_s": 0.3,
+  "firmware": "VER,VGT6_BM50_SPEED_FIXED_R5",
+  "gains": [
+    1.2,
+    0.2,
+    0.0,
+    1.2,
+    0.2,
+    0.0,
+    1.2,
+    0.2,
+    0.0,
+    1.2,
+    0.2,
+    0.0
+  ],
+  "source": "BM50 TEL over local WebSocket bridge"
+}

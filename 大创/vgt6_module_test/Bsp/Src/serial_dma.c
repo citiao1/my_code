@@ -20,8 +20,11 @@ typedef struct
   volatile uint16_t rx_head;
   volatile uint16_t rx_tail;
   volatile uint8_t rx_restart_needed;
+  volatile uint8_t rx_overflow;
+  volatile uint8_t rx_fault;
   char rx_line[SERIAL_LINE_SIZE];
   uint8_t rx_line_length;
+  uint8_t rx_discard_line;
   uint8_t tx_queue[SERIAL_TX_QUEUE_DEPTH][SERIAL_TX_MESSAGE_SIZE];
   uint16_t tx_length[SERIAL_TX_QUEUE_DEPTH];
   volatile uint8_t tx_head;
@@ -32,6 +35,8 @@ typedef struct
 
 static SerialPortState serial_port;
 static SerialLineCallback line_callback;
+static volatile SerialDmaSnapshot serial_stats;
+static volatile SerialUartSnapshot uart_stats;
 
 static uint8_t SerialDma_StartRx(void)
 {
@@ -61,6 +66,8 @@ static void SerialDma_PushRx(const uint8_t *data, uint16_t length)
                       SERIAL_RX_RING_MASK);
     if (next == serial_port.rx_tail)
     {
+      serial_port.rx_overflow = 1U;
+      ++serial_stats.rx_overflows;
       break;
     }
     serial_port.rx_ring[serial_port.rx_head] = data[index];
@@ -75,11 +82,13 @@ static void SerialDma_StartTx(void)
   {
     return;
   }
+  /* Publish ownership before starting DMA; completion can preempt this call. */
+  serial_port.tx_busy = 1U;
   if (HAL_UART_Transmit_DMA(&huart2,
                             serial_port.tx_queue[serial_port.tx_tail],
-                            serial_port.tx_length[serial_port.tx_tail]) == HAL_OK)
+                            serial_port.tx_length[serial_port.tx_tail]) != HAL_OK)
   {
-    serial_port.tx_busy = 1U;
+    serial_port.tx_busy = 0U;
   }
 }
 
@@ -87,6 +96,12 @@ static void SerialDma_ProcessByte(uint8_t byte)
 {
   if ((byte == '\r') || (byte == '\n'))
   {
+    if (serial_port.rx_discard_line != 0U)
+    {
+      serial_port.rx_discard_line = 0U;
+      serial_port.rx_line_length = 0U;
+      return;
+    }
     if (serial_port.rx_line_length == 0U)
     {
       return;
@@ -94,18 +109,27 @@ static void SerialDma_ProcessByte(uint8_t byte)
     serial_port.rx_line[serial_port.rx_line_length] = '\0';
     if (line_callback != NULL)
     {
+      ++serial_stats.rx_lines;
       line_callback(serial_port.rx_line);
     }
     serial_port.rx_line_length = 0U;
     return;
   }
+  if (serial_port.rx_discard_line != 0U)
+  {
+    return;
+  }
   if ((byte < 0x20U) || (byte > 0x7EU))
   {
+    serial_port.rx_discard_line = 1U;
+    serial_port.rx_line_length = 0U;
+    (void)SerialDma_Write("ERR,NON_ASCII\r\n");
     return;
   }
   if (serial_port.rx_line_length >= (SERIAL_LINE_SIZE - 1U))
   {
     serial_port.rx_line_length = 0U;
+    serial_port.rx_discard_line = 1U;
     (void)SerialDma_Write("ERR,LINE_TOO_LONG\r\n");
     return;
   }
@@ -119,6 +143,7 @@ static uint8_t SerialDma_QueueWrite(const char *text, size_t length)
   next = (uint8_t)((serial_port.tx_head + 1U) % SERIAL_TX_QUEUE_DEPTH);
   if (next == serial_port.tx_tail)
   {
+    ++serial_stats.tx_dropped;
     return 0U;
   }
   memcpy(serial_port.tx_queue[serial_port.tx_head], text, length);
@@ -130,6 +155,17 @@ static uint8_t SerialDma_QueueWrite(const char *text, size_t length)
 uint8_t SerialDma_Init(SerialLineCallback callback)
 {
   memset(&serial_port, 0, sizeof(serial_port));
+  serial_stats.rx_bytes = 0U;
+  serial_stats.rx_lines = 0U;
+  serial_stats.rx_overflows = 0U;
+  serial_stats.tx_dropped = 0U;
+  serial_stats.uart_errors = 0U;
+  uart_stats.last_error = 0U;
+  uart_stats.parity_errors = 0U;
+  uart_stats.noise_errors = 0U;
+  uart_stats.framing_errors = 0U;
+  uart_stats.overrun_errors = 0U;
+  uart_stats.dma_errors = 0U;
   line_callback = callback;
   return SerialDma_StartRx();
 }
@@ -141,7 +177,27 @@ void SerialDma_Process(void)
   if (serial_port.rx_restart_needed != 0U)
   {
     (void)HAL_UART_AbortReceive(&huart2);
+    if (serial_port.rx_fault != 0U)
+    {
+      /* Never combine bytes from before/after a hardware reception error.
+       * The bridge prefixes every command with LF to resynchronize safely. */
+      serial_port.rx_tail = serial_port.rx_head;
+      serial_port.rx_line_length = 0U;
+      serial_port.rx_discard_line = 1U;
+    }
     (void)SerialDma_StartRx();
+    if ((serial_port.ready != 0U) && (serial_port.rx_fault != 0U))
+    {
+      serial_port.rx_fault = 0U;
+      (void)SerialDma_Write("ERR,UART_RX,QUERY_UART\r\n");
+    }
+  }
+  if (serial_port.rx_overflow != 0U)
+  {
+    serial_port.rx_line_length = 0U;
+    serial_port.rx_discard_line = 1U;
+    serial_port.rx_overflow = 0U;
+    (void)SerialDma_Write("ERR,RX_OVERFLOW\r\n");
   }
   while (serial_port.rx_tail != serial_port.rx_head)
   {
@@ -164,6 +220,7 @@ uint8_t SerialDma_Write(const char *text)
   length = strlen(text);
   if ((length == 0U) || (length >= SERIAL_TX_MESSAGE_SIZE))
   {
+    ++serial_stats.tx_dropped;
     return 0U;
   }
   return SerialDma_QueueWrite(text, length);
@@ -174,10 +231,23 @@ uint8_t SerialDma_IsReady(void)
   return serial_port.ready;
 }
 
+SerialDmaSnapshot SerialDma_GetSnapshot(void)
+{
+  SerialDmaSnapshot snapshot = serial_stats;
+  return snapshot;
+}
+
+SerialUartSnapshot SerialDma_GetUartSnapshot(void)
+{
+  SerialUartSnapshot snapshot = uart_stats;
+  snapshot.baud = huart2.Init.BaudRate;
+  snapshot.pclk_hz = HAL_RCC_GetPCLK1Freq();
+  snapshot.brr = huart2.Instance->BRR;
+  return snapshot;
+}
+
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
 {
-  uint8_t line_end;
-
   if (huart != &huart2)
   {
     return;
@@ -186,18 +256,10 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
   {
     size = SERIAL_RX_DMA_SIZE;
   }
+  serial_stats.rx_bytes += size;
+  /* IDLE ends a DMA burst, NOT a command. BLE may split even a short line.
+   * Assemble bursts in the main loop until an explicit CR/LF is received. */
   SerialDma_PushRx(serial_port.rx_dma_buffer, size);
-  /* ReceiveToIdle is also used as a command terminator. This accepts
-   * terminals that send "ARM" or "A+" without CR/LF, while CR/LF input
-   * remains fully supported. A full DMA buffer is left untouched so a long
-   * line can continue in the normal ring-buffer path. */
-  if ((size > 0U) && (size < SERIAL_RX_DMA_SIZE) &&
-      (serial_port.rx_dma_buffer[size - 1U] != '\r') &&
-      (serial_port.rx_dma_buffer[size - 1U] != '\n'))
-  {
-    line_end = '\n';
-    SerialDma_PushRx(&line_end, 1U);
-  }
   if (SerialDma_StartRx() == 0U)
   {
     serial_port.rx_restart_needed = 1U;
@@ -206,7 +268,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if (huart != &huart2)
+  if ((huart != &huart2) || (serial_port.tx_busy == 0U))
   {
     return;
   }
@@ -219,6 +281,14 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
   if (huart == &huart2)
   {
+    ++serial_stats.uart_errors;
+    uart_stats.last_error = huart->ErrorCode;
+    if ((huart->ErrorCode & HAL_UART_ERROR_PE) != 0U) ++uart_stats.parity_errors;
+    if ((huart->ErrorCode & HAL_UART_ERROR_NE) != 0U) ++uart_stats.noise_errors;
+    if ((huart->ErrorCode & HAL_UART_ERROR_FE) != 0U) ++uart_stats.framing_errors;
+    if ((huart->ErrorCode & HAL_UART_ERROR_ORE) != 0U) ++uart_stats.overrun_errors;
+    if ((huart->ErrorCode & HAL_UART_ERROR_DMA) != 0U) ++uart_stats.dma_errors;
+    serial_port.rx_fault = 1U;
     serial_port.rx_restart_needed = 1U;
     serial_port.ready = 0U;
   }

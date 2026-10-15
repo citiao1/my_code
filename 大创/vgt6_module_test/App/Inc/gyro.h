@@ -24,6 +24,9 @@ typedef struct
   float raw_rate_dps;
   float rate_dps;
   float yaw_deg;
+  float roll_deg;
+  float pitch_deg;
+  uint8_t stationary;
 } GyroSnapshot;
 
 uint8_t Gyro_Init(void);

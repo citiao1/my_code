@@ -1,0 +1,326 @@
+[
+  {
+    "wheel": "A",
+    "baseline_gains": [
+      1.2,
+      0.2,
+      0.0
+    ],
+    "applied_readback": [
+      1.2,
+      0.0991,
+      0.0
+    ],
+    "tuning": {
+      "model": {
+        "step_time_s": 4.2,
+        "input_step": 80.0,
+        "process_step": 80.74,
+        "process_gain": 1.00925,
+        "dead_time_s": 0.0,
+        "time_constant_s": 1e-09,
+        "baseline_process": 0.0,
+        "final_process": 80.74,
+        "saturated": false
+      },
+      "candidate_raw": {
+        "mode": "PI",
+        "form": "incremental",
+        "kp": 9.908347783007184e-09,
+        "ki": 0.09908347783007183,
+        "kd": 0.0,
+        "sample_time_s": 0.01,
+        "output_limit": 60.0,
+        "notes": [
+          "gains converted from continuous parallel form to discrete incremental coefficients",
+          "candidate is not written to firmware automatically"
+        ]
+      },
+      "candidate_applied": {
+        "kp": 1.2,
+        "ki": 0.09908347783007183,
+        "kd": 0.0
+      }
+    },
+    "validation": {
+      "wheel": "A",
+      "validation": {
+        "40": {
+          "samples": 23,
+          "tail_mean_rpm": 40.36,
+          "tail_max_error_rpm": 2.3,
+          "tail_output_mean_percent": 15.38,
+          "saturated": false
+        },
+        "80": {
+          "samples": 23,
+          "tail_mean_rpm": 81.62,
+          "tail_max_error_rpm": 3.8,
+          "tail_output_mean_percent": 28.88,
+          "saturated": false
+        },
+        "120": {
+          "samples": 23,
+          "tail_mean_rpm": 120.38,
+          "tail_max_error_rpm": 1.4,
+          "tail_output_mean_percent": 45.88,
+          "saturated": false
+        },
+        "160": {
+          "samples": 23,
+          "tail_mean_rpm": 151.46,
+          "tail_max_error_rpm": 11.0,
+          "tail_output_mean_percent": 58.25,
+          "saturated": true
+        }
+      }
+    },
+    "files": [
+      "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\live-session-20261010\\live-A-baseline.csv",
+      "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\live-session-20261010\\live-A-validation.csv"
+    ]
+  },
+  {
+    "wheel": "B",
+    "baseline_gains": [
+      1.2,
+      0.2,
+      0.0
+    ],
+    "applied_readback": [
+      1.2,
+      0.0998,
+      0.0
+    ],
+    "tuning": {
+      "model": {
+        "step_time_s": 4.2,
+        "input_step": 80.0,
+        "process_step": 80.17999999999999,
+        "process_gain": 1.0022499999999999,
+        "dead_time_s": 0.0,
+        "time_constant_s": 1e-09,
+        "baseline_process": 0.0,
+        "final_process": 80.17999999999999,
+        "saturated": false
+      },
+      "candidate_raw": {
+        "mode": "PI",
+        "form": "incremental",
+        "kp": 9.977550511349465e-09,
+        "ki": 0.09977550511349464,
+        "kd": 0.0,
+        "sample_time_s": 0.01,
+        "output_limit": 60.0,
+        "notes": [
+          "gains converted from continuous parallel form to discrete incremental coefficients",
+          "candidate is not written to firmware automatically"
+        ]
+      },
+      "candidate_applied": {
+        "kp": 1.2,
+        "ki": 0.09977550511349464,
+        "kd": 0.0
+      }
+    },
+    "validation": {
+      "wheel": "B",
+      "validation": {
+        "40": {
+          "samples": 23,
+          "tail_mean_rpm": 40.6,
+          "tail_max_error_rpm": 2.8,
+          "tail_output_mean_percent": 15.12,
+          "saturated": false
+        },
+        "80": {
+          "samples": 23,
+          "tail_mean_rpm": 80.74,
+          "tail_max_error_rpm": 3.9,
+          "tail_output_mean_percent": 29.88,
+          "saturated": false
+        },
+        "120": {
+          "samples": 23,
+          "tail_mean_rpm": 120.34,
+          "tail_max_error_rpm": 3.6,
+          "tail_output_mean_percent": 46.12,
+          "saturated": false
+        },
+        "160": {
+          "samples": 23,
+          "tail_mean_rpm": 151.25,
+          "tail_max_error_rpm": 10.6,
+          "tail_output_mean_percent": 58.5,
+          "saturated": true
+        }
+      }
+    },
+    "files": [
+      "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\live-session-20261010\\live-B-baseline.csv",
+      "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\live-session-20261010\\live-B-validation.csv"
+    ]
+  },
+  {
+    "wheel": "C",
+    "baseline_gains": [
+      1.2,
+      0.2,
+      0.0
+    ],
+    "applied_readback": [
+      1.2,
+      0.0998,
+      0.0
+    ],
+    "tuning": {
+      "model": {
+        "step_time_s": 4.2,
+        "input_step": 80.0,
+        "process_step": 80.14,
+        "process_gain": 1.00175,
+        "dead_time_s": 0.0,
+        "time_constant_s": 1e-09,
+        "baseline_process": 0.0,
+        "final_process": 80.14,
+        "saturated": false
+      },
+      "candidate_raw": {
+        "mode": "PI",
+        "form": "incremental",
+        "kp": 9.982530571499876e-09,
+        "ki": 0.09982530571499876,
+        "kd": 0.0,
+        "sample_time_s": 0.01,
+        "output_limit": 60.0,
+        "notes": [
+          "gains converted from continuous parallel form to discrete incremental coefficients",
+          "candidate is not written to firmware automatically"
+        ]
+      },
+      "candidate_applied": {
+        "kp": 1.2,
+        "ki": 0.09982530571499876,
+        "kd": 0.0
+      }
+    },
+    "validation": {
+      "wheel": "C",
+      "validation": {
+        "40": {
+          "samples": 23,
+          "tail_mean_rpm": 39.77,
+          "tail_max_error_rpm": 2.2,
+          "tail_output_mean_percent": 16.12,
+          "saturated": false
+        },
+        "80": {
+          "samples": 23,
+          "tail_mean_rpm": 80.17,
+          "tail_max_error_rpm": 3.7,
+          "tail_output_mean_percent": 30.75,
+          "saturated": false
+        },
+        "120": {
+          "samples": 23,
+          "tail_mean_rpm": 120.75,
+          "tail_max_error_rpm": 3.0,
+          "tail_output_mean_percent": 45.38,
+          "saturated": false
+        },
+        "160": {
+          "samples": 23,
+          "tail_mean_rpm": 151.69,
+          "tail_max_error_rpm": 9.9,
+          "tail_output_mean_percent": 58.25,
+          "saturated": true
+        }
+      }
+    },
+    "files": [
+      "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\live-session-20261010\\live-C-baseline.csv",
+      "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\live-session-20261010\\live-C-validation.csv"
+    ]
+  },
+  {
+    "wheel": "D",
+    "baseline_gains": [
+      1.2,
+      0.2,
+      0.0
+    ],
+    "applied_readback": [
+      1.2,
+      0.1008,
+      0.0
+    ],
+    "tuning": {
+      "model": {
+        "step_time_s": 4.2,
+        "input_step": 80.0,
+        "process_step": 79.4,
+        "process_gain": 0.9925,
+        "dead_time_s": 0.0,
+        "time_constant_s": 1e-09,
+        "baseline_process": 0.0,
+        "final_process": 79.4,
+        "saturated": false
+      },
+      "candidate_raw": {
+        "mode": "PI",
+        "form": "incremental",
+        "kp": 1.0075566750629723e-08,
+        "ki": 0.10075566750629722,
+        "kd": 0.0,
+        "sample_time_s": 0.01,
+        "output_limit": 60.0,
+        "notes": [
+          "gains converted from continuous parallel form to discrete incremental coefficients",
+          "candidate is not written to firmware automatically"
+        ]
+      },
+      "candidate_applied": {
+        "kp": 1.2,
+        "ki": 0.10075566750629722,
+        "kd": 0.0
+      }
+    },
+    "validation": {
+      "wheel": "D",
+      "validation": {
+        "40": {
+          "samples": 23,
+          "tail_mean_rpm": 39.55,
+          "tail_max_error_rpm": 3.5,
+          "tail_output_mean_percent": 16.5,
+          "saturated": false
+        },
+        "80": {
+          "samples": 23,
+          "tail_mean_rpm": 80.22,
+          "tail_max_error_rpm": 3.8,
+          "tail_output_mean_percent": 31.12,
+          "saturated": false
+        },
+        "120": {
+          "samples": 23,
+          "tail_mean_rpm": 122.24,
+          "tail_max_error_rpm": 2.7,
+          "tail_output_mean_percent": 44.25,
+          "saturated": false
+        },
+        "160": {
+          "samples": 23,
+          "tail_mean_rpm": 150.19,
+          "tail_max_error_rpm": 11.4,
+          "tail_output_mean_percent": 59.0,
+          "saturated": true
+        }
+      }
+    },
+    "files": [
+      "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\live-session-20261010\\live-D-baseline.csv",
+      "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\live-session-20261010\\live-D-validation.csv"
+    ]
+  }
+]

@@ -25,6 +25,12 @@ void Pid_Init(PidController *pid, float kp, float ki, float kd,
   pid->ki = ki;
   pid->kd = kd;
   pid->output_limit = output_limit;
+  /*
+   * The speed loop uses incremental PID.  Keep the legacy argument in the
+   * API so existing callers and generated projects remain source-compatible;
+   * incremental PID limits the accumulated output, not the individual
+   * increment.
+   */
   (void)integral_limit;
   Pid_Reset(pid);
 }
@@ -50,7 +56,6 @@ void Pid_SetLimits(PidController *pid, float output_limit, float integral_limit)
 
   pid->output_limit = output_limit;
   pid->output = Pid_Clamp(pid->output, output_limit);
-  /* Keep the legacy argument for the existing command and telemetry format. */
   (void)integral_limit;
 }
 
@@ -82,6 +87,8 @@ float Pid_Update(PidController *pid, float target, float feedback, float dt_seco
               pid->ki * error +
               pid->kd * (error - 2.0f * pid->previous_error +
                          pid->previous_previous_error);
+
+  /* Incremental PID: u(k) = u(k-1) + Δu(k). */
   pid->output = Pid_Clamp(pid->output + increment, pid->output_limit);
   pid->previous_previous_error = pid->previous_error;
   pid->previous_error = error;

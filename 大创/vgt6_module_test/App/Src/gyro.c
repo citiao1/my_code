@@ -1,6 +1,8 @@
 #include "gyro.h"
 
 #include <string.h>
+#include <math.h>
+#include "attitude_filter.h"
 
 #include "imu660rc.h"
 #include "stm32f4xx_hal.h"
@@ -18,6 +20,10 @@
 static GyroSnapshot gyro_state;
 static uint16_t warmup_remaining;
 static float calibration_mean[3];
+static float calibration_m2[3];
+static float rest_time;
+static float yaw_offset;
+static AttitudeFilter attitude;
 static uint32_t reconnect_tick;
 
 static void Gyro_UpdateDiagnostics(void)
@@ -64,9 +70,13 @@ static void Gyro_ResetCalibration(uint16_t warmup_samples)
   gyro_state.raw_rate_dps = 0.0f;
   gyro_state.rate_dps = 0.0f;
   warmup_remaining = warmup_samples;
+  rest_time = 0.0f;
+  gyro_state.stationary = 0U;
+  yaw_offset = 0.0f;
   for (axis = 0U; axis < 3U; ++axis)
   {
     calibration_mean[axis] = 0.0f;
+    calibration_m2[axis] = 0.0f;
     gyro_state.bias[axis] = 0.0f;
   }
   gyro_state.bias_z = 0.0f;
@@ -87,6 +97,7 @@ static void Gyro_AddCalibrationSample(const Imu660rcAxis3 *raw)
     delta = sample[axis] - calibration_mean[axis];
     calibration_mean[axis] += delta /
                               (float)gyro_state.calibration_samples;
+    calibration_m2[axis] += delta * (sample[axis] - calibration_mean[axis]);
   }
 }
 
@@ -150,6 +161,7 @@ void Gyro_Process(float dt_seconds, uint8_t stationary)
   float filter_rc;
   float filter_alpha;
   float raw_rate[3];
+  float accel_g[3], corrected[3], gyro_norm = 0.0f, accel_norm = 0.0f;
   uint8_t axis;
 
   if (dt_seconds <= 0.0f)
@@ -193,7 +205,18 @@ void Gyro_Process(float dt_seconds, uint8_t stationary)
         (float)gyro_state.raw_accel[axis] * ACCEL_SCALE_MG_PER_LSB);
     gyro_state.gyro_mdps[axis] = Gyro_RoundToInt(
         raw_rate[axis] * GYRO_SCALE_MDPS_PER_LSB);
+    accel_g[axis] = (float)gyro_state.raw_accel[axis] *
+                       ACCEL_SCALE_MG_PER_LSB / 1000.0f;
+    accel_norm += accel_g[axis] * accel_g[axis];
+    corrected[axis] = (raw_rate[axis] - gyro_state.bias[axis]) *
+                        GYRO_SCALE_MDPS_PER_LSB / 1000.0f;
+    gyro_norm += corrected[axis] * corrected[axis];
   }
+  stationary = stationary && accel_norm > 0.94f && accel_norm < 1.06f &&
+               gyro_norm < 2.25f;
+  if (stationary) rest_time += dt_seconds;
+  else rest_time = 0.0f;
+  gyro_state.stationary = rest_time >= 1.5f;
 
   if (warmup_remaining > 0U)
   {
@@ -215,8 +238,20 @@ void Gyro_Process(float dt_seconds, uint8_t stationary)
     }
     for (axis = 0U; axis < 3U; ++axis)
     {
+      if (calibration_m2[axis] /
+             (float)(GYRO_CALIBRATION_SAMPLES - 1U) *
+             (GYRO_SCALE_MDPS_PER_LSB / 1000.0f) *
+             (GYRO_SCALE_MDPS_PER_LSB / 1000.0f) > 0.04f)
+      {
+        Gyro_ResetCalibration(GYRO_WARMUP_SAMPLES);
+        return;
+      }
+    }
+    for (axis = 0U; axis < 3U; ++axis)
+    {
       gyro_state.bias[axis] = calibration_mean[axis];
     }
+    AttitudeFilter_Init(&attitude, accel_g);
     gyro_state.bias_z = gyro_state.bias[2];
     gyro_state.ready = 1U;
     gyro_state.calibrating = 0U;
@@ -229,26 +264,29 @@ void Gyro_Process(float dt_seconds, uint8_t stationary)
         (raw_rate[axis] - gyro_state.bias[axis]) *
         GYRO_SCALE_MDPS_PER_LSB);
   }
-  corrected_rate = (raw_rate[2] - gyro_state.bias[2]) *
-                   (GYRO_SCALE_MDPS_PER_LSB / 1000.0f);
-  if ((stationary != 0U) && (Gyro_Abs(corrected_rate) < 1.5f))
+  if (gyro_state.stationary)
   {
-    gyro_state.bias[2] = 0.998f * gyro_state.bias[2] + 0.002f * raw_rate[2];
-    gyro_state.bias_z = gyro_state.bias[2];
-    corrected_rate = (raw_rate[2] - gyro_state.bias[2]) *
-                     (GYRO_SCALE_MDPS_PER_LSB / 1000.0f);
+    float alpha = dt_seconds / (30.0f + dt_seconds);
+    for (axis = 0U; axis < 3U; ++axis)
+      gyro_state.bias[axis] += alpha * (raw_rate[axis] - gyro_state.bias[axis]);
   }
-
-  if (Gyro_Abs(corrected_rate) < GYRO_DEADBAND_DPS)
+  gyro_state.bias_z = gyro_state.bias[2];
+  for (axis = 0U; axis < 3U; ++axis)
   {
-    corrected_rate = 0.0f;
+    corrected[axis] = (raw_rate[axis] - gyro_state.bias[axis]) *
+                       GYRO_SCALE_MDPS_PER_LSB / 1000.0f;
+    if (gyro_state.stationary && Gyro_Abs(corrected[axis]) < GYRO_DEADBAND_DPS)
+      corrected[axis] = 0.0f;
   }
+  AttitudeFilter_Update(&attitude, corrected, accel_g, dt_seconds);
+  corrected_rate = attitude.rate_dps;
   gyro_state.raw_rate_dps = corrected_rate;
   filter_rc = 1.0f / (GYRO_TWO_PI * GYRO_LPF_CUTOFF_HZ);
   filter_alpha = dt_seconds / (filter_rc + dt_seconds);
   gyro_state.rate_dps += filter_alpha * (corrected_rate - gyro_state.rate_dps);
-  gyro_state.yaw_deg = Gyro_WrapAngle(gyro_state.yaw_deg +
-                                      gyro_state.rate_dps * dt_seconds);
+  gyro_state.yaw_deg = Gyro_WrapAngle(attitude.yaw_deg - yaw_offset);
+  gyro_state.roll_deg = attitude.roll_deg;
+  gyro_state.pitch_deg = attitude.pitch_deg;
 }
 
 uint8_t Gyro_StartCalibration(void)
@@ -265,6 +303,7 @@ uint8_t Gyro_StartCalibration(void)
 
 void Gyro_ZeroYaw(void)
 {
+  yaw_offset = attitude.yaw_deg;
   gyro_state.yaw_deg = 0.0f;
 }
 

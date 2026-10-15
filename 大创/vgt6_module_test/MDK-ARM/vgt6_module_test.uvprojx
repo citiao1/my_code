@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../App/Inc;../Bsp/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Core/Inc;../App/Inc;../Bsp/Inc;../Algorithm/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -500,6 +500,36 @@
               <FileType>1</FileType>
               <FilePath>../App/Src/chassis_test.c</FilePath>
             </File>
+            <File>
+              <FileName>speed_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/speed_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>attitude_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/attitude_control.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application/User/Algorithm</GroupName>
+          <Files>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Algorithm/Src/pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>attitude_filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Algorithm/Src/attitude_filter.c</FilePath>
+            </File>
+            <File>
+              <FileName>mecanum.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Algorithm/Src/mecanum.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -509,6 +539,11 @@
               <FileName>serial_dma.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Bsp/Src/serial_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stack_usage.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Bsp/Src/stack_usage.c</FilePath>
             </File>
             <File>
               <FileName>oled.c</FileName>

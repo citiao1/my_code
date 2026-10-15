@@ -3,15 +3,121 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
+#include "attitude_control.h"
 
 #include "battery.h"
 #include "chassis_test.h"
 #include "encoder.h"
 #include "gyro.h"
 #include "serial_dma.h"
+#include "speed_control.h"
+#include "stack_usage.h"
 #include "telemetry.h"
 
 #define COMMAND_SIZE 64U
+
+static uint8_t Command_Attitude(const char *command)
+{
+  AttitudeControlSnapshot a;
+  float p, i, target;
+  int forward, left;
+  char message[128];
+  if (!strcmp(command, "CAPS"))
+  {
+    SerialDma_Write("CAPS,ATTITUDE_R7,20,10,200,60,60,80,SPEED_FIXED\r\n");
+    return 1U;
+  }
+  if (!strcmp(command, "YAWGET") || !strcmp(command, "HEADGET"))
+  {
+    a = AttitudeControl_GetSnapshot();
+    if (command[0] == 'Y')
+      (void)snprintf(message, sizeof(message), "YAWPID,%.4f,%.4f,60,80,20\r\n",
+                     a.rate_kp, a.rate_ki);
+    else
+      (void)snprintf(message, sizeof(message), "HEADPID,%.4f,%.4f,80,20,D_MEAS\r\n",
+                     a.heading_kp, a.heading_kd);
+    SerialDma_Write(message);
+    return 1U;
+  }
+  if (!strncmp(command, "YAWPID,", 7U) || !strncmp(command, "HEADPID,", 8U))
+  {
+    uint8_t rate = command[0] == 'Y';
+    if (sscanf(command + (rate ? 7 : 8), "%f,%f", &p, &i) != 2 ||
+        !(rate ? AttitudeControl_SetRatePid(p, i) :
+                 AttitudeControl_SetHeadingPid(p, i)))
+      SerialDma_Write("ERR,ANGLEPID,RANGE_0_100\r\n");
+    else SerialDma_Write(rate ? "ACK,YAWPID\r\n" : "ACK,HEADPID\r\n");
+    return 1U;
+  }
+  if (!strcmp(command, "KEEP"))
+  {
+    SerialDma_Write(AttitudeControl_KeepAlive() ? "ACK,KEEP\r\n" :
+                                                  "ERR,KEEP,STOPPED\r\n");
+    return 1U;
+  }
+  if (!strcmp(command, "ANGLESTATUS"))
+  {
+    Telemetry_SendAttitude();
+    return 1U;
+  }
+  if (!strcmp(command, "ATEL,1") || !strcmp(command, "ATEL,0"))
+  {
+    Telemetry_SetAttitude(command[5] == '1');
+    SerialDma_Write(command[5] == '1' ? "ACK,ATEL,1\r\n" : "ACK,ATEL,0\r\n");
+    return 1U;
+  }
+  if (!strncmp(command, "YAW,", 4U) || !strncmp(command, "HEAD,", 5U))
+  {
+    uint8_t rate = command[0] == 'Y';
+    if (sscanf(command + (rate ? 4 : 5), "%f", &target) != 1 ||
+        !(rate ? AttitudeControl_SetRate(target, 0, 0) :
+                 AttitudeControl_SetHeading(target)))
+      SerialDma_Write("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
+    else
+    {
+      Telemetry_SetAttitude(1U);
+      SerialDma_Write(rate ? "ACK,YAW\r\n" : "ACK,HEAD\r\n");
+    }
+    return 1U;
+  }
+  if (!strncmp(command, "MOVE,", 5U))
+  {
+    if (sscanf(command + 5, "%d,%d,%f", &forward, &left, &target) != 3 ||
+        forward < -200 || forward > 200 || left < -200 || left > 200 ||
+        !AttitudeControl_SetRate(target, (int16_t)forward, (int16_t)left))
+      SerialDma_Write("ERR,MOVE,ARM_IMU_OR_RANGE\r\n");
+    else
+    {
+      Telemetry_SetAttitude(1U);
+      SerialDma_Write("ACK,MOVE\r\n");
+    }
+    return 1U;
+  }
+  return 0U;
+}
+
+static void Command_SendUnknown(const char *raw, const char *normalized)
+{
+  static const char digits[] = "0123456789ABCDEF";
+  static char message[144];
+  size_t index;
+  size_t count = strlen(raw);
+
+  (void)snprintf(message, sizeof(message),
+                 "ERR,UNKNOWN_COMMAND,%s\r\n", normalized);
+  SerialDma_Write(message);
+  if (count >= COMMAND_SIZE) count = COMMAND_SIZE - 1U;
+  memcpy(message, "RXHEX,", 6U);
+  for (index = 0U; index < count; ++index)
+  {
+    uint8_t byte = (uint8_t)raw[index];
+    message[6U + index * 2U] = digits[byte >> 4U];
+    message[7U + index * 2U] = digits[byte & 0x0FU];
+  }
+  memcpy(&message[6U + count * 2U], "\r\n", 3U);
+  SerialDma_Write(message);
+}
 
 static uint8_t Command_ParseMotor(char value, MotorChannel *channel)
 {
@@ -85,6 +191,62 @@ void Command_HandleLine(const char *line)
     SerialDma_Write("PONG\r\n");
     return;
   }
+  if (strcmp(command, "STACK") == 0)
+  {
+    StackUsageSnapshot stack = StackUsage_GetSnapshot();
+    char message[80];
+    (void)snprintf(message, sizeof(message), "STACK,%lu,%lu,%lu,%u\r\n",
+                   (unsigned long)stack.allocated_bytes,
+                   (unsigned long)stack.used_bytes,
+                   (unsigned long)stack.free_bytes, stack.guard_ok);
+    SerialDma_Write(message);
+    return;
+  }
+  if (strcmp(command, "UART") == 0)
+  {
+    SerialUartSnapshot uart = SerialDma_GetUartSnapshot();
+    char message[160];
+    (void)snprintf(message, sizeof(message),
+                   "UART,%lu,%lu,%lu,0x%02lX,%lu,%lu,%lu,%lu,%lu\r\n",
+                   (unsigned long)uart.baud, (unsigned long)uart.pclk_hz,
+                   (unsigned long)uart.brr, (unsigned long)uart.last_error,
+                   (unsigned long)uart.parity_errors,
+                   (unsigned long)uart.noise_errors,
+                   (unsigned long)uart.framing_errors,
+                   (unsigned long)uart.overrun_errors,
+                   (unsigned long)uart.dma_errors);
+    SerialDma_Write(message);
+    return;
+  }
+  if ((strcmp(command, "VER") == 0) ||
+      (strcmp(command, "VERSION") == 0))
+  {
+    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R7\r\n");
+    return;
+  }
+  if (strcmp(command, "LINK") == 0)
+  {
+    SerialDmaSnapshot link = SerialDma_GetSnapshot();
+    char message[128];
+    (void)snprintf(message, sizeof(message),
+                   "LINK,%lu,%lu,%lu,%lu,%lu,%u\r\n",
+                   (unsigned long)link.rx_bytes,
+                   (unsigned long)link.rx_lines,
+                   (unsigned long)link.rx_overflows,
+                   (unsigned long)link.tx_dropped,
+                   (unsigned long)link.uart_errors,
+                   Telemetry_IsPeriodic());
+    SerialDma_Write(message);
+    return;
+  }
+  if (StackUsage_IsHealthy() == 0U)
+  {
+    ChassisTest_Disarm();
+    Telemetry_SetPeriodic(0U);
+    SerialDma_Write("ERR,STACK_GUARD,MOTORS_DISABLED\r\n");
+    return;
+  }
+  if (Command_Attitude(command)) return;
   if (strcmp(command, "STATUS") == 0)
   {
     Telemetry_SendNow();
@@ -112,7 +274,163 @@ void Command_HandleLine(const char *line)
   if (strcmp(command, "STOP") == 0)
   {
     ChassisTest_Stop();
+    Telemetry_SetPeriodic(0U);
     SerialDma_Write("ACK,STOP\r\n");
+    return;
+  }
+  if (strcmp(command, "SPEED,1") == 0)
+  {
+    ChassisTest_Stop();
+    if (SpeedControl_Enable(1U) == 0U)
+    {
+      SerialDma_Write("ERR,SPEED,ARM_FIRST\r\n");
+    }
+    else
+    {
+      Telemetry_SetPeriodic(1U);
+      SerialDma_Write("ACK,SPEED,1\r\n");
+    }
+    return;
+  }
+  if (strcmp(command, "SPEED,0") == 0)
+  {
+    ChassisTest_Stop();
+    Telemetry_SetPeriodic(0U);
+    SerialDma_Write("ACK,SPEED,0\r\n");
+    return;
+  }
+  if (strncmp(command, "SPEED,", 6U) == 0)
+  {
+    unsigned long limit_rpm;
+    if ((sscanf(command, "SPEED,%lu", &limit_rpm) != 1) ||
+        (limit_rpm == 0UL) || (limit_rpm > SPEED_CONTROL_MAX_TARGET_RPM) ||
+        (SpeedControl_SetTargetLimit((uint16_t)limit_rpm) == 0U))
+    {
+      SerialDma_Write("ERR,SPEED,RANGE_1_200\r\n");
+    }
+    else
+    {
+      SerialDma_Write("ACK,SPEED,LIMIT\r\n");
+    }
+    return;
+  }
+  if (strncmp(command, "SPD,", 4U) == 0)
+  {
+    char channel_name;
+    int speed_rpm;
+    MotorChannel channel;
+
+    if (AttitudeControl_GetSnapshot().mode) ChassisTest_Stop();
+    if ((sscanf(command, "SPD,%c,%d", &channel_name, &speed_rpm) != 2) ||
+        (Command_ParseMotor(channel_name, &channel) == 0U) ||
+        (SpeedControl_SetTarget(channel, speed_rpm) == 0U))
+    {
+      SerialDma_Write("ERR,SPD,USE_SPD,A,RPM\r\n");
+    }
+    else
+    {
+      SerialDma_Write("ACK,SPD\r\n");
+    }
+    return;
+  }
+  if (strncmp(command, "DRV,", 4U) == 0)
+  {
+    int forward_rpm;
+    int left_rpm;
+    int rotate_rpm;
+
+    if (AttitudeControl_GetSnapshot().mode) ChassisTest_Stop();
+    if ((sscanf(command, "DRV,%d,%d,%d", &forward_rpm, &left_rpm,
+                &rotate_rpm) != 3) ||
+        forward_rpm < -200 || forward_rpm > 200 ||
+        left_rpm < -200 || left_rpm > 200 ||
+        rotate_rpm < -200 || rotate_rpm > 200 ||
+        (SpeedControl_SetDrive((int16_t)forward_rpm, (int16_t)left_rpm,
+                               (int16_t)rotate_rpm) == 0U))
+    {
+      SerialDma_Write("ERR,DRV,SPEED_DISABLED_OR_RANGE\r\n");
+    }
+    else
+    {
+      SerialDma_Write("ACK,DRV\r\n");
+    }
+    return;
+  }
+  if (strncmp(command, "PID,", 4U) == 0)
+  {
+    char channel_name;
+    float kp;
+    float ki;
+    float kd;
+    MotorChannel channel;
+
+    if ((sscanf(command, "PID,%c,%f,%f,%f", &channel_name, &kp, &ki, &kd) != 4) ||
+        (Command_ParseMotor(channel_name, &channel) == 0U))
+    {
+      SerialDma_Write("ERR,PID,USE_PID,A,KP,KI,KD\r\n");
+    }
+    else if (SpeedControl_SetPid(channel, kp, ki, kd) == 0U)
+    {
+      SerialDma_Write("ERR,PID,SPEED_FIXED_R7\r\n");
+    }
+    else
+    {
+      SerialDma_Write("ACK,PID\r\n");
+    }
+    return;
+  }
+  if (strncmp(command, "SPDLIMIT,", 9U) == 0)
+  {
+    unsigned long limit_rpm;
+    if ((sscanf(command, "SPDLIMIT,%lu", &limit_rpm) != 1) ||
+        (limit_rpm == 0UL) || (limit_rpm > SPEED_CONTROL_MAX_TARGET_RPM) ||
+        (SpeedControl_SetTargetLimit((uint16_t)limit_rpm) == 0U))
+    {
+      SerialDma_Write("ERR,SPDLIMIT,RANGE_1_200\r\n");
+    }
+    else
+    {
+      SerialDma_Write("ACK,SPDLIMIT\r\n");
+    }
+    return;
+  }
+  if (strcmp(command, "SPEEDLIMIT") == 0)
+  {
+    SpeedControlSnapshot speed = SpeedControl_GetSnapshot();
+    char message[40];
+    (void)snprintf(message, sizeof(message), "SPEEDLIMIT,%u\r\n",
+                   speed.target_limit_rpm);
+    SerialDma_Write(message);
+    return;
+  }
+  if (strcmp(command, "PIDGET") == 0)
+  {
+    SpeedControlSnapshot speed = SpeedControl_GetSnapshot();
+    char message[192];
+    (void)snprintf(message, sizeof(message),
+                   "PID,%0.4f,%0.4f,%0.4f,%0.4f,%0.4f,%0.4f,%0.4f,%0.4f,%0.4f,%0.4f,%0.4f,%0.4f\r\n",
+                   speed.kp[0], speed.ki[0], speed.kd[0],
+                   speed.kp[1], speed.ki[1], speed.kd[1],
+                   speed.kp[2], speed.ki[2], speed.kd[2],
+                   speed.kp[3], speed.ki[3], speed.kd[3]);
+    SerialDma_Write(message);
+    return;
+  }
+  if (strcmp(command, "SPEEDSTATUS") == 0)
+  {
+    Telemetry_SendSpeedStatus();
+    return;
+  }
+  if (strcmp(command, "TEL,1") == 0)
+  {
+    Telemetry_SetPeriodic(1U);
+    SerialDma_Write("ACK,TEL,1\r\n");
+    return;
+  }
+  if (strcmp(command, "TEL,0") == 0)
+  {
+    Telemetry_SetPeriodic(0U);
+    SerialDma_Write("ACK,TEL,0\r\n");
     return;
   }
   if ((strlen(command) == 2U) &&
@@ -197,6 +515,7 @@ void Command_HandleLine(const char *line)
   if ((strcmp(command, "CAL") == 0) ||
       (strcmp(command, "GYROCAL") == 0))
   {
+    ChassisTest_Stop();
     if (Gyro_StartCalibration() == 0U)
     {
       SerialDma_Write("ERR,IMU660RC_OFFLINE\r\n");
@@ -210,6 +529,7 @@ void Command_HandleLine(const char *line)
   if ((strcmp(command, "ZERO") == 0) ||
       (strcmp(command, "YAWZERO") == 0))
   {
+    ChassisTest_Stop();
     Gyro_ZeroYaw();
     SerialDma_Write("ACK,ZERO\r\n");
     return;
@@ -229,11 +549,14 @@ void Command_HandleLine(const char *line)
   }
   if ((strcmp(command, "HELP") == 0) || (strcmp(command, "?") == 0))
   {
+    SerialDma_Write("CMD,VER,LINK,UART,STACK,STATUS,ARM,DISARM,STOP,PING\r\n");
     SerialDma_Write("CMD,ARM,DISARM,STOP,A+,A-,B+,B-,C+,C-,D+,D-\r\n");
     SerialDma_Write("CMD,JOG,A,+/-1..30,50..5000,ENC,ENCZERO,CPR,380\r\n");
     SerialDma_Write("CMD,BAT,RECOVER,A,STATUS,CAL,ZERO,WHO,PING,HELP\r\n");
+    SerialDma_Write("CMD,SPEED,0/1,SPD,A,RPM,DRV,F,L,R,PID,A,KP,KI,KD,PIDGET,SPEEDSTATUS,SPEEDLIMIT,TEL,0/1\r\n");
+    SerialDma_Write("CMD,CAPS,YAW,DPS,HEAD,DEG,MOVE,F,L,DPS,KEEP,YAWPID,KP,KI,HEADPID,KP,KD,YAWGET,HEADGET,ANGLESTATUS,ATEL,0/1\r\n");
     return;
   }
 
-  SerialDma_Write("ERR,UNKNOWN_COMMAND\r\n");
+  Command_SendUnknown(line, command);
 }

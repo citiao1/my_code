@@ -1,27 +1,84 @@
 #include "telemetry.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #include "battery.h"
+#include "attitude_control.h"
 #include "chassis_test.h"
 #include "encoder.h"
 #include "gyro.h"
 #include "serial_dma.h"
+#include "speed_control.h"
 #include "stm32f4xx_hal.h"
+
+/* 9600 baud provides ~960 bytes/s. Leave room for command ACKs and for
+ * BLE notification buffering instead of saturating UART at 5 Hz. */
+#define TELEMETRY_PERIOD_MS 300U
+
+static uint8_t telemetry_periodic;
+static uint32_t telemetry_tick;
+static uint8_t attitude_stream;
 
 void Telemetry_Init(void)
 {
+  telemetry_periodic = 0U;
+  attitude_stream = 0U;
+  telemetry_tick = HAL_GetTick();
 }
 
 void Telemetry_Process(void)
 {
-  /* Deliberately empty: telemetry is command-driven to keep the 9600-baud
-   * Bluetooth link clear for interactive motor testing. */
+  uint32_t now = HAL_GetTick();
+
+  if ((telemetry_periodic != 0U) &&
+      ((now - telemetry_tick) >= (attitude_stream ? 200U : TELEMETRY_PERIOD_MS)))
+  {
+    telemetry_tick = now;
+    if (attitude_stream) Telemetry_SendAttitude();
+    else Telemetry_SendSpeedStatus();
+  }
 }
 
-void Telemetry_SendNow(void)
+void Telemetry_SetPeriodic(uint8_t enable)
 {
-  char message[256];
+  attitude_stream = 0U;
+  telemetry_periodic = (enable != 0U) ? 1U : 0U;
+  telemetry_tick = HAL_GetTick();
+}
+
+void Telemetry_SetAttitude(uint8_t enable)
+{
+  Telemetry_SetPeriodic(enable);
+  attitude_stream = 1U;
+}
+
+void Telemetry_SendAttitude(void)
+{
+  static char message[256];
+  AttitudeControlSnapshot a = AttitudeControl_GetSnapshot();
+  GyroSnapshot g = Gyro_GetSnapshot();
+  (void)snprintf(message, sizeof(message),
+      "ATEL,%lu,%u,%u,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%u,%u,%u\r\n",
+      (unsigned long)HAL_GetTick(), a.mode, g.ready && !g.read_failures,
+      (long)(a.target_dps * 1000), (long)(g.rate_dps * 1000),
+      (long)(a.output_rpm * 1000), (long)(a.target_deg * 1000),
+      (long)(g.yaw_deg * 1000), (long)(a.error_deg * 1000),
+      (long)(a.output_dps * 1000), a.saturated,
+      SpeedControl_GetSnapshot().enabled, Battery_GetSnapshot().voltage_mv);
+  SerialDma_Write(message);
+}
+
+uint8_t Telemetry_IsPeriodic(void)
+{
+  return telemetry_periodic;
+}
+
+/* Formatting is main-loop-only; SerialDma_Write copies before reuse.
+ * Keep large work buffers out of nested command/telemetry stack frames. */
+static void Telemetry_SendImu(void)
+{
+  static char message[256];
   GyroSnapshot gyro = Gyro_GetSnapshot();
 
   (void)snprintf(message, sizeof(message),
@@ -38,14 +95,20 @@ void Telemetry_SendNow(void)
                  gyro.sensor_status, gyro.spi_transfer_ok,
                  gyro.spi_hal_status);
   SerialDma_Write(message);
+}
+
+void Telemetry_SendNow(void)
+{
+  Telemetry_SendImu();
   Telemetry_SendEncoders();
   Telemetry_SendBattery();
   Telemetry_SendDriver();
+  Telemetry_SendSpeedStatus();
 }
 
 void Telemetry_SendEncoders(void)
 {
-  char message[256];
+  static char message[256];
   EncoderSnapshot encoder = Encoder_GetSnapshot();
 
   (void)snprintf(message, sizeof(message),
@@ -85,5 +148,57 @@ void Telemetry_SendDriver(void)
                  driver.armed, driver.active,
                  (char)('A' + (uint8_t)driver.channel), driver.direction,
                  driver.duty_percent, (unsigned long)driver.remaining_ms);
+  SerialDma_Write(message);
+}
+
+void Telemetry_SendSpeedStatus(void)
+{
+  /*
+   * Keep TEL within the UART TX queue's 256-byte per-message limit.
+   * The pure BM50 console only consumes the 27-field speed format; the
+   * previous 48-field vehicle format could be silently rejected by
+   * SerialDma_Write() after the tick/diagnostic values grew.
+   */
+  static char message[256];
+  GyroSnapshot gyro = Gyro_GetSnapshot();
+  BatterySnapshot battery = Battery_GetSnapshot();
+  SpeedControlSnapshot speed = SpeedControl_GetSnapshot();
+  static int32_t fields[27];
+  int32_t gyro_raw_mdps = (int32_t)(gyro.raw_rate_dps * 1000.0f);
+  int32_t gyro_rate_mdps = (int32_t)(gyro.rate_dps * 1000.0f);
+  int32_t yaw_mdeg = (int32_t)(gyro.yaw_deg * 1000.0f);
+  uint32_t index;
+  int length;
+
+  memset(fields, 0, sizeof(fields));
+  fields[1] = (int32_t)HAL_GetTick();
+  fields[3] = speed.enabled;
+  for (index = 0U; index < 4U; ++index)
+  {
+    fields[4U + index] = speed.target_rpm[index];
+    fields[8U + index] = speed.output_percent[index];
+    fields[12U + index] = speed.actual_rpm_x10[index];
+    fields[16U + index] = speed.target_rpm[index];
+  }
+  fields[20] = battery.voltage_mv;
+  fields[21] = gyro_raw_mdps;
+  fields[22] = gyro_rate_mdps;
+  fields[23] = gyro.ready;
+  fields[24] = gyro_rate_mdps;
+  fields[25] = yaw_mdeg;
+  fields[26] = speed.enabled;
+
+  length = snprintf(message, sizeof(message), "TEL");
+  for (index = 1U; (index < 27U) && (length > 0) &&
+                   ((uint32_t)length < sizeof(message)); ++index)
+  {
+    length += snprintf(&message[length], sizeof(message) - (size_t)length,
+                       ",%ld", (long)fields[index]);
+  }
+  if ((length > 0) && ((size_t)length < (sizeof(message) - 3U)))
+  {
+    (void)snprintf(&message[length], sizeof(message) - (size_t)length,
+                   "\r\n");
+  }
   SerialDma_Write(message);
 }
