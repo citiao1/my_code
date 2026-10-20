@@ -87,6 +87,16 @@ Keil重新编译0 errors/0 warnings，HEX哈希仍为上述121485C1...B08C60B。
 
 烧录连接检查：已检测单个PUSO1234:5678；蓝牙DISARM成功，ANGLESTATUS mode=0、
 速度环失能，电压12.270V、PS2未解锁，板上查询仍是R16。Keil本轮报RDDI-DAP，
-默认pyOCD DAPv2打开失败；改prefer_v1=True/100kHz只读连接成功，读到
-0x101f6413、Flash1024KiB、CPU RUNNING。工具增加显式-PreferV1恢复路线，
-仅在已确认HID连接有效时选用；仍须完整镜像读回、复位后再校验运行状态。
+默认pyOCD DAPv2打开失败；100kHz只读连接一度成功，读到
+0x101f6413、Flash1024KiB、CPU RUNNING，但后续写入未通过读回验证。
+
+最终状态：R17未烧录成功。复位后蓝牙VER确认仍为R16，DISARM成功，
+ANGLESTATUS mode=0/speed=0，电压12.257V。再次Keil仍报RDDI-DAP，停止写入，
+待人工重插电脑端无线DAP并重启车端接收器/确认SWD连接后重试。
+没有启动电机、写PID参数、整片擦除或修改保护位；不能声称旧镜像逐字节完整，
+只能确认其R16程序重新启动且有上述协议响应。
+
+撤回94ef0773中临时-PreferV1工具路线：pyOCD0.45.1的ConnectHelper在应用
+session options前已选探针，故那次成功读取并不能证明实际走了HID；提前设置
+枚举选项的真正HID诊断又阻塞，已停止本任务自己的辅助进程。工具恢复原版流程，
+不把不稳定/未验证的替代路径固化为“已验证烧录方法”。

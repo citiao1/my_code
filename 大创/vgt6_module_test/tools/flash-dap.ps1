@@ -3,8 +3,7 @@ param(
     [string]$PackDirectory = "D:\Keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1",
     [string]$KeilExe = "D:\Keil5\UV4\UV4.exe",
     [int]$SwdClockHz = 1000000,
-    [switch]$UseKeil = $true,
-    [switch]$PreferV1
+    [switch]$UseKeil = $true
 )
 $ErrorActionPreference = "Stop"
 $FirmwareRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
@@ -17,13 +16,6 @@ $VerifyLog = Join-Path $FirmwareRoot "MDK-ARM\flash-r17-verify.log"
 $PostVerifyLog = Join-Path $FirmwareRoot "MDK-ARM\flash-r17-postverify.log"
 if (!(Test-Path -LiteralPath $ImageFile)) { throw "Build firmware in Keil first." }
 $NeedFullReadback = $true
-$DapTransportOptions = @()
-if ($PreferV1) {
-    # Explicit recovery route, after a read-only HID attach succeeds.
-    $UseKeil = $false
-    if (-not $PSBoundParameters.ContainsKey('SwdClockHz')) { $SwdClockHz = 100000 }
-    $DapTransportOptions = @('-O', 'cmsis_dap.prefer_v1=True')
-}
 if ($UseKeil -and (Test-Path -LiteralPath $KeilExe) -and (Test-Path -LiteralPath $ProjectFile)) {
     # Keil's CMSIS-DAP backend is the verified path for this PUSO probe. It
     # can be selected explicitly for installations where its target backend
@@ -61,7 +53,7 @@ if ($UseKeil -and (Test-Path -LiteralPath $KeilExe) -and (Test-Path -LiteralPath
     # pyOCD is the fallback PUSO path. Start at the configured SWD rate; lower
     # rates can be selected with -SwdClockHz if this specific probe is unstable.
     & $PythonExe -m pyocd load --pack $PackDirectory -t stm32f407vgtx -u $ProbeId `
-        -O cmsis_dap.deferred_transfers=False -O cmsis_dap.limit_packets=True @DapTransportOptions `
+        -O cmsis_dap.deferred_transfers=False -O cmsis_dap.limit_packets=True `
         -f $SwdClockHz -e sector --format hex --no-reset $ImageFile 2>&1 |
         Tee-Object -FilePath $FlashLog
     $LoadExitCode = $LASTEXITCODE
@@ -76,7 +68,6 @@ $VerifyArguments = @(
     "--frequency", "$SwdClockHz"
 )
 if (-not $NeedFullReadback) { $VerifyArguments += "--critical-only" }
-if ($PreferV1) { $VerifyArguments += "--prefer-v1" }
 for ($VerifyAttempt = 1; $VerifyAttempt -le 3; $VerifyAttempt++) {
     & $PythonExe @VerifyArguments 2>&1 |
         Tee-Object -FilePath $VerifyLog
@@ -99,15 +90,14 @@ if ($LoadExitCode -ne 0) {
 # only after byte readback has accepted the image, then verify the run state.
 @("reset", "exit") | & $PythonExe -m pyocd commander --pack $PackDirectory `
     -t stm32f407vgtx -u $ProbeId -O cmsis_dap.deferred_transfers=False `
-    -O cmsis_dap.limit_packets=True @DapTransportOptions -f $SwdClockHz 2>&1 |
+    -O cmsis_dap.limit_packets=True -f $SwdClockHz 2>&1 |
     Tee-Object -FilePath $ResetLog
 if ($LASTEXITCODE -ne 0) { throw "DAP reset/resume failed; see $FlashLog" }
 $PostResetPassed = $false
-$PostVerifyArguments = @('--pack', $PackDirectory, '--probe', $ProbeId,
-    '--image', $ImageFile, '--frequency', "$SwdClockHz", '--critical-only', '--require-running')
-if ($PreferV1) { $PostVerifyArguments += '--prefer-v1' }
 for ($VerifyAttempt = 1; $VerifyAttempt -le 3; $VerifyAttempt++) {
-    & $PythonExe $VerifyScript @PostVerifyArguments 2>&1 |
+    & $PythonExe $VerifyScript --pack $PackDirectory `
+        --probe $ProbeId --image $ImageFile --frequency $SwdClockHz `
+        --critical-only --require-running 2>&1 |
         Tee-Object -FilePath $PostVerifyLog
     if ($LASTEXITCODE -eq 0) {
         $PostResetPassed = $true
