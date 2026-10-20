@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VGT6 四轮控制台</title>
-  <link rel="stylesheet" href="touch-remote.css?v=13">
+  <link rel="stylesheet" href="touch-remote.css?v=20">
 </head>
 <body>
   <header class="topbar">
@@ -25,20 +25,30 @@
         </div>
       </div>
       <div class="tuning-grid">
-        <label>目标上限 <input id="speedLimitInput" type="number" min="1" max="200" value="200"><span>RPM</span></label>
+        <label>目标上限 <input id="speedLimitInput" type="number" min="1" max="160" value="160"><span>RPM</span></label>
         <button id="speedLimitButton" class="button secondary" type="button" disabled>写入上限</button>
         <label>周期遥测 <select id="telemetrySelect" disabled><option value="0">关闭</option><option value="1">开启</option></select></label>
         <button id="queryButton" class="button secondary" type="button" disabled>查询状态</button>
         <div id="speedStatus" class="speed-status">等待 TEL</div>
       </div>
-      <div class="pid-table">
-        <div class="pid-row pid-head"><span>轮</span><span>目标 RPM</span><span>Kp</span><span>Ki</span><span>Kd</span><span></span></div>
-        <div class="pid-row" data-motor="A"><strong>A</strong><input class="target-input" type="number" min="-200" max="200" value="0"><input class="kp-input" type="number" value="1.20" readonly><input class="ki-input" type="number" value="0.0991" readonly><input class="kd-input" type="number" value="0" readonly><button class="button secondary pid-send" type="button" disabled>写入目标</button></div>
-        <div class="pid-row" data-motor="B"><strong>B</strong><input class="target-input" type="number" min="-200" max="200" value="0"><input class="kp-input" type="number" value="1.20" readonly><input class="ki-input" type="number" value="0.0998" readonly><input class="kd-input" type="number" value="0" readonly><button class="button secondary pid-send" type="button" disabled>写入目标</button></div>
-        <div class="pid-row" data-motor="C"><strong>C</strong><input class="target-input" type="number" min="-200" max="200" value="0"><input class="kp-input" type="number" value="1.20" readonly><input class="ki-input" type="number" value="0.0998" readonly><input class="kd-input" type="number" value="0" readonly><button class="button secondary pid-send" type="button" disabled>写入目标</button></div>
-        <div class="pid-row" data-motor="D"><strong>D</strong><input class="target-input" type="number" min="-200" max="200" value="0"><input class="kp-input" type="number" value="1.20" readonly><input class="ki-input" type="number" value="0.1008" readonly><input class="kd-input" type="number" value="0" readonly><button class="button secondary pid-send" type="button" disabled>写入目标</button></div>
-      </div>
-      <p class="hint">速度环参数已固定 · 10 ms 增量式 PI · 最大目标 200 RPM · PWM 上限 60%</p>
+      <section class="angle-panel speed-pid-panel">
+        <div class="section-heading">
+          <div><span>SPEED LOOP</span><h2>四轮速度环 PID</h2></div>
+          <output id="speedPidReadback">等待回读</output>
+        </div>
+        <div class="pid-table" id="speedPidTable">
+          <div class="pid-row pid-header"><strong>轮</strong><span>Kp</span><span>Ki</span><span>Kd</span><span>状态</span><span>操作</span></div>
+          <div class="pid-row" data-motor="A"><strong>A / 1</strong><input class="kp-input" type="number" min="0" max="100" step="0.0001" value="1.2" aria-label="A Kp"><input class="ki-input" type="number" min="0" max="100" step="0.0001" value="0.0991" aria-label="A Ki"><input class="kd-input" type="number" min="0" max="100" step="0.0001" value="0" aria-label="A Kd"><span class="pid-state">—</span><button class="button secondary pid-send" type="button" disabled>写入</button></div>
+          <div class="pid-row" data-motor="B"><strong>B / 2</strong><input class="kp-input" type="number" min="0" max="100" step="0.0001" value="1.2" aria-label="B Kp"><input class="ki-input" type="number" min="0" max="100" step="0.0001" value="0.0998" aria-label="B Ki"><input class="kd-input" type="number" min="0" max="100" step="0.0001" value="0" aria-label="B Kd"><span class="pid-state">—</span><button class="button secondary pid-send" type="button" disabled>写入</button></div>
+          <div class="pid-row" data-motor="C"><strong>C / 3</strong><input class="kp-input" type="number" min="0" max="100" step="0.0001" value="1.2" aria-label="C Kp"><input class="ki-input" type="number" min="0" max="100" step="0.0001" value="0.0998" aria-label="C Ki"><input class="kd-input" type="number" min="0" max="100" step="0.0001" value="0" aria-label="C Kd"><span class="pid-state">—</span><button class="button secondary pid-send" type="button" disabled>写入</button></div>
+          <div class="pid-row" data-motor="D"><strong>D / 4</strong><input class="kp-input" type="number" min="0" max="100" step="0.0001" value="1.2" aria-label="D Kp"><input class="ki-input" type="number" min="0" max="100" step="0.0001" value="0.1008" aria-label="D Ki"><input class="kd-input" type="number" min="0" max="100" step="0.0001" value="0" aria-label="D Kd"><span class="pid-state">—</span><button class="button secondary pid-send" type="button" disabled>写入</button></div>
+        </div>
+        <div class="tuning-actions">
+          <button id="speedPidReadButton" class="button secondary" type="button" disabled>回读四轮参数</button>
+          <button id="speedPidWriteAllButton" class="button connect" type="button" disabled>写入全部并回读</button>
+        </div>
+        <p class="hint">范围 0～100；协议：PID,A/B/C/D,Kp,Ki,Kd。写入后自动发送 PIDGET 校验。</p>
+      </section>
       <section class="angle-panel">
         <div class="section-heading"><div><span>INNER LOOP</span><h2>角速度 PI</h2></div><output id="rateReadback">等待回读</output></div>
         <div class="angle-inputs">
@@ -52,22 +62,57 @@
       <section class="angle-panel">
         <div class="section-heading"><div><span>OUTER LOOP</span><h2>方向 PD</h2></div><output id="headingReadback">等待回读</output></div>
         <div class="angle-inputs">
-          <label>Kp<input id="headKp" type="number" min="0" max="100" step="0.0001" value="5"></label>
+          <label>Kp<input id="headKp" type="number" min="0" max="100" step="0.0001" value="6"></label>
           <label>Kd · s<input id="headKd" type="number" min="0" max="100" step="0.0001" value="1.25"></label>
           <label>目标 °<input id="headTarget" type="number" min="-180" max="180" value="15"></label>
         </div>
         <div class="tuning-actions"><button id="headPidButton" class="button secondary angle-command" disabled>写入并回读 PD</button><button id="headStartButton" class="button connect angle-command" disabled>启动方向环</button><button id="yawZeroButton" class="button secondary angle-command" disabled>航向归零</button><button id="calButton" class="button secondary angle-command" disabled>静止校准</button></div>
         <p class="hint">最短角误差 · D 使用实测角速度 · 先整定内层 PI，再整定方向</p>
       </section>
+      <section class="angle-panel hlog-panel">
+        <div class="section-heading"><div><span>RAM LOGGER</span><h2>方向环 HLOG</h2></div><output id="hlogStatus">未查询</output></div>
+        <div class="tuning-actions hlog-actions">
+          <button id="hlogClearButton" class="button secondary hlog-command" type="button" disabled>清空 RAM 日志</button>
+          <button id="hlogStartButton" class="button connect hlog-command" type="button" disabled>开始记录</button>
+          <button id="hlogStopButton" class="stop-button hlog-command" type="button" disabled>停止记录</button>
+          <button id="hlogReadButton" class="button secondary hlog-command" type="button" disabled>读取并下载 CSV</button>
+        </div>
+        <p class="hint">1024 条环形 RAM 记录；读取前必须停止运动。日志不会写入 Flash。</p>
+      </section>
       <section class="angle-panel">
         <div class="section-heading"><div><span>CHASSIS</span><h2>四轮运动</h2></div></div>
         <label>平移轮速 <input id="driveSpeed" type="number" min="1" max="100" value="30"> RPM</label>
-        <div class="drive-pad"><button class="button drive-command up" data-forward="1" data-left="0" disabled>↑ 前进</button><button class="button drive-command left" data-forward="0" data-left="1" disabled>← 左移</button><button class="stop-button pad-stop" id="padStop" disabled>停止</button><button class="button drive-command right" data-forward="0" data-left="-1" disabled>右移 →</button><button class="button drive-command down" data-forward="-1" data-left="0" disabled>↓ 后退</button></div>
-        <p class="hint">按下启动，松开停止 · 保持零角速度 · 车体需有旋转空间</p>
+        <label>原地转速 <input id="driveTurnRate" type="number" min="1" max="80" value="20"> °/s</label>
+        <div class="drive-pad"><button class="button drive-command turn-left" data-forward="0" data-left="0" data-rotate="1" disabled>Q 左转</button><button class="button drive-command up" data-forward="1" data-left="0" data-rotate="0" disabled>↑ 前进</button><button class="button drive-command turn-right" data-forward="0" data-left="0" data-rotate="-1" disabled>E 右转</button><button class="button drive-command left" data-forward="0" data-left="1" data-rotate="0" disabled>← 左移</button><button class="stop-button pad-stop" id="padStop" disabled>停止</button><button class="button drive-command right" data-forward="0" data-left="-1" data-rotate="0" disabled>右移 →</button><button class="button drive-command down" data-forward="-1" data-left="0" data-rotate="0" disabled>↓ 后退</button></div>
+        <p class="hint">按下启动，松开停止 · W/A/S/D 平移 · Q 左原地转、E 右原地转 · 可组合按键 · 车体需有旋转空间</p>
+      </section>
+      <section class="angle-panel">
+        <div class="section-heading"><div><span>TEST</span><h2>方形运动测试</h2></div><output id="squareTestStatus">未运行</output></div>
+        <div class="tuning-actions">
+          <button id="squareTestButton" class="button connect" type="button" disabled>30 cm × 4 边方形</button>
+        </div>
+        <p class="hint">每边按四轮编码器行进 30 cm，再闭环转向 90°，共四次。角度以起始航向为基准；必须有新反馈且角速度降下才算到位。段间保持控制，不反复 STOP。</p>
+      </section>
+      <section class="angle-panel">
+        <div class="section-heading"><div><span>MEASURED TEST</span><h2>任意角度平移与航向复测</h2></div></div>
+        <label>测试速度 <input id="testRpm" type="number" min="10" max="60" value="30"> RPM（所有自动测试）</label>
+        <label>平移方向 <input id="translateAngle" type="number" min="-180" max="180" step="1" value="30"> °</label>
+        <label>单程距离 <input id="translateDistance" type="number" min="10" max="100" value="30"> cm</label>
+        <label>车头航向偏置 <input id="translateHeading" type="number" min="-45" max="45" value="0"> °</label>
+        <label><input id="testSafety" type="checkbox"> 已确认下地、路径及转向区域无障碍，急停可用</label>
+        <div class="tuning-actions">
+          <button id="translateTestButton" class="button connect" type="button" disabled>任意角度往返</button>
+          <button id="quarterTurnButton" class="button secondary" type="button" disabled>左转 90° → 右转回原位</button>
+          <button id="chassisStopButton" class="stop-button" type="button" disabled>停止测试</button>
+          <button id="chassisCsvButton" class="button secondary" type="button" disabled>下载本次测试 CSV</button>
+        </div>
+        <output id="chassisTestStatus">未运行</output>
+        <p class="hint">方向相对测试开始时的车头：0° 前、+90° 左、−90° 右、±180° 后，支持任意角。R16 下位机按实际航向每 20 ms 变换平移向量，上位机低速纠正编码器估计横偏；不等于外部定位。到站后锁存零平移，不反复前后追点；完成或异常均 STOP。不会自动解锁或修改 PID。</p>
+        <p class="hint">轮径 127 mm，CPR 使用下位机回读值（默认 380）。坐标、横偏与返回误差是编码器/IMU 估计，不能识别打滑；请用地面标线实测方向和距离。测试中请保持页面前台。“停止测试”或上方 STOP 均立即请求停车。</p>
       </section>
     </section>
     <section class="tuning-section telemetry-surface">
-      <div class="section-heading"><div><span>TELEMETRY</span><h2>实时反馈</h2></div><select id="chartLoop"><option value="rate">角速度 °/s</option><option value="heading">方向 °</option><option value="wheel">A 轮 RPM</option></select></div>
+        <div class="section-heading"><div><span>TELEMETRY</span><h2>实时反馈</h2></div><select id="chartLoop"><option value="rate">角速度 °/s</option><option value="heading">方向 °</option><option value="wheel">1 号轮 RPM</option></select></div>
       <div class="metrics"><div><span>角速度</span><output id="rateActual">— °/s</output></div><div><span>航向</span><output id="yawActual">— °</output></div><div><span>电池</span><output id="batteryActual">— V</output></div><div><span>模式</span><output id="angleMode">停止</output></div></div>
       <canvas id="responseChart" width="700" height="320" aria-label="目标与实际响应波形"></canvas>
       <p class="hint chart-legend">绿色：目标 · 蓝色：实际 · 切换观察量会清空图表</p>
@@ -77,9 +122,14 @@
       <p class="event-text">链路：<span id="linkStatus">未查询</span></p>
       <p class="event-text">串口：<span id="uartStatus">未查询</span></p>
       <p class="event-text">栈空间：<span id="stackStatus">未查询</span></p>
+      <p class="event-text">PS2：<span id="ps2Status">未查询</span></p>
+      <p class="hint">左杆连续全向平移；右杆平滑改变航向，回中后先刹停旋转、再锁定实际航向，不追赶松杆前的旧角度。无扳机 / 单扳机 / 双扳机：30 / 60 / 140 RPM。各档右杆目标上限均为 80°/s；转向优先，轮速不足时等比降低平移。平移方向相对于车身。</p>
+      <button id="ps2QueryButton" class="button secondary" type="button" disabled>查询手柄与原始帧</button>
+      <p class="event-text"><span id="ps2RawStatus">等待原始帧</span></p>
       <details><summary>最近命令与应答（不记录周期 TEL）</summary><pre id="commandLog"></pre></details>
     </section>
   </main>
-  <script src="touch-remote.js?v=13"></script>
+  <script src="chassis-test.js?v=2"></script>
+  <script src="touch-remote.js?v=26"></script>
 </body>
 </html>

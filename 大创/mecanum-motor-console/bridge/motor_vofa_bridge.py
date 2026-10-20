@@ -27,6 +27,7 @@ BLE_SCAN_RETRY_DELAY_SECONDS = 2.0
 BLE_WRITE_CHUNK_SIZE = 16
 BLE_WRITE_CHUNK_DELAY_SECONDS = 0.02
 COMMAND_TIMEOUT_SECONDS = 3.0
+HLOG_READ_TIMEOUT_SECONDS = 20.0
 MAX_COMMAND_BYTES = 63
 
 
@@ -140,7 +141,7 @@ class MotorVofaBridge:
         return None
 
     async def publish_line(self, line: str) -> None:
-        if not line.startswith(("TEL,", "ATEL,")):
+        if not line.startswith(("TEL,", "ATEL,", "HLOG,DATA")):
             print(f"[HW<-] {line}")
         await self.broadcast_web(f"{line}\n")
         firewater = self.to_firewater(line)
@@ -170,8 +171,14 @@ class MotorVofaBridge:
             "STACK": "STACK", "UART": "UART",
             "CAPS": "CAPS", "YAWGET": "YAWPID", "HEADGET": "HEADPID",
             "ANGLESTATUS": "ATEL",
+            "PS2STATUS": "PS2",
+            "PS2RAW": "PS2RAW",
             "ENC": "ENC", "BAT": "BAT", "WHO": "WHO", "HELP": "CMD", "?": "CMD",
         }
+        if name == "HLOG":
+            if command.upper().startswith("HLOG,READ,"):
+                return "HLOG,END"
+            return "HLOG"
         if name in queries:
             return queries[name]
         if command.upper() in ("SPEED,0", "SPEED,1", "TEL,0", "TEL,1"):
@@ -223,9 +230,14 @@ class MotorVofaBridge:
             future = self.loop.create_future()
             self.pending_reply = (self.expected_reply(command), future)
             write_complete = False
-            deadline = self.loop.time() + COMMAND_TIMEOUT_SECONDS
+            timeout = (
+                HLOG_READ_TIMEOUT_SECONDS
+                if command.startswith("HLOG,READ,")
+                else COMMAND_TIMEOUT_SECONDS
+            )
+            deadline = self.loop.time() + timeout
             try:
-                if not await asyncio.wait_for(self.send_hardware(command), COMMAND_TIMEOUT_SECONDS):
+                if not await asyncio.wait_for(self.send_hardware(command), timeout):
                     raise ConnectionError("hardware disconnected")
                 write_complete = True
                 remaining = max(0.001, deadline - self.loop.time())

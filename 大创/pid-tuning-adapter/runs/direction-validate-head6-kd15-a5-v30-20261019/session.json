@@ -1,0 +1,43 @@
+{
+  "loop": "direction",
+  "experiment": "direction_identify",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "measurement",
+  "telemetry_period_s": 0.2,
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 200
+  },
+  "baseline": 0,
+  "target": 5.0,
+  "forward_rpm": 30,
+  "distance_m": 0.3,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        6.0,
+        1.5
+      ],
+      "metrics": {
+        "normalized_iae": 1.7849056493884714,
+        "overshoot": 0.0,
+        "steady_error": 1.400666666666666,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": false,
+        "score": 3.1855723160551372
+      },
+      "csv": "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\runs\\direction-validate-head6-kd15-a5-v30-20261019\\round-01.csv",
+      "hlog_csv": "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\runs\\direction-validate-head6-kd15-a5-v30-20261019\\round-01-hlog.csv",
+      "writeback": false
+    }
+  ],
+  "gains": [
+    6.0,
+    1.5
+  ],
+  "writeback": false
+}

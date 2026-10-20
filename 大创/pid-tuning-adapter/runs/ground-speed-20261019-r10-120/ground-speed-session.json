@@ -1,0 +1,17 @@
+{
+  "mode": "ground_speed_round_trip",
+  "distance_m": 0.5,
+  "speed_rpm": 120.0,
+  "wheel_diameter_m": 0.127,
+  "encoder_counts_per_rev": 380,
+  "metrics": {
+    "normalized_iae": 0.3017298789173789,
+    "overshoot": 0.0,
+    "steady_error": 0.4015416666666667,
+    "settling_s": null,
+    "saturation_fraction": 0,
+    "resolved_transient": false,
+    "score": 0.7032715455840456
+  },
+  "csv": "pid-tuning-adapter\\runs\\ground-speed-20261019-r10-120\\ground-speed-round-trip.csv"
+}

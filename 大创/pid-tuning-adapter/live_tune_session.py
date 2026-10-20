@@ -23,11 +23,12 @@ WHEELS = ("A", "B", "C", "D")
 TARGET_LIMIT = 160
 OUTPUT_LIMIT = 60.0
 CONTROL_PERIOD_S = 0.01
-BASELINE_GAINS = (1.2, 0.2, 0.0)
+DEFAULT_GAINS = (1.2, 0.2, 0.0)
 MAX_SAFE_KP = 4.0
 MAX_SAFE_KI = 0.8
 MAX_SAFE_KD = 0.0
 MIN_STEP_SAMPLES = 8
+MAX_GAIN_CHANGE_FRACTION = 0.20
 
 
 class LiveSessionError(RuntimeError):
@@ -42,6 +43,7 @@ class BridgeSession:
         self.baseline_link_errors = None
         self.baseline_uart_errors = None
         self.last_link = None
+        self.initial_gains: tuple[tuple[float, float, float], ...] | None = None
 
     async def __aenter__(self):
         self.ws = await websockets.connect(self.url, open_timeout=5, close_timeout=2)
@@ -89,10 +91,25 @@ class BridgeSession:
 
     async def preflight(self) -> dict[str, str]:
         replies = {}
-        for command in ("VER", "STACK", "LINK", "SPEEDLIMIT", "PIDGET"):
+        for command in ("VER", "CAPS", "STACK", "LINK", "SPEEDLIMIT", "PIDGET"):
             replies[command] = await self.command(command)
-        if not replies["VER"].startswith("VER,VGT6_BM50_SPEED_TUNABLE_R6"):
+        if replies["VER"] not in (
+            "VER,VGT6_BM50_SPEED_TUNABLE_R6",
+            "VER,VGT6_BM50_ATTITUDE_R10",
+        ):
             raise LiveSessionError(f"unsupported firmware: {replies['VER']}")
+        caps = replies["CAPS"].split(",")
+        if len(caps) < 2 or caps[0] != "CAPS" or caps[-1] != "SPEED_TUNABLE":
+            raise LiveSessionError(f"speed PID write capability missing: {replies['CAPS']}")
+        pid_fields = replies["PIDGET"].split(",")
+        if len(pid_fields) != 13 or pid_fields[0] != "PID":
+            raise LiveSessionError(f"malformed PIDGET: {replies['PIDGET']}")
+        values = tuple(float(value) for value in pid_fields[1:])
+        if any(value < 0.0 or value > 100.0 for value in values):
+            raise LiveSessionError("PIDGET gain outside 0..100")
+        self.initial_gains = tuple(
+            tuple(values[offset:offset + 3]) for offset in range(0, 12, 3)
+        )
         stack = replies["STACK"].split(",")
         if len(stack) != 5 or stack[0] != "STACK" or stack[4] != "1":
             raise LiveSessionError(f"stack guard failed: {replies['STACK']}")
@@ -112,6 +129,14 @@ class BridgeSession:
         self.last_link = replies["LINK"]
         return replies
 
+    async def get_pid_checked(self, wheel: str) -> tuple[float, float, float]:
+        readback = await self.command("PIDGET")
+        values = readback.split(",")
+        if len(values) != 13 or values[0] != "PID":
+            raise LiveSessionError(f"malformed PIDGET: {readback}")
+        index = WHEELS.index(wheel) * 3 + 1
+        return tuple(float(values[index + offset]) for offset in range(3))
+
     async def check_health(self) -> None:
         stack = (await self.command("STACK")).split(",")
         link = (await self.command("LINK")).split(",")
@@ -129,16 +154,25 @@ class BridgeSession:
 
     async def set_pid_checked(self, wheel: str, gains: tuple[float, float, float]):
         kp, ki, kd = gains
+        current = await self.get_pid_checked(wheel)
+        for name, before, requested in zip(("kp", "ki", "kd"), current, gains):
+            if before == 0.0:
+                if abs(requested) > 1e-6:
+                    raise LiveSessionError(
+                        f"{wheel} {name} cannot change from zero in one write: "
+                        f"current={before} requested={requested}"
+                    )
+                continue
+            if abs(requested - before) > abs(before) * MAX_GAIN_CHANGE_FRACTION + 1e-6:
+                raise LiveSessionError(
+                    f"{wheel} {name} change exceeds "
+                    f"{MAX_GAIN_CHANGE_FRACTION:.0%}: current={before} requested={requested}"
+                )
         command = f"PID,{wheel},{kp:.6f},{ki:.6f},{kd:.6f}"
         reply = await self.command(command)
         if reply != "ACK,PID":
             raise LiveSessionError(f"PID write rejected: {reply}")
-        readback = await self.command("PIDGET")
-        values = readback.split(",")
-        if len(values) != 13 or values[0] != "PID":
-            raise LiveSessionError(f"malformed PIDGET: {readback}")
-        index = WHEELS.index(wheel) * 3 + 1
-        actual = tuple(float(values[index + offset]) for offset in range(3))
+        actual = await self.get_pid_checked(wheel)
         if any(abs(a - b) > 1e-4 for a, b in zip(actual, gains)):
             raise LiveSessionError(f"PID readback mismatch: requested={gains} got={actual}")
         return actual
@@ -283,9 +317,9 @@ def conservative_candidate(samples: list[dict]) -> tuple[tuple[float, float, flo
     ki = min(max(candidate.ki, 0.0), MAX_SAFE_KI)
     kd = min(max(candidate.kd, 0.0), MAX_SAFE_KD)
     if kp < 0.15:
-        kp = BASELINE_GAINS[0]
+        kp = DEFAULT_GAINS[0]
     if ki < 0.05:
-        ki = BASELINE_GAINS[1]
+        ki = DEFAULT_GAINS[1]
     return (kp, ki, kd), {
         "model": asdict(model),
         "candidate_raw": asdict(candidate),
@@ -321,7 +355,10 @@ async def tune_wheel(
     wheel: str,
     output_dir: Path,
 ) -> dict:
-    await session.set_pid_checked(wheel, BASELINE_GAINS)
+    if session.initial_gains is None:
+        raise LiveSessionError("preflight gains are unavailable")
+    baseline_gains = session.initial_gains[WHEELS.index(wheel)]
+    await session.set_pid_checked(wheel, baseline_gains)
     await session.start_speed_loop()
     samples: list[dict] = []
     await session.run_stage(wheel, 0, 4.0, samples)
@@ -354,7 +391,7 @@ async def tune_wheel(
 
     report = {
         "wheel": wheel,
-        "baseline_gains": BASELINE_GAINS,
+        "baseline_gains": baseline_gains,
         "applied_readback": applied,
         "tuning": tuning,
         "validation": evaluate(validation_samples, wheel),

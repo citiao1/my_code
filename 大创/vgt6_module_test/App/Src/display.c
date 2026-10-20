@@ -9,6 +9,8 @@
 #include "gyro.h"
 #include "oled.h"
 #include "serial_dma.h"
+#include "ps2.h"
+#include "ps2_control.h"
 #include "stm32f4xx_hal.h"
 
 #define DISPLAY_PERIOD_MS 250U
@@ -35,6 +37,8 @@ void Display_Process(void)
   EncoderSnapshot encoder;
   BatterySnapshot battery;
   ChassisTestSnapshot driver;
+  Ps2Snapshot ps2;
+  Ps2ControlSnapshot ps2_control;
   char state;
 
   now = HAL_GetTick();
@@ -47,6 +51,8 @@ void Display_Process(void)
   encoder = Encoder_GetSnapshot();
   battery = Battery_GetSnapshot();
   driver = ChassisTest_GetSnapshot();
+  ps2 = Ps2_GetSnapshot();
+  ps2_control = Ps2Control_GetSnapshot();
   state = (gyro.connected == 0U) ? 'E' :
           ((gyro.ready != 0U) ? 'R' : 'C');
 
@@ -79,10 +85,11 @@ void Display_Process(void)
                  (long)(encoder.rpm_x10[2] / 10L),
                  (long)(encoder.rpm_x10[3] / 10L));
   Display_PrintLine(48U, line);
-  /* R7 marker: this text is emitted by the new image after boot. */
-  (void)snprintf(line, sizeof(line), "R7 F:%u Y:%4ld W:%02X",
-                 gyro.read_failures, (long)(gyro.yaw_deg * 10.0f),
-                 gyro.who_am_i);
+  /* Fixed marker lets the independent DAP verifier identify this image. */
+  (void)snprintf(line, sizeof(line), "R16 F:%u P:%c S:%u V:%u",
+                 1U,
+                 (ps2.connected != 0U) ? '1' : '0',
+                 ps2_control.enabled, ps2_control.speed_rpm);
   Display_PrintLine(56U, line);
   OLED_ShowFrame();
 }

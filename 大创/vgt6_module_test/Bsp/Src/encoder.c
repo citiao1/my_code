@@ -17,6 +17,19 @@ static volatile int32_t encoder3_isr_count;
 static int32_t previous_encoder3;
 static volatile uint8_t encoder3_previous_state;
 
+/*
+ * Keep encoder feedback in the same sign convention as Motor_Run():
+ * positive RPM means wheel motion in the chassis-forward direction.
+ * Motors 2/3 are physically reversed by their mirrored installation.
+ */
+static const int8_t encoder_sign[ENCODER_CHANNEL_COUNT] =
+{
+   1, /* motor 1: right-front */
+  -1, /* motor 2: left-front */
+  -1, /* motor 3: left-rear */
+   1  /* motor 4: right-rear */
+};
+
 static const int8_t quadrature_table[16] =
 {
    0, -1,  1,  0,
@@ -85,10 +98,14 @@ void Encoder_Process(uint32_t elapsed_ms)
   current_encoder3 = encoder3_isr_count;
   __enable_irq();
 
-  encoder_snapshot.delta[0] = (int32_t)(int16_t)(current_tim1 - previous_tim1);
-  encoder_snapshot.delta[1] = (int32_t)(current_tim2 - previous_tim2);
-  encoder_snapshot.delta[2] = current_encoder3 - previous_encoder3;
-  encoder_snapshot.delta[3] = (int32_t)(int16_t)(current_tim4 - previous_tim4);
+  encoder_snapshot.delta[0] =
+      ((int32_t)(int16_t)(current_tim1 - previous_tim1)) * encoder_sign[0];
+  encoder_snapshot.delta[1] =
+      ((int32_t)(current_tim2 - previous_tim2)) * encoder_sign[1];
+  encoder_snapshot.delta[2] =
+      (current_encoder3 - previous_encoder3) * encoder_sign[2];
+  encoder_snapshot.delta[3] =
+      ((int32_t)(int16_t)(current_tim4 - previous_tim4)) * encoder_sign[3];
   previous_tim1 = current_tim1;
   previous_tim2 = current_tim2;
   previous_encoder3 = current_encoder3;

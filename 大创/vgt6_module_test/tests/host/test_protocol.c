@@ -17,6 +17,9 @@
 #include "battery.h"
 #include "stack_usage.h"
 #include "attitude_control.h"
+#include "mecanum.h"
+#include "ps2.h"
+#include "ps2_control.h"
 
 static DMA_HandleTypeDef mock_dma;
 static USART_TypeDef mock_usart = {4375U};
@@ -30,6 +33,8 @@ static unsigned cases;
 static EncoderSnapshot encoder;
 static uint8_t stack_healthy = 1U;
 static GyroSnapshot gyro_mock;
+static Ps2Snapshot ps2_mock;
+static Ps2ControlSnapshot ps2_control_mock;
 
 uint32_t HAL_GetTick(void) { return tick; }
 uint32_t HAL_RCC_GetPCLK1Freq(void) { return 42000000U; }
@@ -72,6 +77,18 @@ GyroSnapshot Gyro_GetSnapshot(void)
 { return gyro_mock; }
 uint8_t Gyro_StartCalibration(void) { return 1U; }
 void Gyro_ZeroYaw(void) {}
+Ps2Snapshot Ps2_GetSnapshot(void) { return ps2_mock; }
+uint8_t Ps2_IsPressed(uint16_t button)
+{ return (ps2_mock.buttons & button) != 0U; }
+void Ps2Control_Stop(void)
+{
+  ps2_control_mock.enabled = 0U;
+  ps2_control_mock.forward_rpm = 0;
+  ps2_control_mock.left_rpm = 0;
+  ps2_control_mock.rotate_rpm = 0;
+}
+uint8_t Ps2Control_IsActive(void) { return ps2_control_mock.enabled; }
+Ps2ControlSnapshot Ps2Control_GetSnapshot(void) { return ps2_control_mock; }
 
 static void drain(void)
 {
@@ -92,6 +109,8 @@ static void init(void)
   AttitudeControl_Init();
   memset(&gyro_mock, 0, sizeof(gyro_mock));
   gyro_mock.ready = 1U;
+  memset(&ps2_mock, 0, sizeof(ps2_mock));
+  memset(&ps2_control_mock, 0, sizeof(ps2_control_mock));
   Telemetry_Init();
   assert(SerialDma_Init(Command_HandleLine) == 1U);
 }
@@ -124,7 +143,7 @@ static void test_every_split(void)
     "SPEED,0\n", "SPEED,120\n", "STOP\n", "PING\r\n"
   };
   static const char *replies[] = {
-    "VER,VGT6_BM50_ATTITUDE_R7\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
+    "VER,VGT6_BM50_ATTITUDE_R16\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
     "ACK,SPDLIMIT\r\n", "ACK,SPEED,1\r\n", "ACK,PID\r\n",
     "ACK,SPD\r\n", "ACK,TEL,1\r\n", "ACK,SPEED,0\r\n",
     "ACK,SPEED,LIMIT\r\n", "ACK,STOP\r\n", "PONG\r\n"
@@ -163,10 +182,11 @@ static void test_stop_restart_and_tel(void)
   line("STOP\n"); expect("ACK,STOP\r\n");
   assert(SpeedControl_GetSnapshot().enabled == 0U);
   assert(SpeedControl_GetSnapshot().target_rpm[0] == 0);
-  assert(Telemetry_IsPeriodic() == 0U);
+  assert(Telemetry_IsPeriodic() == 1U);
   assert(ChassisTest_GetSnapshot().armed == 1U);
   clear_tx();
-  tick += 4000U; Telemetry_Process(); drain(); expect("");
+  tick += 4000U; Telemetry_Process(); drain();
+  assert(strncmp(transmitted, "TEL,", 4U) == 0);
   line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
   line("SPD,A,60\n"); expect("ACK,SPD\r\n");
   assert(SpeedControl_GetSnapshot().target_rpm[0] == 60);
@@ -246,20 +266,24 @@ static void test_stack_guard_and_diagnostics(void)
   line("STACK\n"); expect("STACK,4096,1200,2896,0\r\n");
 }
 
-static void test_fixed_gains_and_target_ceiling(void)
+static void test_tunable_gains_and_target_ceiling(void)
 {
   unsigned index;
   SpeedControlSnapshot speed;
   const float ki[4] = {0.0991f,0.0998f,0.0998f,0.1008f};
   init();
   speed = SpeedControl_GetSnapshot();
-  assert(speed.target_limit_rpm == 200U);
+  assert(speed.target_limit_rpm == 160U);
   for (index = 0U; index < SPEED_CONTROL_CHANNEL_COUNT; ++index)
   {
     assert(speed.kp[index] == 1.2f);
     assert(speed.ki[index] == ki[index]);
     assert(speed.kd[index] == 0.0f);
-    assert(SpeedControl_SetPid((MotorChannel)index, 0.8f, 0.1f, 0.0f) == 0U);
+    assert(SpeedControl_SetPid((MotorChannel)index, 0.8f, 0.1f, 0.0f) == 1U);
+    speed = SpeedControl_GetSnapshot();
+    assert(speed.kp[index] == 0.8f);
+    assert(speed.ki[index] == 0.1f);
+    assert(speed.kd[index] == 0.0f);
     assert(SpeedControl_SetPid((MotorChannel)index, 1.2f, ki[index], 0.0f) == 1U);
     ++cases;
   }
@@ -267,23 +291,25 @@ static void test_fixed_gains_and_target_ceiling(void)
   assert(SpeedControl_SetPid(MOTOR_CHANNEL_A, 1.2f, INFINITY, 0.0f) == 0U);
   line("PIDGET\n");
   expect("PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000\r\n");
-  line("PID,A,0.8,0.1,0\n"); expect("ERR,PID,SPEED_FIXED_R7\r\n");
-  line("PID,B,1.2,0.2,1\n"); expect("ERR,PID,SPEED_FIXED_R7\r\n");
-  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_FIXED_R7\r\n");
-  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_FIXED_R7\r\n");
+  line("PID,A,0.8,0.1,0\n"); expect("ACK,PID\r\n");
+  line("PIDGET\n");
+  assert(strstr(transmitted, "PID,0.8000,0.1000,0.0000") != NULL);
+  line("PID,B,1.2,0.2,1\n"); expect("ACK,PID\r\n");
+  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R16_RANGE\r\n");
+  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R16_RANGE\r\n");
   line("SPDLIMIT,201\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPDLIMIT,65736\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPEED,1000\n"); expect("ERR,SPEED,RANGE_1_200\r\n");
-  assert(SpeedControl_GetSnapshot().target_limit_rpm == 200U);
+  assert(SpeedControl_GetSnapshot().target_limit_rpm == 160U);
   line("SPD,A,999\n"); expect("ACK,SPD\r\n");
   line("SPD,B,-999\n"); expect("ACK,SPD\r\n");
   speed = SpeedControl_GetSnapshot();
-  assert(speed.target_rpm[0] == 200);
-  assert(speed.target_rpm[1] == -200);
+  assert(speed.target_rpm[0] == 160);
+  assert(speed.target_rpm[1] == -160);
   line("SPDLIMIT,180\n"); expect("ACK,SPDLIMIT\r\n");
   speed = SpeedControl_GetSnapshot();
-  assert(speed.target_rpm[0] == 180);
-  assert(speed.target_rpm[1] == -180);
+  assert(speed.target_rpm[0] == 160);
+  assert(speed.target_rpm[1] == -160);
   line("SPDLIMIT,200\n"); expect("ACK,SPDLIMIT\r\n");
   line("SPEEDLIMIT\n"); expect("SPEEDLIMIT,200\r\n");
   line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
@@ -311,24 +337,25 @@ static void test_fixed_gains_and_target_ceiling(void)
   line("STOP\n"); expect("ACK,STOP\r\n");
   assert(SpeedControl_GetSnapshot().kp[0] == 1.2f);
   SpeedControl_Init();
-  assert(SpeedControl_GetSnapshot().target_limit_rpm == 200U);
+  assert(SpeedControl_GetSnapshot().target_limit_rpm == 160U);
   assert(SpeedControl_GetSnapshot().ki[0] == ki[0]);
 }
 static void test_attitude_cascade_and_stop(void)
 {
   AttitudeControlSnapshot a;
   init();
-  line("CAPS\n"); expect("CAPS,ATTITUDE_R7,20,10,200,60,60,80,SPEED_FIXED\r\n");
+  line("CAPS\n"); expect("CAPS,ATTITUDE_R16,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE\r\n");
   line("YAW,15\n"); expect("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
   line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
   line("HEAD,-179\n"); expect("ACK,HEAD\r\n");
   gyro_mock.yaw_deg = 179.0f;
   AttitudeControl_Process(20);
   a=AttitudeControl_GetSnapshot();
-  assert(a.error_deg==2.0f && a.output_dps==10.0f);
+  assert(a.error_deg==2.0f && a.output_dps==12.0f);
   gyro_mock.rate_dps=2.0f;
   AttitudeControl_Process(20);
-  assert(AttitudeControl_GetSnapshot().output_dps==7.5f);
+  assert(AttitudeControl_GetSnapshot().output_dps==9.5f);
+  line("HEADMOVE,15,20,0\n"); expect("ACK,HEADMOVE\r\n");
   line("YAWPID,0.25,1.2\n"); expect("ACK,YAWPID\r\n");
   line("YAWGET\n"); expect("YAWPID,0.2500,1.2000,60,80,20\r\n");
   line("HEADPID,3,0.5\n"); expect("ACK,HEADPID\r\n");
@@ -336,6 +363,18 @@ static void test_attitude_cascade_and_stop(void)
   line("HEADPID,NAN,1\n"); expect("ERR,ANGLEPID,RANGE_0_100\r\n");
   line("YAW,81\n"); expect("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
   line("STOP\n"); expect("ACK,STOP\r\n");
+  line("HLOG,STATUS\n"); expect("HLOG,STATUS,0,0,1024,0,0\r\n");
+  line("HLOG,START\n"); expect("HLOG,START,OK\r\n");
+  line("HEAD,15\n"); expect("ACK,HEAD\r\n");
+  AttitudeControl_Process(20);
+  line("HLOG,STOP\n"); expect("HLOG,STOP,OK\r\n");
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("HLOG,STATUS\n");
+  assert(strstr(transmitted, "HLOG,STATUS,0,1,1024,0,1\r\n") != NULL);
+  line("HLOG,READ,0,1\n");
+  assert(strstr(transmitted, "HLOG,DATA,0,") != NULL);
+  assert(strstr(transmitted, "HLOG,END,0,1,1\r\n") != NULL);
+  line("HLOG,CLEAR\n"); expect("HLOG,CLEAR,OK\r\n");
   AttitudeControl_Process(20);
   assert(!SpeedControl_GetSnapshot().enabled && !AttitudeControl_GetSnapshot().mode);
   line("YAW,15\n"); expect("ACK,YAW\r\n");
@@ -360,6 +399,192 @@ static void test_attitude_cascade_and_stop(void)
   assert(!AttitudeControl_GetSnapshot().mode && !SpeedControl_GetSnapshot().enabled);
   ++cases;
 }
+
+static void test_mecanum_installed_numbering(void)
+{
+  MecanumWheelTargets targets;
+
+  Mecanum_CalculateTargets(100, 0, 0, 200, &targets);
+  assert(targets.motor1_right_front == 100);
+  assert(targets.motor2_left_front == 100);
+  assert(targets.motor3_left_rear == 100);
+  assert(targets.motor4_right_rear == 100);
+
+  Mecanum_CalculateTargets(0, 100, 0, 200, &targets);
+  assert(targets.motor1_right_front == 100);
+  assert(targets.motor2_left_front == -100);
+  assert(targets.motor3_left_rear == 100);
+  assert(targets.motor4_right_rear == -100);
+
+  Mecanum_CalculateTargets(0, 0, 100, 200, &targets);
+  assert(targets.motor1_right_front == 100);
+  assert(targets.motor2_left_front == -100);
+  assert(targets.motor3_left_rear == -100);
+  assert(targets.motor4_right_rear == 100);
+  ++cases;
+}
+
+static void test_tracked_drive_frame_rest_and_stop(void)
+{
+  AttitudeControlSnapshot a;
+  init();
+  line("TRACKMOVE,0,30,0\n"); expect("ERR,TRACKMOVE,ARM_IMU_OR_RANGE\r\n");
+  line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+  line("TRACKMOVE,0,30,0\n"); expect("ERR,TRACKMOVE,ARM_IMU_OR_RANGE\r\n");
+  line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
+  line("TRACKMOVE,0,NAN,0\n"); expect("ERR,TRACKMOVE,ARM_IMU_OR_RANGE\r\n");
+  line("TRACKMOVE,0,80,80\n"); expect("ERR,TRACKMOVE,ARM_IMU_OR_RANGE\r\n");
+  line("TRACKMOVE,0,30,0,JUNK\n"); expect("ERR,TRACKMOVE,ARM_IMU_OR_RANGE\r\n");
+  line("TRACKMOVE,90,30,0\n"); expect("ACK,TRACKMOVE\r\n");
+  gyro_mock.yaw_deg = 90.0f;
+  for (int step = 0; step < 20; ++step) AttitudeControl_Process(20U);
+  a = AttitudeControl_GetSnapshot();
+  assert(a.forward_rpm == 0 && a.left_rpm == -30);
+  assert(a.output_rpm == 0.0f && a.target_deg == 90.0f);
+  /* A held world vector follows ACTUAL yaw, even if its target is unchanged. */
+  gyro_mock.yaw_deg = 0.0f;
+  AttitudeControl_Process(20U);
+  a = AttitudeControl_GetSnapshot();
+  assert(a.forward_rpm == 30 && a.left_rpm == 0);
+  line("TRACKMOVE,0,0,0\n"); expect("ACK,TRACKMOVE\r\n");
+  for (int step = 0; step < 10; ++step) AttitudeControl_Process(20U);
+  for (int step = 0; step < 400; ++step)
+  {
+    gyro_mock.yaw_deg = step % 2 ? 0.2f : -0.2f;
+    gyro_mock.rate_dps = step % 2 ? 0.8f : -0.8f;
+    /* Repeated commands/KEEP must not reset the quiet gate. */
+    assert(AttitudeControl_SetTrackedDrive(0.0f, 0.0f, 0.0f));
+    AttitudeControl_Process(20U);
+    SpeedControl_Process(10U);
+    a = AttitudeControl_GetSnapshot();
+    assert(a.output_rpm == 0.0f && a.target_deg == 0.0f);
+    for (int wheel = 0; wheel < 4; ++wheel)
+      assert(SpeedControl_GetSnapshot().output_percent[wheel] == 0);
+  }
+  gyro_mock.yaw_deg = 1.0f;
+  AttitudeControl_Process(20U);
+  assert(AttitudeControl_GetSnapshot().target_dps < 0.0f);
+  /* Returning to zero cancels translation immediately, not after a ramp tail. */
+  assert(AttitudeControl_SetTrackedDrive(0, 60, 0));
+  for (int step = 0; step < 10; ++step) AttitudeControl_Process(20U);
+  assert(AttitudeControl_GetSnapshot().forward_rpm > 0);
+  assert(AttitudeControl_SetTrackedDrive(0, 0, 0));
+  AttitudeControl_Process(20U);
+  assert(AttitudeControl_GetSnapshot().forward_rpm == 0);
+  line("KEEP\n"); expect("ACK,KEEP\r\n");
+  tick += 1501U;
+  AttitudeControl_Process(20U);
+  assert(!AttitudeControl_GetSnapshot().mode && !SpeedControl_GetSnapshot().enabled);
+  line("TRACKMOVE,0,0,0\n"); expect("ERR,TRACKMOVE,ARM_IMU_OR_RANGE\r\n");
+  line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
+  line("TRACKMOVE,0,0,0\n"); expect("ACK,TRACKMOVE\r\n");
+  gyro_mock.read_failures = 1U;
+  AttitudeControl_Process(20U);
+  assert(!SpeedControl_GetSnapshot().enabled);
+  ++cases;
+}
+
+static void test_ps2_diagnostics_and_control_ownership(void)
+{
+  static const uint8_t raw[] = {0xff, 0x73, 0x5a, 0xff, 0xff, 127, 128, 127, 128};
+  static const char *commands[] = {
+    "YAW,15\n", "HEAD,90\n", "HEADMOVE,90,30,0\n", "TRACKMOVE,90,30,0\n",
+    "MOVE,30,0,0\n", "DRV,30,0,0\n", "SPD,A,30\n"
+  };
+  unsigned index;
+  init();
+  memcpy(ps2_mock.raw_frame, raw, sizeof(raw));
+  ps2_mock.valid = ps2_mock.connected = 1U;
+  ps2_mock.config_attempts = 3U;
+  line("PS2RAW\n");
+  expect("PS2RAW,FF,73,5A,FF,FF,7F,80,7F,80,1,3\r\n");
+  line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+  ps2_control_mock.enabled = 1U;
+  for (index = 0U; index < sizeof(commands) / sizeof(commands[0]); ++index)
+  {
+    line(commands[index]);
+    assert(strstr(transmitted, "PS2") != NULL);
+    assert(strncmp(transmitted, "ERR,", 4U) == 0);
+  }
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  assert(!ps2_control_mock.enabled);
+  ++cases;
+}
+
+static void test_track_frame_sweep_and_split_packets(void)
+{
+  const char *command = "TRACKMOVE,-179.25,29.34,-17.21\n";
+  for (size_t split = 0; split < strlen(command); ++split)
+  {
+    init();
+    line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+    line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
+    line("ATEL,0\n"); expect("ACK,ATEL,0\r\n");
+    clear_tx();
+    if (split) burst(command, split, 1);
+    assert(!tx_length);
+    burst(command + split, strlen(command) - split, 1);
+    expect("ACK,TRACKMOVE\r\n");
+    clear_tx(); tick += 400U; Telemetry_Process(); drain();
+    assert(!tx_length); /* TRACKMOVE must not turn ATEL back on. */
+  }
+  init();
+  line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+  line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
+  assert(AttitudeControl_SetTrackedDrive(0, 30, 17));
+  for (unsigned step = 0; step < 20; ++step) AttitudeControl_Process(20U);
+  for (int angle = -180; angle <= 180; ++angle)
+  {
+    float radians = (float)angle * 0.01745329252f;
+    AttitudeControlSnapshot a;
+    gyro_mock.yaw_deg = (float)angle;
+    AttitudeControl_Process(20U);
+    a = AttitudeControl_GetSnapshot();
+    assert(fabsf(a.forward_rpm - (30*cosf(radians)+17*sinf(radians))) <= 0.51f);
+    assert(fabsf(a.left_rpm - (-30*sinf(radians)+17*cosf(radians))) <= 0.51f);
+    ++cases;
+  }
+}
+
+/* Validate the installed mixer as a matrix, rather than only three axes.
+ * f=sum(w)/4; l=(RF-LF+LR-RR)/4; r=(RF-LF-LR+RR)/4. */
+static void test_mecanum_matrix_and_scaling(void)
+{
+  MecanumWheelTargets targets;
+  for (int f = -180; f <= 180; f += 30)
+  for (int l = -180; l <= 180; l += 30)
+  for (int r = -60; r <= 60; r += 20)
+  {
+    int raw[4] = {f+l+r, f-l-r, f+l-r, f-l+r};
+    int maximum = 0;
+    for (int i = 0; i < 4; ++i)
+      if (abs(raw[i]) > maximum) maximum = abs(raw[i]);
+    Mecanum_CalculateTargets((int16_t)f, (int16_t)l, (int16_t)r, 160U, &targets);
+    int wheels[4] = {targets.motor1_right_front, targets.motor2_left_front,
+                    targets.motor3_left_rear, targets.motor4_right_rear};
+    for (int i = 0; i < 4; ++i)
+    {
+      assert(abs(wheels[i]) <= 160);
+      assert(wheels[i] == (maximum > 160 ? raw[i] * 160 / maximum : raw[i]));
+    }
+    float scale = maximum > 160 ? 160.0f / maximum : 1.0f;
+    assert(fabsf((wheels[0]+wheels[1]+wheels[2]+wheels[3])/4.0f - f*scale) < 1.0f);
+    assert(fabsf((wheels[0]-wheels[1]+wheels[2]-wheels[3])/4.0f - l*scale) < 1.0f);
+    assert(fabsf((wheels[0]-wheels[1]-wheels[2]+wheels[3])/4.0f - r*scale) < 1.0f);
+    ++cases;
+  }
+  /* One-degree sweep includes every quadrant and non-45-degree direction. */
+  for (int degrees = -180; degrees <= 180; ++degrees)
+  {
+    int f = (int)lroundf(70.0f * cosf(degrees * 0.01745329252f));
+    int l = (int)lroundf(70.0f * sinf(degrees * 0.01745329252f));
+    Mecanum_CalculateTargets((int16_t)f, (int16_t)l, 0, 160U, &targets);
+    assert(targets.motor1_right_front == f+l && targets.motor2_left_front == f-l);
+    assert(targets.motor3_left_rear == f+l && targets.motor4_right_rear == f-l);
+    ++cases;
+  }
+}
+
 int main(void)
 {
   test_every_split();
@@ -367,8 +592,13 @@ int main(void)
   test_bad_lines_and_recovery();
   test_uart_fault_drops_partial_targets();
   test_stack_guard_and_diagnostics();
-  test_fixed_gains_and_target_ceiling();
+  test_tunable_gains_and_target_ceiling();
   test_attitude_cascade_and_stop();
+  test_tracked_drive_frame_rest_and_stop();
+  test_track_frame_sweep_and_split_packets();
+  test_mecanum_installed_numbering();
+  test_mecanum_matrix_and_scaling();
+  test_ps2_diagnostics_and_control_ownership();
   printf("PASS: %u real-firmware protocol assertions\n", cases);
   return 0;
 }

@@ -1,0 +1,42 @@
+{
+  "loop": "angular_velocity",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "none",
+  "telemetry_period_s": 0.2,
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 200
+  },
+  "baseline": 0,
+  "target": 30.0,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        0.15,
+        2.5
+      ],
+      "metrics": {
+        "normalized_iae": 0.08467787356321838,
+        "overshoot": 0.06230000000000002,
+        "steady_error": 0.005616666666666648,
+        "settling_s": 3.8000000000000007,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.16461120689655184
+      },
+      "next_gains": [
+        0.1725,
+        2.5
+      ],
+      "csv": "pid-tuning-adapter\\runs\\angular-velocity-opt-20261019-30\\round-01.csv"
+    }
+  ],
+  "best_gains": [
+    0.15,
+    2.5
+  ],
+  "best_score": 0.16461120689655184
+}

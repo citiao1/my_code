@@ -27,11 +27,12 @@ class FakeBridge:
         command=request["command"]
         self.sent.append(command)
         replies={
-            "VER":"VER,VGT6_BM50_ATTITUDE_R7",
+            "VER":"VER,VGT6_BM50_ATTITUDE_R10",
             "CAPS":CAPS,"STACK":"STACK,4096,1400,2696,1",
             "UART":"UART,9600,42000000,4375,0x00,0,0,0,0,0",
-            "LINK":"LINK,100,5,0,0,0,1","SPEEDLIMIT":"SPEEDLIMIT,200",
+            "LINK":"LINK,100,5,0,0,0,1","SPEEDLIMIT":"SPEEDLIMIT,160",
             "PIDGET":"PID,"+",".join(str(x) for x in FIXED),
+            "ANGLESTATUS":"ATEL,100,2,1,0,0,0,0,0,0,0,0,1,12000",
         }
         name=command.split(",")[0]
         if name in self.gains:
@@ -83,6 +84,20 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
                     await run(self.args(directory,loop,live))
             history=json.loads((Path(directory)/"session.json").read_text()) if live and not fail else None
         return bridge,history
+
+    def test_motion_commands_match_console_control_path(self):
+        self.assertEqual(
+            Session.motion_command("angular_velocity", 15),
+            "MOVE,0,0,15.0000",
+        )
+        self.assertEqual(
+            Session.motion_command("angular_velocity", -15),
+            "MOVE,0,0,-15.0000",
+        )
+        self.assertEqual(
+            Session.motion_command("direction", 15),
+            "HEAD,15.0000",
+        )
 
     async def test_rate_writes_verified_gains_without_rearming_and_restores_tested_best(self):
         bridge,history=await self.exercise("angular_velocity")

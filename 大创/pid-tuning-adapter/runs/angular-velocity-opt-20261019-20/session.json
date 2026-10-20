@@ -1,0 +1,63 @@
+{
+  "loop": "angular_velocity",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "none",
+  "telemetry_period_s": 0.2,
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 200
+  },
+  "baseline": 0,
+  "target": 20.0,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        0.15,
+        2.5
+      ],
+      "metrics": {
+        "normalized_iae": 0.08948954741379306,
+        "overshoot": 0.07390000000000008,
+        "steady_error": 0.008226666666666679,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.18969121408045989
+      },
+      "next_gains": [
+        0.1725,
+        2.5
+      ],
+      "csv": "pid-tuning-adapter\\runs\\angular-velocity-opt-20261019-20\\round-01.csv"
+    },
+    {
+      "round": 2,
+      "gains": [
+        0.1725,
+        2.5
+      ],
+      "metrics": {
+        "normalized_iae": 0.08993517782215407,
+        "overshoot": 0.07794999999999996,
+        "steady_error": 0.006916666666666682,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.20430184448882083
+      },
+      "next_gains": [
+        0.1725,
+        2.5
+      ],
+      "csv": "pid-tuning-adapter\\runs\\angular-velocity-opt-20261019-20\\round-02.csv"
+    }
+  ],
+  "best_gains": [
+    0.15,
+    2.5
+  ],
+  "best_score": 0.18969121408045989
+}

@@ -38,7 +38,7 @@ uint8_t SpeedControl_SetTarget(MotorChannel channel, int32_t rpm);
 uint8_t SpeedControl_SetDrive(int16_t forward_rpm,
                               int16_t left_rpm,
                               int16_t rotate_rpm);
-/* R7 wheel gains are fixed; accepts only an identical compatibility write. */
+/* R12 wheel gains are runtime-tunable through PID + PIDGET with readback. */
 uint8_t SpeedControl_SetPid(MotorChannel channel, float kp, float ki,
                             float kd);
 uint8_t SpeedControl_SetTargetLimit(uint16_t limit_rpm);

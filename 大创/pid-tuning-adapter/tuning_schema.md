@@ -50,3 +50,24 @@ It is not interchangeable with the incremental form.
 These are tuning templates, not guarantees. A loop with coupling, backlash,
 deadband, unstable open-loop behavior, or significant saturation needs a
 different experiment or a closed-loop/relay method.
+
+## Physical R10 tests
+
+Use the real vehicle for the final validation of the attitude cascade:
+
+- Angular velocity: run symmetric clockwise and counter-clockwise in-place
+  turns with equal magnitude and duration. Score both signs, including sign,
+  steady error, overshoot, settling, saturation and reversal recovery.
+- Heading: drive with `HEADMOVE` while changing the heading reference through a
+  declared sequence. Use `ENC` totals to stop at the distance threshold, then
+  reverse and return to the start. Do not use elapsed time as the distance
+  criterion.
+- Ground speed: run the current wheel speed loop forward and backward over a
+  declared distance. Record TEL plus ENC data, verify the four wheel speeds
+  and return distance. Any gain write must be bounded and verified by PIDGET.
+
+The current geometry constants are wheel diameter 0.127 m and 380 encoder
+counts per output-shaft revolution, or approximately 0.00105 m/count.
+Retain the raw CSV and the command timeline for every round. Relay feedback
+or PRBS/frequency-response tests are alternatives when a trajectory is too
+nonlinear or saturated for step-based proposals.

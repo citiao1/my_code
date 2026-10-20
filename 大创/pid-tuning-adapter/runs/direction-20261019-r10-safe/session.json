@@ -1,0 +1,84 @@
+{
+  "loop": "direction",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "measurement",
+  "telemetry_period_s": 0.2,
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 200
+  },
+  "baseline": 0,
+  "target": 5.0,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        5.0,
+        1.25
+      ],
+      "metrics": {
+        "normalized_iae": 0.011704245090718898,
+        "overshoot": 0.0,
+        "steady_error": 0.00037535806137098187,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.01207960315208988
+      },
+      "next_gains": [
+        5.0,
+        1.25
+      ],
+      "csv": "pid-tuning-adapter\\runs\\direction-20261019-r10-safe\\round-01.csv"
+    },
+    {
+      "round": 2,
+      "gains": [
+        5.0,
+        1.25
+      ],
+      "metrics": {
+        "normalized_iae": 0.012296119615527581,
+        "overshoot": 0.0,
+        "steady_error": 0.0002546788541400616,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.012550798469667643
+      },
+      "next_gains": [
+        5.0,
+        1.25
+      ],
+      "csv": "pid-tuning-adapter\\runs\\direction-20261019-r10-safe\\round-02.csv"
+    },
+    {
+      "round": 3,
+      "gains": [
+        5.0,
+        1.25
+      ],
+      "metrics": {
+        "normalized_iae": 0.014415307279770351,
+        "overshoot": 0.0,
+        "steady_error": 0.00021153653458623895,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.01462684381435659
+      },
+      "next_gains": [
+        5.0,
+        1.25
+      ],
+      "csv": "pid-tuning-adapter\\runs\\direction-20261019-r10-safe\\round-03.csv"
+    }
+  ],
+  "best_gains": [
+    5.0,
+    1.25
+  ],
+  "best_score": 0.01207960315208988
+}

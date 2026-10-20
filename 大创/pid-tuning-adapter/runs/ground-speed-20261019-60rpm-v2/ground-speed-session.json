@@ -1,0 +1,17 @@
+{
+  "mode": "ground_speed_round_trip",
+  "distance_m": 1.0,
+  "speed_rpm": 60.0,
+  "wheel_diameter_m": 0.127,
+  "encoder_counts_per_rev": 380,
+  "metrics": {
+    "normalized_iae": 0.06012624643874644,
+    "overshoot": 0.0,
+    "steady_error": 0.005166666666666657,
+    "settling_s": null,
+    "saturation_fraction": 0,
+    "resolved_transient": false,
+    "score": 0.0652929131054131
+  },
+  "csv": "runs\\ground-speed-20261019-60rpm-v2\\ground-speed-round-trip.csv"
+}

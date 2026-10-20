@@ -27,12 +27,16 @@ void Mecanum_CalculateTargets(int16_t forward_rpm, int16_t left_rpm,
     return;
   }
 
-  /* Wheel order: right rear, left rear, right front, left front. */
-  /* Positive rotate_rpm means left rotation: right wheels forward. */
-  wheel[0] = (int32_t)forward_rpm - left_rpm + rotate_rpm;
-  wheel[1] = (int32_t)forward_rpm + left_rpm - rotate_rpm;
-  wheel[2] = (int32_t)forward_rpm + left_rpm + rotate_rpm;
-  wheel[3] = (int32_t)forward_rpm - left_rpm - rotate_rpm;
+  /*
+   * Installed order is [RF, LF, LR, RR], viewed from above.
+   * This is the standard mecanum transform reordered to the actual
+   * motor channels. Positive rotation is counter-clockwise: right
+   * wheels advance and left wheels reverse.
+   */
+  wheel[0] = (int32_t)forward_rpm + left_rpm + rotate_rpm; /* motor 1 RF */
+  wheel[1] = (int32_t)forward_rpm - left_rpm - rotate_rpm; /* motor 2 LF */
+  wheel[2] = (int32_t)forward_rpm + left_rpm - rotate_rpm; /* motor 3 LR */
+  wheel[3] = (int32_t)forward_rpm - left_rpm + rotate_rpm; /* motor 4 RR */
 
   maximum = 0;
   for (index = 0U; index < 4U; ++index)
@@ -43,8 +47,8 @@ void Mecanum_CalculateTargets(int16_t forward_rpm, int16_t left_rpm,
     }
   }
 
-  targets->right_rear = Mecanum_Scale(wheel[0], maximum, limit_rpm);
-  targets->left_rear = Mecanum_Scale(wheel[1], maximum, limit_rpm);
-  targets->right_front = Mecanum_Scale(wheel[2], maximum, limit_rpm);
-  targets->left_front = Mecanum_Scale(wheel[3], maximum, limit_rpm);
+  targets->motor1_right_front = Mecanum_Scale(wheel[0], maximum, limit_rpm);
+  targets->motor2_left_front = Mecanum_Scale(wheel[1], maximum, limit_rpm);
+  targets->motor3_left_rear = Mecanum_Scale(wheel[2], maximum, limit_rpm);
+  targets->motor4_right_rear = Mecanum_Scale(wheel[3], maximum, limit_rpm);
 }

@@ -26,6 +26,20 @@ static const MotorHardware motor_hardware[MOTOR_CHANNEL_COUNT] =
    MOTOR4_BRAKE_GPIO_Port, MOTOR4_BRAKE_Pin, TIM_CHANNEL_4}
 };
 
+/*
+ * The installed wheel numbering is 1=RF, 2=LF, 3=LR, 4=RR.
+ * A positive software command means motion in the wheel's chassis-forward
+ * direction. The two left BM50 units are mounted with opposite DIR polarity,
+ * so their hardware direction is inverted at this boundary.
+ */
+static const int8_t motor_drive_sign[MOTOR_CHANNEL_COUNT] =
+{
+   1, /* motor 1: right-front */
+  -1, /* motor 2: left-front */
+  -1, /* motor 3: left-rear */
+   1  /* motor 4: right-rear */
+};
+
 static uint8_t motor_ready;
 
 static uint8_t Motor_IsValid(MotorChannel channel)
@@ -95,6 +109,7 @@ uint8_t Motor_Run(MotorChannel channel, int8_t direction,
 {
   uint32_t period_ticks;
   uint32_t compare;
+  int8_t hardware_direction;
 
   if ((motor_ready == 0U) || (Motor_IsValid(channel) == 0U) ||
       (duty_percent == 0U) || (duty_percent > 100U))
@@ -104,9 +119,12 @@ uint8_t Motor_Run(MotorChannel channel, int8_t direction,
 
   period_ticks = __HAL_TIM_GET_AUTORELOAD(&htim8) + 1U;
   compare = (period_ticks * (uint32_t)duty_percent) / 100U;
+  hardware_direction = ((direction >= 0) ? 1 : -1) *
+                       motor_drive_sign[(uint32_t)channel];
   HAL_GPIO_WritePin(motor_hardware[channel].dir_port,
                     motor_hardware[channel].dir_pin,
-                    (direction >= 0) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+                    (hardware_direction >= 0) ? GPIO_PIN_SET :
+                                                 GPIO_PIN_RESET);
   HAL_GPIO_WritePin(motor_hardware[channel].brake_port,
                     motor_hardware[channel].brake_pin, GPIO_PIN_SET);
   Motor_SetCompare(channel, compare);

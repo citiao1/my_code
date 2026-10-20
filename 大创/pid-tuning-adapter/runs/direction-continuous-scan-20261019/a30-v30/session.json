@@ -1,0 +1,42 @@
+{
+  "loop": "direction",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "measurement",
+  "telemetry_period_s": 0.2,
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 200
+  },
+  "baseline": 0,
+  "target": 30.0,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        5.0,
+        1.25
+      ],
+      "metrics": {
+        "normalized_iae": 0.8431763072433092,
+        "overshoot": 0.0,
+        "steady_error": 0.6871327897400845,
+        "settling_s": null,
+        "saturation_fraction": 0.2391304347826087,
+        "resolved_transient": false,
+        "score": 1.7694395317660023
+      },
+      "next_gains": [
+        5.0,
+        1.25
+      ],
+      "csv": "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\runs\\direction-continuous-scan-20261019\\a30-v30\\round-01.csv"
+    }
+  ],
+  "best_gains": [
+    5.0,
+    1.25
+  ],
+  "best_score": 1.7694395317660023
+}

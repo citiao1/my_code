@@ -119,6 +119,14 @@ void Error_Handler(void);
 #define ENCODER4_B_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+#define PS2_CLK_Pin GPIO_PIN_8
+#define PS2_CLK_GPIO_Port GPIOE
+#define PS2_SEL_Pin GPIO_PIN_10
+#define PS2_SEL_GPIO_Port GPIOE
+#define PS2_CMD_Pin GPIO_PIN_12
+#define PS2_CMD_GPIO_Port GPIOE
+#define PS2_DAT_Pin GPIO_PIN_15
+#define PS2_DAT_GPIO_Port GPIOE
 
 /* USER CODE END Private defines */
 

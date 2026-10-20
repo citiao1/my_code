@@ -14,11 +14,15 @@ h1,h2,p{margin:0}.topbar h1{font:800 20px/1 Consolas,monospace}.topbar p{margin-
 .angle-inputs label{display:grid;gap:6px;font-size:12px;color:var(--muted)}
 .angle-panel input,select{width:100%;min-height:36px;border:1px solid var(--line);border-radius:5px;padding:7px;color:var(--light);background:#fff}
 .angle-panel>label{display:flex;align-items:center;gap:10px;font-size:13px;margin-top:15px}
+#testRpm,#translateAngle,#translateDistance,#translateHeading{width:90px;flex:0 0 90px}
+#testSafety{width:18px;min-height:18px;flex:0 0 18px;padding:0}
+#chassisTestStatus{display:block;margin-top:14px;color:var(--muted);font-size:12px;line-height:1.7;overflow-wrap:anywhere}
+.hlog-actions{margin-top:16px}.hlog-panel output{color:var(--green)}
 #driveSpeed{width:90px}.hint{font-size:12px;color:var(--muted);line-height:1.7;margin-top:12px}.section-heading output{color:var(--muted);font:11px Consolas,monospace}
 .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0}.metrics div{padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:6px}.metrics span{display:block;color:var(--muted);font-size:12px}.metrics output{display:block;margin-top:8px;font:600 20px Consolas,monospace}
 #responseChart{display:block;width:100%;height:300px;background:#f8faf9;border:1px solid var(--line);border-radius:6px}.chart-legend{color:var(--green)}
 .telemetry-surface{position:sticky;top:20px}#chartLoop{width:140px}.event-text{text-align:left;overflow-wrap:anywhere}.badge.online{color:var(--green);background:#e7f4ee}.speed-status{color:var(--green);white-space:normal;grid-column:1/-1}.tuning-grid{grid-template-columns:1fr 120px}
 .pid-row{min-width:500px;grid-template-columns:20px repeat(4,1fr) 84px}.pid-row input{font-size:12px}.pid-row .button{font-size:11px;padding:5px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 Consolas,monospace}
-.drive-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:280px;margin:16px auto}.up{grid-area:1/2}.left{grid-area:2/1}.pad-stop{grid-area:2/2}.right{grid-area:2/3}.down{grid-area:3/2}
+.drive-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:320px;margin:16px auto}.turn-left{grid-area:1/1}.up{grid-area:1/2}.turn-right{grid-area:1/3}.left{grid-area:2/1}.pad-stop{grid-area:2/2}.right{grid-area:2/3}.down{grid-area:3/2}
 @media(max-width:1050px){.workspace{grid-template-columns:1fr}.telemetry-surface{position:static}}
 @media(max-width:480px){.workspace{width:calc(100% - 20px)}.angle-inputs{gap:6px}.metrics output{font-size:17px}.topbar h1{font-size:14px}}

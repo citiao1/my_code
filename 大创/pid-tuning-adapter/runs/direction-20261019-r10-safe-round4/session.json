@@ -1,0 +1,42 @@
+{
+  "loop": "direction",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "measurement",
+  "telemetry_period_s": 0.2,
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 200
+  },
+  "baseline": 0,
+  "target": 5.0,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        5.0,
+        1.25
+      ],
+      "metrics": {
+        "normalized_iae": 0.6372143471259292,
+        "overshoot": 0.0,
+        "steady_error": 0.017068564787914995,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": false,
+        "score": 0.6542829119138441
+      },
+      "next_gains": [
+        5.0,
+        1.25
+      ],
+      "csv": "pid-tuning-adapter\\runs\\direction-20261019-r10-safe-round4\\round-01.csv"
+    }
+  ],
+  "best_gains": [
+    5.0,
+    1.25
+  ],
+  "best_score": 0.6542829119138441
+}

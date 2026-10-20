@@ -104,6 +104,23 @@ def unused_local_port() -> int:
 
 
 class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_tracked_drive_requires_its_own_mcu_ack(self) -> None:
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        started = asyncio.Event()
+
+        async def write(command):
+            self.assertEqual(command, "TRACKMOVE,90,25.50,-17.25")
+            started.set()
+            return True
+
+        bridge.send_hardware = write
+        task = asyncio.create_task(bridge.execute_command("TRACKMOVE,90,25.50,-17.25"))
+        await started.wait()
+        bridge.consume_bytes(b"ACK,HEADMOVE\r\n")
+        self.assertFalse(task.done())
+        bridge.consume_bytes(b"ACK,TRACKMOVE\r\n")
+        self.assertEqual(await task, "ACK,TRACKMOVE")
+
     def make_config(self, tcp_port: int = 0, ws_port: int = 0):
         return bridge_module.BridgeConfig(
             "ble", None, 9600, None,
@@ -147,7 +164,12 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(bridge_module.MotorVofaBridge.to_firewater(
             "ATEL,1234,2,1,NaN,14250,5400,170000,-175000,15000,15000,0,1,12000"))
         for command,reply in (("YAWGET","YAWPID"),("HEADGET","HEADPID"),
-                              ("CAPS","CAPS"),("ANGLESTATUS","ATEL")):
+                              ("CAPS","CAPS"),("ANGLESTATUS","ATEL"),
+                              ("PS2STATUS","PS2"),
+                              ("PS2RAW","PS2RAW"),
+                              ("HLOG,STATUS","HLOG"),
+                              ("HLOG,START","HLOG"),
+                              ("HLOG,READ,0,8","HLOG,END")):
             self.assertEqual(bridge_module.MotorVofaBridge.expected_reply(command),reply)
 
     async def test_power_cycle_rescans_and_keeps_local_servers_alive(self) -> None:
@@ -303,6 +325,33 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(results[1], RuntimeError)
         self.assertEqual(results[2], "ACK,STOP")
         self.assertEqual(writes, ["PID,A,0.8,0.1,0", "STOP"])
+
+    async def test_normal_stop_cancels_keep_without_disconnect_or_second_stop(self) -> None:
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        bridge.hardware_connected = True
+        writes = []
+        keep_written = asyncio.Event()
+
+        async def write(command):
+            writes.append(command)
+            if command == "KEEP":
+                keep_written.set()  # ACK is delayed when STOP arrives.
+            else:
+                bridge.consume_bytes(("ACK," + command.split(",")[0] + "\r\n").encode())
+            return True
+
+        bridge.send_hardware = write
+        keep = asyncio.create_task(bridge.execute_command("KEEP"))
+        await keep_written.wait()
+        stop = asyncio.create_task(bridge.execute_command("STOP"))
+        results = await asyncio.gather(keep, stop, return_exceptions=True)
+        self.assertIsInstance(results[0], ConnectionError)
+        self.assertIn("cancelled by STOP", str(results[0]))
+        self.assertEqual(results[1], "ACK,STOP")
+        self.assertTrue(bridge.hardware_connected)
+        self.assertFalse(bridge.disconnected.is_set())
+        self.assertEqual(await bridge.execute_command("HEADMOVE,90,0,0"), "ACK,HEADMOVE")
+        self.assertEqual(writes, ["KEEP", "STOP", "HEADMOVE,90,0,0"])
 
     async def test_timeout_does_not_retry_and_next_command_recovers(self) -> None:
         bridge = bridge_module.MotorVofaBridge(self.make_config())

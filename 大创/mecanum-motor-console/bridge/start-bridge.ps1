@@ -13,13 +13,35 @@ $VenvDir = Join-Path $BridgeDir ".venv"
 $VenvPython = Join-Path $VenvDir "Scripts\python.exe"
 $BundledPython = Join-Path $env:USERPROFILE ".cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
 
-# Python does not reload a running bridge when its source file changes.
-# Do not start a second process against the same BLE module/ports.
+# Restart only the bridge from this exact project; unrelated listeners
+# must never be terminated simply because they use the same port.
+$BridgeScript = (Resolve-Path (Join-Path $BridgeDir "motor_vofa_bridge.py")).Path
+$BridgeScriptPattern = '(?:^|\s|")' + [regex]::Escape($BridgeScript) + '(?:"|\s|$)'
 foreach ($BridgeListenPort in @(8766, 1347)) {
     $ExistingListener = Get-NetTCPConnection -LocalPort $BridgeListenPort -State Listen -ErrorAction SilentlyContinue
     if ($ExistingListener) {
-        $ExistingIds = ($ExistingListener.OwningProcess | Sort-Object -Unique) -join ", "
-        throw "Port $BridgeListenPort is already in use (PID $ExistingIds). Close the old bridge window before starting this version."
+        $ExistingIds = @($ExistingListener.OwningProcess | Sort-Object -Unique)
+        $ExistingProcesses = @($ExistingIds | ForEach-Object {
+            Get-CimInstance Win32_Process -Filter "ProcessId=$_" -ErrorAction SilentlyContinue
+        })
+        if ($ExistingProcesses.Count -ne $ExistingIds.Count -or
+            @($ExistingProcesses | Where-Object {
+                $_.Name -notmatch '^python(w)?\.exe$' -or
+                $_.CommandLine -notmatch $BridgeScriptPattern
+            }).Count -ne 0) {
+            throw "Port $BridgeListenPort is used by another program (PID $($ExistingIds -join ', ')). Close that program first."
+        }
+        foreach ($ExistingId in $ExistingIds) {
+            Write-Host "Restarting this project's old bridge (PID $ExistingId)."
+            Stop-Process -Id $ExistingId -Force -ErrorAction SilentlyContinue
+        }
+        for ($PortAttempt = 0; $PortAttempt -lt 20; $PortAttempt++) {
+            if (-not (Get-NetTCPConnection -LocalPort $BridgeListenPort -State Listen -ErrorAction SilentlyContinue)) { break }
+            Start-Sleep -Milliseconds 100
+        }
+        if (Get-NetTCPConnection -LocalPort $BridgeListenPort -State Listen -ErrorAction SilentlyContinue) {
+            throw "Port $BridgeListenPort did not close after restarting the project bridge."
+        }
     }
 }
 

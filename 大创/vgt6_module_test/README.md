@@ -24,6 +24,25 @@ source of truth and the MDK-ARM project is built with Keil/Arm Compiler 5.
 | Battery ADC | PC0 | ADC1_IN10, 100 kOhm / 22 kOhm divider |
 | Status LED | PE2 | on while IMU communication is healthy |
 
+The installed chassis numbering is viewed from above, starting at the
+upper-right and counting counter-clockwise: motor 1 = right-front, motor 2 =
+left-front, motor 3 = left-rear, and motor 4 = right-rear. Firmware channels
+A/B/C/D follow motors 1/2/3/4 in that order. The mecanum transform, encoder
+sign table, drive polarity table, and speed-loop target array all use this
+same physical order.
+
+For command inputs `(F,L,R)` = `(forward,left,counter-clockwise turn)`, the
+four signed wheel targets are:
+
+```text
+1 RF = F + L + R       2 LF = F - L - R
+3 LR = F + L - R       4 RR = F - L + R
+```
+
+The left-side BM50 DIR and encoder signs are inverted at their hardware
+boundaries (`[+1,-1,-1,+1]` for channels 1..4), so the speed PID sees one
+consistent chassis-forward sign for all four wheels.
+
 PB14/PB15 can be routed to TIM12_CH1/CH2, but STM32F407 TIM12 does not have
 hardware encoder mode. Therefore encoder C is decoded from both GPIO edges;
 the other three encoders use timer encoder mode.
@@ -90,9 +109,12 @@ HELP
 ```
 
 `A+` through `D-` are fixed 10% / 1000 ms jogs. `JOG` accepts a signed duty
-from -30 to +30 percent and a duration from 50 to 5000 ms. The physical
-meaning of `+` is initially just `DIR=high`; verify each wheel and encoder
-sign on the raised-wheel bench before using the values for chassis control.
+from -30 to +30 percent and a duration from 50 to 5000 ms. A positive
+software command means chassis-forward: motors 1/2 invert the BM50 DIR level
+because they are mirrored on the left side, while motors 3/4 keep it.
+Encoder feedback uses the matching `[-1,-1,+1,+1]` sign table so positive
+RPM has the same chassis-forward meaning. Verify each wheel on the
+raised-wheel bench before applying load.
 
 The default encoder count is 380 transitions per output-shaft revolution,
 which assumes the BM50 motor with a 19:1 gearbox. Raw totals and deltas are
@@ -129,15 +151,21 @@ limit.
 `SPEED,1`/`SPEED,0` enable or disable the four-wheel speed loop after `ARM`.
 `SPEED,<rpm>` sets the target limit (except the special value `1`), `SPD`
 sets one wheel target RPM, and `DRV` sets mecanum forward/left/rotate RPM.
-`PIDGET` reports the four fixed wheel gains. R7 accepts finite `PID,<A-D>,Kp,Ki,Kd`
-writes in the 0..100 range and resets the selected controller state. `SPEEDLIMIT`
-returns the current target ceiling.
+`PIDGET` reports the four wheel gains. R16 accepts finite
+`PID,<A-D>,Kp,Ki,Kd` writes in the 0..100 range, updates the selected
+incremental controller and resets its state. Always query `PIDGET` after a
+write and keep the output limit at +/-60%.
+`SPEEDLIMIT`
+returns the current target ceiling. `MOVE` and `DRV` use the documented vehicle
+axes directly: positive forward moves the chassis forward and positive left
+moves it to the left. R16 uses the installed order `[RF, LF, LR, RR]` directly;
+no upper-layer axis swap or temporary lateral sign correction is applied.
 `TEL,1` enables a 300 ms `TEL` stream for
 the web console and VOFA bridge; it is off by default.
 
 ### BLE line-framing revision
 
-`VER` returns `VER,VGT6_BM50_ATTITUDE_R7`. UART IDLE ends only a DMA
+`VER` returns `VER,VGT6_BM50_ATTITUDE_R16`. UART IDLE ends only a DMA
 burst, never a command; the receive ring assembles BLE fragments until an
 explicit CR or LF. Manual serial terminals must send a line terminator.
 
@@ -164,8 +192,9 @@ lightweight diagnostic commands remain available. The guard does not replace
 instrumented stack and control-loop validation.
 
 Prefer `SPDLIMIT,<rpm>` for limit writes, including 1 RPM. `SPEED,0/1`
-remain the loop-disable/enable commands. STOP disables the loop and stream
-but preserves ARM; enabling the loop again does not require a BLE reconnect.
+remain the loop-disable/enable commands. STOP disables the loop but preserves
+ARM and the current telemetry selection; use `TEL,0` to explicitly stop a
+stream. Enabling the loop again does not require a BLE reconnect.
 
 `tests/host/run-tests.ps1` compiles the real transport, parser, telemetry and
 speed-control modules with mock HAL/board I/O using GCC. It checks every
@@ -186,12 +215,11 @@ measurement is filtered with a 0.7/0.3 first-order low-pass filter before the
 PID calculation. The legacy integral-limit parameter is retained only for
 command/API compatibility and does not limit the incremental update.
 
-### R7 runtime gains and shaft-speed ceiling
+### R16 runtime gains and shaft-speed ceiling
 
-All four channels start with Kp=1.2, Ki=0.2, Kd=0 at the existing 10 ms
-control period. R7 validates finite `PID,<A-D>,Kp,Ki,Kd` writes against the
-per-wheel gains and rejects changes, so the calibrated gains remain fixed.
-The pure console page only writes targets; the live
+All four channels start with calibrated gains at the existing 10 ms control
+period. R16 accepts finite `PID,<A-D>,Kp,Ki,Kd` writes in the 0..100 range,
+updates the selected controller and resets its incremental state. The live
 整定器 performs guarded PID updates and readback checks.
 
 The supplied `BM50电机规格书与使用说明书(2026.01.16).pdf`, PDF pages 4--5
@@ -213,17 +241,40 @@ lags a higher target while VOFA I9--I12 stays at +/-60, the speed loop is
 output-saturated; raising Ki will not overcome this cap. Supply/load and
 encoder scaling must also be checked before increasing drive capability.
 
-### R7 attitude cascade
+### R16 attitude cascade
 
-R7 adds an angular-velocity inner PI loop and a heading outer PD loop. Both run
+R16 adds `TRACKMOVE,heading_deg,field_x_rpm,field_y_rpm` for supervised motion
+tests, without changing raw tuning interfaces. Its 20 ms measured-yaw frame
+transform, quiet heading gate and test-side cross-track correction are explained
+in [the team-code review and validation notes](RM_CHASSIS_R16_REVIEW.md).
+R16 has been flashed via wireless DAP, independently read back (53356 bytes),
+and confirmed running by Bluetooth version query. Ground tracking is not yet validated.
+
+R16 uses an adaptive six-axis Mahony observer plus a zero-velocity update
+(ZUPT) detector. Accelerometer correction is weighted by the confidence of the
+measured gravity magnitude, so chassis acceleration does not receive the full
+tilt correction. Mahony integral feedback learns residual tilt gyro bias, and
+the application learns all three gyro biases only after 1.5 s of confirmed
+rest. This is a self-learning stationary correction; it cannot remove
+long-term yaw drift because IMU660RC is a six-axis sensor without a magnetic or
+other absolute heading reference.
+
+R16 uses an angular-velocity inner PI loop and a heading outer PD loop. Both run
 at 20 ms. The angular-velocity loop uses the IMU660RC measured yaw rate and
 outputs a rotation RPM command limited to +/-60 RPM. The heading loop wraps its
 error to +/-180 degrees, uses measured yaw rate for damping, and limits the
 generated angular-velocity target to +/-80 degrees/s. `YAW,<deg/s>` starts the
-inner loop; `HEAD,<deg>` starts the heading cascade; `MOVE,<forward>,<left>,<deg/s>`
+inner loop; `HEAD,<deg>` starts the heading cascade; `HEADMOVE,<heading>,<forward>,<left>`
+starts the heading cascade while retaining translation; `MOVE,<forward>,<left>,<deg/s>`
 combines translation with the inner loop. `YAWPID`, `HEADPID`, `YAWGET`,
 `HEADGET`, `KEEP`, `ATEL,1/0`, and `ANGLESTATUS` configure and observe the
 loops. A 1.5 s command watchdog stops the cascade if `KEEP` is not received.
+
+The direction loop also has a RAM-only high-rate logger. `HLOG,CLEAR`,
+`HLOG,START`, `HLOG,STOP`, `HLOG,STATUS`, and `HLOG,READ,offset,count` record
+the 20 ms direction-loop state without writing Flash. Reading is limited to
+eight records per command and must be done after `STOP`; the host can batch
+reads and save the returned `HLOG,DATA` records as CSV.
 
 `ATEL` fields are:
 
@@ -233,9 +284,40 @@ output_rpm_milli,target_heading_mdeg,actual_heading_mdeg,
 heading_error_mdeg,output_dps_milli,saturated,speed_enabled,battery_mv
 ```
 
-The OLED bottom line contains the `R7` marker, IMU read-failure count, yaw
-tenths of a degree, and IMU `WHO_AM_I` value. It is a quick confirmation that
-the flashed image is the R7 build.
+PS2 translation uses a radial deadzone and continuous X/Y mixing. Its maximum
+translation wheel RPM is 30, 60 or 140, preserving direction at saturation.
+The right stick requests a heading-reference rate up to 80 deg/s at every tier.
+The turning reference uses 400 deg/s^2 acceleration and integrates actual
+controller elapsed time. Manual control stays in mode 2:
+rate feedforward plus heading PD, then rate PI. D uses reference rate minus
+40 ms low-pass measured rate. Tracking error is bounded to 8 degrees while
+turning. R15 release cancels reference integration and the old angle target,
+clears rate integral, then uses P-only zero-rate damping with the existing
+output slew limit. During braking the angle target follows measured yaw,
+so no outer-loop command pulls the chassis back to its pre-stop angle.
+The actual heading is latched after measured and D-filtered rate are both
+within 1.5 deg/s and rotation output is below 0.5 RPM for 120 ms. If braking
+does not settle within 2.5 seconds, the chassis stops. A new stick command
+cancels braking without restarting wheel PIDs. Translation remains active.
+After capture, ordinary hold corrects external disturbances without recapture.
+
+Manual hold has 0.35/0.8 degree and 1.5/3 deg/s rest hysteresis. Within rest,
+the rate integrator is cleared and rotation output returns to zero, avoiding
+noise-driven alternating wheel targets. Hold corrections are limited to 30
+deg/s; manual rotation output slews at 240 RPM/s. These are initial shaping
+settings, not experimentally tuned gains. Manual integral may unwind towards
+zero even while the output slew limiter is active. HEAD/YAW tuning formulas and gains
+remain unchanged (HEAD 6.0/1.25, YAW 0.15/2.5).
+
+Manual rotation gets priority within the wheel ceiling: translation is scaled
+uniformly when needed. At the default 160 RPM ceiling, 60 RPM rotation leaves
+100 RPM peak translation, preserving its direction. All tiers retain their
+30/60/140 RPM translation maximum when enough headroom exists.
+Invalid IMU data, a lost PS2 frame, STOP or SELECT stop the vehicle and require
+another deliberate START.
+
+The OLED bottom line contains the `R16` marker, receiver connection, PS2 enable
+and selected speed tier. This identifies the build independently of the page.
 
 ## First bench test order
 
@@ -258,6 +340,13 @@ the flashed image is the R7 build.
 Open `vgt6_module_test.ioc` in STM32CubeMX 6.17, keep MDK-ARM V5 selected,
 and regenerate when pin/peripheral settings change. Then build
 `MDK-ARM/vgt6_module_test.uvprojx` in Keil.
+
+For the connected PUSO CMSIS-DAP, run `tools/flash-dap.ps1` after the Keil
+build. It uses the verified Keil CMSIS-DAP backend when installed, with
+low-speed pyOCD as a fallback. It independently compares the complete HEX
+image, vector table and R16 marker, then resets and confirms the target is
+running. The PUSO readback uses single-word transfers because its block-read
+command can return empty packets.
 
 The `.axf` and `.hex` outputs are under `MDK-ARM/vgt6_module_test/`.
 R4 stack regeneration used the existing STM32CubeMX 6.17 / F4 V1.28.3

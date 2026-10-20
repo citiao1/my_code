@@ -3,6 +3,8 @@
 typedef struct
 {
   float q[4];
+  float integral_fb[3];
+  float accel_confidence;
   float yaw_deg, roll_deg, pitch_deg, rate_dps;
 } AttitudeFilter;
 void AttitudeFilter_Init(AttitudeFilter *s, const float accel_g[3]);

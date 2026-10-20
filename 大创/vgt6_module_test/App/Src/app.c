@@ -9,6 +9,8 @@
 #include "gyro.h"
 #include "main.h"
 #include "serial_dma.h"
+#include "ps2.h"
+#include "ps2_control.h"
 #include "speed_control.h"
 #include "stack_usage.h"
 #include "stm32f4xx_hal.h"
@@ -33,6 +35,8 @@ void App_Init(void)
   motor_ready = ChassisTest_Init();
   SpeedControl_Init();
   AttitudeControl_Init();
+  Ps2_Init();
+  Ps2Control_Init();
   Display_Init();
   Telemetry_Init();
   imu_tick = HAL_GetTick();
@@ -64,6 +68,8 @@ void App_Process(void)
     return;
   }
   SerialDma_Process();
+  Ps2_Process();
+  Ps2Control_Process();
   ChassisTest_Process();
   Battery_Process();
   Telemetry_Process();

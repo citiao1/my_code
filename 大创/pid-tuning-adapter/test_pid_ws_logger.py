@@ -1,6 +1,9 @@
 import unittest
 
-from pid_ws_logger import BRIDGE_GREETING, BridgeClient, telemetry_row
+from pid_ws_logger import (
+    BRIDGE_GREETING, BridgeClient, distance_from_encoder, encoder_row,
+    hlog_row, speed_drive_row, telemetry_row,
+)
 
 
 class TelemetryRowTests(unittest.TestCase):
@@ -40,6 +43,31 @@ class TelemetryRowTests(unittest.TestCase):
         self.assertIsNone(telemetry_row(rate.replace("14250","nan"),None,None,"angular_velocity"))
         self.assertIsNone(telemetry_row("TEL,1,2",None,None,"direction"))
         self.assertAlmostEqual(telemetry_row(rate,None,0xFFFFFF00,"angular_velocity")[0][0],1.49)
+
+    def test_encoder_distance_uses_380_counts_and_127mm_wheel(self):
+        packet = "ENC,2000,1,380,380,380,380,380,10,10,10,10,300,300,300,300"
+        parsed = encoder_row(packet)
+        self.assertEqual(parsed[3], (380, 380, 380, 380))
+        self.assertAlmostEqual(
+            distance_from_encoder(parsed[3], (0, 0, 0, 0)), 0.398982,
+            places=5,
+        )
+
+    def test_speed_drive_row_averages_four_wheels(self):
+        packet = "TEL,1234,0,1,30,30,30,30,10,10,10,10,300,300,300,300,30,30,30,30,12540,0,0,1,0,0,1"
+        row, tick = speed_drive_row(packet)
+        self.assertEqual(tick, 1234)
+        self.assertEqual(row, (0.0, 30.0, 30.0, 10.0))
+
+    def test_hlog_row_decodes_scaled_direction_loop_record(self):
+        packet = (
+            "HLOG,DATA,12,3456,15000,12000,3000,8000,7600,40000,12000,0,20,0"
+        )
+        row = hlog_row(packet)
+        self.assertEqual(row["sequence"], 12)
+        self.assertAlmostEqual(row["target_heading_deg"], 15.0)
+        self.assertAlmostEqual(row["actual_rate_dps"], 7.6)
+        self.assertEqual(row["forward_rpm"], 20)
 
 
 if __name__ == "__main__":

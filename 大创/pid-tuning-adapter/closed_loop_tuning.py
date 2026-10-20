@@ -21,6 +21,77 @@ class ResponseScore:
     score: float
 
 
+def score_bidirectional(
+    positive: list[Sample],
+    negative: list[Sample],
+    *,
+    output_limit: float,
+    angle: bool = False,
+) -> ResponseScore:
+    """Score matched positive/negative closed-loop tests as one experiment."""
+    first = score_step(positive, angle=angle, output_limit=output_limit)
+    second = score_step(negative, angle=angle, output_limit=output_limit)
+    return ResponseScore(
+        normalized_iae=(first.normalized_iae + second.normalized_iae) / 2.0,
+        overshoot=max(first.overshoot, second.overshoot),
+        steady_error=(first.steady_error + second.steady_error) / 2.0,
+        settling_s=max(
+            x for x in (first.settling_s, second.settling_s) if x is not None
+        ) if first.settling_s is not None and second.settling_s is not None else None,
+        saturation_fraction=max(
+            first.saturation_fraction, second.saturation_fraction
+        ),
+        resolved_transient=first.resolved_transient and second.resolved_transient,
+        score=(first.score + second.score) / 2.0,
+    )
+
+
+def score_tracking(
+    samples: list[Sample],
+    *,
+    angle: bool,
+    output_limit: float,
+    max_interval_s: float = 1.0,
+    min_samples: int = 12,
+) -> ResponseScore:
+    """Score a bounded moving-reference trajectory, including heading wrap."""
+    if min_samples < 4:
+        raise ValueError("minimum sample count must be at least 4")
+    if len(samples) < min_samples:
+        raise ValueError(f"need at least {min_samples} trajectory samples")
+    if output_limit <= 0 or not math.isfinite(output_limit):
+        raise ValueError("output limit must be positive")
+    if max_interval_s <= 0 or not math.isfinite(max_interval_s):
+        raise ValueError("maximum sample interval must be positive")
+    if any(not all(math.isfinite(x) for x in asdict(s).values()) for s in samples):
+        raise ValueError("nonfinite trajectory sample")
+    intervals = [b.time_s - a.time_s for a, b in zip(samples, samples[1:])]
+    if any(dt <= 0 or dt > max_interval_s for dt in intervals):
+        raise ValueError("duplicate, reordered or stale trajectory samples")
+    error = [
+        wrap_deg(s.setpoint - s.process) if angle else s.setpoint - s.process
+        for s in samples
+    ]
+    duration = samples[-1].time_s - samples[0].time_s
+    scale = max(1.0, median(abs(s.setpoint) for s in samples))
+    iae = sum(
+        0.5 * (abs(a) + abs(b)) * (v.time_s - u.time_s)
+        for a, b, u, v in zip(error, error[1:], samples, samples[1:])
+    )
+    saturation = mean(abs(s.output) >= output_limit * 0.98 for s in samples)
+    if any(abs(s.output) > output_limit + 0.001 for s in samples):
+        raise ValueError("output exceeded locked limit")
+    if saturation > 0.25:
+        raise ValueError("sustained saturation; reduce trajectory command")
+    steady = mean(abs(x) for x in error[-max(5, len(error) // 5):]) / scale
+    normalized = iae / max(duration * scale, 1e-6)
+    score = normalized + steady + saturation
+    return ResponseScore(
+        normalized, 0.0, steady, None, saturation,
+        max(abs(x) for x in error) < 0.5 * scale, score,
+    )
+
+
 def score_step(samples: list[Sample], *, angle: bool, output_limit: float) -> ResponseScore:
     if len(samples) < 12:
         raise ValueError("need pre-step and at least 12 measured samples")

@@ -1,0 +1,43 @@
+{
+  "loop": "direction",
+  "experiment": "direction_identify",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "measurement",
+  "telemetry_period_s": 0.2,
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 200
+  },
+  "baseline": 0,
+  "target": 10.0,
+  "forward_rpm": 20,
+  "distance_m": 0.3,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        5.0,
+        1.25
+      ],
+      "metrics": {
+        "normalized_iae": 3.7069338878327014,
+        "overshoot": 0.0,
+        "steady_error": 2.798000000000002,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": false,
+        "score": 6.504933887832703
+      },
+      "csv": "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\runs\\direction-identify-a10-v20-20261019\\round-01.csv",
+      "hlog_csv": "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\runs\\direction-identify-a10-v20-20261019\\round-01-hlog.csv",
+      "writeback": false
+    }
+  ],
+  "gains": [
+    5.0,
+    1.25
+  ],
+  "writeback": false
+}

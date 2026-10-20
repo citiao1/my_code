@@ -1,5 +1,6 @@
 #include "telemetry.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -19,12 +20,19 @@
 static uint8_t telemetry_periodic;
 static uint32_t telemetry_tick;
 static uint8_t attitude_stream;
+static TelemetryHeadingLogRecord heading_log[TELEMETRY_HLOG_CAPACITY];
+static uint16_t heading_log_start;
+static uint16_t heading_log_count;
+static uint32_t heading_log_sequence;
+static uint8_t heading_log_active;
+static uint8_t heading_log_overflow;
 
 void Telemetry_Init(void)
 {
   telemetry_periodic = 0U;
   attitude_stream = 0U;
   telemetry_tick = HAL_GetTick();
+  Telemetry_Hlog_Clear();
 }
 
 void Telemetry_Process(void)
@@ -67,6 +75,142 @@ void Telemetry_SendAttitude(void)
       (long)(a.output_dps * 1000), a.saturated,
       SpeedControl_GetSnapshot().enabled, Battery_GetSnapshot().voltage_mv);
   SerialDma_Write(message);
+}
+
+void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude)
+{
+  TelemetryHeadingLogRecord *record;
+  uint16_t index;
+
+  if ((heading_log_active == 0U) || (attitude == NULL) ||
+      (attitude->mode != 2U))
+  {
+    return;
+  }
+  if (heading_log_count < TELEMETRY_HLOG_CAPACITY)
+  {
+    index = (uint16_t)((heading_log_start + heading_log_count) %
+                       TELEMETRY_HLOG_CAPACITY);
+    ++heading_log_count;
+  }
+  else
+  {
+    index = heading_log_start;
+    heading_log_start = (uint16_t)((heading_log_start + 1U) %
+                                   TELEMETRY_HLOG_CAPACITY);
+    heading_log_overflow = 1U;
+  }
+  record = &heading_log[index];
+  record->sequence = heading_log_sequence++;
+  record->tick = HAL_GetTick();
+  record->target_heading_mdeg = (int32_t)lroundf(attitude->target_deg * 1000.0f);
+  record->actual_heading_mdeg = (int32_t)lroundf(attitude->feedback_deg * 1000.0f);
+  record->heading_error_mdeg = (int32_t)lroundf(attitude->error_deg * 1000.0f);
+  record->target_rate_mdps = (int32_t)lroundf(attitude->target_dps * 1000.0f);
+  record->actual_rate_mdps = (int32_t)lroundf(attitude->feedback_dps * 1000.0f);
+  record->heading_output_mdps = (int32_t)lroundf(attitude->output_dps * 1000.0f);
+  record->rate_output_mrpm = (int32_t)lroundf(attitude->output_rpm * 1000.0f);
+  record->saturated = attitude->saturated;
+  record->forward_rpm = attitude->forward_rpm;
+  record->left_rpm = attitude->left_rpm;
+}
+
+void Telemetry_Hlog_Clear(void)
+{
+  heading_log_start = 0U;
+  heading_log_count = 0U;
+  heading_log_sequence = 0U;
+  heading_log_active = 0U;
+  heading_log_overflow = 0U;
+}
+
+uint8_t Telemetry_Hlog_Start(void)
+{
+  if (heading_log_active != 0U)
+  {
+    return 0U;
+  }
+  heading_log_active = 1U;
+  return 1U;
+}
+
+uint8_t Telemetry_Hlog_Stop(void)
+{
+  heading_log_active = 0U;
+  return 1U;
+}
+
+uint8_t Telemetry_Hlog_IsActive(void)
+{
+  return heading_log_active;
+}
+
+uint16_t Telemetry_Hlog_Count(void)
+{
+  return heading_log_count;
+}
+
+uint8_t Telemetry_Hlog_SendStatus(void)
+{
+  char message[96];
+  int length = snprintf(message, sizeof(message),
+                        "HLOG,STATUS,%u,%u,%u,%u,%lu\r\n",
+                        heading_log_active, heading_log_count,
+                        TELEMETRY_HLOG_CAPACITY, heading_log_overflow,
+                        (unsigned long)heading_log_sequence);
+  if ((length <= 0) || ((size_t)length >= sizeof(message)))
+  {
+    return 0U;
+  }
+  return SerialDma_Write(message);
+}
+
+uint8_t Telemetry_Hlog_SendRead(uint32_t offset, uint32_t count)
+{
+  static char message[224];
+  uint32_t index;
+  uint32_t available;
+  uint32_t actual_count;
+  int length;
+  TelemetryHeadingLogRecord record;
+
+  if (offset >= heading_log_count)
+  {
+    actual_count = 0U;
+  }
+  else
+  {
+    available = (uint32_t)heading_log_count - offset;
+    actual_count = (count < available) ? count : available;
+  }
+  for (index = 0U; index < actual_count; ++index)
+  {
+    record = heading_log[(heading_log_start + (uint16_t)offset +
+                          (uint16_t)index) % TELEMETRY_HLOG_CAPACITY];
+    length = snprintf(
+        message, sizeof(message),
+        "HLOG,DATA,%lu,%lu,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%u,%d,%d\r\n",
+        (unsigned long)record.sequence, (unsigned long)record.tick,
+        (long)record.target_heading_mdeg, (long)record.actual_heading_mdeg,
+        (long)record.heading_error_mdeg, (long)record.target_rate_mdps,
+        (long)record.actual_rate_mdps, (long)record.heading_output_mdps,
+        (long)record.rate_output_mrpm, record.saturated,
+        (int)record.forward_rpm, (int)record.left_rpm);
+    if ((length <= 0) || ((size_t)length >= sizeof(message)) ||
+        (SerialDma_Write(message) == 0U))
+    {
+      return 0U;
+    }
+  }
+  length = snprintf(message, sizeof(message),
+                    "HLOG,END,%lu,%lu,%u\r\n",
+                    (unsigned long)offset, (unsigned long)actual_count,
+                    heading_log_count);
+  if ((length <= 0) || ((size_t)length >= sizeof(message)))
+  {
+    return 0U;
+  }
+  return SerialDma_Write(message);
 }
 
 uint8_t Telemetry_IsPeriodic(void)

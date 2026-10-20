@@ -1,0 +1,101 @@
+{
+  "model": {
+    "sample_period_s": 0.02,
+    "delay_samples": 1,
+    "delay_s": 0.02,
+    "pole": 0.942501124723352,
+    "rate_gain": 0.7659597231300171,
+    "tau_s": 0.33773419953327083,
+    "rmse_dps": 0.44732617984419637,
+    "samples": 750
+  },
+  "current_gains": [
+    6.0,
+    1.25
+  ],
+  "candidates": [
+    {
+      "kp": 7.2,
+      "kd": 1.5,
+      "score": 6.845830220569141,
+      "iae_deg_s": 26.157272410238196,
+      "overshoot_deg": 0.32543059439933586,
+      "steady_error_deg": 4.376484204421256,
+      "saturation_fraction": 0.07466666666666667
+    },
+    {
+      "kp": 6.0,
+      "kd": 1.5,
+      "score": 6.90712541818908,
+      "iae_deg_s": 28.738399107863028,
+      "overshoot_deg": 0.06542249461759297,
+      "steady_error_deg": 4.809720488429693,
+      "saturation_fraction": 0.050666666666666665
+    },
+    {
+      "kp": 6.0,
+      "kd": 1.25,
+      "score": 7.227524029723303,
+      "iae_deg_s": 27.5009298849035,
+      "overshoot_deg": 0.3590755183502381,
+      "steady_error_deg": 4.62264433402926,
+      "saturation_fraction": 0.05333333333333334
+    },
+    {
+      "kp": 4.8,
+      "kd": 1.25,
+      "score": 7.508838139989312,
+      "iae_deg_s": 32.10992838230206,
+      "overshoot_deg": 0.0,
+      "steady_error_deg": 5.368176247835842,
+      "saturation_fraction": 0.0
+    },
+    {
+      "kp": 7.2,
+      "kd": 1.25,
+      "score": 7.734944464151953,
+      "iae_deg_s": 26.00257303729203,
+      "overshoot_deg": 0.7891565486520733,
+      "steady_error_deg": 4.3377931643616705,
+      "saturation_fraction": 0.08533333333333333
+    },
+    {
+      "kp": 4.8,
+      "kd": 1.0,
+      "score": 7.811365983954211,
+      "iae_deg_s": 30.235948541770906,
+      "overshoot_deg": 0.34426195203860743,
+      "steady_error_deg": 5.107112177092269,
+      "saturation_fraction": 0.0
+    },
+    {
+      "kp": 4.8,
+      "kd": 1.5,
+      "score": 7.973421051990082,
+      "iae_deg_s": 34.44059196825168,
+      "overshoot_deg": 0.0,
+      "steady_error_deg": 5.67738158743997,
+      "saturation_fraction": 0.0
+    },
+    {
+      "kp": 6.0,
+      "kd": 1.0,
+      "score": 8.219280325156697,
+      "iae_deg_s": 27.283692826582737,
+      "overshoot_deg": 0.8803979991606923,
+      "steady_error_deg": 4.586238138396465,
+      "saturation_fraction": 0.05333333333333334
+    },
+    {
+      "kp": 7.2,
+      "kd": 1.0,
+      "score": 9.08053615095093,
+      "iae_deg_s": 26.43273038609018,
+      "overshoot_deg": 1.4274701559212417,
+      "steady_error_deg": 4.372747146702435,
+      "saturation_fraction": 0.09066666666666667
+    }
+  ],
+  "writeback": false,
+  "validation_required": true
+}

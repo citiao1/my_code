@@ -1,0 +1,105 @@
+{
+  "loop": "angular_velocity",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "none",
+  "telemetry_period_s": 0.2,
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 200
+  },
+  "baseline": 0,
+  "target": 15.0,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        0.15,
+        2.5
+      ],
+      "metrics": {
+        "normalized_iae": 0.1016149425287356,
+        "overshoot": 0.07333333333333347,
+        "steady_error": 0.007780555555555547,
+        "settling_s": 5.0,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.2118288314176245
+      },
+      "next_gains": [
+        0.1725,
+        2.5
+      ],
+      "csv": "pid-tuning-adapter\\runs\\angular-velocity-20261019-r10\\round-01.csv"
+    },
+    {
+      "round": 2,
+      "gains": [
+        0.1725,
+        2.5
+      ],
+      "metrics": {
+        "normalized_iae": 0.101764367816092,
+        "overshoot": 0.1568666666666665,
+        "steady_error": 0.02353055555555555,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.32669492337164735
+      },
+      "next_gains": [
+        0.138,
+        2.125
+      ],
+      "csv": "pid-tuning-adapter\\runs\\angular-velocity-20261019-r10\\round-02.csv"
+    },
+    {
+      "round": 3,
+      "gains": [
+        0.138,
+        2.125
+      ],
+      "metrics": {
+        "normalized_iae": 0.11592959770114943,
+        "overshoot": 0.07106666666666661,
+        "steady_error": 0.022083333333333326,
+        "settling_s": 5.4,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.2665129310344826
+      },
+      "next_gains": [
+        0.1656,
+        2.5
+      ],
+      "csv": "pid-tuning-adapter\\runs\\angular-velocity-20261019-r10\\round-03.csv"
+    },
+    {
+      "round": 4,
+      "gains": [
+        0.1656,
+        2.5
+      ],
+      "metrics": {
+        "normalized_iae": 0.10161219348659002,
+        "overshoot": 0.08439999999999981,
+        "steady_error": 0.018177777777777758,
+        "settling_s": 5.199999999999999,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.2843899712643676
+      },
+      "next_gains": [
+        0.1725,
+        2.5
+      ],
+      "csv": "pid-tuning-adapter\\runs\\angular-velocity-20261019-r10\\round-04.csv"
+    }
+  ],
+  "best_gains": [
+    0.15,
+    2.5
+  ],
+  "best_score": 0.2118288314176245
+}

@@ -20,13 +20,17 @@ BRIDGE_GREETING = "BRIDGE,BM50_ACK_R3"
 FIRMWARE_VERSIONS = (
     "VER,VGT6_BM50_SPEED_FIXED_R5",
     "VER,VGT6_BM50_SPEED_TUNABLE_R6",
-    "VER,VGT6_BM50_ATTITUDE_R7",
+    "VER,VGT6_BM50_ATTITUDE_R10",
 )
 FIRMWARE_VERSION = FIRMWARE_VERSIONS[-1]
+ATTITUDE_CAPS = "CAPS,ATTITUDE_R10,20,10,200,60,60,80,SPEED_TUNABLE,HLOG"
 BRIDGE_URL = "ws://127.0.0.1:8766"
 REQUEST_TIMEOUT_SECONDS = 5.0
 MOTOR_INDEX = {"A": 0, "B": 1, "C": 2, "D": 3}
 LOOP_CHOICES = ("wheel_speed", "angular_velocity", "direction")
+WHEEL_DIAMETER_M = 0.127
+ENCODER_COUNTS_PER_REV = 380
+METERS_PER_ENCODER_COUNT = math.pi * WHEEL_DIAMETER_M / ENCODER_COUNTS_PER_REV
 
 
 class BridgeClient:
@@ -97,7 +101,7 @@ class BridgeClient:
             if version == FIRMWARE_VERSIONS[-1]
             else [1.2, 0.2, 0.0] * 4
         )
-        if self.require_fixed_gains and not all(
+        if self.require_fixed_gains and version != "VER,VGT6_BM50_ATTITUDE_R10" and not all(
             math.isclose(value, expected, rel_tol=0.0, abs_tol=0.0001)
             for value, expected in zip(values, expected_gains)
         ):
@@ -170,6 +174,84 @@ def telemetry_row(
     return None
 
 
+def encoder_row(message: str):
+    """Return (tick, ready, cpr, totals) for an ENC diagnostic packet."""
+    fields = message.strip().split(",")
+    if len(fields) != 16 or fields[0] != "ENC":
+        return None
+    try:
+        values = [int(x, 0) for x in fields[1:]]
+    except ValueError:
+        return None
+    tick, ready, cpr = values[:3]
+    totals = tuple(values[3:7])
+    if cpr <= 0 or not all(math.isfinite(float(x)) for x in values):
+        return None
+    return tick, ready, cpr, totals
+
+
+def hlog_row(message: str):
+    """Parse one RAM-resident direction-loop HLOG record."""
+    fields = message.strip().split(",")
+    if len(fields) != 14 or fields[:2] != ["HLOG", "DATA"]:
+        return None
+    try:
+        values = [int(value, 0) for value in fields[2:]]
+    except ValueError:
+        return None
+    if values[0] < 0 or values[1] < 0 or values[9] not in (0, 1):
+        return None
+    return {
+        "sequence": values[0],
+        "tick": values[1],
+        "target_heading_deg": values[2] / 1000.0,
+        "actual_heading_deg": values[3] / 1000.0,
+        "heading_error_deg": values[4] / 1000.0,
+        "target_rate_dps": values[5] / 1000.0,
+        "actual_rate_dps": values[6] / 1000.0,
+        "heading_output_dps": values[7] / 1000.0,
+        "rate_output_rpm": values[8] / 1000.0,
+        "saturated": bool(values[9]),
+        "forward_rpm": values[10],
+        "left_rpm": values[11],
+    }
+
+
+def distance_from_encoder(
+    totals: tuple[int, int, int, int],
+    origin: tuple[int, int, int, int],
+    *,
+    meters_per_count: float = METERS_PER_ENCODER_COUNT,
+) -> float:
+    """Estimate forward distance from the signed mean of four wheel totals."""
+    if len(totals) != 4 or len(origin) != 4 or meters_per_count <= 0:
+        raise ValueError("invalid encoder distance inputs")
+    displacement = sum(float(now - start)
+                      for now, start in zip(totals, origin)) / 4.0
+    return abs(displacement) * meters_per_count
+
+
+def speed_drive_row(message: str, first_tick: int | None = None):
+    """Convert a TEL packet to vehicle forward RPM/PWM averages."""
+    fields = message.strip().split(",")
+    if len(fields) != 27 or fields[0] != "TEL":
+        return None
+    try:
+        values = [int(x, 0) for x in fields[1:]]
+    except ValueError:
+        return None
+    if values[2] != 1:
+        return None
+    tick = values[0]
+    if first_tick is None:
+        first_tick = tick
+    time_s = ((tick - first_tick) & 0xFFFFFFFF) / 1000.0
+    actual = sum(values[11:15]) / 40.0
+    output = sum(values[7:11]) / 4.0
+    target = sum(values[3:7]) / 4.0
+    return (time_s, target, actual, output), first_tick
+
+
 async def capture(
     motor: str | None,
     output: Path,
@@ -208,7 +290,7 @@ async def capture(
             raise RuntimeError("disable existing telemetry before passive capture")
         if loop != "wheel_speed":
             caps = await client.command("CAPS")
-            if caps != "CAPS,ATTITUDE_R7,20,10,200,60,60,80,SPEED_FIXED":
+            if caps != ATTITUDE_CAPS:
                 raise RuntimeError("unsupported attitude capability")
         await client.command("TEL,1" if loop == "wheel_speed" else "ATEL,1")
         client.telemetry_started = True

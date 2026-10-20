@@ -1,7 +1,7 @@
 const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
-const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R7';
-const MAX_TARGET_RPM = 200;
+const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R16';
+const MAX_TARGET_RPM = 160;
 
 function normalizeRemoteTarget(value) {
   if (!value) return '';
@@ -49,6 +49,21 @@ const ui = {
   stack: document.querySelector('#stackStatus'),
   log: document.querySelector('#commandLog'),
   query: document.querySelector('#queryButton'),
+  hlogStatus: document.querySelector('#hlogStatus'),
+  hlogClear: document.querySelector('#hlogClearButton'),
+  hlogStart: document.querySelector('#hlogStartButton'),
+  hlogStop: document.querySelector('#hlogStopButton'),
+  hlogRead: document.querySelector('#hlogReadButton'),
+  squareTest: document.querySelector('#squareTestButton'),
+  squareStatus: document.querySelector('#squareTestStatus'),
+  translateTest: document.querySelector('#translateTestButton'),
+  turnTest: document.querySelector('#quarterTurnButton'),
+  testDownload: document.querySelector('#chassisCsvButton'),
+  testStatus: document.querySelector('#chassisTestStatus'),
+  testStop: document.querySelector('#chassisStopButton'),
+  ps2Status: document.querySelector('#ps2Status'),
+  ps2Query: document.querySelector('#ps2QueryButton'),
+  ps2Raw: document.querySelector('#ps2RawStatus'),
 };
 
 let socket;
@@ -63,13 +78,20 @@ let operationSerial = 0;
 let requestSerial = 0;
 let ownsAngleMotion = false;
 let keepPending = false;
+let chassisTestActive = false;
+let chassisTestRows = [];
+let chassisTestSummary = '';
+let motionEpoch = 0;
 const chartSamples = [];
 const pending = new Map();
 const logLines = [];
 const firmware = {
   speedEnabled: false, telemetryEnabled: false,
   receivedAt: 0, expectedAt: 0, timeoutReported: false,
+  hlogSupported: false,
+  hlog: { active: false, count: 0, capacity: 0, overflow: 0, sequence: 0, lastBatch: 0 },
 };
+const hlogRows = [];
 
 function setEvent(text) { ui.event.textContent = text; }
 function logCommand(text) {
@@ -90,14 +112,31 @@ function setBadge(state, text) {
 function updateUi() {
   ui.connect.textContent = isOpen() ? '断开' : (connecting ? '连接中' : '连接');
   ui.connect.disabled = connecting;
-  const disabled = !connected() || busy || !firmwareCompatible || !stackHealthy;
+  /*
+   * Commands are serialized by runAction(), but controls stay visually
+   * stable while a request is in flight.  Disabling the whole panel here
+   * made every button flash because the stylesheet lowers disabled opacity.
+   */
+  const disabled = !connected() || !firmwareCompatible || !stackHealthy;
   [ui.arm, ui.speed, ui.limitButton, ui.telemetry]
     .forEach((element) => { element.disabled = disabled; });
-  ui.query.disabled = !connected() || busy;
+  ui.query.disabled = !connected();
+  ui.ps2Query.disabled = !connected();
   ui.stop.disabled = !connected();
-  document.querySelectorAll('.pid-send').forEach((button) => { button.disabled = disabled; });
+  ui.testStop.disabled = !connected();
   document.querySelectorAll('.angle-command,.drive-command').forEach((button) => { button.disabled = disabled; });
+  document.querySelectorAll('.pid-send').forEach((button) => { button.disabled = disabled; });
+  document.querySelector('#speedPidReadButton').disabled = disabled;
+  document.querySelector('#speedPidWriteAllButton').disabled = disabled;
+  [ui.hlogClear, ui.hlogStart, ui.hlogRead].forEach((element) => {
+    element.disabled = disabled || !firmware.hlogSupported;
+  });
+  ui.hlogStop.disabled = disabled || !firmware.hlogSupported;
   document.querySelector('#padStop').disabled = !connected();
+  [ui.squareTest, ui.translateTest, ui.turnTest].forEach((button) => {
+    button.disabled = disabled || chassisTestActive;
+  });
+  ui.testDownload.disabled = chassisTestActive || !chassisTestRows.length;
   ui.speed.textContent = firmware.speedEnabled ? '关闭速度环' : '启用速度环';
   if (connected()) setBadge('online', '蓝牙在线');
   else if (isOpen()) setBadge('waiting', '等待蓝牙');
@@ -105,12 +144,19 @@ function updateUi() {
 }
 
 function resetLinkState() {
+  const interruptedTest = chassisTestActive;
+  chassisTestActive = false;
+  motionEpoch += 1;
+  document.querySelector('#testSafety').checked = false;
   ownsAngleMotion = false;
   chartSamples.length = 0;
   operationSerial += 1;
   busy = false;
   receiveBuffer = '';
   firmware.speedEnabled = false;
+  firmware.hlogSupported = false;
+  firmware.hlog = { active: false, count: 0, capacity: 0, overflow: 0, sequence: 0, lastBatch: 0 };
+  hlogRows.length = 0;
   firmwareCompatible = false;
   stackHealthy = false;
   setTelemetry(false);
@@ -119,7 +165,12 @@ function resetLinkState() {
   ui.link.textContent = '未查询';
   ui.uart.textContent = '未查询';
   ui.stack.textContent = '未查询';
+  ui.ps2Status.textContent = '未查询';
+  ui.ps2Raw.textContent = '等待原始帧';
+  ui.squareStatus.textContent = interruptedTest ? '连接中断，测试已取消；不会自动恢复' : '未运行';
+  if (interruptedTest) ui.testStatus.textContent = ui.squareStatus.textContent;
   ui.status.textContent = '等待状态查询';
+  ui.hlogStatus.textContent = '未查询';
   for (const request of pending.values()) {
     clearTimeout(request.timer);
     request.reject(new Error('连接已断开'));
@@ -136,7 +187,8 @@ function setTelemetry(enabled) {
 
 function writeCommand(command) {
   if (!connected()) return Promise.reject(new Error('蓝牙未连接'));
-  const diagnostic = ['VER', 'UART', 'LINK', 'STACK', 'SPEEDSTATUS', 'SPEEDLIMIT', 'PIDGET', 'PING', 'STOP', 'CAPS', 'YAWGET', 'HEADGET', 'ANGLESTATUS'].includes(command);
+  const diagnostic = ['VER', 'UART', 'LINK', 'STACK', 'SPEEDSTATUS', 'SPEEDLIMIT', 'PIDGET', 'PING', 'STOP', 'CAPS', 'YAWGET', 'HEADGET', 'ANGLESTATUS', 'PS2STATUS', 'PS2RAW'].includes(command) ||
+    command.startsWith('HLOG,');
   if (!diagnostic && (!firmwareCompatible || !stackHealthy)) {
     return Promise.reject(new Error('固件版本或栈保护检查未通过；请查询状态'));
   }
@@ -296,9 +348,11 @@ function handleLine(line) {
         await send('SPEEDSTATUS');
         await send('PIDGET');
         await send('CAPS');
+        await send('PS2STATUS');
         await send('YAWGET');
         await send('HEADGET');
         await send('ANGLESTATUS');
+        await send('HLOG,STATUS');
         await send('STACK');
         if (!stackHealthy) throw new Error('查询后栈保护异常，已禁用电机控制');
         setEvent('下位机应答正常；遥测由开关或速度环启动控制');
@@ -312,6 +366,82 @@ function handleLine(line) {
     firmwareCompatible = version === REQUIRED_FIRMWARE;
     logCommand(`收到 < ${line}`);
     setEvent(firmwareCompatible ? `固件：${version}` : `固件不兼容：请烧录 ${REQUIRED_FIRMWARE}`);
+    updateUi();
+    return;
+  }
+  if (fields[0] === 'CAPS') {
+    firmware.hlogSupported = fields.includes('HLOG');
+    logCommand(`收到 < ${line}`);
+    if (!firmware.hlogSupported) ui.hlogStatus.textContent = '固件不支持 HLOG';
+    updateUi();
+    return;
+  }
+  if (fields[0] === 'PS2' && fields.length === 12) {
+    const values = fields.slice(1).map(Number);
+    if (values.every(Number.isFinite)) {
+      const connectedState = values[0] === 1;
+      const enabledState = values[1] === 1;
+      ui.ps2Status.textContent =
+        `${connectedState ? '已连接' : '未连接'} · ` +
+        `${enabledState ? '已解锁' : '锁定'} · ${values[8]} RPM · 模式 ${fields[3]} · ` +
+        `左杆 ${values[4]}/${values[5]} · 右杆 ${values[6]}/${values[7]} · 按键 ${fields[4]}`;
+      logCommand(`收到 < ${line}`);
+    } else {
+      setEvent(`PS2 状态格式错误：${line}`);
+    }
+    updateUi();
+    return;
+  }
+  if (fields[0] === 'PS2RAW' && fields.length === 12) {
+    const bytes = fields.slice(1, 10);
+    if (!bytes.every(x => /^[0-9A-F]{2}$/i.test(x))) return;
+    let hint = fields[10] === '1' ? '模拟帧有效' : '等待有效模拟帧';
+    if (bytes.every(x => x === 'FF')) hint = 'DAT 全高：检查供电、DAT 接线、片选和手柄配对';
+    else if (bytes.every(x => x === '00')) hint = 'DAT 全低：检查接线或短路';
+    else if (bytes[1] === '41') hint = '数字模式，固件正在自动切换模拟模式';
+    ui.ps2Raw.textContent = `${bytes.join(' ')} · ${hint} · 配置次数 ${fields[11]}`;
+    logCommand(`收到 < ${line}`);
+    return;
+  }
+  if (fields[0] === 'HLOG' && fields[1] === 'STATUS' && fields.length === 7) {
+    const values = fields.slice(2).map(Number);
+    if (values.every(Number.isFinite) && values[0] >= 0 && values[0] <= 1 &&
+        values[1] >= 0 && values[2] >= 1 && values[3] >= 0 && values[4] >= 0) {
+      firmware.hlog.active = values[0] === 1;
+      firmware.hlog.count = values[1];
+      firmware.hlog.capacity = values[2];
+      firmware.hlog.overflow = values[3];
+      firmware.hlog.sequence = values[4];
+      ui.hlogStatus.textContent =
+        `${firmware.hlog.active ? '记录中' : '已停止'} · ${values[1]}/${values[2]} 条 · 溢出 ${values[3]}`;
+      logCommand(`收到 < ${line}`);
+    } else {
+      setEvent(`HLOG 状态格式错误：${line}`);
+    }
+    updateUi();
+    return;
+  }
+  if (fields[0] === 'HLOG' && fields[1] === 'DATA' && fields.length === 14) {
+    const values = fields.slice(2).map(Number);
+    if (values.every(Number.isFinite)) hlogRows.push(values);
+    else setEvent(`HLOG 数据格式错误：${line}`);
+    return;
+  }
+  if (fields[0] === 'HLOG' && fields[1] === 'END' && fields.length === 5) {
+    const values = fields.slice(2).map(Number);
+    if (values.every(Number.isFinite)) {
+      firmware.hlog.lastBatch = values[1];
+      firmware.hlog.count = values[2];
+      logCommand(`收到 < ${line}`);
+    } else setEvent(`HLOG 结束格式错误：${line}`);
+    return;
+  }
+  if (fields[0] === 'HLOG' && ['CLEAR', 'START', 'STOP'].includes(fields[1])) {
+    logCommand(`收到 < ${line}`);
+    if (fields[1] === 'CLEAR' && fields[2] === 'OK') hlogRows.length = 0;
+    if (fields[1] === 'START') firmware.hlog.active = true;
+    if (fields[1] === 'STOP') firmware.hlog.active = false;
+    setEvent(line);
     updateUi();
     return;
   }
@@ -355,13 +485,8 @@ function handleLine(line) {
     }
     return;
   }
-  if (fields[0] === 'PID' && fields.length === 13) {
-    document.querySelectorAll('.pid-row[data-motor]').forEach((row, index) => {
-      ['.kp-input', '.ki-input', '.kd-input'].forEach((selector, offset) => {
-        const input = row.querySelector(selector);
-        if (document.activeElement !== input) input.value = fields[1 + index * 3 + offset];
-      });
-    });
+  if (fields[0] === 'PID') {
+    if (!applySpeedPidReadback(line)) setEvent(`PIDGET 格式错误：${line}`);
     return;
   }
   if ((fields[0] === 'YAWPID' || fields[0] === 'HEADPID') && fields.length === 6) {
@@ -391,10 +516,11 @@ function handleLine(line) {
     return;
   }
   if (fields[0] === 'ACK' && fields[1] === 'SPEED') {
-    // ACK,SPEED,LIMIT is not an enable/disable response.
+    // ACK,SPEED,LIMIT is not an enable/disable response.  SPEED,0 stops
+    // the loop but deliberately preserves the selected telemetry stream.
     if (fields[2] === '0' || fields[2] === '1') {
       firmware.speedEnabled = fields[2] === '1';
-      setTelemetry(firmware.speedEnabled);
+      if (fields[2] === '1') setTelemetry(true);
     }
     logCommand(`收到 < ${line}`);
     setEvent(line);
@@ -404,7 +530,6 @@ function handleLine(line) {
   if (fields[0] === 'ACK' && fields[1] === 'STOP') {
     ownsAngleMotion = false;
     firmware.speedEnabled = false;
-    setTelemetry(false);
     logCommand(`收到 < ${line}`);
     setEvent(line);
     updateUi();
@@ -424,6 +549,32 @@ function handleLine(line) {
     logCommand(`收到 < ${line}`);
     setEvent(line);
   }
+}
+
+function hlogCsv(rows) {
+  const header = [
+    'sequence', 'tick', 'target_heading_mdeg', 'actual_heading_mdeg',
+    'heading_error_mdeg', 'target_rate_mdps', 'actual_rate_mdps',
+    'heading_output_mdps', 'rate_output_mrpm', 'saturated',
+    'forward_rpm', 'left_rpm',
+  ];
+  const escape = (value) => {
+    const text = String(value);
+    return /[,"\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+  };
+  return [header, ...rows].map((row) => row.map(escape).join(',')).join('\r\n') + '\r\n';
+}
+
+function downloadHlogCsv(rows) {
+  const csv = hlogCsv(rows);
+  const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = `direction-hlog-${new Date().toISOString().replaceAll(':', '-')}.csv`;
+  anchor.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+  return csv;
 }
 
 function consumeText(text) {
@@ -451,13 +602,13 @@ async function connectBridge() {
       try { handleResult(JSON.parse(text)); } catch (_) { setEvent('桥接返回格式错误'); }
     } else consumeText(text);
   });
-  candidate.addEventListener('close', () => {
+  candidate.addEventListener('close', (event) => {
     if (socket !== candidate) return;
     hardwareConnected = false;
     bridgeReady = false;
     resetLinkState();
     socket = undefined;
-    setEvent('蓝牙桥接已断开');
+    setEvent(`本地 WebSocket 已断开，代码 ${event.code}：${event.reason || '无关闭说明'}；测试不会自动恢复`);
     updateUi();
   });
   candidate.addEventListener('error', () => setEvent('无法连接本地蓝牙桥接'));
@@ -489,13 +640,106 @@ function disconnectBridge() {
 }
 
 ui.connect.addEventListener('click', () => (isOpen() ? disconnectBridge() : void connectBridge()));
+ui.ps2Query.addEventListener('click', () => runAction(async send => {
+  await send('PS2STATUS');
+  await send('PS2RAW');
+  await send('ANGLESTATUS');
+}));
 ui.arm.addEventListener('click', () => { ownsAngleMotion=false; void runAction((send) => send('ARM')); });
 function stopMotion() {
+  motionEpoch += 1;
+  if (chassisTestActive) {
+    chassisTestActive = false;
+    operationSerial += 1;
+    ui.squareStatus.textContent = '已停止';
+    ui.testStatus.textContent = '已停止；可下载已采集数据';
+  }
+  driveVector = { forward: 0, left: 0, rotate: 0 };
+  driveVectorSerial += 1;
+  driveKeys.clear();
+  driveActive = false;
   ownsAngleMotion=false;
   void runAction((send) => send('STOP'), true);
 }
 ui.stop.addEventListener('click', stopMotion);
+ui.testStop.addEventListener('click', stopMotion);
 document.querySelector('#padStop').addEventListener('click', stopMotion);
+
+function waitMilliseconds(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function runChassisTest(kind) {
+  return runAction(async (send) => {
+    if (chassisTestActive) return;
+    if (!firmware.speedEnabled) throw new Error('请先 ARM 并启用速度环');
+    if (driveActive || driveFlushRunning || driveKeys.size)
+      throw new Error('请先松开方向键，等待手动运动命令结束，再启用速度环开始测试');
+    if (!document.querySelector('#testSafety').checked)
+      throw new Error('请先确认测试区域、下地状态和急停可用');
+    const config = { kind, confirmed: true,
+      rpm: numeric('#testRpm', 60, true),
+      distance: numeric('#translateDistance', 100, true) / 100,
+      angle: numeric('#translateAngle', 180),
+      headingOffset: numeric('#translateHeading', 45) };
+    const epoch = operationSerial;
+    chassisTestActive = true;
+    motionEpoch += 1;
+    ownsAngleMotion = false; // The test owns serialized KEEP + feedback.
+    driveActive = false;
+    driveVector = { forward: 0, left: 0, rotate: 0 };
+    driveKeys.clear();
+    chassisTestRows = [];
+    chassisTestSummary = '';
+    updateUi();
+    try {
+      const result = await ChassisTest.run({
+        send, now: () => Date.now(), sleep: waitMilliseconds,
+        check: () => {
+          if (!chassisTestActive || epoch !== operationSerial || !connected())
+            throw new Error('测试已取消或连接中断');
+        },
+        progress: (text) => {
+          ui.testStatus.textContent = text;
+          if (kind === 'square') ui.squareStatus.textContent = text;
+        },
+        record: (row) => chassisTestRows.push({ test: kind, ...row }),
+      }, config);
+      const maxError = kind === 'turn' ? result.maxHeadingError : result.movingMaxError;
+      const rmsError = kind === 'turn' ? result.rmsHeadingError : result.movingRmsError;
+      chassisTestSummary = `流程完成（非实地验收）· ${kind === 'turn' ? '转向' : '移动中'}航向最大/RMS ${maxError.toFixed(1)}/${rmsError.toFixed(1)}° · 估计最大横偏 ${(result.maxCrossM * 100).toFixed(1)} cm · 估计终点偏移 ${(result.residualM * 100).toFixed(1)} cm`;
+      ui.testStatus.textContent = chassisTestSummary;
+      if (kind === 'square') ui.squareStatus.textContent = chassisTestSummary;
+      setEvent(chassisTestSummary);
+    } catch (error) {
+      if (epoch === operationSerial) {
+        ui.testStatus.textContent = `测试中止：${error.message}`;
+        if (kind === 'square') ui.squareStatus.textContent = ui.testStatus.textContent;
+      }
+      throw error;
+    } finally {
+      if (epoch === operationSerial) {
+        ownsAngleMotion = false;
+        chassisTestActive = false;
+        updateUi();
+      }
+    }
+  });
+}
+ui.squareTest.addEventListener('click', () => runChassisTest('square'));
+ui.translateTest.addEventListener('click', () => runChassisTest('translation'));
+ui.turnTest.addEventListener('click', () => runChassisTest('turn'));
+ui.testDownload.addEventListener('click', () => {
+  if (!chassisTestRows.length || chassisTestActive) return;
+  const keys = Object.keys(chassisTestRows[0]);
+  const rows = chassisTestRows.map((row) => keys.map((key) => row[key]));
+  const csv = [keys, ...rows].map((row) => row.join(',')).join('\r\n') + '\r\n';
+  const url = URL.createObjectURL(new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8'}));
+  const anchor = document.createElement('a');
+  anchor.href = url; anchor.download = 'chassis-test.csv'; anchor.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+});
+
 ui.limitButton.addEventListener('click', () => {
   const limit = Math.round(Math.max(1, Math.min(MAX_TARGET_RPM, Number(ui.limit.value) || MAX_TARGET_RPM)));
   ui.limit.value = limit;
@@ -512,48 +756,74 @@ ui.query.addEventListener('click', () => void runAction(async (send) => {
   await send('SPEEDLIMIT');
   await send('SPEEDSTATUS');
   await send('PIDGET');
+  await send('CAPS');
+  await send('PS2STATUS');
   await send('YAWGET');
   await send('HEADGET');
   await send('ANGLESTATUS');
+  await send('HLOG,STATUS');
   await send('STACK');
   if (!stackHealthy) throw new Error('查询后栈保护异常，已禁用电机控制');
 }));
-document.querySelectorAll('.pid-row[data-motor]').forEach((row) => {
-  row.querySelector('.pid-send').addEventListener('click', () => {
-    const motor = row.dataset.motor;
-    const value = (selector) => Number(row.querySelector(selector).value);
-    const target = value('.target-input');
-    if (!Number.isInteger(target) ||
-        Math.abs(target) > Math.min(MAX_TARGET_RPM, Number(ui.limit.value))) {
-      setEvent('目标必须为上限范围内的整数 RPM，最高 200 RPM；四轮速度 PID 已固定');
-      return;
-    }
-    void runAction(async (send) => {
-      await send(`SPD,${motor},${target}`);
+const speedPidRows = [...document.querySelectorAll('.pid-row[data-motor]')];
+const speedPidReadback = document.querySelector('#speedPidReadback');
+function speedPidValues(row) {
+  const values = ['.kp-input', '.ki-input', '.kd-input']
+    .map((selector) => {
+      const value = Number(row.querySelector(selector).value);
+      if (!Number.isFinite(value) || value < 0 || value > 100)
+        throw new Error(`输入超出范围：${row.dataset.motor} 轮 ${selector}`);
+      return value;
     });
-  });
-});
-async function restoreConfiguredTargets(send) {
-  for (const row of document.querySelectorAll('.pid-row[data-motor]')) {
-    const motor = row.dataset.motor;
-    const target = Number(row.querySelector('.target-input').value) || 0;
-    await send(`SPD,${motor},${target}`);
-  }
+  return values;
 }
+function applySpeedPidReadback(reply) {
+  const fields = Array.isArray(reply) ? reply : String(reply).split(',');
+  if (fields.length !== 13 || fields[0] !== 'PID') return false;
+  const values = fields.slice(1).map(Number);
+  if (values.some((value) => !Number.isFinite(value) || value < 0 || value > 100)) return false;
+  speedPidRows.forEach((row, index) => {
+    const rowValues = values.slice(index * 3, index * 3 + 3);
+    ['.kp-input', '.ki-input', '.kd-input'].forEach((selector, valueIndex) => {
+      const input = row.querySelector(selector);
+      if (document.activeElement !== input) input.value = rowValues[valueIndex].toFixed(4);
+    });
+    row.querySelector('.pid-state').textContent = '已回读';
+  });
+  speedPidReadback.textContent = '已回读四轮参数';
+  logCommand(`收到 < ${fields.join(',')}`);
+  return true;
+}
+async function writeSpeedPidRow(row, send) {
+  const values = speedPidValues(row);
+  const encoded = values.map((value) => value.toFixed(4));
+  await send(`PID,${row.dataset.motor},${encoded.join(',')}`);
+  const reply = await send('PIDGET');
+  if (!applySpeedPidReadback(reply)) throw new Error('速度环 PID 回读格式错误');
+  row.querySelector('.pid-state').textContent = '已写入并校验';
+}
+document.querySelector('#speedPidReadButton').addEventListener('click', () => runAction(async (send) => {
+  const reply = await send('PIDGET');
+  if (!applySpeedPidReadback(reply)) throw new Error('速度环 PID 回读格式错误');
+}));
+document.querySelector('#speedPidWriteAllButton').addEventListener('click', () => runAction(async (send) => {
+  for (const row of speedPidRows) await writeSpeedPidRow(row, send);
+  setEvent('四轮速度环 PID 已写入并回读校验');
+}));
+speedPidRows.forEach((row) => {
+  row.querySelector('.pid-send').addEventListener('click', () => runAction(async (send) => {
+    await writeSpeedPidRow(row, send);
+    setEvent(`${row.dataset.motor} 轮速度环 PID 已写入并回读校验`);
+  }));
+});
 ui.speed.addEventListener('click', () => {
   ownsAngleMotion=false;
   void runAction(async (send) => {
     if (firmware.speedEnabled) return send('SPEED,0');
-    const targets = [...document.querySelectorAll('.target-input')].map((input) => Number(input.value));
-    if (targets.some((target) => !Number.isInteger(target) ||
-        Math.abs(target) > Math.min(MAX_TARGET_RPM, Number(ui.limit.value)))) {
-      throw new Error('目标必须为上限范围内的整数 RPM，最高 200 RPM');
-    }
     let attempted = false;
     try {
       attempted = true;
       await send('SPEED,1');
-      await restoreConfiguredTargets(send);
     } catch (error) {
       // A lost enable ACK or partial target write must not leave wheels running.
       if (attempted) {
@@ -601,36 +871,153 @@ document.querySelector('#headStartButton').addEventListener('click', () => angle
   await send(`HEAD,${numeric('#headTarget',180)}`);
   ownsAngleMotion=true;
 }));
+ui.hlogClear.addEventListener('click', () => runAction(async (send) => {
+  if (firmware.hlog.active || firmware.speedEnabled || document.querySelector('#angleMode').textContent !== '停止')
+    throw new Error('请先停止运动再清空 HLOG');
+  await send('HLOG,CLEAR');
+  await send('HLOG,STATUS');
+}));
+ui.hlogStart.addEventListener('click', () => runAction(async (send) => {
+  if (firmware.hlog.active) throw new Error('HLOG 已在记录');
+  if (firmware.speedEnabled || document.querySelector('#angleMode').textContent !== '停止')
+    throw new Error('请先停止运动再开始 HLOG');
+  hlogRows.length = 0;
+  await send('HLOG,START');
+  await send('HLOG,STATUS');
+}));
+ui.hlogStop.addEventListener('click', () => runAction(async (send) => {
+  await send('HLOG,STOP');
+  await send('HLOG,STATUS');
+}));
+ui.hlogRead.addEventListener('click', () => runAction(async (send) => {
+  if (firmware.hlog.active || firmware.speedEnabled || document.querySelector('#angleMode').textContent !== '停止')
+    throw new Error('请先停止运动再读取 HLOG');
+  await send('HLOG,STATUS');
+  hlogRows.length = 0;
+  const total = firmware.hlog.count;
+  for (let offset = 0; offset < total; offset += 8) await send(`HLOG,READ,${offset},8`);
+  if (hlogRows.length !== total)
+    throw new Error(`HLOG 读取不完整：${hlogRows.length}/${total}`);
+  downloadHlogCsv(hlogRows);
+  setEvent(`已下载 ${hlogRows.length} 条方向环日志`);
+}));
 for (const [id,command] of [['#yawZeroButton','ZERO'],['#calButton','CAL']])
   document.querySelector(id).addEventListener('click', () => {
     ownsAngleMotion=false; angleAction(send => send(command));
   });
 let drivePressSerial=0;
+const driveKeys = new Set();
+let driveVector = { forward: 0, left: 0, rotate: 0 };
+let driveVectorSerial = 0;
+let driveFlushRunning = false;
+let driveActive = false;
+
+function sendDriveVector(forward, left, rotate) {
+  if (chassisTestActive) return;
+  driveVector = { forward, left, rotate };
+  driveVectorSerial += 1;
+  if (connected()) void flushDriveVector();
+}
+
+async function flushDriveVector() {
+  if (driveFlushRunning || !connected()) return;
+  driveFlushRunning = true;
+  try {
+    while (connected()) {
+      const serial = driveVectorSerial;
+      const vector = { ...driveVector };
+      if (vector.forward === 0 && vector.left === 0 && vector.rotate === 0) {
+        if (driveActive) {
+          await writeCommand('STOP');
+          driveActive = false;
+          ownsAngleMotion = false;
+        }
+        break;
+      }
+      const speed = Math.round(numeric('#driveSpeed', 100, true));
+      const turnRate = Math.round(numeric('#driveTurnRate', 80, true));
+      await writeCommand(
+        `MOVE,${speed * vector.forward},${speed * vector.left},${turnRate * vector.rotate}`,
+      );
+      driveActive = true;
+      ownsAngleMotion = true;
+      if (serial === driveVectorSerial) break;
+    }
+  } catch (error) {
+    driveActive = false;
+    ownsAngleMotion = false;
+    setEvent(error.message);
+  } finally {
+    driveFlushRunning = false;
+  }
+}
+
+function releaseDrive() {
+  drivePressSerial++;
+  driveKeys.clear();
+  sendDriveVector(0, 0, 0);
+}
+
+function sendDriveKeys() {
+  const forward = (driveKeys.has('w') ? 1 : 0) +
+                  (driveKeys.has('s') ? -1 : 0);
+  /* A is vehicle-left and D is vehicle-right in the shared chassis frame. */
+  const left = (driveKeys.has('a') ? 1 : 0) +
+               (driveKeys.has('d') ? -1 : 0);
+  const rotate = (driveKeys.has('q') ? 1 : 0) +
+                 (driveKeys.has('e') ? -1 : 0);
+  if (forward === 0 && left === 0 && rotate === 0) {
+    releaseDrive();
+    return;
+  }
+  sendDriveVector(forward, left, rotate);
+}
+
 document.querySelectorAll('.drive-command').forEach(button => {
   button.addEventListener('pointerdown', event => {
     if (button.disabled) return;
-    const press=++drivePressSerial;
     button.setPointerCapture(event.pointerId);
-    angleAction(async send => {
-      const speed=Math.round(numeric('#driveSpeed',100,true));
-      await send(`MOVE,${speed*Number(button.dataset.forward)},${speed*Number(button.dataset.left)},0`);
-      if (press!==drivePressSerial) return send('STOP');
-      ownsAngleMotion=true;
-    });
+    sendDriveVector(Number(button.dataset.forward), Number(button.dataset.left),
+                    Number(button.dataset.rotate));
   });
-  const release = () => { drivePressSerial++; stopMotion(); };
+  const release = () => releaseDrive();
   button.addEventListener('pointerup',release);
   button.addEventListener('pointercancel',release);
   button.addEventListener('lostpointercapture', () => { if (ownsAngleMotion) release(); });
 });
+window.addEventListener('keydown', event => {
+  if (event.ctrlKey || event.altKey || event.metaKey) return;
+  const target = event.target;
+  if (target && ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(target.tagName)) return;
+  const key = event.key.toLowerCase();
+  if (chassisTestActive) return;
+  if (!['w', 'a', 's', 'd', 'q', 'e'].includes(key)) return;
+  event.preventDefault();
+  if (!driveKeys.has(key)) {
+    driveKeys.add(key);
+    sendDriveKeys();
+  }
+});
+window.addEventListener('keyup', event => {
+  const key = event.key.toLowerCase();
+  if (!['w', 'a', 's', 'd', 'q', 'e'].includes(key)) return;
+  event.preventDefault();
+  driveKeys.delete(key);
+  sendDriveKeys();
+});
+window.addEventListener('blur', releaseDrive);
 document.querySelector('#chartLoop').addEventListener('change', () => {
   chartSamples.length=0; drawChart();
 });
 setInterval(async () => {
-  if (!ownsAngleMotion || !connected() || keepPending) return;
+  if (chassisTestActive || !ownsAngleMotion || !connected() || keepPending) return;
+  const epoch = motionEpoch;
   keepPending=true;
   try { await writeCommand('KEEP'); }
-  catch (error) { ownsAngleMotion=false; stopMotion(); setEvent(error.message); }
+  catch (error) {
+    if (epoch !== motionEpoch || chassisTestActive || !ownsAngleMotion) return;
+    ownsAngleMotion=false; stopMotion(); setEvent(`KEEP 故障停车（不主动断开 BLE）：${error.message}`);
+  }
   finally { keepPending=false; }
 },400);
 window.addEventListener('pagehide', () => { socket?.close(); });

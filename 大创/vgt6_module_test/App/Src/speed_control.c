@@ -11,7 +11,7 @@
 #include "stm32f4xx_hal.h"
 
 #define SPEED_CONTROL_PERIOD_MS       10U
-#define SPEED_CONTROL_DEFAULT_LIMIT   SPEED_CONTROL_MAX_TARGET_RPM
+#define SPEED_CONTROL_DEFAULT_LIMIT   160U
 #define SPEED_CONTROL_OUTPUT_LIMIT    60.0f
 #define SPEED_CONTROL_WATCHDOG_MS     300U
 #define SPEED_CONTROL_STOP_EPSILON    0.05f
@@ -21,7 +21,7 @@ static PidController speed_pid[SPEED_CONTROL_CHANNEL_COUNT];
 static float filtered_rpm[SPEED_CONTROL_CHANNEL_COUNT];
 static uint32_t last_drive_tick;
 static uint8_t drive_watchdog_enabled;
-static const float fixed_ki[4] = {0.0991f, 0.0998f, 0.0998f, 0.1008f};
+static const float default_ki[4] = {0.0991f, 0.0998f, 0.0998f, 0.1008f};
 
 static uint8_t SpeedControl_IsValid(MotorChannel channel)
 {
@@ -63,7 +63,7 @@ void SpeedControl_Init(void)
   for (index = 0U; index < SPEED_CONTROL_CHANNEL_COUNT; ++index)
   {
     speed_state.kp[index] = SPEED_CONTROL_DEFAULT_KP;
-    speed_state.ki[index] = fixed_ki[index];
+    speed_state.ki[index] = default_ki[index];
     speed_state.kd[index] = SPEED_CONTROL_DEFAULT_KD;
     Pid_Init(&speed_pid[index], speed_state.kp[index],
              speed_state.ki[index], speed_state.kd[index],
@@ -137,10 +137,10 @@ uint8_t SpeedControl_SetDrive(int16_t forward_rpm,
   }
   Mecanum_CalculateTargets(forward_rpm, left_rpm, rotate_rpm,
                            speed_state.target_limit_rpm, &targets);
-  speed_state.target_rpm[0] = targets.right_rear;
-  speed_state.target_rpm[1] = targets.left_rear;
-  speed_state.target_rpm[2] = targets.right_front;
-  speed_state.target_rpm[3] = targets.left_front;
+  speed_state.target_rpm[0] = targets.motor1_right_front;
+  speed_state.target_rpm[1] = targets.motor2_left_front;
+  speed_state.target_rpm[2] = targets.motor3_left_rear;
+  speed_state.target_rpm[3] = targets.motor4_right_rear;
   last_drive_tick = HAL_GetTick();
   drive_watchdog_enabled = 1U;
   return 1U;
@@ -158,9 +158,13 @@ uint8_t SpeedControl_SetPid(MotorChannel channel, float kp, float ki,
     return 0U;
   }
 
-  return fabsf(kp - SPEED_CONTROL_DEFAULT_KP) < 0.00001f &&
-         fabsf(ki - fixed_ki[(uint32_t)channel]) < 0.00001f &&
-         kd == 0.0f;
+  speed_state.kp[(uint32_t)channel] = kp;
+  speed_state.ki[(uint32_t)channel] = ki;
+  speed_state.kd[(uint32_t)channel] = kd;
+  Pid_SetGains(&speed_pid[(uint32_t)channel], kp, ki, kd);
+  Pid_Reset(&speed_pid[(uint32_t)channel]);
+  speed_state.output_percent[(uint32_t)channel] = 0;
+  return 1U;
 }
 
 uint8_t SpeedControl_SetTargetLimit(uint16_t limit_rpm)

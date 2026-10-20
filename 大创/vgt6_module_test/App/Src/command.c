@@ -10,12 +10,80 @@
 #include "chassis_test.h"
 #include "encoder.h"
 #include "gyro.h"
+#include "ps2.h"
+#include "ps2_control.h"
 #include "serial_dma.h"
 #include "speed_control.h"
 #include "stack_usage.h"
 #include "telemetry.h"
+#include "stm32f4xx_hal.h"
 
 #define COMMAND_SIZE 64U
+
+static uint8_t Command_Hlog(const char *command)
+{
+  unsigned long offset;
+  unsigned long count;
+
+  if (strcmp(command, "HLOG,CLEAR") == 0)
+  {
+    if (AttitudeControl_GetSnapshot().mode != 0U)
+    {
+      SerialDma_Write("ERR,HLOG,MOTION_ACTIVE\r\n");
+    }
+    else
+    {
+      Telemetry_Hlog_Clear();
+      SerialDma_Write("HLOG,CLEAR,OK\r\n");
+    }
+    return 1U;
+  }
+  if (strcmp(command, "HLOG,START") == 0)
+  {
+    if (AttitudeControl_GetSnapshot().mode != 0U)
+    {
+      SerialDma_Write("ERR,HLOG,MOTION_ACTIVE\r\n");
+    }
+    else if (Telemetry_Hlog_Start() == 0U)
+    {
+      SerialDma_Write("ERR,HLOG,ALREADY_ACTIVE\r\n");
+    }
+    else
+    {
+      SerialDma_Write("HLOG,START,OK\r\n");
+    }
+    return 1U;
+  }
+  if (strcmp(command, "HLOG,STOP") == 0)
+  {
+    Telemetry_Hlog_Stop();
+    SerialDma_Write("HLOG,STOP,OK\r\n");
+    return 1U;
+  }
+  if (strcmp(command, "HLOG,STATUS") == 0)
+  {
+    (void)Telemetry_Hlog_SendStatus();
+    return 1U;
+  }
+  if (strncmp(command, "HLOG,READ,", 10U) == 0)
+  {
+    if (AttitudeControl_GetSnapshot().mode != 0U)
+    {
+      SerialDma_Write("ERR,HLOG,MOTION_ACTIVE\r\n");
+    }
+    else if ((sscanf(command + 10U, "%lu,%lu", &offset, &count) != 2) ||
+             (count > TELEMETRY_HLOG_READ_MAX))
+    {
+      SerialDma_Write("ERR,HLOG,USE_READ,OFFSET,COUNT_0_8\r\n");
+    }
+    else
+    {
+      (void)Telemetry_Hlog_SendRead((uint32_t)offset, (uint32_t)count);
+    }
+    return 1U;
+  }
+  return 0U;
+}
 
 static uint8_t Command_Attitude(const char *command)
 {
@@ -25,9 +93,10 @@ static uint8_t Command_Attitude(const char *command)
   char message[128];
   if (!strcmp(command, "CAPS"))
   {
-    SerialDma_Write("CAPS,ATTITUDE_R7,20,10,200,60,60,80,SPEED_FIXED\r\n");
+    SerialDma_Write("CAPS,ATTITUDE_R16,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE\r\n");
     return 1U;
   }
+  if (Command_Hlog(command)) return 1U;
   if (!strcmp(command, "YAWGET") || !strcmp(command, "HEADGET"))
   {
     a = AttitudeControl_GetSnapshot();
@@ -70,6 +139,11 @@ static uint8_t Command_Attitude(const char *command)
   if (!strncmp(command, "YAW,", 4U) || !strncmp(command, "HEAD,", 5U))
   {
     uint8_t rate = command[0] == 'Y';
+    if (Ps2Control_IsActive())
+    {
+      SerialDma_Write("ERR,ANGLE,PS2_ACTIVE\r\n");
+      return 1U;
+    }
     if (sscanf(command + (rate ? 4 : 5), "%f", &target) != 1 ||
         !(rate ? AttitudeControl_SetRate(target, 0, 0) :
                  AttitudeControl_SetHeading(target)))
@@ -81,8 +155,51 @@ static uint8_t Command_Attitude(const char *command)
     }
     return 1U;
   }
+  if (!strncmp(command, "HEADMOVE,", 9U))
+  {
+    if (Ps2Control_IsActive())
+    {
+      SerialDma_Write("ERR,HEADMOVE,PS2_ACTIVE\r\n");
+      return 1U;
+    }
+    if (sscanf(command + 9, "%f,%d,%d", &target, &forward, &left) != 3 ||
+        forward < -200 || forward > 200 || left < -200 || left > 200 ||
+        !AttitudeControl_SetHeadingWithDrive(target, (int16_t)forward,
+                                             (int16_t)left))
+      SerialDma_Write("ERR,HEADMOVE,ARM_IMU_OR_RANGE\r\n");
+    else
+    {
+      Telemetry_SetAttitude(1U);
+      SerialDma_Write("ACK,HEADMOVE\r\n");
+    }
+    return 1U;
+  }
+  if (!strncmp(command, "TRACKMOVE,", 10U))
+  {
+    float field_forward, field_left;
+    int end = 0;
+    if (Ps2Control_IsActive())
+    {
+      SerialDma_Write("ERR,TRACKMOVE,PS2_ACTIVE\r\n");
+      return 1U;
+    }
+    if (sscanf(command + 10, "%f,%f,%f%n", &target,
+               &field_forward, &field_left, &end) != 3 ||
+        command[10 + end] != '\0' ||
+        !AttitudeControl_SetTrackedDrive(target, field_forward, field_left))
+      SerialDma_Write("ERR,TRACKMOVE,ARM_IMU_OR_RANGE\r\n");
+    else
+      SerialDma_Write("ACK,TRACKMOVE\r\n");
+    /* Query/reply only: this command never enables unsolicited streaming. */
+    return 1U;
+  }
   if (!strncmp(command, "MOVE,", 5U))
   {
+    if (Ps2Control_IsActive())
+    {
+      SerialDma_Write("ERR,MOVE,PS2_ACTIVE\r\n");
+      return 1U;
+    }
     if (sscanf(command + 5, "%d,%d,%f", &forward, &left, &target) != 3 ||
         forward < -200 || forward > 200 || left < -200 || left > 200 ||
         !AttitudeControl_SetRate(target, (int16_t)forward, (int16_t)left))
@@ -221,7 +338,34 @@ void Command_HandleLine(const char *line)
   if ((strcmp(command, "VER") == 0) ||
       (strcmp(command, "VERSION") == 0))
   {
-    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R7\r\n");
+    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R16\r\n");
+    return;
+  }
+  if (strcmp(command, "PS2STATUS") == 0)
+  {
+    Ps2Snapshot ps2 = Ps2_GetSnapshot();
+    Ps2ControlSnapshot control = Ps2Control_GetSnapshot();
+    char message[160];
+    (void)snprintf(message, sizeof(message),
+                   "PS2,%u,%u,0x%02X,0x%04X,%u,%u,%u,%u,%u,%u,%u\r\n",
+                   ps2.connected, control.enabled, ps2.mode, ps2.buttons,
+                   ps2.left_x, ps2.left_y, ps2.right_x, ps2.right_y,
+                   control.speed_rpm, ps2.read_failures,
+                   (unsigned int)(HAL_GetTick() - ps2.last_tick));
+    SerialDma_Write(message);
+    return;
+  }
+  if (strcmp(command, "PS2RAW") == 0)
+  {
+    Ps2Snapshot ps2 = Ps2_GetSnapshot();
+    char message[128];
+    (void)snprintf(message, sizeof(message),
+                   "PS2RAW,%02X,%02X,%02X,%02X,%02X,%02X,%02X,%02X,%02X,%u,%u\r\n",
+                   ps2.raw_frame[0], ps2.raw_frame[1], ps2.raw_frame[2],
+                   ps2.raw_frame[3], ps2.raw_frame[4], ps2.raw_frame[5],
+                   ps2.raw_frame[6], ps2.raw_frame[7], ps2.raw_frame[8],
+                   ps2.valid, ps2.config_attempts);
+    SerialDma_Write(message);
     return;
   }
   if (strcmp(command, "LINK") == 0)
@@ -267,19 +411,26 @@ void Command_HandleLine(const char *line)
   }
   if (strcmp(command, "DISARM") == 0)
   {
+    Ps2Control_Stop();
     ChassisTest_Disarm();
     SerialDma_Write("ACK,DISARM\r\n");
     return;
   }
   if (strcmp(command, "STOP") == 0)
   {
+    Ps2Control_Stop();
     ChassisTest_Stop();
-    Telemetry_SetPeriodic(0U);
+    /*
+     * STOP brakes and disables the control loops, but it does not change
+     * the user's telemetry selection. TEL,0 remains the explicit way to
+     * stop a periodic stream.
+     */
     SerialDma_Write("ACK,STOP\r\n");
     return;
   }
   if (strcmp(command, "SPEED,1") == 0)
   {
+    Ps2Control_Stop();
     ChassisTest_Stop();
     if (SpeedControl_Enable(1U) == 0U)
     {
@@ -294,8 +445,8 @@ void Command_HandleLine(const char *line)
   }
   if (strcmp(command, "SPEED,0") == 0)
   {
+    Ps2Control_Stop();
     ChassisTest_Stop();
-    Telemetry_SetPeriodic(0U);
     SerialDma_Write("ACK,SPEED,0\r\n");
     return;
   }
@@ -320,6 +471,11 @@ void Command_HandleLine(const char *line)
     int speed_rpm;
     MotorChannel channel;
 
+    if (Ps2Control_IsActive())
+    {
+      SerialDma_Write("ERR,SPD,PS2_ACTIVE\r\n");
+      return;
+    }
     if (AttitudeControl_GetSnapshot().mode) ChassisTest_Stop();
     if ((sscanf(command, "SPD,%c,%d", &channel_name, &speed_rpm) != 2) ||
         (Command_ParseMotor(channel_name, &channel) == 0U) ||
@@ -339,6 +495,11 @@ void Command_HandleLine(const char *line)
     int left_rpm;
     int rotate_rpm;
 
+    if (Ps2Control_IsActive())
+    {
+      SerialDma_Write("ERR,DRV,PS2_ACTIVE\r\n");
+      return;
+    }
     if (AttitudeControl_GetSnapshot().mode) ChassisTest_Stop();
     if ((sscanf(command, "DRV,%d,%d,%d", &forward_rpm, &left_rpm,
                 &rotate_rpm) != 3) ||
@@ -371,7 +532,7 @@ void Command_HandleLine(const char *line)
     }
     else if (SpeedControl_SetPid(channel, kp, ki, kd) == 0U)
     {
-      SerialDma_Write("ERR,PID,SPEED_FIXED_R7\r\n");
+      SerialDma_Write("ERR,PID,SPEED_TUNABLE_R16_RANGE\r\n");
     }
     else
     {
@@ -554,7 +715,8 @@ void Command_HandleLine(const char *line)
     SerialDma_Write("CMD,JOG,A,+/-1..30,50..5000,ENC,ENCZERO,CPR,380\r\n");
     SerialDma_Write("CMD,BAT,RECOVER,A,STATUS,CAL,ZERO,WHO,PING,HELP\r\n");
     SerialDma_Write("CMD,SPEED,0/1,SPD,A,RPM,DRV,F,L,R,PID,A,KP,KI,KD,PIDGET,SPEEDSTATUS,SPEEDLIMIT,TEL,0/1\r\n");
-    SerialDma_Write("CMD,CAPS,YAW,DPS,HEAD,DEG,MOVE,F,L,DPS,KEEP,YAWPID,KP,KI,HEADPID,KP,KD,YAWGET,HEADGET,ANGLESTATUS,ATEL,0/1\r\n");
+    SerialDma_Write("CMD,CAPS,PS2STATUS,YAW,DPS,HEAD,DEG,HEADMOVE,DEG,F,L,TRACKMOVE,DEG,FX,FY,MOVE,F,L,DPS,KEEP,YAWPID,KP,KI,HEADPID,KP,KD,YAWGET,HEADGET,ANGLESTATUS,ATEL,0/1\r\n");
+    SerialDma_Write("CMD,HLOG,CLEAR,START,STOP,STATUS,READ,OFFSET,COUNT_0_8\r\n");
     return;
   }
 

@@ -510,6 +510,11 @@
               <FileType>1</FileType>
               <FilePath>../App/Src/attitude_control.c</FilePath>
             </File>
+            <File>
+              <FileName>ps2_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/ps2_control.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -574,6 +579,11 @@
               <FileName>battery.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Bsp/Src/battery.c</FilePath>
+            </File>
+            <File>
+              <FileName>ps2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Bsp/Src/ps2.c</FilePath>
             </File>
           </Files>
         </Group>

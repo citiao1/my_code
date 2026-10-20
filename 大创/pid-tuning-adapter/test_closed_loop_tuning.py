@@ -1,6 +1,7 @@
 import math
 import unittest
 from closed_loop_tuning import candidate, score_step, wrap_deg
+from direction_model import fit_direction_model, search_direction_pd
 from pid_tuning import Sample, identify_fopdt
 
 
@@ -47,6 +48,28 @@ class ClosedLoopTests(unittest.TestCase):
             self.assertTrue(0.8<=p<=1.2 and 1.6<=k<=2.4)
         with self.assertRaises(ValueError):
             candidate((1,2),result,"gimbal")
+
+    def test_direction_model_uses_yaw_rate_target_as_plant_input(self):
+        records = []
+        pole = 0.8
+        gain = 0.6
+        rate = 0.0
+        for index in range(80):
+            target = 20.0 if index >= 10 else 0.0
+            rate = pole * rate + (1.0 - pole) * gain * target
+            records.append({
+                "target_rate_dps": target,
+                "actual_rate_dps": rate,
+            })
+        model = fit_direction_model(records, sample_period_s=0.02,
+                                    max_delay_s=0.08)
+        self.assertEqual(model.delay_samples, 0)
+        self.assertAlmostEqual(model.pole, pole, places=2)
+        self.assertAlmostEqual(model.rate_gain, gain, places=2)
+        ranked = search_direction_pd(model, (5.0, 1.25))
+        self.assertEqual(len(ranked), 9)
+        self.assertTrue(all(0.0 <= item.saturation_fraction <= 1.0
+                            for item in ranked))
 
 
 if __name__=="__main__":
