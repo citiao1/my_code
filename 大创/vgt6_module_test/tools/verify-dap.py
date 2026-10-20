@@ -31,9 +31,9 @@ with ConnectHelper.session_with_chosen_probe(
             raise RuntimeError("image contains data outside application flash")
     checks = [0x08000000, 0x08000004, 0x08000008]
     marker = next((addr for addr in range(0x08000000, 0x08100000 - 6)
-                   if bytes(image[addr + i] for i in range(6)) == b"R16 F:"), None)
+                   if bytes(image[addr + i] for i in range(6)) == b"R17 F:"), None)
     if marker is None:
-        raise RuntimeError("R16 marker is absent from the image")
+        raise RuntimeError("R17 marker is absent from the image")
     checks.append(marker & ~3)
     for address in checks:
         observed = target.read32(address)
@@ -80,7 +80,7 @@ with ConnectHelper.session_with_chosen_probe(
                     print(f"Readback: {verified_bytes} bytes verified", flush=True)
     verification = (f"full image ({verified_bytes} bytes)" if not a.critical_only
                     else "critical addresses")
-    print(f"VERIFIED {verification}, vector table and R16 marker at {marker:#010x}; "
+    print(f"VERIFIED {verification}, vector table and R17 marker at {marker:#010x}; "
           f"device {device_id:#010x}; flash {flash_kib} KiB")
     state = target.get_state().name
     print(f"Core state after programming: {state}")

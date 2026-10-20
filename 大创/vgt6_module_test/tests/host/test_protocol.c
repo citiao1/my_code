@@ -143,7 +143,7 @@ static void test_every_split(void)
     "SPEED,0\n", "SPEED,120\n", "STOP\n", "PING\r\n"
   };
   static const char *replies[] = {
-    "VER,VGT6_BM50_ATTITUDE_R16\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
+    "VER,VGT6_BM50_ATTITUDE_R17\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
     "ACK,SPDLIMIT\r\n", "ACK,SPEED,1\r\n", "ACK,PID\r\n",
     "ACK,SPD\r\n", "ACK,TEL,1\r\n", "ACK,SPEED,0\r\n",
     "ACK,SPEED,LIMIT\r\n", "ACK,STOP\r\n", "PONG\r\n"
@@ -295,8 +295,8 @@ static void test_tunable_gains_and_target_ceiling(void)
   line("PIDGET\n");
   assert(strstr(transmitted, "PID,0.8000,0.1000,0.0000") != NULL);
   line("PID,B,1.2,0.2,1\n"); expect("ACK,PID\r\n");
-  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R16_RANGE\r\n");
-  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R16_RANGE\r\n");
+  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R17_RANGE\r\n");
+  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R17_RANGE\r\n");
   line("SPDLIMIT,201\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPDLIMIT,65736\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPEED,1000\n"); expect("ERR,SPEED,RANGE_1_200\r\n");
@@ -344,7 +344,7 @@ static void test_attitude_cascade_and_stop(void)
 {
   AttitudeControlSnapshot a;
   init();
-  line("CAPS\n"); expect("CAPS,ATTITUDE_R16,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE\r\n");
+  line("CAPS\n"); expect("CAPS,ATTITUDE_R17,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE\r\n");
   line("YAW,15\n"); expect("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
   line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
   line("HEAD,-179\n"); expect("ACK,HEAD\r\n");
@@ -422,6 +422,44 @@ static void test_mecanum_installed_numbering(void)
   assert(targets.motor3_left_rear == -100);
   assert(targets.motor4_right_rear == 100);
   ++cases;
+}
+
+static void test_rate_and_heading_ram_logs(void)
+{
+  AttitudeControlSnapshot sample;
+  init();
+  line("HLOG,CLEAR\n"); expect("HLOG,CLEAR,OK\r\n");
+  line("HLOG,START\n"); expect("HLOG,START,OK\r\n");
+  line("HLOG,READ,0,1\n"); expect("ERR,HLOG,STOP_RECORDING_FIRST\r\n");
+  line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+  line("YAW,15\n"); expect("ACK,YAW\r\n");
+  gyro_mock.rate_dps = 10.0f;
+  tick += 20U;
+  AttitudeControl_Process(20U);
+  assert(Telemetry_Hlog_Count() == 1U);
+  line("HLOG,READ,0,1\n"); expect("ERR,HLOG,MOTION_ACTIVE\r\n");
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("HLOG,STOP\n"); expect("HLOG,STOP,OK\r\n");
+  line("HLOG,READ,0,1\n");
+  expect("HLOG,DATA,0,120,0,0,0,15000,10000,0,1000,0,0,0,1\r\nHLOG,END,0,1,1\r\n");
+  /* Direct snapshots isolate RAM capacity/mode serialization from hardware. */
+  Telemetry_Hlog_Clear();
+  assert(Telemetry_Hlog_Start());
+  memset(&sample, 0, sizeof(sample));
+  Telemetry_Hlog_Record(&sample);
+  assert(Telemetry_Hlog_Count() == 0U);
+  sample.mode = 2U;
+  tick += 20U; Telemetry_Hlog_Record(&sample);
+  sample.mode = 1U;
+  for (unsigned index = 0; index < TELEMETRY_HLOG_CAPACITY; ++index)
+  {
+    tick += 20U;
+    Telemetry_Hlog_Record(&sample);
+  }
+  assert(Telemetry_Hlog_Count() == TELEMETRY_HLOG_CAPACITY);
+  line("HLOG,STATUS\n"); expect("HLOG,STATUS,1,1024,1024,1,1025\r\n");
+  line("HLOG,STOP\n"); expect("HLOG,STOP,OK\r\n");
+  line("HLOG,CLEAR\n"); expect("HLOG,CLEAR,OK\r\n");
 }
 
 static void test_tracked_drive_frame_rest_and_stop(void)
@@ -594,6 +632,7 @@ int main(void)
   test_stack_guard_and_diagnostics();
   test_tunable_gains_and_target_ceiling();
   test_attitude_cascade_and_stop();
+  test_rate_and_heading_ram_logs();
   test_tracked_drive_frame_rest_and_stop();
   test_track_frame_sweep_and_split_packets();
   test_mecanum_installed_numbering();

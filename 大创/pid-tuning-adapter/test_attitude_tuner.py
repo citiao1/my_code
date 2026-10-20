@@ -7,7 +7,7 @@ import unittest
 from contextlib import asynccontextmanager
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 from attitude_tuner import CAPS, FIXED, Session, run
 from pid_tuning import Sample
 
@@ -133,6 +133,28 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
         finally:
             session.reader.cancel()
             await asyncio.gather(session.reader,return_exceptions=True)
+
+    async def test_downloaded_rate_log_checks_status_mode_and_sequence(self):
+        session = Session(FakeBridge())
+        try:
+            session.command = AsyncMock(side_effect=[
+                "HLOG,STATUS,0,2,1024,0,2", "HLOG,END,0,2,2"])
+            for sequence, tick in enumerate((100, 120)):
+                await session.hlog_frames.put(
+                    f"HLOG,DATA,{sequence},{tick},0,0,0,15000,12000,0,5000,0,0,0,1")
+            records = await session.read_hlog(loop="angular_velocity")
+            self.assertEqual([x["mode"] for x in records], [1, 1])
+            for status in ("HLOG,STATUS,1,2,1024,0,2",
+                           "HLOG,STATUS,0,1024,1024,1,1025",
+                           "HLOG,STATUS,0,2,1024,0,3",
+                           "HLOG,STATUS,0,0,1024,0,0"):
+                session.command = AsyncMock(return_value=status)
+                with self.assertRaises(RuntimeError):
+                    await session.read_hlog(loop="angular_velocity")
+                self.assertEqual(session.command.await_count, 1)
+        finally:
+            session.reader.cancel()
+            await asyncio.gather(session.reader, return_exceptions=True)
 
 
 if __name__=="__main__":

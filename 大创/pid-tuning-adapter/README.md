@@ -1,5 +1,12 @@
 # BM50 PID Tuning Data Adapter
 
+2026-10-20 policy: gain decisions require validated downloaded high-rate MCU
+logs, never low-rate TEL/ATEL. R17 adds HLOG mode=1 rate PI and mode=2 heading;
+`hlog_samples` validates and maps either mode. `direction_identify` scores the
+downloaded records. Legacy default step/spin paths and R10-only capability
+checks still require adaptation before live R17 tuning; examples below are
+not permission to bypass this gate. See [R17 handoff](../vgt6_module_test/HLOG_R17_HANDOFF.md).
+
 This standalone adapter passively records one wheel's speed-loop response from
 the existing BM50 bridge WebSocket. It does not open BLE/serial, command motor
 targets, write PID gains, or apply tuning results. The accompanying

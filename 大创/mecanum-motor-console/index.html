@@ -70,14 +70,14 @@
         <p class="hint">最短角误差 · D 使用实测角速度 · 先整定内层 PI，再整定方向</p>
       </section>
       <section class="angle-panel hlog-panel">
-        <div class="section-heading"><div><span>RAM LOGGER</span><h2>方向环 HLOG</h2></div><output id="hlogStatus">未查询</output></div>
+        <div class="section-heading"><div><span>RAM LOGGER</span><h2>角速度 / 航向 HLOG</h2></div><output id="hlogStatus">未查询</output></div>
         <div class="tuning-actions hlog-actions">
           <button id="hlogClearButton" class="button secondary hlog-command" type="button" disabled>清空 RAM 日志</button>
           <button id="hlogStartButton" class="button connect hlog-command" type="button" disabled>开始记录</button>
           <button id="hlogStopButton" class="stop-button hlog-command" type="button" disabled>停止记录</button>
           <button id="hlogReadButton" class="button secondary hlog-command" type="button" disabled>读取并下载 CSV</button>
         </div>
-        <p class="hint">1024 条环形 RAM 记录；读取前必须停止运动。日志不会写入 Flash。</p>
+        <p class="hint">20 ms / 50 Hz · 1024 条，约 20.48 秒。开始记录后再启动角环；每轮停车、停止记录后下载。mode=1 角速度，2 航向；溢出日志不可用于整定。只用 RAM，不写 Flash。</p>
       </section>
       <section class="angle-panel">
         <div class="section-heading"><div><span>CHASSIS</span><h2>四轮运动</h2></div></div>
@@ -130,6 +130,6 @@
     </section>
   </main>
   <script src="chassis-test.js?v=2"></script>
-  <script src="touch-remote.js?v=26"></script>
+  <script src="touch-remote.js?v=27"></script>
 </body>
 </html>

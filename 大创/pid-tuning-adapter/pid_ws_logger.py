@@ -191,15 +191,17 @@ def encoder_row(message: str):
 
 
 def hlog_row(message: str):
-    """Parse one RAM-resident direction-loop HLOG record."""
+    """Parse HLOG; legacy records have unknown mode, not inferred rate data."""
     fields = message.strip().split(",")
-    if len(fields) != 14 or fields[:2] != ["HLOG", "DATA"]:
+    if len(fields) not in (14, 15) or fields[:2] != ["HLOG", "DATA"]:
         return None
     try:
         values = [int(value, 0) for value in fields[2:]]
     except ValueError:
         return None
     if values[0] < 0 or values[1] < 0 or values[9] not in (0, 1):
+        return None
+    if len(values) == 13 and values[12] not in (1, 2):
         return None
     return {
         "sequence": values[0],
@@ -214,7 +216,37 @@ def hlog_row(message: str):
         "saturated": bool(values[9]),
         "forward_rpm": values[10],
         "left_rpm": values[11],
+        "mode": values[12] if len(values) == 13 else None,
     }
+
+
+def hlog_samples(records, loop="direction", *, max_interval_ms=60):
+    """Strict high-rate log -> controller samples; no live-telemetry fallback."""
+    expected_mode = {"angular_velocity": 1, "direction": 2}.get(loop)
+    if expected_mode is None or not records:
+        raise ValueError("nonempty supported high-rate log required")
+    elapsed = 0
+    rows = []
+    previous_tick = None
+    for sequence, record in enumerate(records):
+        if record["sequence"] != sequence or record.get("mode") != expected_mode:
+            raise ValueError("HLOG sequence incomplete or wrong/missing loop mode")
+        tick = record["tick"]
+        if not isinstance(tick, int) or not 0 <= tick <= 0xffffffff:
+            raise ValueError("HLOG MCU timestamp out of range")
+        if previous_tick is not None:
+            dt = (tick - previous_tick) & 0xffffffff
+            if not 20 <= dt <= max_interval_ms:
+                raise ValueError("HLOG timestamp duplicate, unordered or gap")
+            elapsed += dt
+        previous_tick = tick
+        keys = ("target_rate_dps", "actual_rate_dps", "rate_output_rpm") if expected_mode == 1 else (
+            "target_heading_deg", "actual_heading_deg", "heading_output_dps")
+        values = tuple(record[key] for key in keys)
+        if not all(math.isfinite(value) for value in values):
+            raise ValueError("HLOG nonfinite controller data")
+        rows.append((elapsed / 1000.0, *values))
+    return rows
 
 
 def distance_from_encoder(

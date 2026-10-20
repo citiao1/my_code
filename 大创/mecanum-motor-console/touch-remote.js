@@ -1,6 +1,6 @@
 const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
-const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R16';
+const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R17';
 const MAX_TARGET_RPM = 160;
 
 function normalizeRemoteTarget(value) {
@@ -421,9 +421,10 @@ function handleLine(line) {
     updateUi();
     return;
   }
-  if (fields[0] === 'HLOG' && fields[1] === 'DATA' && fields.length === 14) {
+  if (fields[0] === 'HLOG' && fields[1] === 'DATA' && [14, 15].includes(fields.length)) {
     const values = fields.slice(2).map(Number);
-    if (values.every(Number.isFinite)) hlogRows.push(values);
+    if (values.every(Number.isFinite) && (fields.length === 14 || [1, 2].includes(values[12])))
+      hlogRows.push(fields.length === 14 ? [...values, 0] : values);
     else setEvent(`HLOG 数据格式错误：${line}`);
     return;
   }
@@ -556,7 +557,7 @@ function hlogCsv(rows) {
     'sequence', 'tick', 'target_heading_mdeg', 'actual_heading_mdeg',
     'heading_error_mdeg', 'target_rate_mdps', 'actual_rate_mdps',
     'heading_output_mdps', 'rate_output_mrpm', 'saturated',
-    'forward_rpm', 'left_rpm',
+    'forward_rpm', 'left_rpm', 'mode',
   ];
   const escape = (value) => {
     const text = String(value);
@@ -571,7 +572,7 @@ function downloadHlogCsv(rows) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = `direction-hlog-${new Date().toISOString().replaceAll(':', '-')}.csv`;
+  anchor.download = `attitude-hlog-${new Date().toISOString().replaceAll(':', '-')}.csv`;
   anchor.click();
   setTimeout(() => URL.revokeObjectURL(url), 0);
   return csv;
@@ -895,11 +896,15 @@ ui.hlogRead.addEventListener('click', () => runAction(async (send) => {
   await send('HLOG,STATUS');
   hlogRows.length = 0;
   const total = firmware.hlog.count;
+  if (!total || firmware.hlog.overflow || firmware.hlog.sequence !== total)
+    throw new Error('日志为空、溢出或已覆盖，不能作为整定数据；请重新采集');
   for (let offset = 0; offset < total; offset += 8) await send(`HLOG,READ,${offset},8`);
   if (hlogRows.length !== total)
     throw new Error(`HLOG 读取不完整：${hlogRows.length}/${total}`);
+  if (hlogRows.some((row, index) => row[0] !== index || ![1, 2].includes(row[12])))
+    throw new Error('日志序号或控制模式不完整，不能作为整定数据');
   downloadHlogCsv(hlogRows);
-  setEvent(`已下载 ${hlogRows.length} 条方向环日志`);
+  setEvent(`已下载 ${hlogRows.length} 条角环日志（mode=1 角速度，2 航向）`);
 }));
 for (const [id,command] of [['#yawZeroButton','ZERO'],['#calButton','CAL']])
   document.querySelector(id).addEventListener('click', () => {

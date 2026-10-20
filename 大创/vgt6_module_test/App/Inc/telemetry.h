@@ -20,6 +20,7 @@ typedef struct
   int32_t heading_output_mdps;
   int32_t rate_output_mrpm;
   uint8_t saturated;
+  uint8_t mode; /* 1 rate PI; 2 heading PD -> rate PI (R17 log schema). */
   int16_t forward_rpm;
   int16_t left_rpm;
 } TelemetryHeadingLogRecord;

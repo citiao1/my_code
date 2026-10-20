@@ -47,14 +47,14 @@ function consoleFixture() {
       queueMicrotask(() => {
         const command = request.command;
         const replies = {
-          VER: 'VER,VGT6_BM50_ATTITUDE_R16', LINK: 'LINK,42,3,0,0,0,0',
+          VER: 'VER,VGT6_BM50_ATTITUDE_R17', LINK: 'LINK,42,3,0,0,0,0',
           UART: 'UART,9600,42000000,4375,0x00,0,0,0,0,0',
           STACK: 'STACK,4096,1024,3072,1',
           SPEEDLIMIT: 'SPEEDLIMIT,160',
           SPEEDSTATUS: 'TEL,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12000,0,0,1,0,0,0',
           PIDGET: 'PID,1.2,0.2,0,1.2,0.2,0,1.2,0.2,0,1.2,0.2,0',
           ARM: 'ACK,ARM,WHEELS_OFF_GROUND', STOP: 'ACK,STOP',
-          CAPS: 'CAPS,ATTITUDE_R16,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE',
+          CAPS: 'CAPS,ATTITUDE_R17,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE',
           PS2STATUS: 'PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10',
           PS2RAW: 'PS2RAW,FF,73,5A,FF,FF,7F,80,7F,80,1,1',
           YAWGET: 'YAWPID,0.1500,2.5000,60,80,20',
@@ -302,11 +302,11 @@ test('R3 bridge handshake matches this page', () => {
   assert.equal(f.eval('bridgeReady'), true);
 });
 
-test('R16 firmware passes the page compatibility check', () => {
+test('R17 firmware passes the page compatibility check', () => {
   const f = consoleFixture();
-  f.line('VER,VGT6_BM50_ATTITUDE_R16');
+  f.line('VER,VGT6_BM50_ATTITUDE_R17');
   assert.equal(f.eval('firmwareCompatible'), true);
-  assert.match(f.elements.get('#eventText').textContent, /ATTITUDE_R16/);
+  assert.match(f.elements.get('#eventText').textContent, /ATTITUDE_R17/);
 });
 
 test('PS2 status is shown without enabling motion', () => {
@@ -330,7 +330,7 @@ test('UART and stack diagnostics display the MCU measurements', () => {
 });
 
 test('old firmware disables motion but leaves STOP and query available', async () => {
-  for (const version of ['VGT6_BM50_SPEED_LINE_R3', 'VGT6_BM50_ATTITUDE_R13', 'VGT6_BM50_ATTITUDE_R14', 'VGT6_BM50_ATTITUDE_R15']) {
+  for (const version of ['VGT6_BM50_SPEED_LINE_R3', 'VGT6_BM50_ATTITUDE_R13', 'VGT6_BM50_ATTITUDE_R14', 'VGT6_BM50_ATTITUDE_R15', 'VGT6_BM50_ATTITUDE_R16']) {
     const f = consoleFixture();
     f.line(`VER,${version}`);
     assert.equal(f.elements.get('#armButton').disabled, true);
@@ -385,7 +385,7 @@ test('the page exposes RAM-only HLOG controls and capability state', () => {
   assert.match(html, /id="hlogStopButton"/);
   assert.match(html, /id="hlogReadButton"/);
   const f = consoleFixture();
-  f.line('CAPS,ATTITUDE_R16,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE');
+  f.line('CAPS,ATTITUDE_R17,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE');
   f.line('HLOG,STATUS,0,12,1024,0,12');
   assert.equal(f.eval('firmware.hlogSupported'), true);
   assert.match(f.elements.get('#hlogStatus').textContent, /已停止 · 12\/1024 条/);
@@ -398,6 +398,17 @@ test('HLOG data is parsed and exported with a stable CSV schema', () => {
   assert.match(csv, /^sequence,tick,target_heading_mdeg,actual_heading_mdeg/);
   assert.match(csv, /12,240,1000,1100,-100,500,450,20,10,0,30,-4/);
   assert.equal(f.eval('firmware.hlog.lastBatch'), 1);
+});
+
+test('R17 rate and heading logs export an explicit controller mode', () => {
+  const f = consoleFixture();
+  f.line('HLOG,DATA,0,120,0,0,0,15000,10000,0,1000,0,0,0,1');
+  f.line('HLOG,DATA,1,140,15000,12000,3000,8000,7600,40000,12000,0,20,0,2');
+  f.line('HLOG,DATA,2,160,0,0,0,0,0,0,0,0,0,0,3');
+  const csv = f.eval('hlogCsv(hlogRows)');
+  assert.match(csv, /forward_rpm,left_rpm,mode\r\n/);
+  assert.match(csv, /0,120,0,0,0,15000,10000,0,1000,0,0,0,1/);
+  assert.equal(f.eval('hlogRows.length'), 2);
 });
 test('PIDGET populates all four speed-loop rows', () => {
   const f = consoleFixture();

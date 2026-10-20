@@ -1,5 +1,8 @@
 # VGT6 BM50 module test
 
+Current source/build is R17 (not flashed): [rate/heading RAM log handoff](HLOG_R17_HANDOFF.md).
+The deployed R16 motion-control baseline is unchanged; incomplete FAST streaming was removed.
+
 This STM32F407VGT6 HAL project tests the extension board one module at a
 time: OLED, Bluetooth, IMU660RC, four WHEELTEC BM50 motors, four quadrature
 encoders and the battery-voltage ADC. The `.ioc` file is the pin/peripheral
@@ -165,7 +168,7 @@ the web console and VOFA bridge; it is off by default.
 
 ### BLE line-framing revision
 
-`VER` returns `VER,VGT6_BM50_ATTITUDE_R16`. UART IDLE ends only a DMA
+`VER` returns `VER,VGT6_BM50_ATTITUDE_R17`. UART IDLE ends only a DMA
 burst, never a command; the receive ring assembles BLE fragments until an
 explicit CR or LF. Manual serial terminals must send a line terminator.
 
@@ -270,10 +273,11 @@ combines translation with the inner loop. `YAWPID`, `HEADPID`, `YAWGET`,
 `HEADGET`, `KEEP`, `ATEL,1/0`, and `ANGLESTATUS` configure and observe the
 loops. A 1.5 s command watchdog stops the cascade if `KEEP` is not received.
 
-The direction loop also has a RAM-only high-rate logger. `HLOG,CLEAR`,
+R17 records rate PI (mode=1) and heading cascade (mode=2) in its RAM logger.
+`HLOG,CLEAR`,
 `HLOG,START`, `HLOG,STOP`, `HLOG,STATUS`, and `HLOG,READ,offset,count` record
-the 20 ms direction-loop state without writing Flash. Reading is limited to
-eight records per command and must be done after `STOP`; the host can batch
+the 20 ms rate/heading state without writing Flash. Reading is limited to
+eight records per command and requires `STOP` and `HLOG,STOP`; the host can batch
 reads and save the returned `HLOG,DATA` records as CSV.
 
 `ATEL` fields are:
@@ -316,7 +320,7 @@ uniformly when needed. At the default 160 RPM ceiling, 60 RPM rotation leaves
 Invalid IMU data, a lost PS2 frame, STOP or SELECT stop the vehicle and require
 another deliberate START.
 
-The OLED bottom line contains the `R16` marker, receiver connection, PS2 enable
+The OLED bottom line contains the `R17` marker, receiver connection, PS2 enable
 and selected speed tier. This identifies the build independently of the page.
 
 ## First bench test order

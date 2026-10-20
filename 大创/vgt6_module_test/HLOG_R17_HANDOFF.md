@@ -1,0 +1,60 @@
+# R17：恢复原遥测，补齐角速度环 RAM 日志
+
+2026-10-20。先撤回未完成的 FAST/FTEL 压缩实时遥测，六个相关文件曾与 R16
+基线提交 `41ee7d9e` 比对一致；随后仅按用户补充增加角速度日志及 mode 字段。
+没有保留 FAST 命令或采样钩子，不改 UART、PID、控制周期、电机符号、运动学或
+操控行为。本轮未连接实车、烧录或启动电机。源码/HEX/网页为 R17，板上仍是 R16。
+
+## 日志
+
+HLOG 在每次实际 20 ms 角环更新后记录 mode=1（角速度 PI）和 mode=2（航向级联）。
+mode 使用原结构体对齐空位，单条 RAM 记录大小不变，容量仍为 1024 条，约20.48秒。
+这不是提高 ATEL 发送频率；运行时不写 Flash。
+
+```text
+HLOG,DATA,seq,tick,heading_target_mdeg,heading_actual_mdeg,heading_error_mdeg,
+rate_target_mdps,rate_actual_mdps,heading_output_mdps,rotation_output_mrpm,
+saturated,forward_rpm,left_rpm,mode
+```
+
+角速度整定使用 rate_target/rate_actual/rotation_output（deg/s、deg/s、RPM）。
+航向外环使用 heading_target/heading_actual/heading_output（deg、deg、deg/s），
+不能用内环 RPM 代替外环输出。mode=1 的航向列不是活动的外环。
+
+每轮：停止状态下 HLOG,CLEAR → HLOG,START → 获授权后执行基线/阶跃/稳定段 →
+STOP并确认停车 → HLOG,STOP → HLOG,STATUS → 最多8条一批下载 → 验证保存 →
+分析 → 有授权时写参数并回读 → 下一轮。没有额外的每轮硬件确认要求。
+读取时角环仍在运动或记录未停止，固件会拒绝；这些日志命令本身不解锁、不启动电机。
+
+网页支持两种角环并在 CSV 追加 mode。旧14字段记录只作未知模式展示，不自动当作
+角速度数据。空日志、溢出、覆盖、缺号、模式不明不能作为完整整定数据。
+pid_ws_logger.hlog_samples 按模式映射高频数据并验证序号、有限值、MCU tick顺序、
+回绕及20..60 ms间隔。Session.read_hlog 在读取前检查状态、读取后验证记录。
+direction_identify 现在实际用下载 HLOG 算指标，不再只导出它却用 ATEL 评分。
+
+边界：旧默认step/spin仍有低频评分路径，适配器还检查旧R10版本/能力；本轮没有
+宣称已经完成整个R17自动整定器。PID skill 明确禁止这些旧路径自动出参/写回，
+适配高频采集和评分前只能诊断。轮速10 ms RAM日志不在本轮范围，不能用角环日志
+冒充轮速日志。1024条覆盖后也不能把丢失起始瞬态的剩余尾段当成完整试验。
+
+## Skill 与备份
+
+`C:/Users/28097/.codex/skills/pid-tuning/` 已规定：整定决策只能使用校验完整的
+板载高频日志；不能用 TEL/ATEL、截图或插值伪造高频数据；不合格日志不出参、
+不写回。真实采样率必须足以解析瞬态，不是任意 PID 都默认50 Hz足够。
+
+`C:/Users/28097/.codex/skills/nuedc-stm32-mspm0-skill/` 已规定每版交付/烧录代码
+必须有本地Git commit，包含版本、验证状态与镜像哈希；先备份上一版再开发新版。
+只提交相关目录，不自动push、不重置历史、不改Git身份。已有同版提交则核验复用。
+本地skill安装文件位于仓库外，本次代码commit不代表这些安装文件也已纳入Git。
+
+## 离线验证
+
+- 2305项固件协议/运动学断言通过，含mode=1的目标/反馈/输出、活动日志拒读、
+  停止后读取、容量和覆盖标志；IMU、PS2及角环集成回归通过。
+- 网页64项Node、适配器23项Python测试通过；两个skill通过quick_validate。
+- Keil ARMCC5.06 update5 build528：0 errors / 0 warnings；
+  Code=51010、RO-data=2262、RW-data=168、ZI-data=58320。
+- HEX：`MDK-ARM/vgt6_module_test/vgt6_module_test.hex`；SHA256：
+  `121485C1C256E5EB60641ED4BE2607EE237B095462B1B8762556675CAB08C60B`。
+- 未烧录、未做实车采集或PID整定；主机和假设模型测试不是实测性能。

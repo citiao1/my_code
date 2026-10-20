@@ -17,7 +17,7 @@ from pid_tuning import Sample
 from pid_ws_logger import (
     ATTITUDE_CAPS, BRIDGE_GREETING, ENCODER_COUNTS_PER_REV, FIRMWARE_VERSION,
     METERS_PER_ENCODER_COUNT, WHEEL_DIAMETER_M, distance_from_encoder,
-    encoder_row, hlog_row, speed_drive_row, telemetry_row,
+    encoder_row, hlog_row, hlog_samples, speed_drive_row, telemetry_row,
 )
 
 CAPS = ATTITUDE_CAPS
@@ -167,8 +167,10 @@ class Session:
         return gains
 
     async def read_hlog(self, *, batch_size=8, command_timeout=20.0,
-                        frame_timeout=5.0):
+                        frame_timeout=5.0, loop="direction"):
         """Read the stopped MCU RAM log in bounded UART-sized batches."""
+        if not isinstance(batch_size, int) or not 1 <= batch_size <= 8:
+            raise ValueError("HLOG batch size must be 1..8")
         self.hlog_reading = True
         try:
             status = (await self.command(
@@ -177,10 +179,12 @@ class Session:
             if len(status) != 7 or status[:2] != ["HLOG", "STATUS"]:
                 raise RuntimeError("invalid HLOG status")
             total = int(status[3])
-            if total < 0:
-                raise RuntimeError("invalid HLOG count")
+            if (status[2] != "0" or status[5] != "0" or
+                    not 0 < total <= int(status[4]) or int(status[6]) != total):
+                raise RuntimeError("HLOG active, empty, overflowed or overwritten")
             records = []
             pending = {}
+            next_sequence = 0
             offset = 0
             while offset < total:
                 requested = min(batch_size, total - offset)
@@ -214,6 +218,9 @@ class Session:
                     record = hlog_row(line)
                     if record is not None:
                         sequence = int(record["sequence"])
+                        if sequence != next_sequence:
+                            raise RuntimeError("HLOG duplicate, missing or unordered sequence")
+                        next_sequence += 1
                         if sequence in expected:
                             batch[sequence] = record
                             expected.remove(sequence)
@@ -225,6 +232,7 @@ class Session:
                     offset, offset + returned
                 ))
                 offset += returned
+            hlog_samples(records, loop)  # Validate before any downstream scoring.
             return records
         finally:
             self.hlog_reading = False
@@ -594,6 +602,9 @@ async def run(args):
                         args.distance_m, args.forward_rpm,
                         [0.0, args.target, 0.0, -args.target, 0.0],
                         args.seconds, heading_reference)
+                    # Low-rate ATEL above is only the live safety/route monitor.
+                    # Identification metrics must use downloaded 20 ms records.
+                    measured = [Sample(*row) for row in hlog_samples(hlog_records)]
                     result = score_tracking(
                         measured,
                         angle=True,
@@ -630,7 +641,7 @@ async def run(args):
                             "actual_heading_deg", "heading_error_deg",
                             "target_rate_dps", "actual_rate_dps",
                             "heading_output_dps", "rate_output_rpm",
-                            "saturated", "forward_rpm", "left_rpm",
+                            "saturated", "forward_rpm", "left_rpm", "mode",
                         ))
                         writer.writeheader()
                         writer.writerows(hlog_records)
@@ -646,6 +657,7 @@ async def run(args):
                         "loop":"direction","experiment":"direction_identify",
                         "form":"parallel","period_s":0.02,
                         "derivative":"measurement","telemetry_period_s":0.2,
+                        "scoring_source":"downloaded_HLOG", "log_period_s":0.02,
                         "limits":{"rpm":60,"dps":80,
                                   "wheel_rpm":TARGET_WHEEL_LIMIT},
                         "baseline":args.baseline,"target":args.target,
