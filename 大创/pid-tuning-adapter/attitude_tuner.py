@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""R17 PI-rate / PD-heading tuning, scored only from stopped RAM-log downloads."""
+"""R17/R18 PI-rate / PD-heading tuning from stopped RAM-log downloads."""
 from __future__ import annotations
 import argparse
 import asyncio
@@ -21,6 +21,10 @@ from pid_ws_logger import (
 
 FIRMWARE_VERSION = "VER,VGT6_BM50_ATTITUDE_R17"
 CAPS = "CAPS,ATTITUDE_R17,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE"
+FIRMWARE_CAPS = {
+    FIRMWARE_VERSION: CAPS,
+    FIRMWARE_VERSION.replace("R17", "R18"): CAPS.replace("R17", "R18") + ",HLOG_US",
+}
 TARGET_WHEEL_LIMIT = 160
 HEADING_FINAL_SETTLE_S = 1.0
 HEADING_REVERSAL_PAUSE_S = 1.5
@@ -40,6 +44,9 @@ class Session:
         self.armed = False
         self.allow_stopped_heartbeat = False
         self.hlog_reading = False
+        self.require_hlog_us = False
+        self.expected_caps = CAPS
+        self.firmware_version = FIRMWARE_VERSION
         self.motion_active = False
         self.timeline = []
         self.monitor = []
@@ -141,7 +148,7 @@ class Session:
     async def health(self):
         if self.fault:
             raise self.fault
-        if await self.command("CAPS") != CAPS:
+        if await self.command("CAPS") != self.expected_caps:
             raise RuntimeError("firmware capability or fixed limits changed")
         if await self.command("SPEEDLIMIT") != f"SPEEDLIMIT,{TARGET_WHEEL_LIMIT}":
             raise RuntimeError("wheel ceiling changed")
@@ -193,58 +200,79 @@ class Session:
             if (status[2] != "0" or status[5] != "0" or
                     not 0 < total <= int(status[4]) or int(status[6]) != total):
                 raise RuntimeError("HLOG active, empty, overflowed or overwritten")
-            records = []
-            pending = {}
-            next_sequence = 0
+            records_by_sequence = {}
+            self.download["batch_retries"] = []
             offset = 0
             while offset < total:
                 requested = min(batch_size, total - offset)
-                reply = await self.command(
-                    f"HLOG,READ,{offset},{requested}",
-                    timeout=command_timeout,
-                )
-                end = reply.split(",")
-                if (len(end) != 5 or end[:2] != ["HLOG", "END"] or
-                        int(end[2]) != offset or int(end[4]) != total):
-                    raise RuntimeError("invalid HLOG end marker")
-                returned = int(end[3])
-                if returned != requested:
-                    raise RuntimeError("HLOG batch was truncated")
-                expected = set(range(offset, offset + returned))
-                batch = {}
-                deadline = time.monotonic() + frame_timeout
-                while len(batch) < returned and time.monotonic() < deadline:
-                    for sequence in tuple(expected):
-                        if sequence in pending:
-                            batch[sequence] = pending.pop(sequence)
-                            expected.remove(sequence)
-                    if len(batch) == returned:
-                        break
+                expected = set(range(offset, offset + requested))
+                for attempt in range(3):
                     try:
-                        line = await asyncio.wait_for(
-                            self.hlog_frames.get(),
-                            max(0.01, deadline - time.monotonic()),
+                        reply = await self.command(
+                            f"HLOG,READ,{offset},{requested}",
+                            timeout=command_timeout,
                         )
-                    except asyncio.TimeoutError:
-                        break
-                    record = hlog_row(line)
-                    if record is not None:
-                        self.download["records"].append(record)
+                    except (RuntimeError, TimeoutError) as error:
+                        if not isinstance(error, TimeoutError) and "timeout" not in str(error).lower():
+                            raise
+                        self.download["batch_retries"].append({
+                            "offset": offset, "count": requested,
+                            "attempt": attempt + 1, "error": str(error),
+                        })
+                        if attempt == 2:
+                            raise
+                        continue
+                    end = reply.split(",")
+                    if (len(end) != 5 or end[:2] != ["HLOG", "END"] or
+                            not all(value.isdecimal() for value in end[2:]) or
+                            int(end[2]) != offset):
+                        self.download["batch_retries"].append({
+                            "offset": offset, "count": requested,
+                            "attempt": attempt + 1, "invalid_end": reply,
+                        })
+                        if attempt == 2:
+                            raise RuntimeError("invalid HLOG end marker")
+                        continue
+                    if int(end[4]) != total:
+                        raise RuntimeError("HLOG total changed during download")
+                    returned = int(end[3])
+                    if returned != requested:
+                        raise RuntimeError("HLOG batch was truncated")
+                    deadline = time.monotonic() + frame_timeout
+                    while (not expected.issubset(records_by_sequence) or not self.hlog_frames.empty()) and time.monotonic() < deadline:
+                        try:
+                            line = await asyncio.wait_for(
+                                self.hlog_frames.get(),
+                                max(0.01, deadline - time.monotonic()),
+                            )
+                        except asyncio.TimeoutError:
+                            break
+                        record = hlog_row(line)
+                        if record is None:
+                            continue
                         sequence = int(record["sequence"])
-                        if sequence != next_sequence:
-                            raise RuntimeError("HLOG duplicate, missing or unordered sequence")
-                        next_sequence += 1
-                        if sequence in expected:
-                            batch[sequence] = record
-                            expected.remove(sequence)
-                        elif sequence >= offset + returned:
-                            pending[sequence] = record
-                if len(batch) != returned:
-                    raise RuntimeError("HLOG data stream incomplete")
-                records.extend(batch[index] for index in range(
-                    offset, offset + returned
-                ))
+                        if not 0 <= sequence < total:
+                            raise RuntimeError("HLOG sequence outside recorded range")
+                        previous = records_by_sequence.get(sequence)
+                        if previous is not None and previous != record:
+                            raise RuntimeError("conflicting HLOG retransmission")
+                        if previous is None:
+                            records_by_sequence[sequence] = record
+                            self.download["records"].append(record)
+                    if expected.issubset(records_by_sequence):
+                        break
+                    self.download["batch_retries"].append({
+                        "offset": offset,
+                        "count": requested,
+                        "attempt": attempt + 1,
+                        "missing": sorted(expected - records_by_sequence.keys()),
+                    })
+                else:
+                    raise RuntimeError("HLOG batch remained incomplete after retries")
                 offset += returned
+            records = [records_by_sequence[index] for index in range(total)]
+            if self.require_hlog_us and any("tick_us" not in row for row in records):
+                raise RuntimeError("R18 HLOG requires a microsecond timestamp on every record")
             hlog_samples(records, loop, max_interval_ms=25)
             return records
         finally:
@@ -528,8 +556,12 @@ async def run(args):
             raise RuntimeError("R3 bridge required")
         s = Session(ws)
         try:
-            if await s.command("VER")!=FIRMWARE_VERSION:
-                raise RuntimeError("R17 firmware with mode-tagged 50 Hz HLOG required")
+            version = await s.command("VER")
+            if version not in FIRMWARE_CAPS:
+                raise RuntimeError("R17/R18 firmware with mode-tagged 50 Hz HLOG required")
+            s.require_hlog_us = version.endswith("R18")
+            s.expected_caps = FIRMWARE_CAPS[version]
+            s.firmware_version = version
             s.uart_baseline = await s.command("UART")
             u = s.uart_baseline.split(",")
             if len(u)!=10 or u[0]!="UART" or any(int(x) for x in u[5:]):
@@ -542,7 +574,7 @@ async def run(args):
             if experiment == "ground_speed":
                 if not args.live:
                     print(json.dumps({
-                        "capabilities": CAPS,
+                        "capabilities": s.expected_caps,
                         "mode": "ground_speed_round_trip",
                         "wheel_diameter_m": WHEEL_DIAMETER_M,
                         "encoder_counts_per_rev": ENCODER_COUNTS_PER_REV,
@@ -591,7 +623,7 @@ async def run(args):
                     status[2] != "0" or int(status[4]) != 1024):
                 raise RuntimeError("HLOG capacity/idle preflight failed")
             if not args.live:
-                print(json.dumps({"capabilities":CAPS,"gains":current,"inner":inner,
+                print(json.dumps({"capabilities":s.expected_caps,"gains":current,"inner":inner,
                                   "scoring_source":"downloaded_HLOG",
                                   "recording_budget_s":budget,
                                   "motion_started":False},indent=2))
@@ -663,7 +695,7 @@ async def run(args):
                             "actual_heading_deg", "heading_error_deg",
                             "target_rate_dps", "actual_rate_dps",
                             "heading_output_dps", "rate_output_rpm",
-                            "saturated", "forward_rpm", "left_rpm", "mode",
+                            "saturated", "forward_rpm", "left_rpm", "mode", "tick_us",
                         ))
                         writer.writeheader()
                         writer.writerows(hlog_records)
@@ -703,7 +735,7 @@ async def run(args):
                     "derivative":"measurement" if args.loop=="direction" else "none",
                     "telemetry_period_s":0.2,
                     "scoring_source":"downloaded_HLOG", "log_period_s":0.02,
-                    "firmware":FIRMWARE_VERSION,"experiment":experiment,
+                    "firmware":s.firmware_version,"experiment":experiment,
                     "limits":{"rpm":60,"dps":80,
                               "wheel_rpm":TARGET_WHEEL_LIMIT},
                     "baseline":args.baseline,"target":args.target,"history":history,
@@ -736,10 +768,12 @@ def save_round(args, index, session, gains, records, *, phases=None, error=None)
     """Persist the original records/diagnostics before any scoring or gain write."""
     path = args.output / f"round-{index+1:02d}-raw.json"
     previous = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-    payload = {**previous, "firmware": FIRMWARE_VERSION, "loop": args.loop,
+    payload = {**previous, "firmware": session.firmware_version, "loop": args.loop,
                "gains": gains, "scoring_source": "downloaded_HLOG",
                "status": session.download["status"], "records": records,
                "wire": session.download["wire"], "timeline": session.timeline,
+               "timestamp_unit": "us" if session.require_hlog_us else "ms",
+               "batch_retries": session.download.get("batch_retries", []),
                "safety_monitor": session.monitor,
                "limits": {"wheel_rpm": 160, "rotation_rpm": 60, "rate_dps": 80},
                "error": error}

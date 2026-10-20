@@ -77,7 +77,8 @@ void Telemetry_SendAttitude(void)
   SerialDma_Write(message);
 }
 
-void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude)
+void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude,
+                           uint32_t tick_ms, uint32_t tick_us)
 {
   TelemetryHeadingLogRecord *record;
   uint16_t index;
@@ -102,7 +103,8 @@ void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude)
   }
   record = &heading_log[index];
   record->sequence = heading_log_sequence++;
-  record->tick = HAL_GetTick();
+  record->tick = tick_ms;
+  record->tick_us = tick_us;
   record->target_heading_mdeg = (int32_t)lroundf(attitude->target_deg * 1000.0f);
   record->actual_heading_mdeg = (int32_t)lroundf(attitude->feedback_deg * 1000.0f);
   record->heading_error_mdeg = (int32_t)lroundf(attitude->error_deg * 1000.0f);
@@ -190,13 +192,14 @@ uint8_t Telemetry_Hlog_SendRead(uint32_t offset, uint32_t count)
                           (uint16_t)index) % TELEMETRY_HLOG_CAPACITY];
     length = snprintf(
         message, sizeof(message),
-        "HLOG,DATA,%lu,%lu,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%u,%d,%d,%u\r\n",
+        "HLOG,DATA,%lu,%lu,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%u,%d,%d,%u,%lu\r\n",
         (unsigned long)record.sequence, (unsigned long)record.tick,
         (long)record.target_heading_mdeg, (long)record.actual_heading_mdeg,
         (long)record.heading_error_mdeg, (long)record.target_rate_mdps,
         (long)record.actual_rate_mdps, (long)record.heading_output_mdps,
         (long)record.rate_output_mrpm, record.saturated,
-        (int)record.forward_rpm, (int)record.left_rpm, record.mode);
+        (int)record.forward_rpm, (int)record.left_rpm, record.mode,
+        (unsigned long)record.tick_us);
     if ((length <= 0) || ((size_t)length >= sizeof(message)) ||
         (SerialDma_Write(message) == 0U))
     {

@@ -177,6 +177,9 @@ class MotorVofaBridge:
         }
         if name == "HLOG":
             if command.upper().startswith("HLOG,READ,"):
+                parts = command.upper().split(",")
+                if len(parts) == 4 and parts[2].isdigit():
+                    return "HLOG,END," + str(int(parts[2]))
                 return "HLOG,END"
             parts = command.upper().split(",")
             if len(parts) == 2 and parts[1] in ("STATUS", "CLEAR", "START", "STOP"):

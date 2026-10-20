@@ -12,6 +12,7 @@ typedef struct
 {
   uint32_t sequence;
   uint32_t tick;
+  uint32_t tick_us;
   int32_t target_heading_mdeg;
   int32_t actual_heading_mdeg;
   int32_t heading_error_mdeg;
@@ -20,7 +21,7 @@ typedef struct
   int32_t heading_output_mdps;
   int32_t rate_output_mrpm;
   uint8_t saturated;
-  uint8_t mode; /* 1 rate PI; 2 heading PD -> rate PI (R17 log schema). */
+  uint8_t mode; /* 1 rate PI; 2 heading PD -> rate PI. */
   int16_t forward_rpm;
   int16_t left_rpm;
 } TelemetryHeadingLogRecord;
@@ -36,7 +37,8 @@ void Telemetry_SendDriver(void);
 void Telemetry_SendSpeedStatus(void);
 void Telemetry_SetAttitude(uint8_t enable);
 void Telemetry_SendAttitude(void);
-void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude);
+void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude,
+                           uint32_t tick_ms, uint32_t tick_us);
 void Telemetry_Hlog_Clear(void);
 uint8_t Telemetry_Hlog_Start(void);
 uint8_t Telemetry_Hlog_Stop(void);

@@ -24,6 +24,8 @@ class FakeBridge:
         self.process=0.0
         self.recording=False
         self.corrupt=None
+        self.firmware_version=FIRMWARE_VERSION
+        self.caps=CAPS
 
     async def recv(self):
         return "BRIDGE,BM50_ACK_R3\n"
@@ -33,8 +35,8 @@ class FakeBridge:
         command=request["command"]
         self.sent.append(command)
         replies={
-            "VER":FIRMWARE_VERSION,
-            "CAPS":CAPS,"STACK":"STACK,4096,1400,2696,1",
+            "VER":self.firmware_version,
+            "CAPS":self.caps,"STACK":"STACK,4096,1400,2696,1",
             "UART":"UART,9600,42000000,4375,0x00,0,0,0,0,0",
             "LINK":"LINK,100,5,0,0,0,1","SPEEDLIMIT":"SPEEDLIMIT,160",
             "PIDGET":"PID,"+",".join(str(x) for x in FIXED),
@@ -86,9 +88,12 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
                                confirm_hardware=True,baseline=0,target=15,rounds=2,
                                baseline_seconds=4,seconds=6,output=Path(path))
 
-    async def exercise(self,loop,fail=False,live=True,experiment="step",corrupt=None):
+    async def exercise(self,loop,fail=False,live=True,experiment="step",corrupt=None,micros=False):
         bridge=FakeBridge()
         bridge.corrupt=corrupt
+        if micros:
+            bridge.firmware_version=FIRMWARE_VERSION.replace("R17", "R18")
+            bridge.caps=CAPS.replace("R17", "R18") + ",HLOG_US"
         @asynccontextmanager
         async def connect(*args,**kwargs):
             yield bridge
@@ -101,7 +106,9 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
                 sp,pv=round(target*1000),round(bridge.process*1000)
                 values=(sp,pv,sp-pv,0,0,5000,0) if which=="direction" else (0,0,0,sp,pv,0,5000)
                 bridge.records.append("HLOG,DATA,"+",".join(str(x) for x in
-                    (i,1000+20*i,*values,0,0,0,bridge.mode)))
+                    (i,(1000000+20123*i)//1000 if micros else 1000+20*i,*values,0,0,0,bridge.mode)))
+                if micros:
+                    bridge.records[-1] += f",{1000000+20123*i}"
             if target and corrupt in ("duplicate", "gap", "mode"):
                 fields=bridge.records[250].split(",")
                 fields[{"duplicate":2,"gap":3,"mode":14}[corrupt]]={
@@ -120,6 +127,12 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
                     self.assertTrue(saved["error"])
                 else:
                     await run(args)
+                    if micros and live:
+                        saved=json.loads((Path(directory)/"round-01-raw.json").read_text())
+                        self.assertTrue(saved["firmware"].endswith("R18"))
+                        self.assertEqual(saved["timestamp_unit"], "us")
+                        csv_rows=(Path(directory)/"round-01.csv").read_text().splitlines()
+                        self.assertAlmostEqual(float(csv_rows[2].split(",")[0]),0.020123)
             history=json.loads((Path(directory)/"session.json").read_text()) if live and not fail and not corrupt else None
         return bridge,history
 
@@ -159,6 +172,12 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
                 failed,_=await self.exercise("angular_velocity",corrupt=corrupt)
                 self.assertFalse(any(x.startswith("YAWPID,") for x in failed.sent))
                 self.assertEqual(failed.sent[-1],"STOP")
+
+    async def test_r18_scoring_consumes_microsecond_records_and_saves_actual_firmware(self):
+        bridge,history=await self.exercise("angular_velocity",micros=True)
+        self.assertTrue(history["firmware"].endswith("R18"))
+        self.assertEqual(history["scoring_source"],"downloaded_HLOG")
+        self.assertEqual(bridge.sent[-1],"STOP")
 
     async def test_heading_never_writes_inner_rate_and_sensor_failure_stops(self):
         bridge,_=await self.exercise("direction")
@@ -208,6 +227,40 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
             session.reader.cancel()
             await asyncio.gather(session.reader, return_exceptions=True)
 
+    async def test_hlog_retries_incomplete_batch_and_returns_only_contiguous_records(self):
+        session = Session(FakeBridge())
+        reads = 0
+        rows = [
+            f"HLOG,DATA,{sequence},{100 + 20 * sequence},0,0,0,15000,12000,0,5000,0,0,0,1"
+            for sequence in range(2)
+        ]
+
+        async def command(text, *, timeout=5):
+            nonlocal reads
+            if text == "HLOG,STATUS":
+                return "HLOG,STATUS,0,2,1024,0,2"
+            if text == "HLOG,READ,0,2":
+                reads += 1
+                await session.hlog_frames.put(rows[0])
+                if reads > 1:
+                    await session.hlog_frames.put(rows[1])
+                return "HLOG,END,0,2,2"
+            raise AssertionError(text)
+
+        try:
+            session.command = command
+            records = await session.read_hlog(
+                loop="angular_velocity", frame_timeout=0.01
+            )
+            self.assertEqual(reads, 2)
+            self.assertEqual([row["sequence"] for row in records], [0, 1])
+            self.assertEqual(session.download["batch_retries"], [{
+                "offset": 0, "count": 2, "attempt": 1, "missing": [1],
+            }])
+        finally:
+            session.reader.cancel()
+            await asyncio.gather(session.reader,return_exceptions=True)
+
     async def test_capacity_rejected_before_arm_and_unresolved_logs_never_write(self):
         bridge=FakeBridge()
         @asynccontextmanager
@@ -221,6 +274,58 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
                 with self.assertRaisesRegex(ValueError,"maximum"):
                     await run(args)
             self.assertEqual(bridge.sent,[])
+
+    async def test_r18_requires_microseconds_and_retries_only_read_timeouts(self):
+        session = Session(FakeBridge())
+        session.require_hlog_us = True
+        rows = [f"HLOG,DATA,{i},{100 + 20*i},0,0,0,15000,12000,0,5000,0,0,0,1,{100123 + 20123*i}"
+                for i in range(2)]
+        reads = 0
+        async def command(text, *, timeout=5):
+            nonlocal reads
+            if text == "HLOG,STATUS":
+                return "HLOG,STATUS,0,2,1024,0,2"
+            self.assertEqual(text, "HLOG,READ,0,2")
+            reads += 1
+            if reads == 1:
+                raise RuntimeError("command timeout: HLOG,READ,0,2")
+            for row in rows:
+                await session.hlog_frames.put(row)
+            return "HLOG,END,0,2,2"
+        try:
+            session.command = command
+            records = await session.read_hlog(loop="angular_velocity")
+            self.assertEqual(reads, 2)
+            self.assertEqual(records[1]["tick_us"], 120246)
+            rows[:] = [row.rsplit(",", 1)[0] for row in rows]
+            with self.assertRaisesRegex(RuntimeError, "microsecond"):
+                await session.read_hlog(loop="angular_velocity")
+        finally:
+            session.reader.cancel()
+            await asyncio.gather(session.reader, return_exceptions=True)
+
+    async def test_r18_readonly_preflight_accepts_exact_caps_without_motion(self):
+        bridge = FakeBridge()
+        original_send = bridge.send
+        async def send(text):
+            await original_send(text)
+            reply = await bridge.incoming.get()
+            if isinstance(reply, str) and reply.startswith("{"):
+                reply = reply.replace("R17", "R18")
+                if json.loads(text)["command"] == "CAPS":
+                    data = json.loads(reply)
+                    data["reply"] += ",HLOG_US"
+                    reply = json.dumps(data)
+            await bridge.incoming.put(reply)
+        bridge.send = send
+        @asynccontextmanager
+        async def connect(*args, **kwargs):
+            yield bridge
+        with tempfile.TemporaryDirectory() as directory:
+            with patch("attitude_tuner.websockets.connect", connect):
+                await run(self.args(directory, live=False))
+        self.assertNotIn("ARM", bridge.sent)
+        self.assertFalse(any(cmd.startswith(("MOVE,", "YAW,", "HEAD,", "YAWPID,", "HEADPID,")) for cmd in bridge.sent))
 
     async def test_short_or_mixed_log_never_scores(self):
         rows=[]

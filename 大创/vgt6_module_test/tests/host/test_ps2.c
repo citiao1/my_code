@@ -109,8 +109,9 @@ uint8_t Motor_Run(MotorChannel channel, int8_t direction, uint8_t duty)
 uint8_t Motor_Recover(MotorChannel channel) { (void)channel; return 1U; }
 GyroSnapshot Gyro_GetSnapshot(void) { return gyro; }
 EncoderSnapshot Encoder_GetSnapshot(void) { return encoder; }
-void Telemetry_Hlog_Record(const AttitudeControlSnapshot *snapshot)
-{ (void)snapshot; }
+void Telemetry_Hlog_Record(const AttitudeControlSnapshot *snapshot,
+                           uint32_t ms, uint32_t us)
+{ (void)snapshot; (void)ms; (void)us; }
 static void poll(void) { tick += 20U; Ps2_Process(); }
 static void buttons(uint16_t pressed)
 {

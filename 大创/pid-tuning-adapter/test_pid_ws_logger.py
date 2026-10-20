@@ -83,6 +83,19 @@ class TelemetryRowTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             hlog_samples([{**a, "mode": None}], "angular_velocity")
 
+    def test_microsecond_hlog_wraps_and_keeps_submillisecond_times(self):
+        a = hlog_row("HLOG,DATA,0,4294967,0,0,0,15000,12000,0,5400,0,0,0,1,4294967200")
+        b = hlog_row("HLOG,DATA,1,4294987,0,0,0,15000,14000,0,5700,0,0,0,1,20027")
+        self.assertAlmostEqual(hlog_samples([a, b], "angular_velocity", max_interval_ms=25)[1][0], 0.020123)
+        for us, ms in ((19899, 4294986), (24905, 4294992), (4294967200, 4294967)):
+            with self.assertRaises(ValueError):
+                hlog_samples([a, {**b, "tick_us": us, "tick": ms}], "angular_velocity", max_interval_ms=25)
+        with self.assertRaises(ValueError):
+            hlog_samples([a, {k: v for k, v in b.items() if k != "tick_us"}], "angular_velocity")
+        with self.assertRaisesRegex(ValueError, "disagree"):
+            hlog_samples([{**a, "tick": 0}], "angular_velocity")
+        self.assertIsNone(hlog_row("HLOG,DATA,0,100,0,0,0,0,0,0,0,0,0,0,1,4294967296"))
+
     def test_high_rate_direction_data_does_not_use_inner_rotation_output(self):
         row = hlog_row("HLOG,DATA,0,20,15000,12000,3000,8000,7600,40000,12000,0,20,0,2")
         self.assertEqual(hlog_samples([row]), [(0.0, 15.0, 12.0, 40.0)])

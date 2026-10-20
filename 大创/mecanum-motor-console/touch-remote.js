@@ -1,6 +1,7 @@
 const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
 const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R17';
+const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18'];
 const MAX_TARGET_RPM = 160;
 const HLOG_REQUEST_TIMEOUT_MS = 25000; // Bridge allows 20 s for a stopped RAM batch.
 
@@ -90,6 +91,7 @@ const firmware = {
   speedEnabled: false, telemetryEnabled: false,
   receivedAt: 0, expectedAt: 0, timeoutReported: false,
   hlogSupported: false,
+  hlogMicros: false,
   hlog: { active: false, count: 0, capacity: 0, overflow: 0, sequence: 0, lastBatch: 0 },
 };
 const hlogRows = [];
@@ -156,6 +158,7 @@ function resetLinkState() {
   receiveBuffer = '';
   firmware.speedEnabled = false;
   firmware.hlogSupported = false;
+  firmware.hlogMicros = false;
   firmware.hlog = { active: false, count: 0, capacity: 0, overflow: 0, sequence: 0, lastBatch: 0 };
   hlogRows.length = 0;
   firmwareCompatible = false;
@@ -364,7 +367,7 @@ function handleLine(line) {
   if (fields[0] === 'VER') {
     const version = fields.slice(1).join(',') || '未知固件';
     ui.version.textContent = version;
-    firmwareCompatible = version === REQUIRED_FIRMWARE;
+    firmwareCompatible = SUPPORTED_FIRMWARE.includes(version);
     logCommand(`收到 < ${line}`);
     setEvent(firmwareCompatible ? `固件：${version}` : `固件不兼容：请烧录 ${REQUIRED_FIRMWARE}`);
     updateUi();
@@ -372,6 +375,7 @@ function handleLine(line) {
   }
   if (fields[0] === 'CAPS') {
     firmware.hlogSupported = fields.includes('HLOG') && fields.includes('HLOG_MODE');
+    firmware.hlogMicros = fields.includes('HLOG_US');
     logCommand(`收到 < ${line}`);
     if (!firmware.hlogSupported) ui.hlogStatus.textContent = '固件不支持 HLOG';
     updateUi();
@@ -422,11 +426,12 @@ function handleLine(line) {
     updateUi();
     return;
   }
-  if (fields[0] === 'HLOG' && fields[1] === 'DATA' && [14, 15].includes(fields.length)) {
+  if (fields[0] === 'HLOG' && fields[1] === 'DATA' && [14, 15, 16].includes(fields.length)) {
     const values = fields.slice(2).map(Number);
     if (fields.slice(2).every(x => /^-?\d+$/.test(x)) && values.every(Number.isSafeInteger) &&
         values[0] >= 0 && values[1] >= 0 && values[1] <= 0xffffffff &&
-        [0, 1].includes(values[9]) && (fields.length === 14 || [1, 2].includes(values[12])))
+        [0, 1].includes(values[9]) && (fields.length === 14 || [1, 2].includes(values[12])) &&
+        (fields.length !== 16 || (values[13] >= 0 && values[13] <= 0xffffffff)))
       hlogRows.push(fields.length === 14 ? [...values, 0] : values);
     else setEvent(`HLOG 数据格式错误：${line}`);
     return;
@@ -562,6 +567,7 @@ function hlogCsv(rows) {
     'heading_output_mdps', 'rate_output_mrpm', 'saturated',
     'forward_rpm', 'left_rpm', 'mode',
   ];
+  if (rows.some(row => row.length === 14)) header.push('tick_us');
   const escape = (value) => {
     const text = String(value);
     return /[,"\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
@@ -594,9 +600,14 @@ async function readStoppedHlog(send) {
   }
   if (hlogRows.some((row, index) => row[0] !== index || ![1, 2].includes(row[12])))
     throw new Error('日志序号或控制模式不完整，不能作为整定数据');
+  const micros = hlogRows[0].length === 14;
+  if ((firmware.hlogMicros && !micros) || hlogRows.some(row =>
+      (row.length === 14) !== micros || (micros && ((row[13] - row[1] * 1000) >>> 0) >= 1000)))
+    throw new Error('日志时间戳分辨率混用、缺少微秒字段或时间戳不一致');
   for (let index = 1; index < hlogRows.length; index += 1) {
-    const dt = (hlogRows[index][1] - hlogRows[index - 1][1]) >>> 0;
-    if (dt < 20 || dt > 25)
+    const column = micros ? 13 : 1, scale = micros ? 1000 : 1;
+    const dt = (hlogRows[index][column] - hlogRows[index - 1][column]) >>> 0;
+    if (dt < 20 * scale || dt > 25 * scale)
       throw new Error('日志时间不连续或采样不足，保留诊断数据但不能作为完整整定日志');
   }
   return hlogRows;

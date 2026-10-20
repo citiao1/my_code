@@ -193,7 +193,7 @@ def encoder_row(message: str):
 def hlog_row(message: str):
     """Parse HLOG; legacy records have unknown mode, not inferred rate data."""
     fields = message.strip().split(",")
-    if len(fields) not in (14, 15) or fields[:2] != ["HLOG", "DATA"]:
+    if len(fields) not in (14, 15, 16) or fields[:2] != ["HLOG", "DATA"]:
         return None
     try:
         values = [int(value, 0) for value in fields[2:]]
@@ -201,9 +201,11 @@ def hlog_row(message: str):
         return None
     if values[0] < 0 or values[1] < 0 or values[9] not in (0, 1):
         return None
-    if len(values) == 13 and values[12] not in (1, 2):
+    if len(values) >= 13 and values[12] not in (1, 2):
         return None
-    return {
+    if len(values) == 14 and not 0 <= values[13] <= 0xffffffff:
+        return None
+    record = {
         "sequence": values[0],
         "tick": values[1],
         "target_heading_deg": values[2] / 1000.0,
@@ -216,8 +218,11 @@ def hlog_row(message: str):
         "saturated": bool(values[9]),
         "forward_rpm": values[10],
         "left_rpm": values[11],
-        "mode": values[12] if len(values) == 13 else None,
+        "mode": values[12] if len(values) >= 13 else None,
     }
+    if len(values) == 14:
+        record["tick_us"] = values[13]
+    return record
 
 
 def hlog_samples(records, loop="direction", *, max_interval_ms=60):
@@ -228,16 +233,25 @@ def hlog_samples(records, loop="direction", *, max_interval_ms=60):
     elapsed = 0
     rows = []
     previous_tick = None
+    microseconds = "tick_us" in records[0]
+    scale = 1000000 if microseconds else 1000
     for sequence, record in enumerate(records):
         if record["sequence"] != sequence or record.get("mode") != expected_mode:
             raise ValueError("HLOG sequence incomplete or wrong/missing loop mode")
-        tick = record["tick"]
+        if ("tick_us" in record) != microseconds:
+            raise ValueError("HLOG mixed timestamp resolutions")
+        tick_ms = record["tick"]
+        if not isinstance(tick_ms, int) or not 0 <= tick_ms <= 0xffffffff:
+            raise ValueError("HLOG MCU timestamp out of range")
+        tick = record["tick_us"] if microseconds else tick_ms
         if not isinstance(tick, int) or not 0 <= tick <= 0xffffffff:
             raise ValueError("HLOG MCU timestamp out of range")
+        if microseconds and ((tick - tick_ms * 1000) & 0xffffffff) >= 1000:
+            raise ValueError("HLOG millisecond/microsecond timestamps disagree")
         if previous_tick is not None:
             dt = (tick - previous_tick) & 0xffffffff
-            if not 20 <= dt <= max_interval_ms:
-                raise ValueError("HLOG timestamp duplicate, unordered or gap")
+            if not 20 * scale // 1000 <= dt <= max_interval_ms * scale // 1000:
+                raise ValueError(f"HLOG timestamp duplicate, unordered or gap: {dt * 1000 / scale:g} ms")
             elapsed += dt
         previous_tick = tick
         keys = ("target_rate_dps", "actual_rate_dps", "rate_output_rpm") if expected_mode == 1 else (
@@ -245,7 +259,7 @@ def hlog_samples(records, loop="direction", *, max_interval_ms=60):
         values = tuple(record[key] for key in keys)
         if not all(math.isfinite(value) for value in values):
             raise ValueError("HLOG nonfinite controller data")
-        rows.append((elapsed / 1000.0, *values))
+        rows.append((elapsed / scale, *values))
     return rows
 
 

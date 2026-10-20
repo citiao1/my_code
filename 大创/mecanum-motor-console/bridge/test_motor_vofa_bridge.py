@@ -171,7 +171,7 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
                               ("HLOG,START","HLOG,START"),
                               ("HLOG,STOP","HLOG,STOP"),
                               ("HLOG,CLEAR","HLOG,CLEAR"),
-                              ("HLOG,READ,0,8","HLOG,END")):
+                              ("HLOG,READ,0,8","HLOG,END,0")):
             self.assertEqual(bridge_module.MotorVofaBridge.expected_reply(command),reply)
 
     async def test_r17_hlog_fragmented_rows_forward_unchanged_and_need_matching_ack(self):
@@ -188,8 +188,11 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(await task, 'HLOG,STOP,OK')
         task = asyncio.create_task(bridge.execute_command('HLOG,READ,0,2'))
         await asyncio.sleep(0)
+        bridge.consume_bytes(b'HLOG,END,8,2,10\r\n')
+        await asyncio.sleep(0)
+        self.assertFalse(task.done())  # A delayed END cannot acknowledge another offset.
         rows = ['HLOG,DATA,0,100,0,0,0,15000,12000,0,5000,0,0,0,1',
-                'HLOG,DATA,1,120,15000,12000,3000,8000,7600,40000,12000,0,20,0,2']
+                'HLOG,DATA,1,120,15000,12000,3000,8000,7600,40000,12000,0,20,0,2,120123']
         payload = ('\r\n'.join(rows) + '\r\n').encode('ascii')
         for offset in range(0, len(payload), 13):
             bridge.consume_bytes(payload[offset:offset+13])

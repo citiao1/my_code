@@ -159,6 +159,33 @@ test('R17 stopped download checks fresh state, exact batches, modes and MCU tick
   }
 });
 
+test('R18 downloads microsecond timestamps and rejects missing, mixed and out-of-range cadence', async () => {
+  for (const fault of [null, 'missing', 'mixed', 'short', 'long', 'inconsistent']) {
+    const f = consoleFixture();
+    f.line('VER,VGT6_BM50_ATTITUDE_R18');
+    assert.equal(f.eval('firmwareCompatible'), true);
+    f.line('CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US');
+    f.context.downloadSend = async command => {
+      if (command === 'ANGLESTATUS') return 'ATEL,100,0,1,0,0,0,0,0,0,0,0,0,12000';
+      if (command === 'HLOG,STATUS') return 'HLOG,STATUS,0,2,1024,0,2';
+      const dt = fault === 'short' ? 19999 : fault === 'long' ? 25001 : 20123;
+      for (let i = 0; i < 2; i += 1) {
+        const absolute = 4294967200 + i * dt;
+        const ms = fault === 'inconsistent' ? 0 : Math.floor(absolute / 1000);
+        const suffix = fault === 'missing' || (fault === 'mixed' && i === 1) ? '' : `,${absolute >>> 0}`;
+        f.line(`HLOG,DATA,${i},${ms},0,0,0,15000,12000,0,5000,0,0,0,1${suffix}`);
+      }
+      return 'HLOG,END,0,2,2';
+    };
+    if (fault) await assert.rejects(f.eval('readStoppedHlog(downloadSend)'), undefined, fault);
+    else {
+      const rows = await f.eval('readStoppedHlog(downloadSend)');
+      assert.equal(rows[1][13], 20027);
+      assert.match(f.eval('hlogCsv(hlogRows)'), /mode,tick_us\r\n/);
+    }
+  }
+});
+
 test('PS2 diagnostic query reads status and raw bytes without enabling motors', async () => {
   const f = consoleFixture();
   f.elements.get('#ps2QueryButton').listeners.click();
