@@ -58,8 +58,40 @@ R17上一固件备份为b19318a6。本轮提交仅涉及HLOG、相关适配/测�
 
 ## 烧录与后续
 
-当前阶段：已编译，尚未确认R18烧录。按本项目既有授权，先commit，再确认停车/解锁关闭并尝试标准Keil烧录及读回。
+按本项目既有授权，先commit，再确认停车/解锁关闭并进行标准Keil烧录及读回；完成结果见下节。
 发现连接、供电或校验异常应停止，不尝试擦除/解锁/修改保护。烧录结果将追加于此。
 
 后续调参必须重新确认板上VER/CAPS为R18且HLOG_US存在，再使用新的获授权实验采集微秒日志。
 本轮未ARM、未运动、未写PID；离线测试不证明实车时序已满足20–25ms，也不证明PID性能。
+
+## 烧录及启动验证结果（已完成）
+
+固件/适配备份提交 `b814730e`。先确认角环停止、速度环失能，再收到 `ACK,DISARM` 后烧录。
+Keil本次报告 `Erase Done.Programming Done.Verify OK.Application running`；
+独立critical-only读回确认device=0x101f6413、Flash1024KiB、向量表和R18标记0x08005670匹配。
+普通复位后再次读回通过，CPU为RUNNING；未使用整片擦除、解锁或保护位修改。
+
+蓝牙启动查询独立确认：
+
+```text
+VER,VGT6_BM50_ATTITUDE_R18
+CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US
+STACK,4096,1992,2104,1
+UART,9600,42000000,4375,0x00,0,0,0,0,0
+HLOG,STATUS,0,0,1024,0,0
+YAWPID,0.1500,2.5000,60,80,20
+HEADPID,6.0000,1.2500,80,20,D_MEAS
+SPEEDLIMIT,160
+ACK,DISARM
+```
+
+ANGLESTATUS mode=0/speed=0、IMU ready=1，电压11.875V。烧录后的空HLOG符合RAM日志重启清空行为；
+旧646条已提前留档。未启动角环采样，尚无R18运动日志用于判定真实微秒间隔。
+镜像SHA256仍为上述9598821F...55A0143B。
+
+桥接已用项目`.venv`重启并连接同一WHEELTEC-IOS（2A:A2:19:08:08:84），新END偏移匹配已生效。
+重连后曾出现一次UART噪声错误（0x04/NE=1），只读整定预检如实拒绝；停车下执行一次普通NRST复位后，
+R18只读预检通过，随后三次查询均UART各计数0、LINK各错误计数0、mode=0/speed=0，最终DISARM确认。
+这只是当前查询结果，不证明无线链路从此无噪声；后续实车试验仍需逐轮健康检查。
+记录见`../pid-tuning-adapter/runs/r18-readonly-preflight-20261020/preflight-after-reset.json`。
+网页需Ctrl+F5加载v29。没有进行R18运动实验或实际PID调参。
