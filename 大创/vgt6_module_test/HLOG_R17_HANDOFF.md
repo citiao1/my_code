@@ -84,3 +84,9 @@ HLOG状态、控制命令时间线、低频安全诊断；不从失败轮出参�
 正负转向、只写当前环、停车写参/回读/恢复已测最佳、坏日志禁止写参及只读不运动。
 固件2305项断言与PS2/IMU集成回归、网页64项测试均通过；两个skill校验通过。
 Keil重新编译0 errors/0 warnings，HEX哈希仍为上述121485C1...B08C60B。
+
+烧录连接检查：已检测单个PUSO1234:5678；蓝牙DISARM成功，ANGLESTATUS mode=0、
+速度环失能，电压12.270V、PS2未解锁，板上查询仍是R16。Keil本轮报RDDI-DAP，
+默认pyOCD DAPv2打开失败；改prefer_v1=True/100kHz只读连接成功，读到
+0x101f6413、Flash1024KiB、CPU RUNNING。工具增加显式-PreferV1恢复路线，
+仅在已确认HID连接有效时选用；仍须完整镜像读回、复位后再校验运行状态。

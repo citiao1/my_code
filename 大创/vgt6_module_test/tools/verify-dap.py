@@ -8,6 +8,8 @@ p.add_argument("--pack", required=True)
 p.add_argument("--probe", required=True)
 p.add_argument("--image", required=True)
 p.add_argument("--frequency", type=int, default=1_000_000)
+p.add_argument("--prefer-v1", action="store_true",
+               help="prefer the probe's HID transport when DAPv2 fails")
 p.add_argument("--critical-only", action="store_true",
                 help="check device, vectors, marker, and run state without rereading the full image")
 p.add_argument("--require-running", action="store_true")
@@ -19,6 +21,7 @@ with ConnectHelper.session_with_chosen_probe(
         "pack": a.pack, "connect_mode": "attach", "frequency": a.frequency,
         "cmsis_dap.deferred_transfers": False,
         "cmsis_dap.limit_packets": True,
+        "cmsis_dap.prefer_v1": a.prefer_v1,
     },
 ) as session:
     target = session.target
