@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""R9 live PI-rate / PD-heading tuning with physical motion experiments."""
+"""R17 PI-rate / PD-heading tuning, scored only from stopped RAM-log downloads."""
 from __future__ import annotations
 import argparse
 import asyncio
@@ -10,17 +10,17 @@ import time
 from dataclasses import asdict
 from pathlib import Path
 import websockets
-from closed_loop_tuning import (
-    candidate, score_bidirectional, score_step, score_tracking, wrap_deg,
-)
+from closed_loop_tuning import candidate, score_tracking, wrap_deg
 from pid_tuning import Sample
+from hlog_experiment import recording_budget, score_logged
 from pid_ws_logger import (
-    ATTITUDE_CAPS, BRIDGE_GREETING, ENCODER_COUNTS_PER_REV, FIRMWARE_VERSION,
+    BRIDGE_GREETING, ENCODER_COUNTS_PER_REV,
     METERS_PER_ENCODER_COUNT, WHEEL_DIAMETER_M, distance_from_encoder,
     encoder_row, hlog_row, hlog_samples, speed_drive_row, telemetry_row,
 )
 
-CAPS = ATTITUDE_CAPS
+FIRMWARE_VERSION = "VER,VGT6_BM50_ATTITUDE_R17"
+CAPS = "CAPS,ATTITUDE_R17,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE"
 TARGET_WHEEL_LIMIT = 160
 HEADING_FINAL_SETTLE_S = 1.0
 HEADING_REVERSAL_PAUSE_S = 1.5
@@ -40,6 +40,10 @@ class Session:
         self.armed = False
         self.allow_stopped_heartbeat = False
         self.hlog_reading = False
+        self.motion_active = False
+        self.timeline = []
+        self.monitor = []
+        self.download = {"status": None, "records": [], "wire": []}
         self.reader = asyncio.create_task(self.receive())
 
     @staticmethod
@@ -68,6 +72,7 @@ class Session:
                         else:
                             future.set_exception(RuntimeError(reply.get("error")))
                 elif text.startswith("ATEL,"):
+                    self.monitor.append({"host_monotonic_s": time.monotonic(), "line": text.strip()})
                     self.enqueue_latest(
                         self.frames, (time.monotonic(), text.strip())
                     )
@@ -80,7 +85,8 @@ class Session:
                         self.speed_frames, (time.monotonic(), text.strip())
                     )
                 elif text.startswith("HLOG,"):
-                    self.enqueue_latest(self.hlog_frames, text.strip())
+                    self.download["wire"].append(text.strip())
+                    self.hlog_frames.put_nowait(text.strip())  # Overflow is a fault, not silent loss.
                 elif text.startswith(("STATUS,0,", "ERR,")):
                     if not (
                         self.allow_stopped_heartbeat and
@@ -95,6 +101,8 @@ class Session:
                     future.set_exception(ConnectionError("bridge receiver stopped"))
 
     async def command(self, text, *, timeout=5):
+        entry = {"command": text, "host_monotonic_s": time.monotonic()}
+        self.timeline.append(entry)
         self.serial += 1
         number = self.serial
         future = asyncio.get_running_loop().create_future()
@@ -102,7 +110,9 @@ class Session:
         try:
             await self.ws.send(json.dumps({"type":"command","id":number,"command":text}))
             try:
-                return await asyncio.wait_for(future, timeout)
+                result = await asyncio.wait_for(future, timeout)
+                entry["reply"] = result
+                return result
             except asyncio.TimeoutError as exc:
                 raise RuntimeError(f"command timeout: {text}") from exc
         finally:
@@ -111,7 +121,7 @@ class Session:
     async def heartbeat(self):
         try:
             while True:
-                if self.hlog_reading:
+                if self.hlog_reading or not self.motion_active:
                     await asyncio.sleep(0.1)
                     continue
                 await self.command("KEEP")
@@ -176,6 +186,7 @@ class Session:
             status = (await self.command(
                 "HLOG,STATUS", timeout=command_timeout
             )).split(",")
+            self.download["status"] = status
             if len(status) != 7 or status[:2] != ["HLOG", "STATUS"]:
                 raise RuntimeError("invalid HLOG status")
             total = int(status[3])
@@ -193,7 +204,8 @@ class Session:
                     timeout=command_timeout,
                 )
                 end = reply.split(",")
-                if len(end) != 5 or end[:2] != ["HLOG", "END"]:
+                if (len(end) != 5 or end[:2] != ["HLOG", "END"] or
+                        int(end[2]) != offset or int(end[4]) != total):
                     raise RuntimeError("invalid HLOG end marker")
                 returned = int(end[3])
                 if returned != requested:
@@ -217,6 +229,7 @@ class Session:
                         break
                     record = hlog_row(line)
                     if record is not None:
+                        self.download["records"].append(record)
                         sequence = int(record["sequence"])
                         if sequence != next_sequence:
                             raise RuntimeError("HLOG duplicate, missing or unordered sequence")
@@ -232,10 +245,46 @@ class Session:
                     offset, offset + returned
                 ))
                 offset += returned
-            hlog_samples(records, loop)  # Validate before any downstream scoring.
+            hlog_samples(records, loop, max_interval_ms=25)
             return records
         finally:
             self.hlog_reading = False
+
+    async def stop_and_confirm(self):
+        self.motion_active = False
+        if await self.command("STOP") != "ACK,STOP":
+            raise RuntimeError("STOP not acknowledged")
+        fields = (await self.command("ANGLESTATUS")).split(",")
+        if len(fields) != 14 or fields[0] != "ATEL" or fields[2] != "0" or fields[12] != "0":
+            raise RuntimeError("controller did not enter stopped state")
+
+    async def collect_logged(self, loop, phases):
+        """ATEL is only a safety monitor; return complete downloaded HLOG."""
+        self.allow_stopped_heartbeat = True
+        await self.stop_and_confirm()
+        while not self.hlog_frames.empty():
+            self.hlog_frames.get_nowait()
+        self.download = {"status": None, "records": [], "wire": []}
+        await self.command("HLOG,CLEAR")
+        await self.command("HLOG,START")
+        heartbeat = None
+        try:
+            await self.command(self.motion_command(loop, phases[0][0]))
+            self.motion_active = True
+            heartbeat = asyncio.create_task(self.heartbeat())
+            first_tick = None
+            for target, seconds in phases:
+                _, first_tick = await self.collect(loop, target, seconds, first_tick)
+        finally:
+            self.motion_active = False
+            if heartbeat:
+                heartbeat.cancel()
+                await asyncio.gather(heartbeat, return_exceptions=True)
+            try:
+                await self.stop_and_confirm()
+            finally:
+                await self.command("HLOG,STOP")
+        return await self.read_hlog(loop=loop)
 
     async def collect_heading_round_trip_logged(
         self, distance_m, forward_rpm, heading_amplitudes, seconds,
@@ -243,17 +292,21 @@ class Session:
     ):
         """Run a heading trajectory and retrieve the MCU's 20 ms RAM log."""
         self.allow_stopped_heartbeat = True
-        await self.command("STOP")
+        await self.stop_and_confirm()
         await self.command("HLOG,CLEAR")
         await self.command("HLOG,START")
+        heartbeat = asyncio.create_task(self.heartbeat())
         try:
             samples = await self.collect_heading_round_trip(
                 distance_m, forward_rpm, heading_amplitudes, seconds,
                 heading_reference_deg,
             )
         finally:
+            self.motion_active = False
+            heartbeat.cancel()
+            await asyncio.gather(heartbeat, return_exceptions=True)
             try:
-                await self.command("STOP")
+                await self.stop_and_confirm()
             finally:
                 await self.command("HLOG,STOP")
         records = await self.read_hlog()
@@ -267,6 +320,10 @@ class Session:
         return f"HEAD,{target:.4f}"
 
     async def write(self, loop, gains):
+        stopped = (await self.command("ANGLESTATUS")).split(",")
+        if (self.motion_active or len(stopped) != 14 or stopped[0] != "ATEL" or
+                stopped[2] != "0" or stopped[12] != "0"):
+            raise RuntimeError("PID writes require a verified stopped controller")
         old = await self.get_gains(loop)
         if any(abs(new-prev)>max(abs(prev)*0.2001,0.0001) for new,prev in zip(gains,old)):
             raise RuntimeError("per-write gain change exceeds locked 20% bound")
@@ -312,16 +369,6 @@ class Session:
             raise RuntimeError("IMU is not ready for heading reference")
         return float(fields[8]) / 1000.0
 
-    async def collect_spin(self, target, seconds, baseline_seconds):
-        """Run matched CW/CCW rate tests while keeping ARM and telemetry alive."""
-        baseline, first_tick = await self.collect(
-            "angular_velocity", 0.0, baseline_seconds, None)
-        positive, first_tick = await self.collect(
-            "angular_velocity", abs(target), seconds, first_tick)
-        negative, _ = await self.collect(
-            "angular_velocity", -abs(target), seconds, first_tick)
-        return baseline, positive, negative
-
     async def collect_heading_round_trip(
         self, distance_m, forward_rpm, heading_amplitudes, seconds,
         heading_reference_deg
@@ -365,6 +412,7 @@ class Session:
                 raise RuntimeError("encoder feedback unavailable")
             origin = origin_packet[3]
             await self.command(f"HEADMOVE,{heading:.4f},{speed},0")
+            self.motion_active = True
             segment_samples = 0
             while time.monotonic() - started < seconds:
                 await read_sample()
@@ -417,6 +465,7 @@ class Session:
         next_encoder_poll = started
         leg = 0
         await self.command(f"MOVE,{abs(int(target_rpm))},0,0")
+        self.motion_active = True
         # KEEP is only valid after MOVE has enabled the attitude controller.
         # Starting it immediately after ARM would receive ERR,KEEP,STOPPED
         # and leave the later motion without watchdog heartbeats.
@@ -472,15 +521,15 @@ class Session:
 
 
 async def run(args):
+    budget = recording_budget(args)  # Reject oversized/unsupported runs before ARM.
     args.output.mkdir(parents=True, exist_ok=True)
     async with websockets.connect(args.url, open_timeout=5) as ws:
         if (await asyncio.wait_for(ws.recv(),5)).strip()!=BRIDGE_GREETING:
             raise RuntimeError("R3 bridge required")
         s = Session(ws)
-        heartbeat = None
         try:
             if await s.command("VER")!=FIRMWARE_VERSION:
-                raise RuntimeError("R10 firmware required")
+                raise RuntimeError("R17 firmware with mode-tagged 50 Hz HLOG required")
             s.uart_baseline = await s.command("UART")
             u = s.uart_baseline.split(",")
             if len(u)!=10 or u[0]!="UART" or any(int(x) for x in u[5:]):
@@ -537,31 +586,27 @@ async def run(args):
             inner=await s.get_gains("angular_velocity")
             wheel_fields = (await s.command("PIDGET")).split(",")
             s.wheel_baseline = tuple(float(value) for value in wheel_fields[1:])
+            status = (await s.command("HLOG,STATUS")).split(",")
+            if (len(status) != 7 or status[:2] != ["HLOG", "STATUS"] or
+                    status[2] != "0" or int(status[4]) != 1024):
+                raise RuntimeError("HLOG capacity/idle preflight failed")
             if not args.live:
                 print(json.dumps({"capabilities":CAPS,"gains":current,"inner":inner,
+                                  "scoring_source":"downloaded_HLOG",
+                                  "recording_budget_s":budget,
                                   "motion_started":False},indent=2))
                 return
             if not args.confirm_hardware:
                 answer=input("首次确认：车体可实际旋转、场地清空、急停有效，"
                              f"目标 {args.baseline}→{args.target}，固定限幅 60 RPM / 80°/s。输入 YES：")
                 if answer!="YES": raise RuntimeError("hardware not confirmed")
-            # Only one ARM; rounds keep controllers running. Targets are a
-            # predeclared two-level experiment, never chosen by the optimizer.
+            # One confirmation/ARM, but stop for every download and gain write.
             await s.command("ARM")
             s.armed=True
             await s.command("ATEL,1")
             heading_reference = None
             if args.loop == "direction":
                 heading_reference = await s.read_heading_reference()
-                if experiment == "heading_round_trip":
-                    await s.command(
-                        f"HEADMOVE,{wrap_deg(heading_reference):.4f},0,0")
-                else:
-                    await s.command(
-                        f"HEAD,{wrap_deg(heading_reference + args.baseline):.4f}")
-            else:
-                await s.command(s.motion_command(args.loop, args.baseline))
-            heartbeat=asyncio.create_task(s.heartbeat())
             best_gains=current
             best_score=float("inf")
             history=[]
@@ -572,32 +617,7 @@ async def run(args):
                 if args.loop=="direction" and await s.get_gains("angular_velocity")!=inner:
                     raise RuntimeError("inner rate gains changed while tuning outer loop")
                 hlog_records = None
-                if experiment == "spin":
-                    baseline, positive, negative = await s.collect_spin(
-                        args.target, args.seconds, args.baseline_seconds)
-                    measured = baseline + positive + negative
-                    if len(positive) < 3:
-                        raise RuntimeError("positive spin leg too short to score reversal")
-                    # The negative leg starts while the chassis still has
-                    # positive yaw rate. Use the last positive samples as
-                    # the settled pre-step context for the reversal.
-                    negative_for_score = positive[-3:] + negative
-                    result = score_bidirectional(
-                        baseline + positive, negative_for_score,
-                        angle=False, output_limit=60)
-                elif experiment == "heading_round_trip":
-                    measured = await s.collect_heading_round_trip(
-                        args.distance_m, args.forward_rpm,
-                        [0.0, args.target, 0.0, -args.target, 0.0],
-                        args.seconds, heading_reference)
-                    result = score_tracking(
-                        measured,
-                        angle=True,
-                        output_limit=80,
-                        max_interval_s=HEADING_REVERSAL_PAUSE_S + 1.0,
-                    )
-                    hlog_records = None
-                elif experiment == "direction_identify":
+                if experiment == "direction_identify":
                     measured, hlog_records = await s.collect_heading_round_trip_logged(
                         args.distance_m, args.forward_rpm,
                         [0.0, args.target, 0.0, -args.target, 0.0],
@@ -605,6 +625,7 @@ async def run(args):
                     # Low-rate ATEL above is only the live safety/route monitor.
                     # Identification metrics must use downloaded 20 ms records.
                     measured = [Sample(*row) for row in hlog_samples(hlog_records)]
+                    save_round(args, round_index, s, current, hlog_records)
                     result = score_tracking(
                         measured,
                         angle=True,
@@ -612,15 +633,16 @@ async def run(args):
                         max_interval_s=HEADING_REVERSAL_PAUSE_S + 1.0,
                     )
                 else:
-                    hlog_records = None
-                    baseline, first_tick=await s.collect(
-                        args.loop,args.baseline,args.baseline_seconds,None)
-                    step, _=await s.collect(
-                        args.loop,args.target,args.seconds,first_tick)
-                    measured = baseline + step
-                    result=score_step(
-                        measured, angle=args.loop=="direction",
-                        output_limit=60 if args.loop=="angular_velocity" else 80)
+                    offset = heading_reference if args.loop == "direction" else 0.0
+                    convert = wrap_deg if args.loop == "direction" else lambda x: x
+                    phases = [(convert(offset + args.baseline), args.baseline_seconds),
+                              (convert(offset + args.target), args.seconds)]
+                    if experiment == "spin":
+                        phases[1] = (abs(args.target), args.seconds)
+                        phases.append((-abs(args.target), args.seconds))
+                    hlog_records = await s.collect_logged(args.loop, phases)
+                    save_round(args, round_index, s, current, hlog_records, phases=phases)
+                    measured, result = score_logged(hlog_records, args.loop, phases)
                 await s.health()
                 if await s.get_gains(args.loop)!=current:
                     raise RuntimeError("external PID change during measurement")
@@ -667,7 +689,8 @@ async def run(args):
                     }, indent=2), encoding="utf-8")
                     print(json.dumps(record))
                     continue
-                proposal=candidate(best_gains,result,args.loop)
+                proposal = (candidate(current, result, args.loop)
+                            if result.score <= best_score else best_gains)
                 # Each actual write, including rollback, is bounded relative
                 # to the currently applied coefficients.
                 proposal=tuple(round(max(old*0.8,min(old*1.2,new)),4)
@@ -679,12 +702,14 @@ async def run(args):
                     "loop":args.loop,"form":"parallel","period_s":0.02,
                     "derivative":"measurement" if args.loop=="direction" else "none",
                     "telemetry_period_s":0.2,
+                    "scoring_source":"downloaded_HLOG", "log_period_s":0.02,
+                    "firmware":FIRMWARE_VERSION,"experiment":experiment,
                     "limits":{"rpm":60,"dps":80,
                               "wheel_rpm":TARGET_WHEEL_LIMIT},
                     "baseline":args.baseline,"target":args.target,"history":history,
                     "best_gains":best_gains,"best_score":best_score},indent=2),encoding="utf-8")
                 print(json.dumps(record))
-                if round_index+1<args.rounds:
+                if round_index+1<args.rounds and proposal != current:
                     await s.write(args.loop,proposal)
                     current=proposal
             # Finish on the best measured parameters; do not apply an untested last candidate.
@@ -695,15 +720,32 @@ async def run(args):
                     raise RuntimeError("cannot restore measured best within locked gain guard")
                 await s.write(args.loop,rollback)
                 current=rollback
+        except Exception as exc:
+            save_round(args, locals().get("round_index", 0), s,
+                       locals().get("current"), s.download["records"], error=str(exc))
+            raise
         finally:
-            if heartbeat:
-                heartbeat.cancel()
-                await asyncio.gather(heartbeat,return_exceptions=True)
             if s.armed:
                 try: await s.command("STOP")
                 except Exception as exc: print(f"STOP unavailable: {exc}; MCU heartbeat watchdog expires in 1.5s")
             s.reader.cancel()
             await asyncio.gather(s.reader,return_exceptions=True)
+
+
+def save_round(args, index, session, gains, records, *, phases=None, error=None):
+    """Persist the original records/diagnostics before any scoring or gain write."""
+    path = args.output / f"round-{index+1:02d}-raw.json"
+    previous = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    payload = {**previous, "firmware": FIRMWARE_VERSION, "loop": args.loop,
+               "gains": gains, "scoring_source": "downloaded_HLOG",
+               "status": session.download["status"], "records": records,
+               "wire": session.download["wire"], "timeline": session.timeline,
+               "safety_monitor": session.monitor,
+               "limits": {"wheel_rpm": 160, "rotation_rpm": 60, "rate_dps": 80},
+               "error": error}
+    if phases is not None:
+        payload["phases"] = phases
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
 
 def main():

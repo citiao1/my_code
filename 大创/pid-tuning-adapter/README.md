@@ -2,10 +2,32 @@
 
 2026-10-20 policy: gain decisions require validated downloaded high-rate MCU
 logs, never low-rate TEL/ATEL. R17 adds HLOG mode=1 rate PI and mode=2 heading;
-`hlog_samples` validates and maps either mode. `direction_identify` scores the
-downloaded records. Legacy default step/spin paths and R10-only capability
-checks still require adaptation before live R17 tuning; examples below are
-not permission to bypass this gate. See [R17 handoff](../vgt6_module_test/HLOG_R17_HANDOFF.md).
+`attitude_tuner.py` now requires exact R17 VER/CAPS and scores **only downloaded
+HLOG** for rate/heading steps and rate bidirectional spins. Every round stops,
+confirms mode=0/speed=0, downloads/saves the full log, validates/scores it, then
+may write bounded RAM gains and read them back before the next round. One
+hardware confirmation per unchanged session. Limits remain160 wheel RPM,
+60 rotation RPM and80 deg/s. See [R17 handoff](../vgt6_module_test/HLOG_R17_HANDOFF.md).
+
+Read-only preflight (no ARM or motion):
+
+```powershell
+python pid-tuning-adapter/attitude_tuner.py --loop angular_velocity --experiment spin --target 15 --output pid-tuning-adapter/runs/rate-new
+```
+
+Only after motion is explicitly authorized, add `--live`; use
+`--confirm-hardware` only when that exact setup was already confirmed.
+Default spin records4+6+6=16 s; step4+6=10 s. Plans over18 s reject before ARM,
+since1024 records hold20.48 s including latency. At least10 actual samples
+within each10–90% transient are required. A faster response unresolved at50 Hz
+causes a diagnostic-only failure, never a sparse-data gain write. Raw JSON
+contains HLOG status/records/wire lines, gains, limits, phases, command timeline
+and safety ATEL; it is saved before scoring, including on failed runs.
+`direction_identify` is HLOG-only/no-write; automatic `heading_round_trip`
+tuning is disabled. Wheel high-rate tuning is not implemented.
+
+The historical passive-logger/offline examples below are diagnostics only;
+TEL/ATEL captures cannot authorize gain decisions under this policy.
 
 This standalone adapter passively records one wheel's speed-loop response from
 the existing BM50 bridge WebSocket. It does not open BLE/serial, command motor
