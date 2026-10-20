@@ -2,6 +2,7 @@ const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
 const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R17';
 const MAX_TARGET_RPM = 160;
+const HLOG_REQUEST_TIMEOUT_MS = 25000; // Bridge allows 20 s for a stopped RAM batch.
 
 function normalizeRemoteTarget(value) {
   if (!value) return '';
@@ -198,7 +199,7 @@ function writeCommand(command) {
     const timer = setTimeout(() => {
       pending.delete(id);
       reject(new Error(`桥接应答超时：${command}；请重启桥接程序`));
-    }, 5000);
+    }, command.startsWith('HLOG,READ,') ? HLOG_REQUEST_TIMEOUT_MS : 5000);
     pending.set(id, { resolve, reject, timer });
     socket.send(JSON.stringify({ type: 'command', id, command }));
   });
@@ -370,7 +371,7 @@ function handleLine(line) {
     return;
   }
   if (fields[0] === 'CAPS') {
-    firmware.hlogSupported = fields.includes('HLOG');
+    firmware.hlogSupported = fields.includes('HLOG') && fields.includes('HLOG_MODE');
     logCommand(`收到 < ${line}`);
     if (!firmware.hlogSupported) ui.hlogStatus.textContent = '固件不支持 HLOG';
     updateUi();
@@ -423,7 +424,9 @@ function handleLine(line) {
   }
   if (fields[0] === 'HLOG' && fields[1] === 'DATA' && [14, 15].includes(fields.length)) {
     const values = fields.slice(2).map(Number);
-    if (values.every(Number.isFinite) && (fields.length === 14 || [1, 2].includes(values[12])))
+    if (fields.slice(2).every(x => /^-?\d+$/.test(x)) && values.every(Number.isSafeInteger) &&
+        values[0] >= 0 && values[1] >= 0 && values[1] <= 0xffffffff &&
+        [0, 1].includes(values[9]) && (fields.length === 14 || [1, 2].includes(values[12])))
       hlogRows.push(fields.length === 14 ? [...values, 0] : values);
     else setEvent(`HLOG 数据格式错误：${line}`);
     return;
@@ -564,6 +567,39 @@ function hlogCsv(rows) {
     return /[,"\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
   };
   return [header, ...rows].map((row) => row.map(escape).join(',')).join('\r\n') + '\r\n';
+}
+
+async function readStoppedHlog(send) {
+  const angle = (await send('ANGLESTATUS')).split(',');
+  if (angle.length !== 14 || angle[0] !== 'ATEL' || angle[2] !== '0' || angle[12] !== '0')
+    throw new Error('请先停止运动，确认角环停止且速度环关闭后再读取 HLOG');
+  const status = (await send('HLOG,STATUS')).split(',');
+  const numbers = status.slice(2).map(Number);
+  if (status.length !== 7 || status[0] !== 'HLOG' || status[1] !== 'STATUS' ||
+      !status.slice(2).every(x => /^\d+$/.test(x)) || !numbers.every(Number.isSafeInteger))
+    throw new Error('HLOG 状态格式错误');
+  const [active, total, capacity, overflow, sequence] = numbers;
+  if (active !== 0) throw new Error('请先停止记录再下载 HLOG');
+  if (!total || total > capacity || capacity > 1024 || overflow !== 0 || sequence !== total)
+    throw new Error('日志为空、溢出或已覆盖，不能作为整定数据；请重新采集');
+  hlogRows.length = 0;
+  for (let offset = 0; offset < total; offset += 8) {
+    const count = Math.min(8, total - offset);
+    const reply = await send(`HLOG,READ,${offset},${count}`);
+    if (reply !== `HLOG,END,${offset},${count},${total}`)
+      throw new Error(`HLOG 分批校验失败：${reply}`);
+    if (hlogRows.length !== offset + count)
+      throw new Error(`HLOG 读取不完整：${hlogRows.length}/${offset + count}`);
+    ui.hlogStatus.textContent = `下载中 · ${hlogRows.length}/${total} 条`;
+  }
+  if (hlogRows.some((row, index) => row[0] !== index || ![1, 2].includes(row[12])))
+    throw new Error('日志序号或控制模式不完整，不能作为整定数据');
+  for (let index = 1; index < hlogRows.length; index += 1) {
+    const dt = (hlogRows[index][1] - hlogRows[index - 1][1]) >>> 0;
+    if (dt < 20 || dt > 25)
+      throw new Error('日志时间不连续或采样不足，保留诊断数据但不能作为完整整定日志');
+  }
+  return hlogRows;
 }
 
 function downloadHlogCsv(rows) {
@@ -891,19 +927,8 @@ ui.hlogStop.addEventListener('click', () => runAction(async (send) => {
   await send('HLOG,STATUS');
 }));
 ui.hlogRead.addEventListener('click', () => runAction(async (send) => {
-  if (firmware.hlog.active || firmware.speedEnabled || document.querySelector('#angleMode').textContent !== '停止')
-    throw new Error('请先停止运动再读取 HLOG');
-  await send('HLOG,STATUS');
-  hlogRows.length = 0;
-  const total = firmware.hlog.count;
-  if (!total || firmware.hlog.overflow || firmware.hlog.sequence !== total)
-    throw new Error('日志为空、溢出或已覆盖，不能作为整定数据；请重新采集');
-  for (let offset = 0; offset < total; offset += 8) await send(`HLOG,READ,${offset},8`);
-  if (hlogRows.length !== total)
-    throw new Error(`HLOG 读取不完整：${hlogRows.length}/${total}`);
-  if (hlogRows.some((row, index) => row[0] !== index || ![1, 2].includes(row[12])))
-    throw new Error('日志序号或控制模式不完整，不能作为整定数据');
-  downloadHlogCsv(hlogRows);
+  const rows = await readStoppedHlog(send);
+  downloadHlogCsv(rows);
   setEvent(`已下载 ${hlogRows.length} 条角环日志（mode=1 角速度，2 航向）`);
 }));
 for (const [id,command] of [['#yawZeroButton','ZERO'],['#calButton','CAL']])

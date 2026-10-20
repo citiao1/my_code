@@ -31,6 +31,7 @@ function consoleFixture() {
   const intervals = [];
   const windowListeners = {};
   const sent = [];
+  const timeouts = [];
   let now = 10000;
   let respond = true;
   let fail = '';
@@ -77,7 +78,7 @@ function consoleFixture() {
   context = vm.createContext({
     console, URL, URLSearchParams, WebSocket,
     Date: { now: () => now },
-    setTimeout: () => ({}), clearTimeout: () => {},
+    setTimeout: (_callback, delay) => { timeouts.push(delay); return {}; }, clearTimeout: () => {},
     setInterval: (callback) => intervals.push(callback),
     localStorage: { getItem: () => '', setItem: () => {} },
     window: {
@@ -105,7 +106,7 @@ function consoleFixture() {
   vm.runInContext(source, context);
   vm.runInContext('hardwareConnected = true; bridgeReady = true; firmwareCompatible = true; stackHealthy = true; connecting = false; updateUi()', context);
   return {
-    context, sent, rows, elements,
+    context, sent, rows, elements, timeouts,
     eval: (source) => vm.runInContext(source, context),
     line: (line) => { context.testLine = line; vm.runInContext('handleLine(testLine)', context); },
     advance: (ms) => { now += ms; intervals.forEach((callback) => callback()); },
@@ -115,6 +116,48 @@ function consoleFixture() {
     flush: async () => { for (let i = 0; i < 12; i++) await new Promise(setImmediate); },
   };
 }
+
+test('HLOG batch download waits longer than the bridge 20 second allowance', () => {
+  const f = consoleFixture();
+  f.noReply();
+  f.eval("socket = new WebSocket(); void writeCommand('HLOG,READ,0,8')");
+  assert.equal(f.timeouts.at(-1), 25000);
+  f.eval("void writeCommand('VER')");
+  assert.equal(f.timeouts.at(-1), 5000);
+});
+
+test('R17 stopped download checks fresh state, exact batches, modes and MCU ticks', async () => {
+  for (const fault of [null, 'active', 'moving', 'overflow', 'end', 'duplicate', 'tick', 'mode']) {
+    const f = consoleFixture();
+    const sent = [];
+    f.context.downloadSend = async (command) => {
+      sent.push(command);
+      if (command === 'ANGLESTATUS')
+        return `ATEL,100,${fault === 'moving' ? 1 : 0},1,0,0,0,0,0,0,0,0,0,12000`;
+      if (command === 'HLOG,STATUS')
+        return `HLOG,STATUS,${fault === 'active' ? 1 : 0},10,1024,${fault === 'overflow' ? 1 : 0},10`;
+      const [, , offsetText, countText] = command.split(',');
+      const offset = Number(offsetText), count = Number(countText);
+      for (let index = offset; index < offset + count; index += 1) {
+        const seq = fault === 'duplicate' && index === 1 ? 0 : index;
+        const tick = (0xfffffff0 + 20 * (fault === 'tick' && index === 1 ? 0 : index)) >>> 0;
+        const mode = fault === 'mode' && index === 1 ? 3 : 1;
+        f.line(`HLOG,DATA,${seq},${tick},0,0,0,15000,12000,0,5000,0,0,0,${mode}`);
+      }
+      return `HLOG,END,${fault === 'end' ? offset + 1 : offset},${count},10`;
+    };
+    const action = f.eval('readStoppedHlog(downloadSend)');
+    if (fault) {
+      await assert.rejects(action, undefined, fault);
+    } else {
+      const rows = await action;
+      assert.equal(rows.length, 10);
+      assert.deepEqual(sent, ['ANGLESTATUS', 'HLOG,STATUS', 'HLOG,READ,0,8', 'HLOG,READ,8,2']);
+      assert.match(f.eval('hlogCsv(hlogRows)'), /mode/);
+    }
+    assert.ok(sent.every(command => !/^(ARM|MOVE|HEAD,|YAW,|PID,)/.test(command)));
+  }
+});
 
 test('PS2 diagnostic query reads status and raw bytes without enabling motors', async () => {
   const f = consoleFixture();

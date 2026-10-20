@@ -167,10 +167,40 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
                               ("CAPS","CAPS"),("ANGLESTATUS","ATEL"),
                               ("PS2STATUS","PS2"),
                               ("PS2RAW","PS2RAW"),
-                              ("HLOG,STATUS","HLOG"),
-                              ("HLOG,START","HLOG"),
+                              ("HLOG,STATUS","HLOG,STATUS"),
+                              ("HLOG,START","HLOG,START"),
+                              ("HLOG,STOP","HLOG,STOP"),
+                              ("HLOG,CLEAR","HLOG,CLEAR"),
                               ("HLOG,READ,0,8","HLOG,END")):
             self.assertEqual(bridge_module.MotorVofaBridge.expected_reply(command),reply)
+
+    async def test_r17_hlog_fragmented_rows_forward_unchanged_and_need_matching_ack(self):
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        bridge.broadcast_web = AsyncMock()
+        bridge.broadcast_tcp = AsyncMock()
+        bridge.send_hardware = AsyncMock(return_value=True)
+        task = asyncio.create_task(bridge.execute_command('HLOG,STOP'))
+        await asyncio.sleep(0)
+        bridge.consume_bytes(b'HLOG,STATUS,1,2,1024,0,2\r\n')
+        await asyncio.sleep(0)
+        self.assertFalse(task.done())
+        bridge.consume_bytes(b'HLOG,STOP,OK\r\n')
+        self.assertEqual(await task, 'HLOG,STOP,OK')
+        task = asyncio.create_task(bridge.execute_command('HLOG,READ,0,2'))
+        await asyncio.sleep(0)
+        rows = ['HLOG,DATA,0,100,0,0,0,15000,12000,0,5000,0,0,0,1',
+                'HLOG,DATA,1,120,15000,12000,3000,8000,7600,40000,12000,0,20,0,2']
+        payload = ('\r\n'.join(rows) + '\r\n').encode('ascii')
+        for offset in range(0, len(payload), 13):
+            bridge.consume_bytes(payload[offset:offset+13])
+        await asyncio.sleep(0)
+        self.assertFalse(task.done())
+        bridge.consume_bytes(b'HLOG,END,0,2,2\r\n')
+        self.assertEqual(await task, 'HLOG,END,0,2,2')
+        await asyncio.sleep(0)
+        for row in rows:
+            bridge.broadcast_web.assert_any_await(row+'\n')
+        bridge.broadcast_tcp.assert_not_awaited()  # Downloads are not live VOFA frames.
 
     async def test_power_cycle_rescans_and_keeps_local_servers_alive(self) -> None:
         device_a = FakeDevice("BT05", "AA:BB:CC:DD:EE:FF")

@@ -178,6 +178,9 @@ class MotorVofaBridge:
         if name == "HLOG":
             if command.upper().startswith("HLOG,READ,"):
                 return "HLOG,END"
+            parts = command.upper().split(",")
+            if len(parts) == 2 and parts[1] in ("STATUS", "CLEAR", "START", "STOP"):
+                return "HLOG," + parts[1]
             return "HLOG"
         if name in queries:
             return queries[name]
