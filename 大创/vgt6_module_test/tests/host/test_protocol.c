@@ -37,6 +37,7 @@ static GyroSnapshot gyro_mock;
 static Ps2Snapshot ps2_mock;
 static Ps2ControlSnapshot ps2_control_mock;
 static TofSnapshot tof_mock;
+static int motor_applied[4];
 TofSnapshot Tof_GetSnapshot(void) { return tof_mock; }
 
 uint32_t HAL_GetTick(void) { return tick; }
@@ -66,10 +67,10 @@ HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *uart,
 HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *uart)
 { (void)uart; return HAL_OK; }
 uint8_t Motor_Init(void) { return 1U; }
-void Motor_Stop(MotorChannel channel) { (void)channel; }
-void Motor_StopAll(void) {}
+void Motor_Stop(MotorChannel channel) { motor_applied[channel] = 0; }
+void Motor_StopAll(void) { memset(motor_applied, 0, sizeof(motor_applied)); }
 uint8_t Motor_Run(MotorChannel channel, int8_t direction, uint8_t duty)
-{ (void)channel; (void)direction; (void)duty; return 1U; }
+{ motor_applied[channel] = direction * duty; return 1U; }
 uint8_t Motor_Recover(MotorChannel channel) { (void)channel; return 1U; }
 void Encoder_Zero(void) { memset(&encoder, 0, sizeof(encoder)); }
 uint8_t Encoder_SetCountsPerRevolution(uint16_t cpr) { return cpr >= 4U; }
@@ -744,6 +745,19 @@ static void test_front_guard_and_wheel_capture(void)
   assert(SpeedControl_GetSnapshot().target_rpm[0] == 40);
   tick += 301U; SpeedControl_Process(10U);
   assert(SpeedControl_GetSnapshot().target_rpm[0] == 0);
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  tof_mock.valid = tof_mock.connected = 1U;
+  tof_mock.distance_mm = 75U;
+  line("JOG,A,-20,1000\n"); expect("ACK,JOG\r\n");
+  assert(motor_applied[0] == -10);
+  tick += 10U; SpeedControl_Process(10U);
+  assert(motor_applied[0] == -10); /* Disabled recorder cannot cancel JOG. */
+  tof_mock.distance_mm = 50U; ChassisTest_Process();
+  assert(motor_applied[0] == 0);
+  tof_mock.valid = 0U; ChassisTest_Process();
+  assert(motor_applied[0] == -20); /* Same explicit fail-open policy. */
+  tick += 1001U; ChassisTest_Process();
+  assert(motor_applied[0] == 0 && !ChassisTest_IsMotorActive());
 }
 
 int main(void)

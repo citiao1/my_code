@@ -316,7 +316,15 @@ void SpeedControl_Process(uint32_t elapsed_ms)
         (int32_t)((actual >= 0.0f) ? (actual * 10.0f + 0.5f) :
                                       (actual * 10.0f - 0.5f));
     speed_state.output_mpercent[index] = 0;
-    if (!speed_state.enabled || fabsf(target) < SPEED_CONTROL_STOP_EPSILON)
+    if (!speed_state.enabled)
+    {
+      /* Disabled-loop logging observes feedback only. A timed raw JOG may
+       * own the motor outputs; do not overwrite it from the logger path. */
+      Pid_Reset(&speed_pid[index]);
+      speed_state.output_percent[index] = 0;
+      continue;
+    }
+    if (fabsf(target) < SPEED_CONTROL_STOP_EPSILON)
     {
       Pid_Reset(&speed_pid[index]);
       speed_state.output_percent[index] = 0;
