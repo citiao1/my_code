@@ -104,6 +104,27 @@ def unused_local_port() -> int:
 
 
 class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_state_is_published_before_command_completes(self) -> None:
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        entered, release = asyncio.Event(), asyncio.Event()
+
+        async def broadcast(message):
+            self.assertEqual(message, "STACK,4096,1992,2104,1\n")
+            entered.set()
+            await release.wait()
+
+        async def write(command):
+            bridge.consume_bytes(b"STACK,4096,1992,2104,1\r\n")
+            return True
+
+        bridge.broadcast_web = broadcast
+        bridge.send_hardware = write
+        task = asyncio.create_task(bridge.execute_command("STACK"))
+        await entered.wait()
+        self.assertFalse(task.done())
+        release.set()
+        self.assertEqual(await task, "STACK,4096,1992,2104,1")
+
     async def test_tracked_drive_requires_its_own_mcu_ack(self) -> None:
         bridge = bridge_module.MotorVofaBridge(self.make_config())
         started = asyncio.Event()

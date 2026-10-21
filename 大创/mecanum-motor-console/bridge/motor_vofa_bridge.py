@@ -144,6 +144,9 @@ class MotorVofaBridge:
         if not line.startswith(("TEL,", "ATEL,", "HLOG,DATA")):
             print(f"[HW<-] {line}")
         await self.broadcast_web(f"{line}\n")
+        # The page must receive the state before the matching JSON result
+        # lets its sequential preflight inspect that state.
+        self.resolve_reply(line)
         firewater = self.to_firewater(line)
         if firewater is not None:
             await self.broadcast_tcp(firewater)
@@ -155,7 +158,6 @@ class MotorVofaBridge:
         for line in lines:
             line = line.strip()
             if line:
-                self.resolve_reply(line)
                 asyncio.create_task(self.publish_line(line))
         if len(self.rx_buffer) > 4096:
             self.rx_buffer = ""

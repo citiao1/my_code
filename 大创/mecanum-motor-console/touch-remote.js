@@ -415,7 +415,7 @@ function handleLine(line) {
     firmware.tofReceivedAt = Date.now();
     ui.tofDistance.textContent = valid ? `${mm} mm` : '— mm';
     ui.tofState.textContent = !present ? '传感器未连接 / 初始化失败' : valid ?
-      `${(mm / 100).toFixed(1)} cm · 更新于 ${age} ms 前` :
+      `${(mm / 10).toFixed(1)} cm · 更新于 ${age} ms 前` :
       age > 350 ? '等待新测量 / 数据已过期' : `测量无效 · 状态 ${status}`;
     if (errors) ui.tofState.textContent += ` · 通信/超时 ${errors}`;
     return;

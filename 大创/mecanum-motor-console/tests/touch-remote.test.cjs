@@ -195,7 +195,7 @@ test('R19 ToF shows mm/cm, invalidates bad or stale readings, and resets on disc
   assert.equal(f.elements.get('#tofRealtime').disabled, false);
   f.line('TOF,100,1,1,1234,9,12,0');
   assert.equal(f.elements.get('#tofDistance').textContent, '1234 mm');
-  assert.match(f.elements.get('#tofState').textContent, /12\.3 cm/);
+  assert.match(f.elements.get('#tofState').textContent, /123\.4 cm/);
   assert.equal(f.eval('firmware.receivedAt'), 0); // Distance is not motor feedback.
   f.advance(1700);
   assert.equal(f.elements.get('#tofDistance').textContent, '— mm');
