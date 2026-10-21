@@ -169,7 +169,7 @@ test('R18 downloads microsecond timestamps and rejects missing, mixed and out-of
     f.context.downloadSend = async command => {
       if (command === 'ANGLESTATUS') return 'ATEL,100,0,1,0,0,0,0,0,0,0,0,0,12000';
       if (command === 'HLOG,STATUS') return 'HLOG,STATUS,0,2,1024,0,2';
-      const dt = fault === 'short' ? 19999 : fault === 'long' ? 25001 : 20123;
+      const dt = fault === 'short' ? 19899 : fault === 'long' ? 25001 : 20123;
       for (let i = 0; i < 2; i += 1) {
         const absolute = 4294967200 + i * dt;
         const ms = fault === 'inconsistent' ? 0 : Math.floor(absolute / 1000);
@@ -214,6 +214,24 @@ test('R19 ToF shows mm/cm, invalidates bad or stale readings, and resets on disc
   f.eval('resetLinkState()');
   assert.equal(f.elements.get('#tofDistance').textContent, '— mm');
   assert.equal(f.elements.get('#tofRealtime').checked, false);
+});
+
+test('R20 advertises reversed front, wheel logger and the explicit fail-open distance policy', () => {
+  const f=consoleFixture();
+  f.line('VER,VGT6_BM50_ATTITUDE_R20');
+  f.line('CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED');
+  assert.equal(f.eval('firmwareCompatible'),true);
+  assert.equal(f.elements.get('#wlogStartButton').disabled,false);
+  assert.match(f.elements.get('#frontFrameState').textContent,/右前 C/);
+  f.line('TOF,100,1,1,75,9,0,0');
+  assert.match(f.elements.get('#frontGuardState').textContent,/80 RPM/);
+  f.line('TOF,100,1,1,50,9,0,0');
+  assert.match(f.elements.get('#frontGuardState').textContent,/禁止前进/);
+  f.line('TOF,100,1,0,-1,4,0,0');
+  assert.match(f.elements.get('#frontGuardState').textContent,/保持原速度/);
+  f.eval('resetLinkState()');
+  assert.equal(f.eval('firmware.frontReversed'),false);
+  assert.equal(f.sent.length,0);
 });
 
 test('ToF realtime sends only stream/query commands and old firmware leaves it disabled', async () => {

@@ -67,16 +67,28 @@ def score_logged(records, loop, phases):
         tail = [x for x in before if x.time_s >= before[-1].time_s - 1.0]
         step = delta(after[0].setpoint - before[0].setpoint)
         tolerance = max(abs(step) * 0.05, 0.5 if angle else 1.0)
-        if any(abs(delta(x.process - before[0].setpoint)) > tolerance for x in tail):
+        baseline_errors = [delta(x.process - before[0].setpoint) for x in tail]
+        baseline_rms = math.sqrt(mean(value * value for value in baseline_errors))
+        if baseline_rms > tolerance:
             raise ValueError("pre-step baseline has not settled for a full second")
         initial = before[-1].process
         transient = [x for x in after if 0.1 < delta(x.process - initial) / step < 0.9]
         if len(transient) < 10:
             raise ValueError("fewer than 10 independent transient samples; no gain decision")
-        final = [delta(x.process - after[-1].process) for x in after
-                 if x.time_s >= after[-1].time_s - 1.0]
-        if max(final) - min(final) > tolerance:
-            raise ValueError("final response still moving/oscillating; extend acquisition, do not tune")
+        tail_start = after[-1].time_s - 1.0
+        midpoint = after[-1].time_s - 0.5
+        first_half = [x.process for x in after
+                      if tail_start <= x.time_s < midpoint]
+        second_half = [x.process for x in after if x.time_s >= midpoint]
+        if min(len(first_half), len(second_half)) < 10:
+            raise ValueError("insufficient final-window coverage")
+        if abs(mean(first_half) - mean(second_half)) > tolerance:
+            raise ValueError("final response is still drifting; extend acquisition, do not tune")
+        final_errors = [delta(after[-1].setpoint - x.process) for x in after
+                        if x.time_s >= tail_start]
+        final_rms = math.sqrt(mean(value * value for value in final_errors))
+        if final_rms > tolerance:
+            raise ValueError("final tracking RMS exceeds the locked tolerance")
         scores.append(tail + after)
     limit = 80 if angle else 60
     result = (score_bidirectional(*scores, angle=angle, output_limit=limit)

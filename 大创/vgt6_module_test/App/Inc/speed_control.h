@@ -22,17 +22,21 @@ typedef struct
   int32_t actual_rpm[SPEED_CONTROL_CHANNEL_COUNT];
   int32_t actual_rpm_x10[SPEED_CONTROL_CHANNEL_COUNT];
   int32_t output_percent[SPEED_CONTROL_CHANNEL_COUNT];
+  int32_t output_mpercent[SPEED_CONTROL_CHANNEL_COUNT];
   float kp[SPEED_CONTROL_CHANNEL_COUNT];
   float ki[SPEED_CONTROL_CHANNEL_COUNT];
   float kd[SPEED_CONTROL_CHANNEL_COUNT];
   uint16_t target_limit_rpm;
   uint8_t enabled;
   uint8_t armed;
+  uint8_t saturated_mask;
+  uint8_t tof_limited;
 } SpeedControlSnapshot;
 
 void SpeedControl_Init(void);
 void SpeedControl_Process(uint32_t elapsed_ms);
 void SpeedControl_Stop(void);
+uint8_t SpeedControl_KeepAlive(void);
 uint8_t SpeedControl_Enable(uint8_t enable);
 uint8_t SpeedControl_SetTarget(MotorChannel channel, int32_t rpm);
 uint8_t SpeedControl_SetDrive(int16_t forward_rpm,

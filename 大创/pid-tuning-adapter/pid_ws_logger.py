@@ -250,7 +250,9 @@ def hlog_samples(records, loop="direction", *, max_interval_ms=60):
             raise ValueError("HLOG millisecond/microsecond timestamps disagree")
         if previous_tick is not None:
             dt = (tick - previous_tick) & 0xffffffff
-            if not 20 * scale // 1000 <= dt <= max_interval_ms * scale // 1000:
+            min_interval = 19_900 if microseconds else 20
+            max_interval = max_interval_ms * (1000 if microseconds else 1)
+            if not min_interval <= dt <= max_interval:
                 raise ValueError(f"HLOG timestamp duplicate, unordered or gap: {dt * 1000 / scale:g} ms")
             elapsed += dt
         previous_tick = tick
@@ -277,7 +279,7 @@ def distance_from_encoder(
     return abs(displacement) * meters_per_count
 
 
-def speed_drive_row(message: str, first_tick: int | None = None):
+def speed_drive_row(message: str, first_tick: int | None = None, *, front_reversed=False):
     """Convert a TEL packet to vehicle forward RPM/PWM averages."""
     fields = message.strip().split(",")
     if len(fields) != 27 or fields[0] != "TEL":
@@ -295,6 +297,8 @@ def speed_drive_row(message: str, first_tick: int | None = None):
     actual = sum(values[11:15]) / 40.0
     output = sum(values[7:11]) / 4.0
     target = sum(values[3:7]) / 4.0
+    if front_reversed:
+        target, actual, output = -target, -actual, -output
     return (time_s, target, actual, output), first_tick
 
 

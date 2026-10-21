@@ -168,6 +168,7 @@ class MotorVofaBridge:
         name = command.split(",")[0].upper()
         queries = {
             "TOF": "TOF",
+            "WLOGINFO": "WLOG,INFO",
             "PING": "PONG", "VER": "VER", "VERSION": "VER", "LINK": "LINK",
             "SPEEDSTATUS": "TEL", "STATUS": "TEL", "PIDGET": "PID",
             "SPEEDLIMIT": "SPEEDLIMIT",
@@ -180,16 +181,16 @@ class MotorVofaBridge:
         }
         if command.upper() in ("TOF,0", "TOF,1"):
             return "ACK," + command.upper()
-        if name == "HLOG":
-            if command.upper().startswith("HLOG,READ,"):
+        if name in ("HLOG", "WLOG"):
+            if command.upper().startswith(name + ",READ,"):
                 parts = command.upper().split(",")
                 if len(parts) == 4 and parts[2].isdigit():
-                    return "HLOG,END," + str(int(parts[2]))
-                return "HLOG,END"
+                    return name + ",END," + str(int(parts[2]))
+                return name + ",END"
             parts = command.upper().split(",")
             if len(parts) == 2 and parts[1] in ("STATUS", "CLEAR", "START", "STOP"):
-                return "HLOG," + parts[1]
-            return "HLOG"
+                return name + "," + parts[1]
+            return name
         if name in queries:
             return queries[name]
         if command.upper() in ("SPEED,0", "SPEED,1", "TEL,0", "TEL,1"):
@@ -243,7 +244,7 @@ class MotorVofaBridge:
             write_complete = False
             timeout = (
                 HLOG_READ_TIMEOUT_SECONDS
-                if command.startswith("HLOG,READ,")
+                if command.startswith(("HLOG,READ,", "WLOG,READ,"))
                 else COMMAND_TIMEOUT_SECONDS
             )
             deadline = self.loop.time() + timeout

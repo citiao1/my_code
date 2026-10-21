@@ -51,13 +51,13 @@
     return { forward: Math.round(rpm * Math.cos(angle * RAD)),
       left: Math.round(rpm * Math.sin(angle * RAD)) };
   }
-  function bodyDelta(wheels, cpr) {
+  function bodyDelta(wheels, cpr, frontReversed = false) {
     const [rf, lf, lr, rr] = wheels;
-    const scale = Math.PI * DIAMETER_M / (4 * cpr);
+    const scale = Math.PI * DIAMETER_M / (4 * cpr) * (frontReversed ? -1 : 1);
     return { forward: (rf + lf + lr + rr) * scale,
       left: (rf - lf + lr - rr) * scale };
   }
-  function integrate(position, previous, next, yaw0) {
+  function integrate(position, previous, next, yaw0, frontReversed = false) {
     if (next.e.cpr !== previous.e.cpr) throw new Error('测试中编码器 CPR 被修改');
     const elapsed = tickDelta(next.e.tick, previous.e.tick);
     if (!elapsed || elapsed > 1200 || !tickDelta(next.a.tick, previous.a.tick) ||
@@ -68,7 +68,7 @@
     const deltas = next.e.counts.map((v, i) => countDelta(v, previous.e.counts[i]));
     if (deltas.some((v) => Math.abs(v) > next.e.cpr * elapsed / 60000 * 220 + 8))
       throw new Error('编码器突跳或轮速异常，测试停止');
-    const body = bodyDelta(deltas, next.e.cpr);
+    const body = bodyDelta(deltas, next.e.cpr, frontReversed);
     const yaw = (previous.a.yaw + wrap(next.a.yaw - previous.a.yaw) / 2 - yaw0) * RAD;
     return { x: position.x + body.forward * Math.cos(yaw) - body.left * Math.sin(yaw),
       y: position.y + body.forward * Math.sin(yaw) + body.left * Math.cos(yaw) };
@@ -107,7 +107,7 @@
       if (a.mode !== 2 || a.enabled !== 1)
         throw new Error('方向环或速度环已停止，不自动重启');
       const next = { a, e };
-      if (previous) position = integrate(position, previous, next, yaw0);
+      if (previous) position = integrate(position, previous, next, yaw0, !!config.frontReversed);
       previous = next;
       let along = 0, cross = 0;
       if (geometry) {

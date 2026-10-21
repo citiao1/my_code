@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""R17/R18 PI-rate / PD-heading tuning from stopped RAM-log downloads."""
+"""R17/R18/R19 PI-rate / PD-heading tuning from stopped RAM-log downloads."""
 from __future__ import annotations
 import argparse
 import asyncio
@@ -10,7 +10,9 @@ import time
 from dataclasses import asdict
 from pathlib import Path
 import websockets
-from closed_loop_tuning import candidate, score_tracking, wrap_deg
+from closed_loop_tuning import score_tracking, wrap_deg
+from campaign_runner import execute_campaign
+from tuning_campaign import make_plan
 from pid_tuning import Sample
 from hlog_experiment import recording_budget, score_logged
 from pid_ws_logger import (
@@ -25,6 +27,7 @@ FIRMWARE_CAPS = {
     FIRMWARE_VERSION: CAPS,
     FIRMWARE_VERSION.replace("R17", "R18"): CAPS.replace("R17", "R18") + ",HLOG_US",
     FIRMWARE_VERSION.replace("R17", "R19"): CAPS.replace("R17", "R19") + ",HLOG_US,TOF_DL1B",
+    FIRMWARE_VERSION.replace("R17", "R20"): CAPS.replace("R17", "R20") + ",HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED",
 }
 TARGET_WHEEL_LIMIT = 160
 HEADING_FINAL_SETTLE_S = 1.0
@@ -251,6 +254,13 @@ class Session:
                         record = hlog_row(line)
                         if record is None:
                             continue
+                        if self.require_hlog_us and "tick_us" not in record:
+                            self.download.setdefault("invalid_timestamp_frames", []).append(line)
+                            continue
+                        if (self.require_hlog_us and
+                                ((int(record["tick_us"]) - int(record["tick"]) * 1000) & 0xffffffff) >= 1000):
+                            self.download.setdefault("invalid_timestamp_frames", []).append(line)
+                            continue
                         sequence = int(record["sequence"])
                         if not 0 <= sequence < total:
                             raise RuntimeError("HLOG sequence outside recorded range")
@@ -349,6 +359,9 @@ class Session:
         return f"HEAD,{target:.4f}"
 
     async def write(self, loop, gains):
+        if (loop not in ("angular_velocity", "direction") or len(gains) != 2 or
+                any(not math.isfinite(x) or not 0 <= x <= 100 for x in gains)):
+            raise ValueError("write requires two finite attitude gains in 0..100")
         stopped = (await self.command("ANGLESTATUS")).split(",")
         if (self.motion_active or len(stopped) != 14 or stopped[0] != "ATEL" or
                 stopped[2] != "0" or stopped[12] != "0"):
@@ -512,7 +525,8 @@ class Session:
                     # one-shot SPEEDSTATUS query preserves that control path
                     # without racing a TEL stream switch during reversal.
                     parsed = speed_drive_row(
-                        await self.command("SPEEDSTATUS"), first_tick
+                        await self.command("SPEEDSTATUS"), first_tick,
+                        front_reversed=getattr(self, 'firmware_version', '').endswith('R20')
                     )
                     next_speed_poll = time.monotonic() + 0.25
                     if parsed is not None:
@@ -552,6 +566,9 @@ class Session:
 async def run(args):
     budget = recording_budget(args)  # Reject oversized/unsupported runs before ARM.
     args.output.mkdir(parents=True, exist_ok=True)
+    if (any(args.output.glob("round-*-raw.json")) or
+            (args.output / "session.json").exists()):
+        raise ValueError("output already contains trial data; choose a new session directory")
     async with websockets.connect(args.url, open_timeout=5) as ws:
         if (await asyncio.wait_for(ws.recv(),5)).strip()!=BRIDGE_GREETING:
             raise RuntimeError("R3 bridge required")
@@ -559,8 +576,8 @@ async def run(args):
         try:
             version = await s.command("VER")
             if version not in FIRMWARE_CAPS:
-                raise RuntimeError("R17/R18 firmware with mode-tagged 50 Hz HLOG required")
-            s.require_hlog_us = version.endswith(("R18", "R19"))
+                raise RuntimeError("supported R17/R18/R19 firmware with mode-tagged 50 Hz HLOG required")
+            s.require_hlog_us = version.endswith(("R18", "R19", "R20"))
             s.expected_caps = FIRMWARE_CAPS[version]
             s.firmware_version = version
             s.uart_baseline = await s.command("UART")
@@ -623,15 +640,20 @@ async def run(args):
             if (len(status) != 7 or status[:2] != ["HLOG", "STATUS"] or
                     status[2] != "0" or int(status[4]) != 1024):
                 raise RuntimeError("HLOG capacity/idle preflight failed")
+            plan = make_plan(args, current) if experiment in ("step", "spin") else None
             if not args.live:
                 print(json.dumps({"capabilities":s.expected_caps,"gains":current,"inner":inner,
                                   "scoring_source":"downloaded_HLOG",
                                   "recording_budget_s":budget,
+                                  "campaign_plan":asdict(plan) if plan else None,
                                   "motion_started":False},indent=2))
                 return
             if not args.confirm_hardware:
                 answer=input("首次确认：车体可实际旋转、场地清空、急停有效，"
-                             f"目标 {args.baseline}→{args.target}，固定限幅 60 RPM / 80°/s。输入 YES：")
+                             f"训练目标 {args.baseline}→{args.target}，"
+                             f"留出目标 {plan.validation_targets if plan else '无写回'}，"
+                             f"每项重复 {plan.repeats if plan else 1} 次，"
+                             "固定限幅 60 RPM / 80°/s。输入 YES：")
                 if answer!="YES": raise RuntimeError("hardware not confirmed")
             # One confirmation/ARM, but stop for every download and gain write.
             await s.command("ARM")
@@ -640,6 +662,15 @@ async def run(args):
             heading_reference = None
             if args.loop == "direction":
                 heading_reference = await s.read_heading_reference()
+            if plan is not None:
+                s.campaign_active = True
+                report = await execute_campaign(args, s, plan, inner, heading_reference, save_round)
+                print(json.dumps({"status": report["status"], "selection": report["selection"],
+                                  "best_gains": report["best_gains"],
+                                  "best_score": report["best_score"],
+                                  "experiments": len(report["history"]),
+                                  "session": str(args.output / "session.json")}, indent=2))
+                return
             best_gains=current
             best_score=float("inf")
             history=[]
@@ -722,40 +753,11 @@ async def run(args):
                     }, indent=2), encoding="utf-8")
                     print(json.dumps(record))
                     continue
-                proposal = (candidate(current, result, args.loop)
-                            if result.score <= best_score else best_gains)
-                # Each actual write, including rollback, is bounded relative
-                # to the currently applied coefficients.
-                proposal=tuple(round(max(old*0.8,min(old*1.2,new)),4)
-                               for old,new in zip(current,proposal))
-                record={"round":round_index+1,"gains":current,"metrics":asdict(result),
-                        "next_gains":proposal,"csv":str(csv_path)}
-                history.append(record)
-                (args.output/"session.json").write_text(json.dumps({
-                    "loop":args.loop,"form":"parallel","period_s":0.02,
-                    "derivative":"measurement" if args.loop=="direction" else "none",
-                    "telemetry_period_s":0.2,
-                    "scoring_source":"downloaded_HLOG", "log_period_s":0.02,
-                    "firmware":s.firmware_version,"experiment":experiment,
-                    "limits":{"rpm":60,"dps":80,
-                              "wheel_rpm":TARGET_WHEEL_LIMIT},
-                    "baseline":args.baseline,"target":args.target,"history":history,
-                    "best_gains":best_gains,"best_score":best_score},indent=2),encoding="utf-8")
-                print(json.dumps(record))
-                if round_index+1<args.rounds and proposal != current:
-                    await s.write(args.loop,proposal)
-                    current=proposal
-            # Finish on the best measured parameters; do not apply an untested last candidate.
-            while current != best_gains:
-                rollback = tuple(round(max(old*0.8,min(old*1.2,new)),4)
-                                 for old,new in zip(current,best_gains))
-                if rollback == current:
-                    raise RuntimeError("cannot restore measured best within locked gain guard")
-                await s.write(args.loop,rollback)
-                current=rollback
+                raise RuntimeError("unsupported automatic experiment")
         except Exception as exc:
-            save_round(args, locals().get("round_index", 0), s,
-                       locals().get("current"), s.download["records"], error=str(exc))
+            if not getattr(s, "campaign_active", False):
+                save_round(args, locals().get("round_index", 0), s,
+                           locals().get("current"), s.download["records"], error=str(exc))
             raise
         finally:
             if s.armed:
@@ -769,7 +771,8 @@ def save_round(args, index, session, gains, records, *, phases=None, error=None)
     """Persist the original records/diagnostics before any scoring or gain write."""
     path = args.output / f"round-{index+1:02d}-raw.json"
     previous = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-    payload = {**previous, "firmware": session.firmware_version, "loop": args.loop,
+    payload = {**previous, "firmware": session.firmware_version,
+               "capabilities": session.expected_caps, "loop": args.loop,
                "gains": gains, "scoring_source": "downloaded_HLOG",
                "status": session.download["status"], "records": records,
                "wire": session.download["wire"], "timeline": session.timeline,
@@ -793,6 +796,17 @@ def main():
     p.add_argument("--baseline",type=float,default=0)
     p.add_argument("--target",type=float,default=15.0)
     p.add_argument("--rounds",type=int,default=5)
+    p.add_argument("--search", choices=("bo", "de", "heuristic"), default="bo",
+                   help="bounded training search; all methods require independent holdout")
+    p.add_argument("--repeats", type=int, default=2)
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--kp-bounds", type=float, nargs=2, metavar=("MIN", "MAX"))
+    p.add_argument("--second-bounds", type=float, nargs=2, metavar=("MIN", "MAX"),
+                   help="Ki for rate PI; Kd for heading PD")
+    p.add_argument("--validation-targets", type=float, nargs="+",
+                   help="held-out steps, fixed before ARM; default uses reverse and another amplitude")
+    p.add_argument("--min-improvement", type=float, default=0.01)
+    p.add_argument("--max-overshoot", type=float, default=0.30)
     p.add_argument("--seconds",type=float,default=6)
     p.add_argument("--baseline-seconds",type=float,default=4)
     p.add_argument("--output",type=Path,required=True)

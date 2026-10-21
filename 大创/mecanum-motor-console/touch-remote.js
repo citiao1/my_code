@@ -1,7 +1,7 @@
 const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
 const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R17';
-const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19'];
+const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20'];
 const MAX_TARGET_RPM = 160;
 const HLOG_REQUEST_TIMEOUT_MS = 25000; // Bridge allows 20 s for a stopped RAM batch.
 
@@ -99,6 +99,7 @@ const firmware = {
   hlog: { active: false, count: 0, capacity: 0, overflow: 0, sequence: 0, lastBatch: 0 },
 };
 const hlogRows = [];
+const wheelLogFrames = [];
 
 function setEvent(text) { ui.event.textContent = text; }
 function logCommand(text) {
@@ -130,6 +131,8 @@ function updateUi() {
   ui.query.disabled = !connected();
   ui.ps2Query.disabled = !connected();
   ui.tofRealtime.disabled = !connected() || !firmware.tofSupported;
+  for (const action of ['Clear', 'Start', 'Stop', 'Read'])
+    document.querySelector(`#wlog${action}Button`).disabled = disabled || !firmware.wlogSupported;
   ui.stop.disabled = !connected();
   ui.testStop.disabled = !connected();
   document.querySelectorAll('.angle-command,.drive-command').forEach((button) => { button.disabled = disabled; });
@@ -164,6 +167,11 @@ function resetLinkState() {
   firmware.speedEnabled = false;
   firmware.hlogSupported = false;
   firmware.hlogMicros = false;
+  firmware.wlogSupported = firmware.frontReversed = firmware.tofGuard = false;
+  wheelLogFrames.length = 0;
+  document.querySelector('#wlogStatus').textContent = '未查询';
+  document.querySelector('#frontGuardState').textContent = '保护状态未知';
+  document.querySelector('#frontFrameState').textContent = '车头方向等待固件确认';
   firmware.tofSupported = firmware.tofStreaming = false;
   firmware.tofReceivedAt = 0;
   ui.tofRealtime.checked = false;
@@ -202,7 +210,7 @@ function setTelemetry(enabled) {
 function writeCommand(command) {
   if (!connected()) return Promise.reject(new Error('蓝牙未连接'));
   const diagnostic = ['VER', 'UART', 'LINK', 'STACK', 'SPEEDSTATUS', 'SPEEDLIMIT', 'PIDGET', 'PING', 'STOP', 'CAPS', 'YAWGET', 'HEADGET', 'ANGLESTATUS', 'PS2STATUS', 'PS2RAW', 'TOF', 'TOF,0', 'TOF,1'].includes(command) ||
-    command.startsWith('HLOG,');
+    command.startsWith('HLOG,') || command.startsWith('WLOG,') || command === 'WLOGINFO';
   if (!diagnostic && (!firmwareCompatible || !stackHealthy)) {
     return Promise.reject(new Error('固件版本或栈保护检查未通过；请查询状态'));
   }
@@ -212,7 +220,7 @@ function writeCommand(command) {
     const timer = setTimeout(() => {
       pending.delete(id);
       reject(new Error(`桥接应答超时：${command}；请重启桥接程序`));
-    }, command.startsWith('HLOG,READ,') ? HLOG_REQUEST_TIMEOUT_MS : 5000);
+    }, /^(HLOG|WLOG),READ,/.test(command) ? HLOG_REQUEST_TIMEOUT_MS : 5000);
     pending.set(id, { resolve, reject, timer });
     socket.send(JSON.stringify({ type: 'command', id, command }));
   });
@@ -367,6 +375,7 @@ function handleLine(line) {
         await send('HEADGET');
         await send('ANGLESTATUS');
         await send('HLOG,STATUS');
+        if (firmware.wlogSupported) await send('WLOG,STATUS');
         if (firmware.tofSupported) await send('TOF');
         await send('STACK');
         if (!stackHealthy) throw new Error('查询后栈保护异常，已禁用电机控制');
@@ -388,6 +397,13 @@ function handleLine(line) {
     firmware.hlogSupported = fields.includes('HLOG') && fields.includes('HLOG_MODE');
     firmware.hlogMicros = fields.includes('HLOG_US');
     firmware.tofSupported = fields.includes('TOF_DL1B');
+    firmware.wlogSupported = fields.includes('WLOG_US');
+    firmware.frontReversed = fields.includes('FRONT_REVERSED');
+    firmware.tofGuard = fields.includes('TOF_GUARD');
+    document.querySelector('#frontFrameState').textContent = firmware.frontReversed ?
+      'TOF 端为车头 · 新轮位：右前 C / 左前 D / 左后 A / 右后 B · A/B/C/D 仍为物理通道' : '旧版车头方向';
+    document.querySelector('#frontGuardState').textContent = firmware.tofGuard ?
+      '前进保护：100→50 mm 限速，≤50 mm 停止前进；倒退/横移可用' : '当前固件未启用距离保护';
     if (!firmware.tofSupported) {
       ui.tofState.textContent = '当前固件不支持 TOF';
       ui.tofDistance.textContent = '— mm';
@@ -418,6 +434,16 @@ function handleLine(line) {
       `${(mm / 10).toFixed(1)} cm · 更新于 ${age} ms 前` :
       age > 350 ? '等待新测量 / 数据已过期' : `测量无效 · 状态 ${status}`;
     if (errors) ui.tofState.textContent += ` · 通信/超时 ${errors}`;
+    if (firmware.tofGuard) document.querySelector('#frontGuardState').textContent = !valid || !present ?
+      '测距异常：按设置保持原速度，距离保护暂不可用' : mm <= 50 ?
+      '距离≤50 mm：禁止前进，允许倒退/横移' : mm < 100 ?
+      `前进上限约 ${Math.floor(MAX_TARGET_RPM * (mm - 50) / 50)} RPM（100→50 mm 限速）` : '距离≥100 mm：不额外限制前进';
+    return;
+  }
+  if (fields[0] === 'WLOG') {
+    if (fields[1] === 'DATA') wheelLogFrames.push(line);
+    if (fields[1] === 'STATUS' && fields.length === 7)
+      document.querySelector('#wlogStatus').textContent = `${fields[2] === '1' ? '记录中' : '已停止'} · ${fields[3]}/${fields[4]} 条 · 溢出 ${fields[5]}`;
     return;
   }
   if (fields[0] === 'PS2' && fields.length === 12) {
@@ -646,7 +672,7 @@ async function readStoppedHlog(send) {
   for (let index = 1; index < hlogRows.length; index += 1) {
     const column = micros ? 13 : 1, scale = micros ? 1000 : 1;
     const dt = (hlogRows[index][column] - hlogRows[index - 1][column]) >>> 0;
-    if (dt < 20 * scale || dt > 25 * scale)
+    if (dt < (micros ? 19900 : 20) || dt > 25 * scale)
       throw new Error('日志时间不连续或采样不足，保留诊断数据但不能作为完整整定日志');
   }
   return hlogRows;
@@ -764,7 +790,7 @@ function runChassisTest(kind) {
       throw new Error('请先松开方向键，等待手动运动命令结束，再启用速度环开始测试');
     if (!document.querySelector('#testSafety').checked)
       throw new Error('请先确认测试区域、下地状态和急停可用');
-    const config = { kind, confirmed: true,
+    const config = { kind, confirmed: true, frontReversed: firmware.frontReversed,
       rpm: numeric('#testRpm', 60, true),
       distance: numeric('#translateDistance', 100, true) / 100,
       angle: numeric('#translateAngle', 180),
@@ -864,6 +890,7 @@ ui.query.addEventListener('click', () => void runAction(async (send) => {
   await send('HEADGET');
   await send('ANGLESTATUS');
   await send('HLOG,STATUS');
+  if (firmware.wlogSupported) await send('WLOG,STATUS');
   if (firmware.tofSupported) await send('TOF');
   await send('STACK');
   if (!stackHealthy) throw new Error('查询后栈保护异常，已禁用电机控制');
@@ -997,6 +1024,34 @@ ui.hlogRead.addEventListener('click', () => runAction(async (send) => {
   downloadHlogCsv(rows);
   setEvent(`已下载 ${hlogRows.length} 条角环日志（mode=1 角速度，2 航向）`);
 }));
+for (const action of ['Clear', 'Start', 'Stop', 'Read']) {
+  document.querySelector(`#wlog${action}Button`).addEventListener('click', () => runAction(async send => {
+    if (action === 'Read') {
+      try {
+        const rows = await WheelLog.read(send, wheelLogFrames, (n, total) => {
+          document.querySelector('#wlogStatus').textContent = `下载中 ${n}/${total}`;
+        });
+        const blob = new Blob(['\uFEFF'+WheelLog.csv(rows)], {type:'text/csv;charset=utf-8'});
+        const url = URL.createObjectURL(blob), anchor = document.createElement('a');
+        anchor.href = url; anchor.download = `wheel-wlog-${Date.now()}.csv`; anchor.click();
+        setTimeout(() => URL.revokeObjectURL(url), 0);
+        setEvent(`已校验下载 ${rows.length} 条四轮100 Hz日志；评分还需基线/瞬态/稳态校验`);
+      } catch (error) {
+        setEvent(`${error.message}；原始WLOG留在本次页面会话，不能用于写参`);
+        throw error;
+      }
+      return;
+    }
+    if (action !== 'Stop') {
+      const status = (await send('ANGLESTATUS')).split(',');
+      const ps2 = (await send('PS2STATUS')).split(',');
+      if (status.length !== 14 || status[2] !== '0' || status[12] !== '0' || ps2.length !== 12 || ps2[2] !== '0')
+        throw new Error('先停车并锁定手柄，再切换或开始轮速日志');
+    }
+    await send(`WLOG,${action.toUpperCase()}`);
+    await send('WLOG,STATUS');
+  }));
+}
 for (const [id,command] of [['#yawZeroButton','ZERO'],['#calButton','CAL']])
   document.querySelector(id).addEventListener('click', () => {
     ownsAngleMotion=false; angleAction(send => send(command));
@@ -1121,6 +1176,7 @@ setInterval(() => {
   if (firmware.tofReceivedAt && Date.now() - firmware.tofReceivedAt > 1600) {
     ui.tofDistance.textContent = '— mm';
     ui.tofState.textContent = firmware.tofStreaming ? '未收到新距离（日志采集/下载期间暂停）' : '读数已过期，开启实时距离以更新';
+    if (firmware.tofGuard) document.querySelector('#frontGuardState').textContent = '距离显示已过期；板载保护独立运行，测距异常时按设置保持速度';
   }
   const reference = Math.max(firmware.receivedAt, firmware.expectedAt);
   if (connected() && firmware.telemetryEnabled && reference &&

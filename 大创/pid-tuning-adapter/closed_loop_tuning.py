@@ -6,6 +6,13 @@ from statistics import mean, median
 from pid_tuning import Sample
 
 
+# Persist this definition with each campaign so scores remain comparable.
+STEP_SCORE_WEIGHTS = {
+    "normalized_iae": 1.0, "overshoot": 2.0, "steady_error_rms": 1.0,
+    "normalized_settling": 0.5, "saturation_fraction": 0.1,
+}
+
+
 def wrap_deg(x: float) -> float:
     return (x + 180.0) % 360.0 - 180.0
 
@@ -131,18 +138,31 @@ def score_step(samples: list[Sample], *, angle: bool, output_limit: float) -> Re
     iae = sum(0.5*(abs(a)+abs(b))*(v.time_s-u.time_s)
               for a,b,u,v in zip(errors, errors[1:], post, post[1:]))
     overshoot = max(0.0, max(progress)-1)
-    steady = abs(mean(errors[-max(3, len(errors)//5):])) / abs(step)
+    steady_errors = errors[-max(3, len(errors)//5):]
+    steady = math.sqrt(mean(value * value for value in steady_errors)) / abs(step)
     saturated = mean(abs(s.output) >= output_limit*0.98 for s in post)
     if any(abs(s.output) > output_limit+0.001 for s in post):
         raise ValueError("output exceeded locked limit")
     if saturated > 0.25:
         raise ValueError("sustained saturation; reduce the experiment step")
-    settling = next((post[i].time_s-post[0].time_s for i in range(len(post)-2)
-                     if all(abs(e) <= tolerance for e in errors[i:])), None)
+    window = max(3, round(0.2 / median(intervals)))
+    window_rms = [
+        math.sqrt(mean(value * value for value in errors[i:i + window]))
+        for i in range(len(errors) - window + 1)
+    ]
+    settling_index = next((i for i in range(len(window_rms))
+                           if all(value <= tolerance for value in window_rms[i:])), None)
+    settling = (post[settling_index].time_s - post[0].time_s
+                if settling_index is not None else None)
     # At 5 Hz a rise completed in one sample cannot justify more aggressive gains.
     transient_samples = sum(0.1 < p < 0.9 for p in progress)
     normalized = iae / (duration*abs(step))
-    score = normalized + 2*overshoot + steady + saturated
+    response_time = 1.0 if settling is None else settling / max(duration, 1e-6)
+    score = (STEP_SCORE_WEIGHTS["normalized_iae"]*normalized +
+             STEP_SCORE_WEIGHTS["overshoot"]*overshoot +
+             STEP_SCORE_WEIGHTS["steady_error_rms"]*steady +
+             STEP_SCORE_WEIGHTS["normalized_settling"]*response_time +
+             STEP_SCORE_WEIGHTS["saturation_fraction"]*saturated)
     return ResponseScore(normalized, overshoot, steady, settling, saturated,
                          transient_samples >= 2, score)
 
@@ -154,8 +174,11 @@ def candidate(gains: tuple[float, float], result: ResponseScore,
         raise ValueError("this adapter supports only VGT6 PI rate and PD heading")
     p, second = gains
     if result.overshoot > 0.10:
-        p *= 0.9
-        second *= 0.85 if loop == "angular_velocity" else 1.2
+        if loop == "angular_velocity":
+            second *= 0.85
+        else:
+            p *= 0.9
+            second *= 1.2
     elif result.steady_error > 0.08 and loop == "angular_velocity":
         second *= 1.2
     elif result.resolved_transient and result.normalized_iae > 0.08:

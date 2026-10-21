@@ -14,6 +14,7 @@
 #include "gyro.h"
 #include "encoder.h"
 #include "telemetry.h"
+#include "tof.h"
 
 HostDwt host_dwt;
 HostCoreDebug host_debug;
@@ -112,6 +113,10 @@ EncoderSnapshot Encoder_GetSnapshot(void) { return encoder; }
 void Telemetry_Hlog_Record(const AttitudeControlSnapshot *snapshot,
                            uint32_t ms, uint32_t us)
 { (void)snapshot; (void)ms; (void)us; }
+TofSnapshot Tof_GetSnapshot(void) { TofSnapshot s = {0}; return s; }
+void Telemetry_Wlog_Record(const SpeedControlSnapshot *s, const EncoderSnapshot *e,
+                           uint32_t ms, uint32_t us)
+{ (void)s; (void)e; (void)ms; (void)us; }
 static void poll(void) { tick += 20U; Ps2_Process(); }
 static void buttons(uint16_t pressed)
 {
@@ -265,7 +270,7 @@ static void test_manual_authority_and_noise(void)
     assert(AttitudeControl_GetSnapshot().target_deg == target);
     assert(AttitudeControl_GetSnapshot().output_rpm == 0.0f);
     for (unsigned wheel = 0U; wheel < 4U; ++wheel)
-      assert(SpeedControl_GetSnapshot().target_rpm[wheel] == 140);
+      assert(SpeedControl_GetSnapshot().target_rpm[wheel] == -140);
   }
   gyro.yaw_deg = target - 1.0f;
   gyro.rate_dps = 0.0f;

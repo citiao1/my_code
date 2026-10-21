@@ -20,73 +20,76 @@
 
 #define COMMAND_SIZE 64U
 
+static void Command_LogReply(const char *name, const char *text)
+{
+  char message[96];
+  (void)snprintf(message, sizeof(message), "%s,%s\r\n", name, text);
+  SerialDma_Write(message);
+}
+
 static uint8_t Command_Hlog(const char *command)
 {
-  unsigned long offset;
-  unsigned long count;
-
-  if (strcmp(command, "HLOG,CLEAR") == 0)
+  unsigned long offset, count;
+  int end = 0;
+  uint8_t wheel = !strncmp(command, "WLOG,", 5U);
+  const char *name = wheel ? "WLOG" : "HLOG";
+  const char *operation;
+  uint8_t moving;
+  if (!wheel && strncmp(command, "HLOG,", 5U)) return 0U;
+  operation = command + 5;
+  moving = AttitudeControl_GetSnapshot().mode ||
+      SpeedControl_GetSnapshot().enabled || ChassisTest_IsMotorActive();
+  if (!strcmp(operation, "STATUS"))
   {
-    if (AttitudeControl_GetSnapshot().mode != 0U)
-    {
-      SerialDma_Write("ERR,HLOG,MOTION_ACTIVE\r\n");
-    }
-    else
-    {
-      Telemetry_Hlog_Clear();
-      SerialDma_Write("HLOG,CLEAR,OK\r\n");
-    }
+    if (wheel) (void)Telemetry_Wlog_SendStatus();
+    else (void)Telemetry_Hlog_SendStatus();
     return 1U;
   }
-  if (strcmp(command, "HLOG,START") == 0)
-  {
-    if (AttitudeControl_GetSnapshot().mode != 0U)
-    {
-      SerialDma_Write("ERR,HLOG,MOTION_ACTIVE\r\n");
-    }
-    else if (Telemetry_Hlog_Start() == 0U)
-    {
-      SerialDma_Write("ERR,HLOG,ALREADY_ACTIVE\r\n");
-    }
-    else
-    {
-      SerialDma_Write("HLOG,START,OK\r\n");
-    }
-    return 1U;
-  }
-  if (strcmp(command, "HLOG,STOP") == 0)
+  if (!strcmp(operation, "STOP"))
   {
     Telemetry_Hlog_Stop();
-    SerialDma_Write("HLOG,STOP,OK\r\n");
+    Command_LogReply(name, "STOP,OK");
     return 1U;
   }
-  if (strcmp(command, "HLOG,STATUS") == 0)
+  if (moving)
   {
-    (void)Telemetry_Hlog_SendStatus();
+    char error[40];
+    (void)snprintf(error, sizeof(error), "%s,MOTION_ACTIVE", name);
+    Command_LogReply("ERR", error);
     return 1U;
   }
-  if (strncmp(command, "HLOG,READ,", 10U) == 0)
+  if (Telemetry_Hlog_IsActive())
   {
-    if (AttitudeControl_GetSnapshot().mode != 0U)
-    {
-      SerialDma_Write("ERR,HLOG,MOTION_ACTIVE\r\n");
-    }
-    else if (Telemetry_Hlog_IsActive())
-    {
-      SerialDma_Write("ERR,HLOG,STOP_RECORDING_FIRST\r\n");
-    }
-    else if ((sscanf(command + 10U, "%lu,%lu", &offset, &count) != 2) ||
-             (count > TELEMETRY_HLOG_READ_MAX))
-    {
-      SerialDma_Write("ERR,HLOG,USE_READ,OFFSET,COUNT_0_8\r\n");
-    }
-    else
-    {
-      (void)Telemetry_Hlog_SendRead((uint32_t)offset, (uint32_t)count);
-    }
+    char error[48];
+    (void)snprintf(error, sizeof(error), "%s,STOP_RECORDING_FIRST", name);
+    Command_LogReply("ERR", error);
     return 1U;
   }
-  return 0U;
+  if (!strcmp(operation, "CLEAR"))
+  {
+    if (wheel) Telemetry_Wlog_Clear();
+    else Telemetry_Hlog_Clear();
+    Command_LogReply(name, "CLEAR,OK");
+    return 1U;
+  }
+  if (!strcmp(operation, "START"))
+  {
+    uint8_t ok = wheel ? Telemetry_Wlog_Start() : Telemetry_Hlog_Start();
+    if (ok) Command_LogReply(name, "START,OK");
+    else SerialDma_Write("ERR,LOG,USE_CLEAR_FIRST\r\n");
+    return 1U;
+  }
+  if (!strncmp(operation, "READ,", 5U) &&
+      sscanf(operation + 5, "%lu,%lu%n", &offset, &count, &end) == 2 &&
+      operation[5 + end] == '\0' && count <= TELEMETRY_HLOG_READ_MAX &&
+      offset <= TELEMETRY_HLOG_CAPACITY)
+  {
+    if (wheel) (void)Telemetry_Wlog_SendRead((uint32_t)offset, (uint32_t)count);
+    else (void)Telemetry_Hlog_SendRead((uint32_t)offset, (uint32_t)count);
+    return 1U;
+  }
+  SerialDma_Write("ERR,LOG,USE_READ,OFFSET,COUNT_0_8\r\n");
+  return 1U;
 }
 
 static uint8_t Command_Attitude(const char *command)
@@ -97,7 +100,7 @@ static uint8_t Command_Attitude(const char *command)
   char message[128];
   if (!strcmp(command, "CAPS"))
   {
-    SerialDma_Write("CAPS,ATTITUDE_R19,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B\r\n");
+    SerialDma_Write("CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED\r\n");
     return 1U;
   }
   if (!strcmp(command, "TOF"))
@@ -109,6 +112,20 @@ static uint8_t Command_Attitude(const char *command)
   {
     Telemetry_SetTof(command[4] == '1');
     SerialDma_Write(command[4] == '1' ? "ACK,TOF,1\r\n" : "ACK,TOF,0\r\n");
+    return 1U;
+  }
+  if (!strcmp(command, "WLOGINFO"))
+  {
+    (void)snprintf(message, sizeof(message),
+        "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,%u,FRONT_REVERSED\r\n",
+        Encoder_GetSnapshot().counts_per_revolution);
+    SerialDma_Write(message);
+    return 1U;
+  }
+  if (!strcmp(command, "WKEEP"))
+  {
+    SerialDma_Write(!AttitudeControl_GetSnapshot().mode && SpeedControl_KeepAlive() ?
+        "ACK,WKEEP\r\n" : "ERR,WKEEP,STOPPED_OR_ANGLE_MODE\r\n");
     return 1U;
   }
   if (Command_Hlog(command)) return 1U;
@@ -127,6 +144,12 @@ static uint8_t Command_Attitude(const char *command)
   if (!strncmp(command, "YAWPID,", 7U) || !strncmp(command, "HEADPID,", 8U))
   {
     uint8_t rate = command[0] == 'Y';
+    if (AttitudeControl_GetSnapshot().mode || SpeedControl_GetSnapshot().enabled ||
+        ChassisTest_IsMotorActive() || Telemetry_Hlog_IsActive())
+    {
+      SerialDma_Write("ERR,ANGLEPID,STOP_AND_STOP_RECORDING_FIRST\r\n");
+      return 1U;
+    }
     if (sscanf(command + (rate ? 7 : 8), "%f,%f", &p, &i) != 2 ||
         !(rate ? AttitudeControl_SetRatePid(p, i) :
                  AttitudeControl_SetHeadingPid(p, i)))
@@ -353,7 +376,7 @@ void Command_HandleLine(const char *line)
   if ((strcmp(command, "VER") == 0) ||
       (strcmp(command, "VERSION") == 0))
   {
-    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R19\r\n");
+    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R20\r\n");
     return;
   }
   if (strcmp(command, "PS2STATUS") == 0)
@@ -480,11 +503,18 @@ void Command_HandleLine(const char *line)
     }
     return;
   }
-  if (strncmp(command, "SPD,", 4U) == 0)
+  if (!strncmp(command, "SPD,", 4U) || !strncmp(command, "WSPD,", 5U))
   {
     char channel_name;
     int speed_rpm;
     MotorChannel channel;
+    uint8_t tracked = command[0] == 'W';
+
+    if (tracked && (!SpeedControl_GetSnapshot().enabled || AttitudeControl_GetSnapshot().mode))
+    {
+      SerialDma_Write("ERR,WSPD,STOP_ANGLE_AND_ENABLE_SPEED_FIRST\r\n");
+      return;
+    }
 
     if (Ps2Control_IsActive())
     {
@@ -492,7 +522,7 @@ void Command_HandleLine(const char *line)
       return;
     }
     if (AttitudeControl_GetSnapshot().mode) ChassisTest_Stop();
-    if ((sscanf(command, "SPD,%c,%d", &channel_name, &speed_rpm) != 2) ||
+    if ((sscanf(command + (tracked ? 5 : 4), "%c,%d", &channel_name, &speed_rpm) != 2) ||
         (Command_ParseMotor(channel_name, &channel) == 0U) ||
         (SpeedControl_SetTarget(channel, speed_rpm) == 0U))
     {
@@ -500,7 +530,8 @@ void Command_HandleLine(const char *line)
     }
     else
     {
-      SerialDma_Write("ACK,SPD\r\n");
+      if (tracked) (void)SpeedControl_KeepAlive();
+      SerialDma_Write(tracked ? "ACK,WSPD\r\n" : "ACK,SPD\r\n");
     }
     return;
   }
@@ -540,6 +571,13 @@ void Command_HandleLine(const char *line)
     float kd;
     MotorChannel channel;
 
+    if (SpeedControl_GetSnapshot().enabled || AttitudeControl_GetSnapshot().mode ||
+        ChassisTest_IsMotorActive() || Telemetry_Hlog_IsActive())
+    {
+      SerialDma_Write("ERR,PID,STOP_AND_STOP_RECORDING_FIRST\r\n");
+      return;
+    }
+
     if ((sscanf(command, "PID,%c,%f,%f,%f", &channel_name, &kp, &ki, &kd) != 4) ||
         (Command_ParseMotor(channel_name, &channel) == 0U))
     {
@@ -547,7 +585,7 @@ void Command_HandleLine(const char *line)
     }
     else if (SpeedControl_SetPid(channel, kp, ki, kd) == 0U)
     {
-      SerialDma_Write("ERR,PID,SPEED_TUNABLE_R19_RANGE\r\n");
+      SerialDma_Write("ERR,PID,SPEED_TUNABLE_R20_RANGE\r\n");
     }
     else
     {
@@ -732,6 +770,7 @@ void Command_HandleLine(const char *line)
     SerialDma_Write("CMD,SPEED,0/1,SPD,A,RPM,DRV,F,L,R,PID,A,KP,KI,KD,PIDGET,SPEEDSTATUS,SPEEDLIMIT,TEL,0/1\r\n");
     SerialDma_Write("CMD,CAPS,PS2STATUS,YAW,DPS,HEAD,DEG,HEADMOVE,DEG,F,L,TRACKMOVE,DEG,FX,FY,MOVE,F,L,DPS,KEEP,YAWPID,KP,KI,HEADPID,KP,KD,YAWGET,HEADGET,ANGLESTATUS,ATEL,0/1\r\n");
     SerialDma_Write("CMD,HLOG,CLEAR,START,STOP,STATUS,READ,OFFSET,COUNT_0_8\r\n");
+    SerialDma_Write("CMD,WLOG,CLEAR,START,STOP,STATUS,READ,OFFSET,COUNT_0_8,WLOGINFO,WSPD,A,RPM,WKEEP\r\n");
     SerialDma_Write("CMD,TOF,TOF,0/1\r\n");
     return;
   }

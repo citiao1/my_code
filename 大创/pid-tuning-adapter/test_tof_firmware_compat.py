@@ -11,8 +11,14 @@ from test_attitude_tuner import FakeBridge
 
 class TofFirmwareCompatibilityTests(unittest.IsolatedAsyncioTestCase):
     async def test_r19_readonly_preflight_keeps_microsecond_requirement(self):
+        await self.check_preflight("VER,VGT6_BM50_ATTITUDE_R19")
+
+    async def test_r20_readonly_preflight_keeps_angular_semantics(self):
+        await self.check_preflight("VER,VGT6_BM50_ATTITUDE_R20")
+
+    async def check_preflight(self, version):
         bridge = FakeBridge()
-        bridge.firmware_version = "VER,VGT6_BM50_ATTITUDE_R19"
+        bridge.firmware_version = version
         bridge.caps = FIRMWARE_CAPS[bridge.firmware_version]
         bridge.gains = {"YAWPID": (0.1815, 1.8062), "HEADPID": (6.0, 1.25)}
         sessions = []
@@ -30,5 +36,5 @@ class TofFirmwareCompatibilityTests(unittest.IsolatedAsyncioTestCase):
             with patch("attitude_tuner.websockets.connect", connect), patch("attitude_tuner.Session", side_effect=create):
                 await run(args)
         self.assertTrue(sessions[0].require_hlog_us)
-        self.assertTrue(sessions[0].expected_caps.endswith(",HLOG_US,TOF_DL1B"))
+        self.assertIn(",HLOG_US,TOF_DL1B", sessions[0].expected_caps)
         self.assertFalse(any(cmd.startswith(("ARM", "MOVE,", "YAWPID,", "HEADPID,")) for cmd in bridge.sent))

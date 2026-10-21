@@ -157,11 +157,14 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(any(x.startswith("YAWPID,") for x in bridge.sent))
         self.assertFalse(any(x.startswith(("HEADPID,","PID,","SPDLIMIT,")) for x in bridge.sent))
         self.assertEqual(bridge.gains["YAWPID"],tuple(history["best_gains"]))
-        self.assertEqual(len(history["history"]),2)
+        self.assertEqual(len(history["history"]),8)
+        self.assertEqual(history["plan"]["repeats"],2)
+        self.assertTrue(history["baseline_validated"])
+        self.assertEqual(history["selection"],"no_significant_training_improvement")
         self.assertEqual(history["scoring_source"],"downloaded_HLOG")
         self.assertLess(history["history"][0]["metrics"]["steady_error"],0.01)
-        self.assertEqual(bridge.sent.count("HLOG,CLEAR"),2)
-        self.assertEqual(bridge.sent.count("HLOG,STOP"),2)
+        self.assertEqual(bridge.sent.count("HLOG,CLEAR"),8)
+        self.assertEqual(bridge.sent.count("HLOG,STOP"),8)
 
     async def test_spin_downloads_both_signs_and_no_bad_log_can_write(self):
         bridge,history=await self.exercise("angular_velocity",experiment="spin")
@@ -190,6 +193,31 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
         bridge,_=await self.exercise("angular_velocity",live=False)
         self.assertFalse(any(x.split(",")[0] in ("ARM","YAW","HEAD","STOP","YAWPID","HEADPID")
                              for x in bridge.sent))
+
+    async def test_existing_runs_are_never_overwritten_even_in_readonly_preflight(self):
+        with tempfile.TemporaryDirectory() as directory:
+            raw = Path(directory)/"round-01-raw.json"
+            raw.write_text('{"original": true}', encoding="utf-8")
+            for live in (False, True):
+                with patch("attitude_tuner.websockets.connect") as connect:
+                    with self.assertRaisesRegex(ValueError, "already contains"):
+                        await run(self.args(directory, live=live))
+                    connect.assert_not_called()
+                self.assertEqual(raw.read_text(), '{"original": true}')
+
+    async def test_nonfinite_or_wrong_loop_gain_writes_are_rejected_before_commands(self):
+        bridge = FakeBridge()
+        session = Session(bridge)
+        try:
+            for loop, gains in (("angular_velocity", (math.nan, 2)),
+                                ("direction", (2, math.inf)),
+                                ("wheel_speed", (1, 2))):
+                with self.assertRaises(ValueError):
+                    await session.write(loop, gains)
+            self.assertEqual(bridge.sent, [])
+        finally:
+            session.reader.cancel()
+            await asyncio.gather(session.reader, return_exceptions=True)
 
     async def test_command_results_and_telemetry_are_demultiplexed_and_readback_checked(self):
         bridge=FakeBridge()
@@ -261,6 +289,33 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
             session.reader.cancel()
             await asyncio.gather(session.reader,return_exceptions=True)
 
+    async def test_r18_rejects_truncated_timestamp_and_accepts_valid_retransmission(self):
+        session = Session(FakeBridge())
+        session.require_hlog_us = True
+        rows = [
+            "HLOG,DATA,0,100,0,0,0,0,0,0,0,0,0,0,1,100000",
+            "HLOG,DATA,1,120,0,0,0,0,0,0,0,0,0,0,1,12000",
+            "HLOG,DATA,1,120,0,0,0,0,0,0,0,0,0,0,1,120000",
+        ]
+
+        async def command(text, *, timeout=5):
+            if text == "HLOG,STATUS":
+                return "HLOG,STATUS,0,2,1024,0,2"
+            self.assertEqual(text, "HLOG,READ,0,2")
+            for row in rows:
+                await session.hlog_frames.put(row)
+            return "HLOG,END,0,2,2"
+
+        try:
+            session.command = command
+            records = await session.read_hlog(loop="angular_velocity")
+            self.assertEqual([row["sequence"] for row in records], [0, 1])
+            self.assertEqual(records[1]["tick_us"], 120000)
+            self.assertEqual(len(session.download["invalid_timestamp_frames"]), 1)
+        finally:
+            session.reader.cancel()
+            await asyncio.gather(session.reader, return_exceptions=True)
+
     async def test_capacity_rejected_before_arm_and_unresolved_logs_never_write(self):
         bridge=FakeBridge()
         @asynccontextmanager
@@ -298,7 +353,7 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(reads, 2)
             self.assertEqual(records[1]["tick_us"], 120246)
             rows[:] = [row.rsplit(",", 1)[0] for row in rows]
-            with self.assertRaisesRegex(RuntimeError, "microsecond"):
+            with self.assertRaisesRegex(RuntimeError, "incomplete"):
                 await session.read_hlog(loop="angular_velocity")
         finally:
             session.reader.cancel()
@@ -339,6 +394,23 @@ class LiveSessionTests(unittest.IsolatedAsyncioTestCase):
         rows[250]["mode"]=2
         with self.assertRaises(ValueError):
             score_logged(rows,"angular_velocity",[(0,4),(15,6)])
+
+    def test_logged_rate_ripple_is_scored_when_final_mean_is_not_drifting(self):
+        rows=[]
+        actual=0.0
+        for i in range(500):
+            target=0.0 if i<200 else (5.0 if i<350 else -5.0)
+            if i>=200:
+                actual += 0.18*(target-actual)
+            ripple=0.5*math.sin(i*2*math.pi/17) if i>=450 else 0.0
+            rows.append(dict(
+                sequence=i,tick=1000+20*i,tick_us=1000000+20000*i,mode=1,
+                target_rate_dps=target,actual_rate_dps=actual+ripple,
+                rate_output_rpm=5.0,saturated=False,forward_rpm=0,left_rpm=0,
+            ))
+        _, result=score_logged(rows,"angular_velocity",[(0,4),(5,3),(-5,3)])
+        self.assertGreater(result.steady_error,0.01)
+        self.assertGreater(result.score,0.0)
 
 
 if __name__=="__main__":

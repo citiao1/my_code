@@ -104,6 +104,27 @@ def unused_local_port() -> int:
 
 
 class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_r20_wheel_log_routes_full_rows_and_exact_batch_end(self):
+        cls = bridge_module.MotorVofaBridge
+        self.assertEqual(cls.expected_reply("WLOGINFO"), "WLOG,INFO")
+        self.assertEqual(cls.expected_reply("WLOG,STATUS"), "WLOG,STATUS")
+        self.assertEqual(cls.expected_reply("WLOG,READ,8,2"), "WLOG,END,8")
+        self.assertEqual(cls.expected_reply("WSPD,A,30"), "ACK,WSPD")
+        self.assertEqual(cls.expected_reply("WKEEP"), "ACK,WKEEP")
+        bridge = cls(self.make_config())
+        bridge.send_hardware = AsyncMock(return_value=True)
+        bridge.broadcast_web = AsyncMock()
+        task = asyncio.create_task(bridge.execute_command("WLOG,READ,8,2"))
+        await asyncio.sleep(0)
+        packet = b"WLOG,DATA,8,100,100000,1,1,0,40,350,316,15000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12000,500,1,1\r\n"
+        for i in range(0,len(packet),7): bridge.consume_bytes(packet[i:i+7])
+        bridge.consume_bytes(b"WLOG,END,0,2,10\r\n")
+        await asyncio.sleep(0)
+        self.assertFalse(task.done())
+        bridge.consume_bytes(b"WLOG,END,8,2,10\r\n")
+        self.assertEqual(await task,"WLOG,END,8,2,10")
+        bridge.broadcast_web.assert_any_await(packet.decode().replace('\r',''))
+
     async def test_state_is_published_before_command_completes(self) -> None:
         bridge = bridge_module.MotorVofaBridge(self.make_config())
         entered, release = asyncio.Event(), asyncio.Event()

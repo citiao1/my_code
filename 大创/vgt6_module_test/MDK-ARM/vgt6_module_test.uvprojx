@@ -516,6 +516,11 @@
               <FilePath>../App/Src/ps2_control.c</FilePath>
             </File>
             <File>
+              <FileName>front_guard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/front_guard.c</FilePath>
+            </File>
+            <File>
               <FileName>tof.c</FileName>
               <FileType>1</FileType>
               <FilePath>../App/Src/tof.c</FilePath>

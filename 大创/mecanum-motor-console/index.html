@@ -79,8 +79,19 @@
         </div>
         <p class="hint">20 ms / 50 Hz · 1024 条，约 20.48 秒。开始记录后再启动角环；每轮停车、停止记录后下载。mode=1 角速度，2 航向；溢出日志不可用于整定。只用 RAM，不写 Flash。</p>
       </section>
+      <section class="angle-panel hlog-panel">
+        <div class="section-heading"><div><span>100 HZ RAM LOGGER</span><h2>四轮速度 WLOG</h2></div><output id="wlogStatus">未查询</output></div>
+        <div class="tuning-actions hlog-actions">
+          <button id="wlogClearButton" class="button secondary" disabled>清空轮速日志</button>
+          <button id="wlogStartButton" class="button connect" disabled>开始记录轮速</button>
+          <button id="wlogStopButton" class="stop-button" disabled>停止记录轮速</button>
+          <button id="wlogReadButton" class="button secondary" disabled>下载轮速 CSV</button>
+        </div>
+        <p class="hint">10 ms / 100 Hz · 1024 条，约10.24秒，建议单次≤9秒。含四轮目标、原始/滤波反馈、PWM及限速状态。与角环日志共用RAM，清空会替换上一份日志；先停车再切换、下载。</p>
+      </section>
       <section class="angle-panel">
         <div class="section-heading"><div><span>CHASSIS</span><h2>四轮运动</h2></div></div>
+        <p class="hint" id="frontFrameState">车头方向等待固件确认</p>
         <label>平移轮速 <input id="driveSpeed" type="number" min="1" max="100" value="30"> RPM</label>
         <label>原地转速 <input id="driveTurnRate" type="number" min="1" max="80" value="20"> °/s</label>
         <div class="drive-pad"><button class="button drive-command turn-left" data-forward="0" data-left="0" data-rotate="1" disabled>Q 左转</button><button class="button drive-command up" data-forward="1" data-left="0" data-rotate="0" disabled>↑ 前进</button><button class="button drive-command turn-right" data-forward="0" data-left="0" data-rotate="-1" disabled>E 右转</button><button class="button drive-command left" data-forward="0" data-left="1" data-rotate="0" disabled>← 左移</button><button class="stop-button pad-stop" id="padStop" disabled>停止</button><button class="button drive-command right" data-forward="0" data-left="-1" data-rotate="0" disabled>右移 →</button><button class="button drive-command down" data-forward="-1" data-left="0" data-rotate="0" disabled>↓ 后退</button></div>
@@ -115,7 +126,7 @@
         <div class="section-heading"><div><span>TELEMETRY</span><h2>实时反馈</h2></div><select id="chartLoop"><option value="rate">角速度 °/s</option><option value="heading">方向 °</option><option value="wheel">1 号轮 RPM</option></select></div>
       <div class="metrics"><div><span>角速度</span><output id="rateActual">— °/s</output></div><div><span>航向</span><output id="yawActual">— °</output></div><div><span>电池</span><output id="batteryActual">— V</output></div><div><span>模式</span><output id="angleMode">停止</output></div></div>
       <div class="tof-reading" aria-live="polite">
-        <div><span>TOF 距离</span><output id="tofDistance">— mm</output><small id="tofState">等待查询</small></div>
+        <div><span>TOF 距离</span><output id="tofDistance">— mm</output><small id="tofState">等待查询</small><small id="frontGuardState">等待保护能力查询</small></div>
         <label><input id="tofRealtime" type="checkbox">实时距离</label>
       </div>
       <canvas id="responseChart" width="700" height="320" aria-label="目标与实际响应波形"></canvas>
@@ -133,7 +144,8 @@
       <details><summary>最近命令与应答（不记录周期 TEL）</summary><pre id="commandLog"></pre></details>
     </section>
   </main>
-  <script src="chassis-test.js?v=2"></script>
-<script src="touch-remote.js?v=31"></script>
+  <script src="wheel-log.js?v=1"></script>
+  <script src="chassis-test.js?v=3"></script>
+<script src="touch-remote.js?v=32"></script>
 </body>
 </html>

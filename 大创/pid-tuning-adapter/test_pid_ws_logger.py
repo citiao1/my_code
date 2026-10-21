@@ -87,6 +87,8 @@ class TelemetryRowTests(unittest.TestCase):
         a = hlog_row("HLOG,DATA,0,4294967,0,0,0,15000,12000,0,5400,0,0,0,1,4294967200")
         b = hlog_row("HLOG,DATA,1,4294987,0,0,0,15000,14000,0,5700,0,0,0,1,20027")
         self.assertAlmostEqual(hlog_samples([a, b], "angular_velocity", max_interval_ms=25)[1][0], 0.020123)
+        jittered = hlog_row("HLOG,DATA,1,4294987,0,0,0,15000,14000,0,5700,0,0,0,1,19956")
+        self.assertAlmostEqual(hlog_samples([a, jittered], "angular_velocity", max_interval_ms=25)[1][0], 0.020052)
         for us, ms in ((19899, 4294986), (24905, 4294992), (4294967200, 4294967)):
             with self.assertRaises(ValueError):
                 hlog_samples([a, {**b, "tick_us": us, "tick": ms}], "angular_velocity", max_interval_ms=25)

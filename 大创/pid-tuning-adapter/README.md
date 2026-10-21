@@ -1,221 +1,151 @@
-# BM50 PID Tuning Data Adapter
+# BM50 PID tuning adapter
 
-2026-10-20 policy: gain decisions require validated downloaded high-rate MCU
-logs, never low-rate TEL/ATEL. R17 adds HLOG mode=1 rate PI and mode=2 heading;
-`attitude_tuner.py` now requires exact R17 VER/CAPS and scores **only downloaded
-HLOG** for rate/heading steps and rate bidirectional spins. Every round stops,
-confirms mode=0/speed=0, downloads/saves the full log, validates/scores it, then
-may write bounded RAM gains and read them back before the next round. One
-hardware confirmation per unchanged session. Limits remain160 wheel RPM,
-60 rotation RPM and80 deg/s. See [R17 handoff](../vgt6_module_test/HLOG_R17_HANDOFF.md).
+当前角环入口使用“合格 HLOG → 重复测量 → 有界搜索 → 独立留出验证 → 恢复并读回”。
+默认 BO，可用 DE 或原启发式作同流程对照。只读预检是默认行为；实车运行需显式
+`--live` 和覆盖全部实验计划的硬件授权。本次升级只做离线验证，没有运行实车。
 
-Read-only preflight (no ARM or motion):
+## 当前能力
 
-```powershell
-python pid-tuning-adapter/attitude_tuner.py --loop angular_velocity --experiment spin --target 15 --output pid-tuning-adapter/runs/rate-new
-```
+| 环路 | 形式 / 周期 | 评分数据与输出 | 自动写回 |
+|---|---|---|---|
+| 角速度 | parallel PI / 20 ms | mode=1 HLOG，deg/s → rotation RPM，±60 | 验证通过后保留 RAM 参数 |
+| 航向 | measurement-PD / 20 ms | mode=2 HLOG，deg → deg/s，±80 | 内环已验证且锁定时可用 |
+| 轮速 | incremental / 10 ms | R20 WLOG，RPM → PWM%，±60 | 单轮Kp/Ki_step，Kd固定0，独立验证后保留RAM参数 |
 
-Only after motion is explicitly authorized, add `--live`; use
-`--confirm-hardware` only when that exact setup was already confirmed.
-Default spin records4+6+6=16 s; step4+6=10 s. Plans over18 s reject before ARM,
-since1024 records hold20.48 s including latency. At least10 actual samples
-within each10–90% transient are required. A faster response unresolved at50 Hz
-causes a diagnostic-only failure, never a sparse-data gain write. Raw JSON
-contains HLOG status/records/wire lines, gains, limits, phases, command timeline
-and safety ATEL; it is saved before scoring, including on failed runs.
-`direction_identify` is HLOG-only/no-write; automatic `heading_round_trip`
-tuning is disabled. Wheel high-rate tuning is not implemented.
+`loop_profiles.py` 定义单位、参数和周期；`attitude_tuner.FIRMWARE_CAPS` 是精确固件
+白名单，目前含 R17/R18/R19/R20。运行时读取 VER/CAPS、控制器形式、限幅、周期、
+健康及当前增益；源码或历史刷写记录不能代替板上身份。
 
-The historical passive-logger/offline examples below are diagnostics only;
-TEL/ATEL captures cannot authorize gain decisions under this policy.
+R17 有 mode 标签；R18/R19/R20 还必须有微秒时间戳。HLOG 样本间隔分别要求
+20..25 ms / 19.9..25 ms，校验独立 uint32 计数器回绕和 ms/us 相位。
+TEL/ATEL 只用于安全监控，绝不作为角环增益评分数据。桥接是唯一串口/BLE 所有者，
+本工具只经 `ws://127.0.0.1:8766` 通信，不直接占用 COM 口。
 
-This standalone adapter passively records one wheel's speed-loop response from
-the existing BM50 bridge WebSocket. It does not open BLE/serial, command motor
-targets, write PID gains, or apply tuning results. The accompanying
-`pid_tuning.py` module and `tune_pid.py` CLI perform offline SISO step-response
-identification and produce review-only P/PI/PD/PID candidates.
+## 运行
 
-## Setup
-
-Run the existing console and bridge first. Keep the wheels raised and use the
-console to ARM, enable the speed loop, and apply a conservative step target.
-The bridge must be listening on `127.0.0.1:8766`.
+R20轮速用独立入口（默认只读，不会ARM或写参）：
 
 ```powershell
-py -3 -m venv pid-tuning-adapter\.venv
-pid-tuning-adapter\.venv\Scripts\python.exe -m pip install -r pid-tuning-adapter\requirements.txt
-pid-tuning-adapter\.venv\Scripts\python.exe pid-tuning-adapter\pid_ws_logger.py --motor A --output pid-tuning-adapter\capture-A.csv
+.\mecanum-motor-console\bridge\.venv\Scripts\python.exe pid-tuning-adapter/wheel_tuner.py --wheel A --target 40 --validation-targets -40 20 --rounds 5 --repeats 2 --output pid-tuning-adapter/runs/NEW-WHEEL-SESSION
 ```
 
-Choose `A`, `B`, `C`, or `D`. Stop with Ctrl+C. The adapter restores the
-previous periodic-telemetry state on normal exit. If the WebSocket disconnects
-unexpectedly, check telemetry from the console and turn it off there if needed.
+只有完整计划明确授权后才加 `--live`。单轮实验要求可靠悬空、四轮自由、急停可用。
+轮速 Ki 是每次更新的离散系数，不能直接复制连续 PI 的 Ki。默认基线2s、阶跃3s，
+总记录≤9s；100Hz×1024条约10.24s，WLOG与HLOG共用RAM，CLEAR会替换旧数据。
+`WSPD,A,RPM`与`WKEEP`使用300ms看门狗；写参需停车并停止记录，保持其他轮与角环增益。
+`wheel_log.py`校验完整批次、uint32微秒/毫秒相位、9900..15000us间隔、模式/电池/
+编码器/通道隔离/TOF限速、完整阶段与基线/最终窗口、10个瞬态独立样本，失败不写参。
+单轮悬空调参不代替底盘落地验收；本次没有运行实车搜索。
 
-## CSV
+WLOG成功或失败的原始wire、批次重试、增益与命令时间线保存在新会话目录。
+离线复查：`python pid-tuning-adapter/replay_wlog.py <round-001-raw.json>`，不连接硬件。
+R20新车头为TOF端，车体前/左轴反转180°，A/B/C/D物理通道和逆时针转向不变。
+距离100→50mm线性限制前进，≤50mm禁止前进，倒退/横移可用；无效/过期测距按用户选择
+保持原请求速度并提示异常。任何实际触发限速的轮次不可评分。详见
+[`R20交接`](../vgt6_module_test/CONTROL_R20_HANDOFF.md)。
 
-The CSV contains `time_s,setpoint_rpm,process_rpm,output_percent`. Time is the
-firmware millisecond tick relative to the first recorded sample. The logger
-only records samples where the speed loop reports enabled. Use the captured
-step response for offline identification or to prepare candidate gains.
-
-The current R10 firmware reports per-wheel gains (`Kp=1.2`, `Ki` is
-0.0991/0.0998/0.0998/0.1008 by default, `Kd=0`). `PID`
-commands with other values are rejected by firmware, so results from a tuning
-tool must not be written to this firmware. Applying candidate gains requires a
-separately reviewed firmware change and bench validation.
-
-The logger writes a sidecar `<capture>.csv.meta.json` describing the loop,
-controller form, 10 ms firmware control period and approximately 300 ms TEL
-observation period. `--controller-form incremental` is the correct form for
-the current STM32 speed controller; it uses
-`u += Kp*Δe + Ki_step*e + Kd_step*Δ²e`. The logger's TEL samples are not the
-10 ms control samples.
-
-## Offline generic tuner
-
-The tuner accepts the existing columns
-`time_s,setpoint_rpm,process_rpm,output_percent` and generic aliases such as
-`time,setpoint,process,output`. It identifies a conservative first-order plus
-dead-time model and emits candidates for:
+推荐项目已有 `.venv`（系统 Python 可能没有 websockets）：
 
 ```powershell
-pid-tuning-adapter\.venv\Scripts\python.exe `
-  pid-tuning-adapter\tune_pid.py `
-  --input pid-tuning-adapter\capture-A.csv `
-  --output pid-tuning-adapter\capture-A.tuning.json `
-  --sample-time 0.01
+.\pid-tuning-adapter\.venv\Scripts\python.exe pid-tuning-adapter/attitude_tuner.py --loop angular_velocity --experiment spin --target 15 --rounds 5 --search bo --repeats 2 --seed 0 --validation-targets -10 10 --output pid-tuning-adapter/runs/NEW-SESSION
 ```
 
-It supports P, PI, PD and PID modes and three explicit controller forms:
+该命令只读预检并打印完整计划，不 ARM。已明确授权运动、场地、急停、全部目标、
+实验次数和 RAM 写参范围后，才加 `--live`。只有完整计划已在会话中确认时才使用
+`--confirm-hardware`。角环需要车体实际旋转，悬空转轮不能验证 yaw。
+始终用新输出目录；已有 session/raw 数据会被拒绝覆盖。
 
-- `parallel`: continuous notation, `Kp`, `Ki` in 1/s, `Kd` in s;
-- `incremental`: conversion for the current STM32 incremental update;
-- `position-discrete`: per-sample integral and derivative coefficients.
+新环境可 `py -3 -m venv pid-tuning-adapter/.venv`，再用该解释器安装
+`-r pid-tuning-adapter/requirements.txt`。搜索算法本身只用标准库，无 scipy/sklearn 依赖。
 
-This covers speed PI, angular-velocity PI, direction PD and ordinary PID
-loops as long as each is a SISO loop with a meaningful step response. It does
-not claim to auto-tune arbitrary nonlinear, coupled MIMO, unstable, cascaded,
-feed-forward or observer-based controllers. Gimbal angle/velocity loops must
-be captured with their own `setpoint/process/output` CSV; the current BM50
-bridge exposes only wheel TEL and cannot pretend to capture gimbal signals.
-For a cascade, tune the inner velocity loop before the outer angle/direction
-loop and use the inner loop's closed response as the outer loop's plant.
+## 搜索与接受规则
 
-The R10 firmware also provides a RAM-only direction-loop logger. It records
-the 20 ms controller state without writing Flash; `attitude_tuner.py` can
-retrieve the stopped log with `--experiment direction_identify`, and
-`direction_model.py` fits the closed angular-rate plant and ranks bounded
-`HEADPID(Kp,Kd)` candidates. Candidate gains are review-only until an
-independent validation trajectory accepts them.
+- `--search bo|de|heuristic`：BO 为固定 RBF GP + expected improvement；DE 为顺序
+  rand/1/bin；heuristic 是原有有限规则。它们都使用相同重复测量和验证流程。
+- `--rounds 1..20`：训练参数组预算，包含初始参数；`--repeats 2..10` 默认 2。
+  单次记录仍不超过 18 s，但整个会话包含多次停止、下载和验证。
+- 默认全局边界是初始增益的 60–140%，限制在 0..100；可预先指定
+  `--kp-bounds MIN MAX --second-bounds MIN MAX`。第二维分别是 Ki / Kd。
+  每次建议和实际写入都受当前值 ±20% 约束，零系数保持零。
+- `--validation-targets` 至少两个不同于训练的阶跃，训练与验证合起来覆盖正反向。
+  不指定时预检会显示自动生成的反向/不同幅值目标。它们固定在 ARM 之前。
+- 默认 `--max-overshoot 0.30`、`--min-improvement 0.01`。这些参数必须预先声明。
+  搜索器不能改目标、限幅或时长；参数域有界不等于已证明闭环安全。
 
-Candidate gains are never sent to the MCU. Check sign, units, sample period,
-output limit and saturation before applying them. In particular, converting
-continuous gains directly into the current incremental controller is wrong;
-use the `incremental` candidate so `Ki_step = Ki_continuous*T` and
-`Kd_step = Kd_continuous/T`.
+先重复测量初始参数的训练和留出试验，再只用训练分数搜索。每个未被接受的训练
+候选会先恢复训练 incumbent，再提出下一组局部候选；incumbent 在最终验证前仍是
+暂定值。最终只让一个训练 finalist 接受独立留出验证，不把 holdout 反馈给搜索器。
 
-## R10 physical experiment modes
+每阶跃固定目标函数（越低越好）：
 
-The online adapter can operate the vehicle only with `--live` and one
-explicit hardware confirmation. All motion modes keep one ARM and the
-watchdog heartbeat for the whole session, save raw samples, check limits and
-send STOP in a `finally` path.
+`J = normalized_IAE + 2*overshoot + steady_error_RMS + 0.5*normalized_settling + 0.1*saturation_fraction`
 
-Angular velocity uses a matched spin experiment:
+IAE 和稳态 RMS 按阶跃幅值归一化；整定时间按记录时长归一化，未整定取 1。
+spin 取两阶跃分数平均，同时保留最差超调/饱和指标。
+训练聚合 `mean(J) + 0.5*sample_stdev(J)`；噪声筛选要求均值改善超过
+`max(min_improvement, 1.96*sqrt(var_mean_new+var_mean_old))`。这只是工程筛选，
+两次重复不能当成严格统计置信保证。
+
+接受还要求 holdout 总体改善、最差分数不劣化，每个验证工况的均值/最差分数及
+超调、稳态 RMS、饱和不超过 incumbent+0.01，整定不超过 +0.1 s。
+无可靠改善或留出未通过，恢复实测验证过的初始参数。
+
+## 日志、硬约束与恢复
+
+每次记录 STOP/确认 -> CLEAR/START -> 固定基线/阶跃/稳态 -> STOP/确认 ->
+HLOG,STOP/STATUS -> 完整下载 -> 保存 raw -> 评分 -> 健康/增益复核。
+状态要求 active=0、overflow=0、count=sequence>0、容量 1024，批次最多 8 条，
+序号连续、时间戳/模式正确。读取失败可有界重试，完全相同的重传不算新样本。
+
+评分还检查参考阶段、时长覆盖、无意外平移、反馈方向、饱和 <=25%、一秒稳定基线、
+每阶跃至少十个独立 10–90% 瞬态样本，以及末段覆盖、RMS 和漂移。
+失败不会插值补齐或进入排名；超调等性能硬约束失败也立即中止。
+
+每次写参均停车并验证当前参数，单步 <=20%，ACK 后读回。正常结束逐步恢复并
+精确读回留出验证通过的最好值。异常先 STOP；只有通信/健康/当前参数和锁定内环
+仍可核实时才回到已验证初值。失联或外部改参时不盲写，报告恢复未完成。
+所有写参仅在 RAM；本工具不写 Flash。
+
+`session.json` 保存计划/profile、固件/CAPS、单位、目标函数、每次重复的指标、
+训练汇总、初始/候选 holdout、原始日志路径、写入/读回、失败和最终选择依据。
+`round-NN-raw.json` 在评分前保存 status/records/wire/命令时间线/安全遥测，失败也保留；
+成功记录另有普通 CSV 和 HLOG CSV。NN 是物理实验序号，不是候选参数组序号。
+
+## 离线比较与历史回放
 
 ```powershell
-python pid-tuning-adapter/attitude_tuner.py --live --confirm-hardware `
-  --loop angular_velocity --experiment spin --target 15 --rounds 4 `
-  --output pid-tuning-adapter/runs/rate-spin
+.\pid-tuning-adapter\.venv\Scripts\python.exe pid-tuning-adapter/benchmark_search.py --seeds 3 --rounds 10 --output pid-tuning-adapter/runs/NEW-OFFLINE-COMPARISON
+.\pid-tuning-adapter\.venv\Scripts\python.exe pid-tuning-adapter/replay_hlog.py --input pid-tuning-adapter/runs/EXISTING-RUN --output pid-tuning-adapter/runs/NEW-REPLAY.json
 ```
 
-The vehicle holds zero, turns clockwise, returns to zero, turns
-counter-clockwise, and returns to zero. Both signs must pass before a rate
-candidate is accepted.
+benchmark 使用真实 HLOG 评分器、简化合成 PI/PD 植物、相同种子/预算、无噪声与有噪声
+场景，以及不同幅值/方向/负载的留出验证。输出收敛曲线、试验数、失败数、越界数和
+最终保留分数；始终标注 `simulation_only`。它不是 BM50 辨识模型或实机性能证明。
 
-Heading uses a measured-distance round trip. R10's `HEADMOVE` command keeps
-translation active while the outer heading target changes:
+回放仅校验和评分历史 raw JSON，不连接桥接、不提参、不跨会话排名。缺少原始阶跃
+phases 的轨迹日志不能强行套用阶跃评分器。日志质量通过也不等于满足新的 30% 超调门槛。
+
+本次结果见 [离线对照](runs/offline-search-comparison-20261021-final/comparison.md) 和
+[历史回放](runs/offline-search-comparison-20261021-final/historical-replay.json)。
+
+## 其他入口与明确缺口
+
+- `pid_tuning.py` / `tune_pid.py`：通用稳定自调节 SISO 的开环 FOPDT 候选。
+  需要足够采样、执行器阶跃/保持段和已整定响应；闭环参考阶跃不满足这个模型假设。
+  parallel/incremental/position-discrete 必须按真实控制周期和公式换算。
+- `pid_ws_logger.py`：被动 TEL/ATEL 诊断，不能作为 BM50 自动增益数据源。
+- `direction_identify`：HLOG 轨迹采集和模型诊断，无参数写回；自动
+  `heading_round_trip` 调参仍禁用，不能用旧例子绕过缺失的轨迹质量门。
+- `ground_speed`：按 ENC 距离对当前轮速参数做低频观察，不调轮速 PID；轮径 127 mm，
+  每输出转 380 counts。它不能代替 10 ms 轮速高频记录。
+- R20已实现WLOG与单轮评分/搜索入口；底盘联合验证仍需另行实测。旧 live_tune_session / R6 低频
+  整定流程不能重新启用为自动写参路径；外部 GUI 也需协议和 PID 形式适配。
+
+## 检查
 
 ```powershell
-python pid-tuning-adapter/attitude_tuner.py --live --confirm-hardware `
-  --loop direction --experiment heading_round_trip --target 15 `
-  --forward-rpm 30 --distance-m 1.0 --rounds 3 `
-  --output pid-tuning-adapter/runs/heading
+.\pid-tuning-adapter\.venv\Scripts\python.exe -m unittest discover -s pid-tuning-adapter -p "test_*.py"
 ```
 
-To collect high-rate direction data, use the same continuous ground trajectory
-with the RAM HLOG enabled:
-
-```powershell
-pid-tuning-adapter\.venv\Scripts\python.exe `
-  pid-tuning-adapter\attitude_tuner.py `
-  --loop direction --experiment direction_identify --target 15 `
-  --distance-m 0.5 --forward-rpm 20 --seconds 30 --rounds 1 `
-  --live --confirm-hardware `
-  --output pid-tuning-adapter\runs\direction-identify-a15-v20
-```
-
-The resulting `round-01-hlog.csv` can be analyzed without touching the
-controller:
-
-```powershell
-pid-tuning-adapter\.venv\Scripts\python.exe `
-  pid-tuning-adapter\direction_model.py `
-  pid-tuning-adapter\runs\direction-identify-a15-v20\round-01-hlog.csv `
-  --kp 5 --kd 1.25
-```
-
-The adapter zeros the encoder, drives the declared distance, changes the
-heading reference during the leg, reverses automatically, and stops after
-returning the same distance. The distance uses a 127 mm wheel and 380
-transitions per output revolution (`1.05 mm/count`); time is only a timeout.
-
-For a ground speed validation of the currently applied wheel gains:
-
-```powershell
-python pid-tuning-adapter/attitude_tuner.py --live --confirm-hardware `
-  --loop wheel_speed --experiment ground_speed --speed-rpm 30 `
-  --distance-m 1.0 --output pid-tuning-adapter/runs/ground-speed
-```
-
-This mode drives forward and back, records average wheel RPM/PWM and scores
-tracking. Wheel PID writes remain guarded by the live tuning session and are
-verified with `PIDGET` readback.
-
-## WebSocket Contract
-
-- Endpoint: `ws://127.0.0.1:8766`
-- Bridge greeting: `BRIDGE,BM50_ACK_R3`
-- Commands use JSON requests: `{"type":"command","id":N,"command":"VER"}`
-- Results use JSON replies with the same `id`; telemetry remains plain CSV text.
-- `TEL` has 27 comma-separated fields. For wheel index `i` in `A..D`, target is
-  field `4+i`, output is field `8+i`, and actual RPM is field `12+i` divided by
-  10. Firmware tick is field 1; speed-loop-enabled is field 3.
-
-The passive logger sends only diagnostics and telemetry selection. The live
-attitude adapter additionally sends the declared experiment commands
-(`ARM`, `MOVE`, `HEAD`, `HEADMOVE`, `ENC`, `ENCZERO`, `KEEP`, `STOP`)
-inside the confirmed live session. `MOVE` is the same R10 cascade entry used by
-the console's W/A/S/D and Q/E controls. It refuses firmware-version or stack-guard
-mismatches and verifies any attitude PID write by readback.
-
-## Handoff For Project Integration
-
-The browser console already talks to the local bridge over WebSocket; the BLE
-bridge remains the sole BLE Central and serial owner. Keep any future tuning
-tool on this WebSocket boundary rather than letting it open a COM port or BLE
-connection. It should consume `TEL` feedback, associate each sample with the
-active target, and return candidate gains for explicit review.
-
-Before adding parameter writes, first change the MCU protocol and PID ownership
-deliberately: R10 accepts finite 0..100 wheel PID writes, and `PIDGET` is the
-required readback. Do not infer successful parameter application from a bridge ACK alone;
-read back all four gains and require a firmware version/capability check.
-Keep output limits, target RPM limits, stack checks, STOP behavior, and manual
-confirmation in the safety review.
-
-Tests:
-
-```powershell
-pid-tuning-adapter\.venv\Scripts\python.exe -m unittest discover -s pid-tuning-adapter -p "test_*.py" -v
-```
+测试使用内存 bridge 和合成记录，覆盖数据门、搜索边界/重现性、重复/留出选择、
+停车写入/读回、回退，以及故障时停止和恢复未完成。它们不建立实车性能结论。

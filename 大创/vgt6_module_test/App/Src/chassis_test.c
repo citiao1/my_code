@@ -4,6 +4,7 @@
 
 #include "speed_control.h"
 #include "attitude_control.h"
+#include "front_guard.h"
 #include "stm32f4xx_hal.h"
 
 #define CHASSIS_MAX_DUTY_PERCENT 30U
@@ -12,6 +13,13 @@
 
 static ChassisTestSnapshot chassis_state;
 static uint32_t stop_tick;
+static uint8_t requested_duty;
+
+static uint8_t guarded_duty(int8_t direction, uint8_t duty)
+{
+  /* Physical negative single-wheel rotation approaches the new front. */
+  return direction < 0 ? (uint8_t)((uint16_t)duty * FrontGuard_ForwardLimit(100U) / 100U) : duty;
+}
 
 uint8_t ChassisTest_Init(void)
 {
@@ -30,6 +38,15 @@ void ChassisTest_Process(void)
     return;
   }
   now = HAL_GetTick();
+  {
+    uint8_t duty = guarded_duty(chassis_state.direction, requested_duty);
+    if (duty != chassis_state.duty_percent)
+    {
+      if (!duty) Motor_Stop(chassis_state.channel);
+      else (void)Motor_Run(chassis_state.channel, chassis_state.direction, duty);
+      chassis_state.duty_percent = duty;
+    }
+  }
   if ((int32_t)(now - stop_tick) >= 0)
   {
     ChassisTest_Stop();
@@ -74,7 +91,9 @@ uint8_t ChassisTest_Jog(MotorChannel channel, int8_t direction,
   }
 
   ChassisTest_Stop();
-  if (Motor_Run(channel, direction, duty_percent) == 0U)
+  requested_duty = duty_percent;
+  duty_percent = guarded_duty(direction, duty_percent);
+  if (duty_percent && Motor_Run(channel, direction, duty_percent) == 0U)
   {
     return 0U;
   }
