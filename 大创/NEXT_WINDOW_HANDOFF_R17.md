@@ -1,5 +1,7 @@
 # VGT6 麦轮车 / R17 高频日志与整定交接
 
+2026-10-21最新：DL1B 测距、网页距离与用户指定开机PID见 `vgt6_module_test/TOF_R19_HANDOFF.md`；R19烧录和实测状态以该文档追加记录为准。下文为历史。
+
 2026-10-20后续：HLOG微秒时间戳与R18改动见 `vgt6_module_test/HLOG_R18_HANDOFF.md`；
 下文保留R17历史状态，后续烧录状态以R18交接的追加结果及实际VER/CAPS为准。
 

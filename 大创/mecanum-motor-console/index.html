@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VGT6 四轮控制台</title>
-  <link rel="stylesheet" href="touch-remote.css?v=20">
+  <link rel="stylesheet" href="touch-remote.css?v=21">
 </head>
 <body>
   <header class="topbar">
@@ -52,8 +52,8 @@
       <section class="angle-panel">
         <div class="section-heading"><div><span>INNER LOOP</span><h2>角速度 PI</h2></div><output id="rateReadback">等待回读</output></div>
         <div class="angle-inputs">
-          <label>Kp<input id="rateKp" type="number" min="0" max="100" step="0.0001" value="0.15"></label>
-          <label>Ki / s<input id="rateKi" type="number" min="0" max="100" step="0.0001" value="2.5"></label>
+          <label>Kp<input id="rateKp" type="number" min="0" max="100" step="0.0001" value="0.1815"></label>
+          <label>Ki / s<input id="rateKi" type="number" min="0" max="100" step="0.0001" value="1.8062"></label>
           <label>目标 °/s<input id="rateTarget" type="number" min="-80" max="80" value="15"></label>
         </div>
         <div class="tuning-actions"><button id="ratePidButton" class="button secondary angle-command" disabled>写入并回读 PI</button><button id="rateStartButton" class="button connect angle-command" disabled>启动角速度环</button></div>
@@ -114,6 +114,10 @@
     <section class="tuning-section telemetry-surface">
         <div class="section-heading"><div><span>TELEMETRY</span><h2>实时反馈</h2></div><select id="chartLoop"><option value="rate">角速度 °/s</option><option value="heading">方向 °</option><option value="wheel">1 号轮 RPM</option></select></div>
       <div class="metrics"><div><span>角速度</span><output id="rateActual">— °/s</output></div><div><span>航向</span><output id="yawActual">— °</output></div><div><span>电池</span><output id="batteryActual">— V</output></div><div><span>模式</span><output id="angleMode">停止</output></div></div>
+      <div class="tof-reading" aria-live="polite">
+        <div><span>TOF 距离</span><output id="tofDistance">— mm</output><small id="tofState">等待查询</small></div>
+        <label><input id="tofRealtime" type="checkbox">实时距离</label>
+      </div>
       <canvas id="responseChart" width="700" height="320" aria-label="目标与实际响应波形"></canvas>
       <p class="hint chart-legend">绿色：目标 · 蓝色：实际 · 切换观察量会清空图表</p>
       <p class="hint">VOFA / FireWater / TCP 127.0.0.1:1347<br>角环：I1/I2 目标/实际 °/s，I4/I5 目标/实际 °<br>速度：I1..I4 实际 A..D，I5..I8 目标 A..D</p>
@@ -130,6 +134,6 @@
     </section>
   </main>
   <script src="chassis-test.js?v=2"></script>
-  <script src="touch-remote.js?v=29"></script>
+  <script src="touch-remote.js?v=30"></script>
 </body>
 </html>

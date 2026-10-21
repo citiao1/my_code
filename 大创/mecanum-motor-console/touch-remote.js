@@ -1,7 +1,7 @@
 const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
 const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R17';
-const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18'];
+const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19'];
 const MAX_TARGET_RPM = 160;
 const HLOG_REQUEST_TIMEOUT_MS = 25000; // Bridge allows 20 s for a stopped RAM batch.
 
@@ -66,6 +66,9 @@ const ui = {
   ps2Status: document.querySelector('#ps2Status'),
   ps2Query: document.querySelector('#ps2QueryButton'),
   ps2Raw: document.querySelector('#ps2RawStatus'),
+  tofDistance: document.querySelector('#tofDistance'),
+  tofState: document.querySelector('#tofState'),
+  tofRealtime: document.querySelector('#tofRealtime'),
 };
 
 let socket;
@@ -92,6 +95,7 @@ const firmware = {
   receivedAt: 0, expectedAt: 0, timeoutReported: false,
   hlogSupported: false,
   hlogMicros: false,
+  tofSupported: false, tofReceivedAt: 0, tofStreaming: false,
   hlog: { active: false, count: 0, capacity: 0, overflow: 0, sequence: 0, lastBatch: 0 },
 };
 const hlogRows = [];
@@ -125,6 +129,7 @@ function updateUi() {
     .forEach((element) => { element.disabled = disabled; });
   ui.query.disabled = !connected();
   ui.ps2Query.disabled = !connected();
+  ui.tofRealtime.disabled = !connected() || !firmware.tofSupported;
   ui.stop.disabled = !connected();
   ui.testStop.disabled = !connected();
   document.querySelectorAll('.angle-command,.drive-command').forEach((button) => { button.disabled = disabled; });
@@ -159,6 +164,11 @@ function resetLinkState() {
   firmware.speedEnabled = false;
   firmware.hlogSupported = false;
   firmware.hlogMicros = false;
+  firmware.tofSupported = firmware.tofStreaming = false;
+  firmware.tofReceivedAt = 0;
+  ui.tofRealtime.checked = false;
+  ui.tofDistance.textContent = '— mm';
+  ui.tofState.textContent = '连接已断开';
   firmware.hlog = { active: false, count: 0, capacity: 0, overflow: 0, sequence: 0, lastBatch: 0 };
   hlogRows.length = 0;
   firmwareCompatible = false;
@@ -191,7 +201,7 @@ function setTelemetry(enabled) {
 
 function writeCommand(command) {
   if (!connected()) return Promise.reject(new Error('蓝牙未连接'));
-  const diagnostic = ['VER', 'UART', 'LINK', 'STACK', 'SPEEDSTATUS', 'SPEEDLIMIT', 'PIDGET', 'PING', 'STOP', 'CAPS', 'YAWGET', 'HEADGET', 'ANGLESTATUS', 'PS2STATUS', 'PS2RAW'].includes(command) ||
+  const diagnostic = ['VER', 'UART', 'LINK', 'STACK', 'SPEEDSTATUS', 'SPEEDLIMIT', 'PIDGET', 'PING', 'STOP', 'CAPS', 'YAWGET', 'HEADGET', 'ANGLESTATUS', 'PS2STATUS', 'PS2RAW', 'TOF', 'TOF,0', 'TOF,1'].includes(command) ||
     command.startsWith('HLOG,');
   if (!diagnostic && (!firmwareCompatible || !stackHealthy)) {
     return Promise.reject(new Error('固件版本或栈保护检查未通过；请查询状态'));
@@ -357,6 +367,7 @@ function handleLine(line) {
         await send('HEADGET');
         await send('ANGLESTATUS');
         await send('HLOG,STATUS');
+        if (firmware.tofSupported) await send('TOF');
         await send('STACK');
         if (!stackHealthy) throw new Error('查询后栈保护异常，已禁用电机控制');
         setEvent('下位机应答正常；遥测由开关或速度环启动控制');
@@ -376,9 +387,37 @@ function handleLine(line) {
   if (fields[0] === 'CAPS') {
     firmware.hlogSupported = fields.includes('HLOG') && fields.includes('HLOG_MODE');
     firmware.hlogMicros = fields.includes('HLOG_US');
+    firmware.tofSupported = fields.includes('TOF_DL1B');
+    if (!firmware.tofSupported) {
+      ui.tofState.textContent = '当前固件不支持 TOF';
+      ui.tofDistance.textContent = '— mm';
+      ui.tofRealtime.checked = firmware.tofStreaming = false;
+    }
     logCommand(`收到 < ${line}`);
     if (!firmware.hlogSupported) ui.hlogStatus.textContent = '固件不支持 HLOG';
     updateUi();
+    return;
+  }
+  if (fields[0] === 'TOF') {
+    const values = fields.slice(1).map(Number);
+    if (fields.length !== 8 || !fields.slice(1).every(x => /^-?\d+$/.test(x)) ||
+        !values.every(Number.isSafeInteger) ||
+        ![0, 1].includes(values[1]) || ![0, 1].includes(values[2]) ||
+        values.some((x, i) => i !== 3 && (x < 0 || x > 0xffffffff)) ||
+        values[4] > 255 ||
+        (values[2] === 1 && (values[1] !== 1 || values[3] < 1 || values[3] > 4000 || values[4] !== 9 || values[5] > 350)) ||
+        (values[2] === 0 && values[3] !== -1)) {
+      ui.tofDistance.textContent = '— mm';
+      ui.tofState.textContent = '距离报文无效';
+      return;
+    }
+    const [, present, valid, mm, status, age, errors] = values;
+    firmware.tofReceivedAt = Date.now();
+    ui.tofDistance.textContent = valid ? `${mm} mm` : '— mm';
+    ui.tofState.textContent = !present ? '传感器未连接 / 初始化失败' : valid ?
+      `${(mm / 100).toFixed(1)} cm · 更新于 ${age} ms 前` :
+      age > 350 ? '等待新测量 / 数据已过期' : `测量无效 · 状态 ${status}`;
+    if (errors) ui.tofState.textContent += ` · 通信/超时 ${errors}`;
     return;
   }
   if (fields[0] === 'PS2' && fields.length === 12) {
@@ -794,6 +833,21 @@ ui.limitButton.addEventListener('click', () => {
   void runAction((send) => send(`SPDLIMIT,${limit}`));
 });
 ui.telemetry.addEventListener('change', () => void runAction((send) => send(`TEL,${ui.telemetry.value}`)));
+ui.tofRealtime.addEventListener('change', () => {
+  const enable = ui.tofRealtime.checked;
+  void runAction(async send => {
+    try {
+      if (!firmware.tofSupported) throw new Error('当前固件不支持 TOF');
+      await send(`TOF,${enable ? 1 : 0}`);
+      firmware.tofStreaming = enable;
+      ui.tofRealtime.checked = enable;
+      if (enable) await send('TOF');
+    } catch (error) {
+      ui.tofRealtime.checked = firmware.tofStreaming;
+      throw error;
+    }
+  });
+});
 ui.query.addEventListener('click', () => void runAction(async (send) => {
   await send('VER');
   if (!firmwareCompatible) throw new Error(`需要烧录 ${REQUIRED_FIRMWARE}`);
@@ -810,6 +864,7 @@ ui.query.addEventListener('click', () => void runAction(async (send) => {
   await send('HEADGET');
   await send('ANGLESTATUS');
   await send('HLOG,STATUS');
+  if (firmware.tofSupported) await send('TOF');
   await send('STACK');
   if (!stackHealthy) throw new Error('查询后栈保护异常，已禁用电机控制');
 }));
@@ -1063,6 +1118,10 @@ setInterval(async () => {
 },400);
 window.addEventListener('pagehide', () => { socket?.close(); });
 setInterval(() => {
+  if (firmware.tofReceivedAt && Date.now() - firmware.tofReceivedAt > 1600) {
+    ui.tofDistance.textContent = '— mm';
+    ui.tofState.textContent = firmware.tofStreaming ? '未收到新距离（日志采集/下载期间暂停）' : '读数已过期，开启实时距离以更新';
+  }
   const reference = Math.max(firmware.receivedAt, firmware.expectedAt);
   if (connected() && firmware.telemetryEnabled && reference &&
       Date.now() - reference > 3000 && !firmware.timeoutReported) {

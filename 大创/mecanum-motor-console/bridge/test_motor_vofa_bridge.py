@@ -157,6 +157,29 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
             "SPEEDLIMIT",
         )
 
+    async def test_tof_query_stream_acks_and_fragmented_frames(self):
+        cls = bridge_module.MotorVofaBridge
+        self.assertEqual(cls.expected_reply("TOF"), "TOF")
+        self.assertEqual(cls.expected_reply("TOF,1"), "ACK,TOF,1")
+        self.assertEqual(cls.expected_reply("TOF,0"), "ACK,TOF,0")
+        bridge = cls(self.make_config())
+        bridge.broadcast_web = AsyncMock()
+        bridge.broadcast_tcp = AsyncMock()
+        bridge.send_hardware = AsyncMock(return_value=True)
+        task = asyncio.create_task(bridge.execute_command("TOF,1"))
+        await asyncio.sleep(0)
+        bridge.consume_bytes(b"TOF,100,1,1,1234,9,0,0\r\n")
+        await asyncio.sleep(0)
+        self.assertFalse(task.done())  # A data frame cannot acknowledge stream enable.
+        bridge.consume_bytes(b"ACK,TOF,1\r\n")
+        self.assertEqual(await task, "ACK,TOF,1")
+        packet = b"TOF,200,1,0,-1,4,0,0\r\n"
+        for offset in range(0, len(packet), 5):
+            bridge.consume_bytes(packet[offset:offset+5])
+        await asyncio.sleep(0)
+        bridge.broadcast_web.assert_any_await("TOF,200,1,0,-1,4,0,0\n")
+        bridge.broadcast_tcp.assert_not_awaited()
+
     def test_angular_channels_and_query_routing(self):
         self.assertEqual(bridge_module.MotorVofaBridge.to_firewater(
             "ATEL,1234,2,1,15000,14250,5400,170000,-175000,15000,15000,0,1,12000"),

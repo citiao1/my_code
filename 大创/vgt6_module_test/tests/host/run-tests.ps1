@@ -33,6 +33,16 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Timebase host compilation failed." }
     & "tests/host/test_timebase.exe"
     if ($LASTEXITCODE -ne 0) { throw "Timebase regression failed." }
+    & gcc -std=c11 -Wall -Wextra -Werror -I tests/host -I Bsp/Inc -I App/Inc `
+        tests/host/test_tof.c App/Src/tof.c -o tests/host/test_tof.exe
+    if ($LASTEXITCODE -ne 0) { throw "ToF host compilation failed." }
+    & "tests/host/test_tof.exe"
+    if ($LASTEXITCODE -ne 0) { throw "ToF regression failed." }
+    & gcc -std=c11 -Wall -Wextra -Werror -I tests/host/tof_bus -I Bsp/Inc `
+        tests/host/test_tof_bus.c Bsp/Src/tof_bus.c -o tests/host/test_tof_bus.exe
+    if ($LASTEXITCODE -ne 0) { throw "ToF bus compilation failed." }
+    & "tests/host/test_tof_bus.exe"
+    if ($LASTEXITCODE -ne 0) { throw "ToF bus regression failed." }
 } finally {
     Pop-Location
 }

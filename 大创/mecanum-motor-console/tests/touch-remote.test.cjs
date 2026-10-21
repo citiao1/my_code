@@ -62,6 +62,7 @@ function consoleFixture() {
           HEADGET: 'HEADPID,6.0000,1.2500,80,20,D_MEAS',
           ANGLESTATUS: 'ATEL,100,0,1,0,0,0,0,0,0,0,0,0,12000',
           'HLOG,STATUS': 'HLOG,STATUS,0,0,1024,0,0',
+          TOF: 'TOF,100,1,1,1234,9,0,0',
         };
         const reply = command === fail ? 'ERR,SPEED,ARM_FIRST' :
           replies[command] || `ACK,${command.startsWith('SPD,') ? 'SPD' : command.startsWith('PID,') ? 'PID' : command.startsWith('YAW,') ? 'YAW' : command}`;
@@ -184,6 +185,51 @@ test('R18 downloads microsecond timestamps and rejects missing, mixed and out-of
       assert.match(f.eval('hlogCsv(hlogRows)'), /mode,tick_us\r\n/);
     }
   }
+});
+
+test('R19 ToF shows mm/cm, invalidates bad or stale readings, and resets on disconnect', () => {
+  const f = consoleFixture();
+  f.line('VER,VGT6_BM50_ATTITUDE_R19');
+  assert.equal(f.eval('firmwareCompatible'), true);
+  f.line('CAPS,ATTITUDE_R19,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B');
+  assert.equal(f.elements.get('#tofRealtime').disabled, false);
+  f.line('TOF,100,1,1,1234,9,12,0');
+  assert.equal(f.elements.get('#tofDistance').textContent, '1234 mm');
+  assert.match(f.elements.get('#tofState').textContent, /12\.3 cm/);
+  assert.equal(f.eval('firmware.receivedAt'), 0); // Distance is not motor feedback.
+  f.advance(1700);
+  assert.equal(f.elements.get('#tofDistance').textContent, '— mm');
+  for (const packet of ['TOF,100,1,1,NaN,9,0,0', 'TOF,100,1,1,-1,9,0,0',
+    'TOF,100,1,1,1200,9,351,0', 'TOF,100,0,1,1200,9,0,0',
+    'TOF,100,1,1,1200,4,0,0', 'TOF,100,1,1,4001,9,0,0',
+    'TOF,100,1,1,1200,9,0', 'TOF,100,1,0,1200,4,0,0']) {
+    f.line('TOF,100,1,1,1234,9,12,0');
+    f.line(packet);
+    assert.equal(f.elements.get('#tofDistance').textContent, '— mm', packet);
+  }
+  f.line('TOF,100,0,0,-1,255,4294967295,2');
+  assert.match(f.elements.get('#tofState').textContent, /未连接/);
+  f.line('TOF,100,1,0,-1,4,0,0');
+  assert.match(f.elements.get('#tofState').textContent, /测量无效/);
+  f.eval('resetLinkState()');
+  assert.equal(f.elements.get('#tofDistance').textContent, '— mm');
+  assert.equal(f.elements.get('#tofRealtime').checked, false);
+});
+
+test('ToF realtime sends only stream/query commands and old firmware leaves it disabled', async () => {
+  const f = consoleFixture();
+  f.line('CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,HLOG_MODE,HLOG_US');
+  assert.equal(f.elements.get('#tofRealtime').disabled, true);
+  f.line('CAPS,ATTITUDE_R19,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,HLOG_MODE,HLOG_US,TOF_DL1B');
+  f.elements.get('#tofRealtime').checked = true;
+  f.elements.get('#tofRealtime').listeners.change();
+  await f.flush();
+  assert.deepEqual(f.sent, ['TOF,1', 'TOF']);
+  assert.equal(f.elements.get('#tofDistance').textContent, '1234 mm');
+  f.elements.get('#tofRealtime').checked = false;
+  f.elements.get('#tofRealtime').listeners.change();
+  await f.flush();
+  assert.equal(f.sent.at(-1), 'TOF,0');
 });
 
 test('PS2 diagnostic query reads status and raw bytes without enabling motors', async () => {

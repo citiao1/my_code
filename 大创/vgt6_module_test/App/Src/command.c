@@ -97,7 +97,18 @@ static uint8_t Command_Attitude(const char *command)
   char message[128];
   if (!strcmp(command, "CAPS"))
   {
-    SerialDma_Write("CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US\r\n");
+    SerialDma_Write("CAPS,ATTITUDE_R19,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B\r\n");
+    return 1U;
+  }
+  if (!strcmp(command, "TOF"))
+  {
+    Telemetry_SendTof();
+    return 1U;
+  }
+  if (!strcmp(command, "TOF,0") || !strcmp(command, "TOF,1"))
+  {
+    Telemetry_SetTof(command[4] == '1');
+    SerialDma_Write(command[4] == '1' ? "ACK,TOF,1\r\n" : "ACK,TOF,0\r\n");
     return 1U;
   }
   if (Command_Hlog(command)) return 1U;
@@ -342,7 +353,7 @@ void Command_HandleLine(const char *line)
   if ((strcmp(command, "VER") == 0) ||
       (strcmp(command, "VERSION") == 0))
   {
-    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R18\r\n");
+    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R19\r\n");
     return;
   }
   if (strcmp(command, "PS2STATUS") == 0)
@@ -536,7 +547,7 @@ void Command_HandleLine(const char *line)
     }
     else if (SpeedControl_SetPid(channel, kp, ki, kd) == 0U)
     {
-      SerialDma_Write("ERR,PID,SPEED_TUNABLE_R18_RANGE\r\n");
+      SerialDma_Write("ERR,PID,SPEED_TUNABLE_R19_RANGE\r\n");
     }
     else
     {
@@ -721,6 +732,7 @@ void Command_HandleLine(const char *line)
     SerialDma_Write("CMD,SPEED,0/1,SPD,A,RPM,DRV,F,L,R,PID,A,KP,KI,KD,PIDGET,SPEEDSTATUS,SPEEDLIMIT,TEL,0/1\r\n");
     SerialDma_Write("CMD,CAPS,PS2STATUS,YAW,DPS,HEAD,DEG,HEADMOVE,DEG,F,L,TRACKMOVE,DEG,FX,FY,MOVE,F,L,DPS,KEEP,YAWPID,KP,KI,HEADPID,KP,KD,YAWGET,HEADGET,ANGLESTATUS,ATEL,0/1\r\n");
     SerialDma_Write("CMD,HLOG,CLEAR,START,STOP,STATUS,READ,OFFSET,COUNT_0_8\r\n");
+    SerialDma_Write("CMD,TOF,TOF,0/1\r\n");
     return;
   }
 

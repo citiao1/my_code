@@ -15,6 +15,7 @@
 #include "stack_usage.h"
 #include "stm32f4xx_hal.h"
 #include "telemetry.h"
+#include "tof.h"
 
 #define APP_IMU_PERIOD_MS 10U
 
@@ -39,6 +40,7 @@ void App_Init(void)
   Ps2Control_Init();
   Display_Init();
   Telemetry_Init();
+  Tof_Init();
   imu_tick = HAL_GetTick();
 
   /* No boot banner or periodic telemetry: the Bluetooth link only replies
@@ -99,6 +101,7 @@ void App_Process(void)
                       (gyro.connected != 0U) ? GPIO_PIN_SET : GPIO_PIN_RESET);
   }
 
+  Tof_Process();
   Display_Process();
   SerialDma_Process();
 }

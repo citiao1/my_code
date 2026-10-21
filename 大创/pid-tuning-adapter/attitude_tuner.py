@@ -24,6 +24,7 @@ CAPS = "CAPS,ATTITUDE_R17,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HL
 FIRMWARE_CAPS = {
     FIRMWARE_VERSION: CAPS,
     FIRMWARE_VERSION.replace("R17", "R18"): CAPS.replace("R17", "R18") + ",HLOG_US",
+    FIRMWARE_VERSION.replace("R17", "R19"): CAPS.replace("R17", "R19") + ",HLOG_US,TOF_DL1B",
 }
 TARGET_WHEEL_LIMIT = 160
 HEADING_FINAL_SETTLE_S = 1.0
@@ -559,7 +560,7 @@ async def run(args):
             version = await s.command("VER")
             if version not in FIRMWARE_CAPS:
                 raise RuntimeError("R17/R18 firmware with mode-tagged 50 Hz HLOG required")
-            s.require_hlog_us = version.endswith("R18")
+            s.require_hlog_us = version.endswith(("R18", "R19"))
             s.expected_caps = FIRMWARE_CAPS[version]
             s.firmware_version = version
             s.uart_baseline = await s.command("UART")

@@ -37,6 +37,8 @@ void Telemetry_SendDriver(void);
 void Telemetry_SendSpeedStatus(void);
 void Telemetry_SetAttitude(uint8_t enable);
 void Telemetry_SendAttitude(void);
+void Telemetry_SendTof(void);
+void Telemetry_SetTof(uint8_t enable);
 void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude,
                            uint32_t tick_ms, uint32_t tick_us);
 void Telemetry_Hlog_Clear(void);

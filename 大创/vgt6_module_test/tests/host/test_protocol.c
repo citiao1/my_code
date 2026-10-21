@@ -20,6 +20,7 @@
 #include "mecanum.h"
 #include "ps2.h"
 #include "ps2_control.h"
+#include "tof.h"
 
 static DMA_HandleTypeDef mock_dma;
 static USART_TypeDef mock_usart = {4375U};
@@ -35,6 +36,8 @@ static uint8_t stack_healthy = 1U;
 static GyroSnapshot gyro_mock;
 static Ps2Snapshot ps2_mock;
 static Ps2ControlSnapshot ps2_control_mock;
+static TofSnapshot tof_mock;
+TofSnapshot Tof_GetSnapshot(void) { return tof_mock; }
 
 uint32_t HAL_GetTick(void) { return tick; }
 uint32_t HAL_RCC_GetPCLK1Freq(void) { return 42000000U; }
@@ -143,7 +146,7 @@ static void test_every_split(void)
     "SPEED,0\n", "SPEED,120\n", "STOP\n", "PING\r\n"
   };
   static const char *replies[] = {
-    "VER,VGT6_BM50_ATTITUDE_R18\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
+    "VER,VGT6_BM50_ATTITUDE_R19\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
     "ACK,SPDLIMIT\r\n", "ACK,SPEED,1\r\n", "ACK,PID\r\n",
     "ACK,SPD\r\n", "ACK,TEL,1\r\n", "ACK,SPEED,0\r\n",
     "ACK,SPEED,LIMIT\r\n", "ACK,STOP\r\n", "PONG\r\n"
@@ -295,8 +298,8 @@ static void test_tunable_gains_and_target_ceiling(void)
   line("PIDGET\n");
   assert(strstr(transmitted, "PID,0.8000,0.1000,0.0000") != NULL);
   line("PID,B,1.2,0.2,1\n"); expect("ACK,PID\r\n");
-  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R18_RANGE\r\n");
-  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R18_RANGE\r\n");
+  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R19_RANGE\r\n");
+  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R19_RANGE\r\n");
   line("SPDLIMIT,201\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPDLIMIT,65736\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPEED,1000\n"); expect("ERR,SPEED,RANGE_1_200\r\n");
@@ -344,7 +347,7 @@ static void test_attitude_cascade_and_stop(void)
 {
   AttitudeControlSnapshot a;
   init();
-  line("CAPS\n"); expect("CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US\r\n");
+  line("CAPS\n"); expect("CAPS,ATTITUDE_R19,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B\r\n");
   line("YAW,15\n"); expect("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
   line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
   line("HEAD,-179\n"); expect("ACK,HEAD\r\n");
@@ -441,7 +444,7 @@ static void test_rate_and_heading_ram_logs(void)
   line("STOP\n"); expect("ACK,STOP\r\n");
   line("HLOG,STOP\n"); expect("HLOG,STOP,OK\r\n");
   line("HLOG,READ,0,1\n");
-  expect("HLOG,DATA,0,120,0,0,0,15000,10000,0,1000,0,0,0,1,120000\r\nHLOG,END,0,1,1\r\n");
+  expect("HLOG,DATA,0,120,0,0,0,15000,10000,0,1088,0,0,0,1,120000\r\nHLOG,END,0,1,1\r\n");
   /* Direct snapshots isolate RAM capacity/mode serialization from hardware. */
   Telemetry_Hlog_Clear();
   assert(Telemetry_Hlog_Start());
@@ -623,6 +626,49 @@ static void test_mecanum_matrix_and_scaling(void)
   }
 }
 
+static void test_tof_query_and_independent_stream(void)
+{
+  init();
+  memset(&tof_mock, 0, sizeof(tof_mock));
+  tof_mock.range_status = 255U;
+  tof_mock.age_ms = 0xFFFFFFFFU;
+  tof_mock.errors = 7U;
+  line("TOF\n"); expect("TOF,100,0,0,-1,255,4294967295,7\r\n");
+  tof_mock.connected = tof_mock.valid = 1U;
+  tof_mock.distance_mm = 1234U;
+  tof_mock.range_status = 9U; tof_mock.age_ms = tof_mock.errors = 0U;
+  line("TOF\n"); expect("TOF,100,1,1,1234,9,0,0\r\n");
+  line("TOF,1\n"); expect("ACK,TOF,1\r\n");
+  assert(!SpeedControl_GetSnapshot().enabled && !ChassisTest_GetSnapshot().armed);
+  clear_tx(); tick += 500U; Telemetry_Process(); drain();
+  expect("TOF,600,1,1,1234,9,0,0\r\n");
+  line("HLOG,START\n"); expect("HLOG,START,OK\r\n");
+  clear_tx(); tick += 500U; Telemetry_Process(); drain(); expect("");
+  line("HLOG,STOP\n"); expect("HLOG,STOP,OK\r\n");
+  line("HLOG,READ,0,1\n"); expect("HLOG,END,0,0,0\r\n");
+  clear_tx(); tick += 500U; Telemetry_Process(); drain(); expect("");
+  line("TOF,0\n"); expect("ACK,TOF,0\r\n");
+  clear_tx(); tick += 2000U; Telemetry_Process(); drain(); expect("");
+}
+
+static void test_startup_gains_remain_runtime_tunable(void)
+{
+  init();
+  line("YAWGET\n"); expect("YAWPID,0.1815,1.8062,60,80,20\r\n");
+  line("HEADGET\n"); expect("HEADPID,6.0000,1.2500,80,20,D_MEAS\r\n");
+  line("YAWPID,0.22,1.5\n"); expect("ACK,YAWPID\r\n");
+  line("HEADPID,5,1\n"); expect("ACK,HEADPID\r\n");
+  line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+  line("YAW,8\n"); expect("ACK,YAW\r\n");
+  AttitudeControl_Process(20U);
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("HEAD,10\n"); expect("ACK,HEAD\r\n");
+  AttitudeControl_Process(20U);
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("YAWGET\n"); expect("YAWPID,0.2200,1.5000,60,80,20\r\n");
+  line("HEADGET\n"); expect("HEADPID,5.0000,1.0000,80,20,D_MEAS\r\n");
+}
+
 int main(void)
 {
   test_every_split();
@@ -633,6 +679,8 @@ int main(void)
   test_tunable_gains_and_target_ceiling();
   test_attitude_cascade_and_stop();
   test_rate_and_heading_ram_logs();
+  test_tof_query_and_independent_stream();
+  test_startup_gains_remain_runtime_tunable();
   test_tracked_drive_frame_rest_and_stop();
   test_track_frame_sweep_and_split_packets();
   test_mecanum_installed_numbering();

@@ -12,6 +12,7 @@
 #include "serial_dma.h"
 #include "speed_control.h"
 #include "stm32f4xx_hal.h"
+#include "tof.h"
 
 /* 9600 baud provides ~960 bytes/s. Leave room for command ACKs and for
  * BLE notification buffering instead of saturating UART at 5 Hz. */
@@ -26,6 +27,9 @@ static uint16_t heading_log_count;
 static uint32_t heading_log_sequence;
 static uint8_t heading_log_active;
 static uint8_t heading_log_overflow;
+static uint8_t tof_stream;
+static uint32_t tof_tick, hlog_read_tick;
+static uint8_t hlog_read_seen;
 
 void Telemetry_Init(void)
 {
@@ -33,11 +37,22 @@ void Telemetry_Init(void)
   attitude_stream = 0U;
   telemetry_tick = HAL_GetTick();
   Telemetry_Hlog_Clear();
+  tof_stream = hlog_read_seen = 0U;
+  tof_tick = HAL_GetTick();
 }
 
 void Telemetry_Process(void)
 {
   uint32_t now = HAL_GetTick();
+
+  /* Dedicated 2 Hz distance stream (~80 bytes/s); keep UART room for ACKs.
+   * Pause during a capture and contiguous stopped HLOG downloads. */
+  if (tof_stream && !heading_log_active && now - tof_tick >= 500U &&
+      (!hlog_read_seen || now - hlog_read_tick >= 1500U))
+  {
+    tof_tick = now;
+    Telemetry_SendTof();
+  }
 
   if ((telemetry_periodic != 0U) &&
       ((now - telemetry_tick) >= (attitude_stream ? 200U : TELEMETRY_PERIOD_MS)))
@@ -59,6 +74,23 @@ void Telemetry_SetAttitude(uint8_t enable)
 {
   Telemetry_SetPeriodic(enable);
   attitude_stream = 1U;
+}
+
+void Telemetry_SetTof(uint8_t enable)
+{
+  tof_stream = enable != 0U;
+  tof_tick = HAL_GetTick();
+}
+
+void Telemetry_SendTof(void)
+{
+  char message[112];
+  TofSnapshot tof = Tof_GetSnapshot();
+  (void)snprintf(message, sizeof(message), "TOF,%lu,%u,%u,%d,%u,%lu,%lu\r\n",
+      (unsigned long)HAL_GetTick(), tof.connected, tof.valid,
+      tof.valid ? (int)tof.distance_mm : -1, tof.range_status,
+      (unsigned long)tof.age_ms, (unsigned long)tof.errors);
+  (void)SerialDma_Write(message);
 }
 
 void Telemetry_SendAttitude(void)
@@ -176,6 +208,8 @@ uint8_t Telemetry_Hlog_SendRead(uint32_t offset, uint32_t count)
   uint32_t actual_count;
   int length;
   TelemetryHeadingLogRecord record;
+  hlog_read_seen = 1U;
+  hlog_read_tick = HAL_GetTick();
 
   if (offset >= heading_log_count)
   {

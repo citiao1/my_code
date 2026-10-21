@@ -54,8 +54,10 @@ static float wrap(float x)
 void AttitudeControl_Init(void)
 {
   memset(&state, 0, sizeof(state));
-  state.rate_kp = 0.15f;
-  state.rate_ki = 2.5f;
+  /* Startup defaults only. YAWPID/HEADPID update these RAM fields at runtime;
+   * Stop and the control loop preserve the latest accepted gains. */
+  state.rate_kp = 0.1815f;
+  state.rate_ki = 1.8062f;
   state.heading_kp = 6.0f;
   state.heading_kd = 1.25f;
   AttitudeControl_Stop();

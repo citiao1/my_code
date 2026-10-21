@@ -165,6 +165,7 @@ class MotorVofaBridge:
     def expected_reply(command: str) -> str:
         name = command.split(",")[0].upper()
         queries = {
+            "TOF": "TOF",
             "PING": "PONG", "VER": "VER", "VERSION": "VER", "LINK": "LINK",
             "SPEEDSTATUS": "TEL", "STATUS": "TEL", "PIDGET": "PID",
             "SPEEDLIMIT": "SPEEDLIMIT",
@@ -175,6 +176,8 @@ class MotorVofaBridge:
             "PS2RAW": "PS2RAW",
             "ENC": "ENC", "BAT": "BAT", "WHO": "WHO", "HELP": "CMD", "?": "CMD",
         }
+        if command.upper() in ("TOF,0", "TOF,1"):
+            return "ACK," + command.upper()
         if name == "HLOG":
             if command.upper().startswith("HLOG,READ,"):
                 parts = command.upper().split(",")
