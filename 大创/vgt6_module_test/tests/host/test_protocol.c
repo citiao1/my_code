@@ -23,7 +23,7 @@
 #include "tof.h"
 
 static DMA_HandleTypeDef mock_dma;
-static USART_TypeDef mock_usart = {365U};
+static USART_TypeDef mock_usart = {364U};
 UART_HandleTypeDef huart2 = { &mock_dma, {115200U}, &mock_usart, 0U };
 static uint8_t *rx_buffer;
 static uint16_t rx_capacity;
@@ -253,13 +253,13 @@ static void test_uart_fault_drops_partial_targets(void)
   line("\nSPD,A,30\n"); expect("ACK,SPD\r\n");
   assert(SpeedControl_GetSnapshot().target_rpm[0] == 30);
   line("\nUART\n");
-  expect("UART,115200,42000000,365,0x0C,0,0,1,1,0\r\n");
+  expect("UART,115200,42000000,364,0x0C,0,0,1,1,0\r\n");
 }
 static void test_stack_guard_and_diagnostics(void)
 {
   init();
   line("STACK\n"); expect("STACK,4096,1200,2896,1\r\n");
-  line("UART\n"); expect("UART,115200,42000000,365,0x00,0,0,0,0,0\r\n");
+  line("UART\n"); expect("UART,115200,42000000,364,0x00,0,0,0,0,0\r\n");
   line("STATUS\n");
   assert(strstr(transmitted, "IMU,") != NULL);
   assert(strstr(transmitted, "TEL,") != NULL);

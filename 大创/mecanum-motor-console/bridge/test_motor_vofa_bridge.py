@@ -245,6 +245,21 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(bridge.disconnected.is_set())
         self.assertFalse(bridge.set_hardware_status.await_args.args[0])
 
+    async def test_stop_cancelling_serial_heartbeat_keeps_link_online(self):
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        bridge.execute_command = AsyncMock(side_effect=[
+            "ACK,STOP", "ACK,DISARM", "PONG",
+            ConnectionError("cancelled by STOP/DISARM"), asyncio.CancelledError(),
+        ])
+        bridge.set_hardware_status = AsyncMock()
+        with patch.object(bridge_module.asyncio, "sleep", AsyncMock()):
+            with self.assertRaises(asyncio.CancelledError):
+                await bridge.monitor_serial("COM9")
+        self.assertEqual(bridge.execute_command.await_count, 5)
+        self.assertFalse(bridge.disconnected.is_set())
+        bridge.set_hardware_status.assert_awaited_once()
+        self.assertTrue(bridge.set_hardware_status.await_args.args[0])
+
     async def test_serial_command_is_one_write_without_ble_chunking(self):
         bridge = bridge_module.MotorVofaBridge(self.make_config())
         bridge.config.transport = "serial"

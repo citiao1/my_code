@@ -539,15 +539,23 @@ class MotorVofaBridge:
 
     async def monitor_serial(self, port: str) -> None:
         # Opening a USB COM port does not prove that the remote radio/MCU is up.
+        verified = False
         try:
-            for command in ("STOP", "DISARM", "PING"):
-                await self.execute_command(command)
-            await self.set_hardware_status(True, f"serial {port} @ {self.config.baud} verified")
             while True:
-                await asyncio.sleep(1)
-                if self.command_lock.locked():
-                    continue
-                await self.execute_command("PING")
+                try:
+                    if not verified:
+                        for command in ("STOP", "DISARM", "PING"):
+                            await self.execute_command(command)
+                        await self.set_hardware_status(True, f"serial {port} @ {self.config.baud} verified")
+                        verified = True
+                    await asyncio.sleep(1)
+                    if not self.command_lock.locked():
+                        await self.execute_command("PING")
+                except (ConnectionError, RuntimeError) as error:
+                    # STOP/DISARM intentionally cancels an in-flight heartbeat.
+                    # Its priority must not turn a healthy radio into "offline".
+                    if not str(error).startswith("cancelled by STOP"):
+                        raise
         except asyncio.CancelledError:
             raise
         except Exception as error:

@@ -8,9 +8,9 @@
 
 电脑实测USB-SERIAL CH340 COM9 / VID1A86 PID7523；PUSO DAPLink COM8 / VID1234 PID5678仅作SWD，不作通信口。COM9是当前枚举值，不应永久硬编码。原WHEELTEC BLE FFE0/16字节20ms pacing只保留在显式`--transport ble`路径。
 
-USART2 PA2/PA3，APB1=42MHz，115200的BRR=365，实际约115068.49bps（-0.114%）。8位、无校验、1停止位、无流控；DMA1 Stream5/6 Channel4和GPIO/控制周期保持原样。
+USART2 PA2/PA3，APB1=42MHz，实际HAL初始化115200的BRR=364，实板回读确认；42MHz/364约115384.62bps（+0.160%），而临时手工分频365约115068.49bps（-0.114%）。8位、无校验、1停止位、无流控；DMA1 Stream5/6 Channel4和GPIO/控制周期保持原样。
 
-原板R23仍9600；新模块已能透传乱码。先用只读SWD确认chassis armed=0/active=0、speed enabled=0、四轮target=0、TIM8四CCR=0，再仅临时写USART2 BRR=365，未改Flash/电机/PID。COM9立即收到STOP、DISARM、VER及停车状态。临时UART诊断仍显示软件初始化9600、BRR365是预期；正式R24应同时显示115200/365。此前错配期间4次NE错误为前置诊断，烧录后另取新基线。
+原板R23仍9600；新模块已能透传乱码。先用只读SWD确认chassis armed=0/active=0、speed enabled=0、四轮target=0、TIM8四CCR=0，再仅临时写USART2 BRR=365，未改Flash/电机/PID。COM9立即收到STOP、DISARM、VER及停车状态。临时UART诊断仍显示软件初始化9600、BRR365是预期；正式R24实测显示115200/364。此前错配期间4次NE错误为前置诊断，烧录后另取新基线。
 
 ## 源码改动
 
@@ -34,6 +34,21 @@ Keil原工程、STM32F407VGT6/LQFP100、FW_F4 V1.28.3、DFP3.1.1、ARMCC5.06u5 b
 
 HEX SHA256：`4D92496210545D3ECFC03F97004E4546A5E01070CAD36705CEB587B67B6D84A9`。
 
-固件协议2383断言通过；网页77/77；桥接29/29（含新串口启动验证、无远端不报在线、完整串口write与短write拒绝）；PS启动语法及进程归属测试通过。未声称历史PS2模型问题已修复。
+固件协议2383断言通过；网页77/77；桥接30/30（含新串口启动验证、无远端不报在线、完整串口write与短write拒绝）；PS启动语法及进程归属测试通过。未声称历史PS2模型问题已修复。
 
 先做本地源码备份，再正常非破坏烧录、验证和板上协议复测；完成结果另行追加。全程未ARM/运动/PID写参。
+
+
+## 烧录和实板验收结果
+
+源码e71be4f9备份后正常烧录。Keil在20:00:01报告Erase Done/Programming Done/Verify OK/Application running；独立读回设备0x101f6413、1024KiB、向量表和R24标记0x08005ab8一致，复位后再次读回通过并确认RUNNING。未mass erase/解保护/改option bytes。镜像仍为上面的4D924962…7B6D84A9。校验器采用安装版pyOCD commander同款Session/SharedDebugProbeProxy构造，禁用auto_unlock和resume_on_disconnect，实际读回通过。
+
+COM9重新启动桥接后实际VER=R24/CAPS含SERIAL_115200；UART=115200,42000000,364，所有错误为0；PS2锁定、角环/速度环停止、四轮目标/PWM0。PIDGET/YAWGET/HEADGET与烧录前一致，没有写PID。BRR364为本项目HAL宏实际结果；最初主机测试夹具误按四舍五入写365，已按实板和HAL公式改364并重新通过2383断言，不影响已烧录的镜像。
+
+停机对照54次查询全部成功：无串流中位156.5ms/P95203ms/最大219ms；TOF单流203/375/453ms；TOF+TEL219/359/359ms。这轮串口波特率升级不等于无线RTT必然下降，不能宣称已消除延迟。
+
+WLOG停机213条、8条一批、零重试完整下载，序号/字段/END/状态与微秒相位通过，间隔10146..12051us，下载约15.078s。四轮目标/PWM/enable/arm均0；仅为传输/时间轴验证，无PID评分。原组合诊断随后尝试HLOG时，在角环mode0下正确得到0样本，因其非空断言失败；完整原报告保留，单独派生的WLOG报告再次严格校验213条通过。没有为了获得HLOG样本而ARM/转动，因此本轮未验证运动HLOG，不把空HLOG冒充通过。
+
+首版串口桥接120.25秒、236次PING（中位187ms/P95344ms/最大781ms）、23次STOP（中位157ms/P95281ms/最大343ms）均应答；未观察断联，UART/LINK错误不增长，队列观察最大0帧，TOF计数24.6733Hz。测试中网页连入初始化，包含观察者流量。随后仅桥接补充STOP/DISARM取消心跳时不误判掉线的竞态处理（离线30项已过），固件镜像不变；最终桥接另做短时STOP/查询复核。串口首次启动验证尚未完成时，过早发出的DISARM曾被启动STOP取消，该失败未作为成功数据，等待验证在线后查询全部通过。
+
+PID skill已按skill-creator更新，quick_validate通过（使用-X utf8）；文件路径/哈希在validation/r24-build-flash.json。全适配器71项的6个既有不一致仍保留，未宣称全套通过。下次开展live前应先维护该窗口的地面测试与模拟夹具一致性；本轮不恢复任何旧运动计划。
