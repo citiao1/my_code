@@ -1,3 +1,5 @@
+蓝牙问题下一窗口入口：先阅读 [BLUETOOTH_DEBUG_HANDOFF_20261022.md](BLUETOOTH_DEBUG_HANDOFF_20261022.md)，包含新旧模块实测对照、R24状态、启动脚本修复、原始证据和待排查项。
+
 R24链路迁移：LQ208BLE V2.0已配对，115200/8N1 USB串口；当前COM9，不再默认旧BLE。详见[vgt6_module_test/LINK_R24_HANDOFF.md](vgt6_module_test/LINK_R24_HANDOFF.md)。本轮只授权烧录/停机通信验证，勿沿用其他窗口运动许可。
 
 # VGT6 麦轮车 / R17 高频日志与整定交接
