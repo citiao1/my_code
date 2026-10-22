@@ -1,5 +1,7 @@
 # VGT6 麦轮车 / R17 高频日志与整定交接
 
+2026-10-22 最新R23：蓝牙松键延迟STOP、桥接排队和遥测发送退让修复见 `vgt6_module_test/LINK_R23_HANDOFF.md`；本轮用户要求检查后烧录，实际结果以该交接追加验证和VER/CAPS为准。
+
 2026-10-22 R22 已修改并编译：100 mm停止前进、200 mm前进上限40 RPM，细节见 `vgt6_module_test/TOF_R22_HANDOFF.md`。本轮用户明确不烧录，板上仍为R21。
 
 2026-10-22 最新 R21：TOF 测量约 25 Hz、显示 5–10 Hz，单轮限制来源核查见 `vgt6_module_test/TOF_R21_HANDOFF.md`；烧录状态及频率以该文档追加实测和实际 VER/CAPS 为准。

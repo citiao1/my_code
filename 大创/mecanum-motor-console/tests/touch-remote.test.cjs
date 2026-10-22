@@ -697,6 +697,30 @@ test('rapid simultaneous key presses deliver the latest vector after the pending
     'MOVE,30,0,0', 'STOP']);
 });
 
+test('release immediately sends STOP while MOVE is still awaiting its reply', async () => {
+  const f = consoleFixture();
+  f.noReply();
+  f.eval('sendDriveVector(1,0,0)');
+  assert.deepEqual(f.sent, ['MOVE,30,0,0']);
+  f.eval('releaseDrive()');
+  assert.deepEqual(f.sent, ['MOVE,30,0,0', 'STOP']);
+  f.eval('handleResult({id:1,ok:true,reply:"ACK,MOVE"})');
+  await f.flush();
+  assert.equal(f.eval('ownsAngleMotion'), false);
+  assert.equal(f.eval('driveActive'), false);
+  f.advance(400); await f.flush();
+  assert.deepEqual(f.sent, ['MOVE,30,0,0', 'STOP']);
+});
+
+test('a timed out MOVE triggers STOP without declaring the car idle', async () => {
+  const f = consoleFixture();
+  f.noReply();
+  f.eval('sendDriveVector(1,0,0)');
+  f.eval('handleResult({id:1,ok:false,error:"MCU reply timeout"})');
+  await f.flush();
+  assert.deepEqual(f.sent, ['MOVE,30,0,0', 'STOP']);
+});
+
 test('buttons stay visually enabled while a command is waiting', () => {
   const f = consoleFixture();
   f.noReply();

@@ -1,13 +1,22 @@
-"""R21 WLOG provenance and single-wheel step quality; no hardware writes."""
+"""R21 WLOG provenance and synchronous four-wheel step quality; no writes."""
 from __future__ import annotations
 import math
 from statistics import mean
-from closed_loop_tuning import score_step
+from closed_loop_tuning import ResponseScore, score_step
 from pid_tuning import Sample
 
 VERSION = 'VER,VGT6_BM50_ATTITUDE_R21'
 CAPS = 'CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST'
+R22_VERSION = 'VER,VGT6_BM50_ATTITUDE_R22'
+R22_CAPS = CAPS.replace('ATTITUDE_R21', 'ATTITUDE_R22') + ',TOF_GUARD_200_100_40'
+R23_VERSION = 'VER,VGT6_BM50_ATTITUDE_R23'
+R23_CAPS = R22_CAPS.replace('ATTITUDE_R22', 'ATTITUDE_R23') + ',UART_QOS'
 INFO = 'WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED'
+FIRMWARE_PROFILES = {
+    (VERSION, CAPS, INFO),
+    (R22_VERSION, R22_CAPS, INFO),
+    (R23_VERSION, R23_CAPS, INFO),
+}
 HEADER = ['sequence','tick_ms','tick_us','enabled','armed','angle_mode']
 for wheel in 'ABCD':
     HEADER += [f'{wheel}_target_rpm', f'{wheel}_filtered_rpm_x10', f'{wheel}_raw_rpm_x10', f'{wheel}_pwm_mpercent']
@@ -47,10 +56,9 @@ def validate(records):
             raise ValueError('WLOG cadence outside 9900..15000 us')
     return records
 
-def score(records, wheel, target, baseline_seconds=2., seconds=3.):
-    validate(records)
+def _score_one(records, wheel, target, baseline_seconds=2., seconds=3.):
     if wheel not in 'ABCD' or len(wheel) != 1 or not 10 <= abs(target) <= 60:
-        raise ValueError('declare one wheel and a signed 10..60 RPM target')
+        raise ValueError('declare a wheel channel and a signed 10..60 RPM target')
     if not all(math.isfinite(x) and x >= 2 for x in (baseline_seconds,seconds)):
         raise ValueError('baseline/target duration must be >=2 s')
     times=[0.]
@@ -64,8 +72,6 @@ def score(records, wheel, target, baseline_seconds=2., seconds=3.):
         for other in 'ABCD':
             if abs(r[f'{other}_raw_rpm_x10']) > 3000 or abs(r[f'{other}_filtered_rpm_x10']) > 3000:
                 raise ValueError('wheel overspeed guard')
-            if other != wheel and (r[f'{other}_target_rpm'] or r[f'{other}_pwm_mpercent'] or abs(r[f'{other}_raw_rpm_x10']) > 30):
-                raise ValueError('single-wheel isolation violated')
     targets=[r[f'{wheel}_target_rpm'] for r in records]
     edge=next((i for i,v in enumerate(targets) if v != 0),None)
     if edge is None:
@@ -90,3 +96,35 @@ def score(records, wheel, target, baseline_seconds=2., seconds=3.):
     if abs(mean(final[-n:])-mean(final[:n])) > max(1,abs(target)*.03):
         raise ValueError('final-window drift failed')
     return samples,result
+
+
+def score_four(records, target, baseline_seconds=2., seconds=3.):
+    """All channels must share the recorded reference edges and pass separately.
+
+    Use the worst wheel for each aggregate metric, so another channel cannot
+    hide a failed/poor response behind the selected tuning channel or a mean.
+    """
+    validate(records)
+    if any(len({r[f'{wheel}_target_rpm'] for wheel in 'ABCD'}) != 1 for r in records):
+        raise ValueError('four-wheel synchronous targets/edges required')
+    measured={wheel:_score_one(records,wheel,target,baseline_seconds,seconds) for wheel in 'ABCD'}
+    results=[row[1] for row in measured.values()]
+    settling=[r.settling_s for r in results]
+    aggregate=ResponseScore(
+        normalized_iae=max(r.normalized_iae for r in results),
+        overshoot=max(r.overshoot for r in results),
+        steady_error=max(r.steady_error for r in results),
+        settling_s=max(settling) if all(t is not None for t in settling) else None,
+        saturation_fraction=max(r.saturation_fraction for r in results),
+        resolved_transient=all(r.resolved_transient for r in results),
+        score=max(r.score for r in results),
+    )
+    return measured,aggregate
+
+
+def score(records, wheel, target, baseline_seconds=2., seconds=3.):
+    """Compatibility API: selected channel samples, mandatory four-wheel score."""
+    if wheel not in tuple('ABCD'):
+        raise ValueError('unknown wheel channel')
+    measured,result=score_four(records,target,baseline_seconds,seconds)
+    return measured[wheel][0],result

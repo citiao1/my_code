@@ -27,9 +27,18 @@ typedef struct
   uint32_t dma_errors;
 } SerialUartSnapshot;
 
+typedef struct
+{
+  uint16_t pending_frames, pending_bytes;
+  uint32_t telemetry_skipped, command_age_ms;
+} SerialTxSnapshot;
+
 uint8_t SerialDma_Init(SerialLineCallback callback);
 void SerialDma_Process(void);
 uint8_t SerialDma_Write(const char *text);
+/* Optional current-state telemetry: never build a queue ahead of command replies. */
+uint8_t SerialDma_WriteTelemetry(const char *text);
+SerialTxSnapshot SerialDma_GetTxSnapshot(void);
 uint8_t SerialDma_IsReady(void);
 SerialDmaSnapshot SerialDma_GetSnapshot(void);
 SerialUartSnapshot SerialDma_GetUartSnapshot(void);

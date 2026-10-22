@@ -1,7 +1,7 @@
 const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
 const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R17';
-const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20', 'VGT6_BM50_ATTITUDE_R21', 'VGT6_BM50_ATTITUDE_R22'];
+const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20', 'VGT6_BM50_ATTITUDE_R21', 'VGT6_BM50_ATTITUDE_R22', 'VGT6_BM50_ATTITUDE_R23'];
 const MAX_TARGET_RPM = 160;
 const HLOG_REQUEST_TIMEOUT_MS = 25000; // Bridge allows 20 s for a stopped RAM batch.
 
@@ -210,7 +210,7 @@ function setTelemetry(enabled) {
 
 function writeCommand(command) {
   if (!connected()) return Promise.reject(new Error('蓝牙未连接'));
-  const diagnostic = ['VER', 'UART', 'LINK', 'STACK', 'SPEEDSTATUS', 'SPEEDLIMIT', 'PIDGET', 'PING', 'STOP', 'CAPS', 'YAWGET', 'HEADGET', 'ANGLESTATUS', 'PS2STATUS', 'PS2RAW', 'TOF', 'TOF,0', 'TOF,1'].includes(command) ||
+  const diagnostic = ['VER', 'UART', 'LINK', 'STACK', 'LINKQ', 'SPEEDSTATUS', 'SPEEDLIMIT', 'PIDGET', 'PING', 'STOP', 'CAPS', 'YAWGET', 'HEADGET', 'ANGLESTATUS', 'PS2STATUS', 'PS2RAW', 'TOF', 'TOF,0', 'TOF,1'].includes(command) ||
     command.startsWith('HLOG,') || command.startsWith('WLOG,') || command === 'WLOGINFO';
   if (!diagnostic && (!firmwareCompatible || !stackHealthy)) {
     return Promise.reject(new Error('固件版本或栈保护检查未通过；请查询状态'));
@@ -784,6 +784,7 @@ function stopMotion() {
   driveVectorSerial += 1;
   driveKeys.clear();
   driveActive = false;
+  driveMovePending = false;
   ownsAngleMotion=false;
   void runAction((send) => send('STOP'), true);
 }
@@ -1075,6 +1076,7 @@ let driveVector = { forward: 0, left: 0, rotate: 0 };
 let driveVectorSerial = 0;
 let driveFlushRunning = false;
 let driveActive = false;
+let driveMovePending = false;
 
 function sendDriveVector(forward, left, rotate) {
   if (chassisTestActive) return;
@@ -1086,9 +1088,13 @@ function sendDriveVector(forward, left, rotate) {
 async function flushDriveVector() {
   if (driveFlushRunning || !connected()) return;
   driveFlushRunning = true;
+  let attemptedSerial = driveVectorSerial;
+  let epoch = motionEpoch;
   try {
     while (connected()) {
       const serial = driveVectorSerial;
+      attemptedSerial = serial;
+      epoch = motionEpoch;
       const vector = { ...driveVector };
       if (vector.forward === 0 && vector.left === 0 && vector.rotate === 0) {
         if (driveActive) {
@@ -1100,25 +1106,38 @@ async function flushDriveVector() {
       }
       const speed = Math.round(numeric('#driveSpeed', 100, true));
       const turnRate = Math.round(numeric('#driveTurnRate', 80, true));
+      driveMovePending = true;
       await writeCommand(
         `MOVE,${speed * vector.forward},${speed * vector.left},${turnRate * vector.rotate}`,
       );
+      driveMovePending = false;
+      if (epoch !== motionEpoch) return; // A late MOVE reply cannot undo release/STOP.
       driveActive = true;
       ownsAngleMotion = true;
       if (serial === driveVectorSerial) break;
     }
   } catch (error) {
+    if (epoch !== motionEpoch) return; // STOP already cancelled this request.
+    const mayBeMoving = driveActive || driveMovePending;
     driveActive = false;
     ownsAngleMotion = false;
+    if (mayBeMoving) stopMotion();
     setEvent(error.message);
   } finally {
+    driveMovePending = false;
     driveFlushRunning = false;
+    if (connected() && attemptedSerial !== driveVectorSerial &&
+        (driveVector.forward || driveVector.left || driveVector.rotate)) void flushDriveVector();
   }
 }
 
 function releaseDrive() {
   drivePressSerial++;
   driveKeys.clear();
+  if (driveActive || driveMovePending) {
+    stopMotion(); // Urgent STOP must not wait behind an unacknowledged MOVE.
+    return;
+  }
   sendDriveVector(0, 0, 0);
 }
 

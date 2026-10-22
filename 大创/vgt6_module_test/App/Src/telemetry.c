@@ -38,10 +38,18 @@ static uint8_t heading_log_overflow;
 static uint8_t tof_stream;
 static uint32_t tof_tick, hlog_read_tick;
 static uint8_t hlog_read_seen;
+static uint8_t periodic_send;
+
+static void write_live(const char *message)
+{
+  if (periodic_send) (void)SerialDma_WriteTelemetry(message);
+  else (void)SerialDma_Write(message);
+}
 
 void Telemetry_Init(void)
 {
   telemetry_periodic = 0U;
+  periodic_send = 0U;
   attitude_stream = 0U;
   telemetry_tick = HAL_GetTick();
   Telemetry_Hlog_Clear();
@@ -57,6 +65,7 @@ void Telemetry_Process(void)
   uint32_t tof_period = telemetry_periodic ? 200U : 100U;
   uint32_t status_period = ranging_stream ? 500U :
       (attitude_stream ? 200U : TELEMETRY_PERIOD_MS);
+  periodic_send = 1U;
 
   /* Distance: 10 Hz alone, 5 Hz alongside 2 Hz TEL/ATEL. At 9600 baud,
    * even 55-byte TOF + 255-byte TEL stays below 800 bytes/s. Captures and
@@ -74,6 +83,7 @@ void Telemetry_Process(void)
     if (attitude_stream) Telemetry_SendAttitude();
     else Telemetry_SendSpeedStatus();
   }
+  periodic_send = 0U;
 }
 
 void Telemetry_SetPeriodic(uint8_t enable)
@@ -103,7 +113,7 @@ void Telemetry_SendTof(void)
       (unsigned long)HAL_GetTick(), tof.connected, tof.valid,
       tof.valid ? (int)tof.distance_mm : -1, tof.range_status,
       (unsigned long)tof.age_ms, (unsigned long)tof.errors);
-  (void)SerialDma_Write(message);
+  write_live(message);
 }
 
 void Telemetry_SendAttitude(void)
@@ -119,7 +129,7 @@ void Telemetry_SendAttitude(void)
       (long)(g.yaw_deg * 1000), (long)(a.error_deg * 1000),
       (long)(a.output_dps * 1000), a.saturated,
       SpeedControl_GetSnapshot().enabled, Battery_GetSnapshot().voltage_mv);
-  SerialDma_Write(message);
+  write_live(message);
 }
 
 void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude,
@@ -500,5 +510,5 @@ void Telemetry_SendSpeedStatus(void)
     (void)snprintf(&message[length], sizeof(message) - (size_t)length,
                    "\r\n");
   }
-  SerialDma_Write(message);
+  write_live(message);
 }

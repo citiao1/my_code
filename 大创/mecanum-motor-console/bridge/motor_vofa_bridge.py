@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import contextlib
 import json
 import math
 from dataclasses import dataclass
@@ -29,6 +30,11 @@ BLE_WRITE_CHUNK_DELAY_SECONDS = 0.02
 COMMAND_TIMEOUT_SECONDS = 3.0
 HLOG_READ_TIMEOUT_SECONDS = 20.0
 MAX_COMMAND_BYTES = 63
+CLIENT_SEND_TIMEOUT_SECONDS = 0.1
+MOTION_QUEUE_MAX_AGE_SECONDS = 0.25
+DRIVE_REFRESH_INTERVAL_SECONDS = 0.1
+DRIVE_REFRESH_GAP_LIMIT_SECONDS = 0.25
+DRIVE_LEASE_MAX_MS = 12000
 
 
 def normalize_uuid(value: str) -> str:
@@ -69,8 +75,80 @@ class MotorVofaBridge:
         self.command_lock = asyncio.Lock()
         self.pending_reply = None
         self.command_epoch = 0
+        self.motion_revision = 0
         self.disconnected = asyncio.Event()
         self.loop = asyncio.get_running_loop()
+        self.drive_lease_task: Optional[asyncio.Task] = None
+        self.drive_lease_owner = None
+
+    async def cancel_drive_lease(self, owner=None) -> None:
+        task = self.drive_lease_task
+        if task is None or (owner is not None and self.drive_lease_owner is not owner):
+            return
+        self.drive_lease_task = None
+        self.drive_lease_owner = None
+        if task is asyncio.current_task():
+            return
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+
+    async def run_drive_lease(self, owner, request_id, command, duration_ms) -> None:
+        current = asyncio.current_task()
+        last_sent = self.loop.time()
+        max_gap = 0.0
+        failure = None
+        cancelled = False
+        try:
+            deadline = last_sent + duration_ms / 1000.0
+            while self.loop.time() < deadline:
+                await asyncio.sleep(min(
+                    DRIVE_REFRESH_INTERVAL_SECONDS,
+                    max(0.0, deadline - self.loop.time()),
+                ))
+                if self.loop.time() >= deadline:
+                    break
+                gap = self.loop.time() - last_sent
+                max_gap = max(max_gap, gap)
+                if gap > DRIVE_REFRESH_GAP_LIMIT_SECONDS:
+                    raise TimeoutError(f"drive refresh gap {gap:.3f}s")
+                if not await self.send_hardware(command):
+                    raise ConnectionError("hardware disconnected during drive lease")
+                last_sent = self.loop.time()
+        except asyncio.CancelledError:
+            cancelled = True
+            raise
+        except Exception as error:
+            failure = str(error)
+            await self.send_hardware("STOP")
+        else:
+            await self.send_hardware("DRV,0,0,0")
+        finally:
+            if self.drive_lease_task is current:
+                self.drive_lease_task = None
+                self.drive_lease_owner = None
+            try:
+                await owner.send(json.dumps({
+                    "type": "drive_lease",
+                    "event": "cancelled" if cancelled else "failed" if failure else "complete",
+                    "id": request_id,
+                    "error": failure,
+                    "max_gap_s": max_gap,
+                }))
+            except Exception:
+                pass
+
+    async def start_drive_lease(self, owner, request_id, command, duration_ms) -> str:
+        command = command.strip().upper()
+        if (not command.startswith("DRV,") or not isinstance(duration_ms, int) or
+                isinstance(duration_ms, bool) or not 1 <= duration_ms <= DRIVE_LEASE_MAX_MS):
+            raise ValueError("drive lease requires DRV and a 1..12000 ms duration")
+        await self.cancel_drive_lease()
+        reply = await self.execute_command(command)
+        self.drive_lease_owner = owner
+        self.drive_lease_task = asyncio.create_task(
+            self.run_drive_lease(owner, request_id, command, duration_ms)
+        )
+        return reply
 
     async def set_hardware_status(self, connected: bool, detail: str) -> None:
         self.hardware_connected = connected
@@ -78,25 +156,27 @@ class MotorVofaBridge:
             self.command_epoch += 1
             self.fail_pending("hardware disconnected")
             self.rx_buffer = ""
+            await self.cancel_drive_lease()
         await self.broadcast_web(f"STATUS,{1 if connected else 0},{detail}\n")
 
     async def broadcast_web(self, message: str) -> None:
-        failed = []
-        for websocket in tuple(self.ws_clients):
+        async def deliver(websocket):
             try:
-                await websocket.send(message)
+                await asyncio.wait_for(websocket.send(message), CLIENT_SEND_TIMEOUT_SECONDS)
             except Exception:
-                failed.append(websocket)
-        for websocket in failed:
-            self.ws_clients.discard(websocket)
+                self.ws_clients.discard(websocket)
+                # A slow observer must not hold up other observers or MCU ACKs.
+                with contextlib.suppress(Exception):
+                    await asyncio.wait_for(websocket.close(), CLIENT_SEND_TIMEOUT_SECONDS)
+        await asyncio.gather(*(deliver(ws) for ws in tuple(self.ws_clients)))
 
     async def broadcast_tcp(self, payload: bytes) -> None:
         failed = []
         for writer in tuple(self.tcp_clients):
             try:
                 writer.write(payload)
-                await writer.drain()
-            except (ConnectionError, RuntimeError):
+                await asyncio.wait_for(writer.drain(), CLIENT_SEND_TIMEOUT_SECONDS)
+            except (ConnectionError, RuntimeError, asyncio.TimeoutError):
                 failed.append(writer)
         for writer in failed:
             self.tcp_clients.discard(writer)
@@ -141,7 +221,7 @@ class MotorVofaBridge:
         return None
 
     async def publish_line(self, line: str) -> None:
-        if not line.startswith(("TEL,", "ATEL,", "HLOG,DATA")):
+        if not line.startswith(("TEL,", "ATEL,", "TOF,", "HLOG,DATA", "WLOG,DATA")):
             print(f"[HW<-] {line}")
         await self.broadcast_web(f"{line}\n")
         # The page must receive the state before the matching JSON result
@@ -169,6 +249,7 @@ class MotorVofaBridge:
         queries = {
             "TOF": "TOF",
             "TOFINFO": "TOFINFO",
+            "LINKQ": "LINKQ",
             "WLOGINFO": "WLOG,INFO",
             "PING": "PONG", "VER": "VER", "VERSION": "VER", "LINK": "LINK",
             "SPEEDSTATUS": "TEL", "STATUS": "TEL", "PIDGET": "PID",
@@ -226,6 +307,7 @@ class MotorVofaBridge:
     async def execute_command(self, command: str) -> str:
         """One complete newline-framed command and its MCU reply at a time."""
         command = command.strip().upper()
+        enqueued_at = self.loop.time()
         if not command or len(command) > MAX_COMMAND_BYTES or any(
             ord(char) < 32 or ord(char) > 126 for char in command
         ):
@@ -236,10 +318,22 @@ class MotorVofaBridge:
             # chunk write. Do not let a delayed SPD restart a stopped motor.
             self.command_epoch += 1
             self.fail_pending("cancelled by STOP/DISARM")
+            await self.cancel_drive_lease()
+        elif command.startswith("DRV,"):
+            await self.cancel_drive_lease()
         epoch = self.command_epoch
+        realtime = command.startswith(("MOVE,", "DRV,", "HEADMOVE,", "TRACKMOVE,"))
+        if realtime:
+            self.motion_revision += 1
+        revision = self.motion_revision
         async with self.command_lock:
             if epoch != self.command_epoch:
                 raise RuntimeError("cancelled by STOP/disconnection")
+            if realtime and revision != self.motion_revision:
+                raise RuntimeError("superseded by a newer motion target")
+            max_age = MOTION_QUEUE_MAX_AGE_SECONDS if realtime else COMMAND_TIMEOUT_SECONDS
+            if command not in ("STOP", "DISARM") and self.loop.time() - enqueued_at > max_age:
+                raise TimeoutError("stale queued command; refusing delayed execution")
             future = self.loop.create_future()
             self.pending_reply = (self.expected_reply(command), future)
             write_complete = False
@@ -335,9 +429,14 @@ class MotorVofaBridge:
         print("[WEB] console connected")
         requests = set()
 
-        async def dispatch(command: str, request_id=None) -> None:
+        async def dispatch(command: str, request_id=None, lease_ms=None) -> None:
             try:
-                reply = await self.execute_command(command)
+                if lease_ms is None:
+                    reply = await self.execute_command(command)
+                else:
+                    reply = await self.start_drive_lease(
+                        websocket, request_id, command, lease_ms
+                    )
                 result = {"type": "result", "id": request_id, "ok": True, "reply": reply}
             except Exception as error:
                 result = {"type": "result", "id": request_id, "ok": False, "error": str(error)}
@@ -354,27 +453,36 @@ class MotorVofaBridge:
                 if isinstance(message, bytes):
                     message = message.decode("utf-8", errors="ignore")
                 request_id = None
+                lease_ms = None
                 if message.startswith("{"):
                     request = json.loads(message)
-                    if request.get("type") != "command":
+                    request_type = request.get("type")
+                    if request_type not in ("command", "drive_lease"):
                         continue
                     request_id = request.get("id")
                     message = str(request.get("command", ""))
+                    if request_type == "drive_lease":
+                        lease_ms = request.get("duration_ms")
                 for command in message.splitlines():
                     if command.strip():
-                        task = asyncio.create_task(dispatch(command, request_id))
+                        task = asyncio.create_task(dispatch(command, request_id, lease_ms))
                         requests.add(task)
                         task.add_done_callback(requests.discard)
         except Exception as error:
             print(f"[WEB] disconnected: {error}")
         finally:
             self.ws_clients.discard(websocket)
+            lease_owner_disconnected = self.drive_lease_owner is websocket
+            if lease_owner_disconnected:
+                await self.cancel_drive_lease(websocket)
+                await self.send_hardware("STOP")
             if not self.ws_clients:
                 self.command_epoch += 1
                 self.fail_pending("web console disconnected")
                 for task in tuple(requests):
                     task.cancel()
-                await self.send_hardware("STOP")
+                if not lease_owner_disconnected:
+                    await self.send_hardware("STOP")
             if requests:
                 await asyncio.gather(*requests, return_exceptions=True)
             print("[WEB] console disconnected")
@@ -495,7 +603,12 @@ class MotorVofaBridge:
 
     def mark_ble_disconnected(self, client: BleakClient) -> None:
         if client is self.ble_client:
+            print("[BLE] physical link disconnected; cancelling pending commands")
+            self.hardware_connected = False
+            self.command_epoch += 1
+            self.fail_pending("BLE physical link disconnected")
             self.disconnected.set()
+            asyncio.create_task(self.set_hardware_status(False, "BLE disconnected; reconnecting"))
 
     def on_ble_notification(self, _characteristic, data: bytearray) -> None:
         if not self.ble_notify_started:

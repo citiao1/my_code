@@ -37,6 +37,8 @@ static SerialPortState serial_port;
 static SerialLineCallback line_callback;
 static volatile SerialDmaSnapshot serial_stats;
 static volatile SerialUartSnapshot uart_stats;
+static uint32_t last_command_tick, telemetry_skipped;
+static uint8_t command_seen;
 
 static uint8_t SerialDma_StartRx(void)
 {
@@ -110,6 +112,8 @@ static void SerialDma_ProcessByte(uint8_t byte)
     if (line_callback != NULL)
     {
       ++serial_stats.rx_lines;
+      last_command_tick = HAL_GetTick();
+      command_seen = 1U;
       line_callback(serial_port.rx_line);
     }
     serial_port.rx_line_length = 0U;
@@ -166,6 +170,8 @@ uint8_t SerialDma_Init(SerialLineCallback callback)
   uart_stats.framing_errors = 0U;
   uart_stats.overrun_errors = 0U;
   uart_stats.dma_errors = 0U;
+  last_command_tick = telemetry_skipped = 0U;
+  command_seen = 0U;
   line_callback = callback;
   return SerialDma_StartRx();
 }
@@ -224,6 +230,34 @@ uint8_t SerialDma_Write(const char *text)
     return 0U;
   }
   return SerialDma_QueueWrite(text, length);
+}
+
+uint8_t SerialDma_WriteTelemetry(const char *text)
+{
+  /* A query/target/heartbeat owns the UART first. Keep at most one periodic
+   * frame in flight; obsolete live readings are skipped, never replayed. */
+  if ((command_seen && HAL_GetTick() - last_command_tick < 80U) ||
+      serial_port.tx_head != serial_port.tx_tail)
+  {
+    ++telemetry_skipped;
+    return 0U;
+  }
+  return SerialDma_Write(text);
+}
+
+SerialTxSnapshot SerialDma_GetTxSnapshot(void)
+{
+  SerialTxSnapshot snapshot = {0U, 0U, telemetry_skipped,
+      command_seen ? HAL_GetTick() - last_command_tick : 0xFFFFFFFFU};
+  uint8_t index = serial_port.tx_tail;
+  uint8_t head = serial_port.tx_head;
+  while (index != head)
+  {
+    ++snapshot.pending_frames;
+    snapshot.pending_bytes = (uint16_t)(snapshot.pending_bytes + serial_port.tx_length[index]);
+    index = (uint8_t)((index + 1U) % SERIAL_TX_QUEUE_DEPTH);
+  }
+  return snapshot;
 }
 
 uint8_t SerialDma_IsReady(void)

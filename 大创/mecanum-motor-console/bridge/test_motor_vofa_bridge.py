@@ -104,6 +104,51 @@ def unused_local_port() -> int:
 
 
 class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_slow_observer_cannot_hold_up_mcu_ack(self):
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        fast,slow = AsyncMock(),AsyncMock()
+        never = asyncio.Event()
+        async def hang(*args): await never.wait()
+        slow.send.side_effect = hang
+        bridge.ws_clients.update((fast,slow))
+        async def write(command):
+            bridge.consume_bytes(b'PONG\r\n')
+            return True
+        bridge.send_hardware = write
+        with patch.object(bridge_module,'CLIENT_SEND_TIMEOUT_SECONDS',.01):
+            self.assertEqual(await asyncio.wait_for(bridge.execute_command('PING'),.2),'PONG')
+        fast.send.assert_awaited_once_with('PONG\n')
+        self.assertNotIn(slow,bridge.ws_clients)
+
+    async def test_stale_and_superseded_motion_targets_are_never_written(self):
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        writes=[]
+        async def write(command):
+            writes.append(command);bridge.consume_bytes(b'ACK,MOVE\r\n');return True
+        bridge.send_hardware=write
+        await bridge.command_lock.acquire()
+        first=asyncio.create_task(bridge.execute_command('MOVE,10,0,0'))
+        second=asyncio.create_task(bridge.execute_command('MOVE,20,0,0'))
+        await asyncio.sleep(0);bridge.command_lock.release()
+        results=await asyncio.gather(first,second,return_exceptions=True)
+        self.assertIsInstance(results[0],RuntimeError)
+        self.assertEqual(results[1],'ACK,MOVE');self.assertEqual(writes,['MOVE,20,0,0'])
+        await bridge.command_lock.acquire()
+        with patch.object(bridge_module,'MOTION_QUEUE_MAX_AGE_SECONDS',.01):
+            stale=asyncio.create_task(bridge.execute_command('MOVE,30,0,0'))
+            await asyncio.sleep(.02);bridge.command_lock.release()
+            with self.assertRaisesRegex(TimeoutError,'stale queued'):
+                await stale
+        self.assertEqual(writes,['MOVE,20,0,0'])
+
+    async def test_physical_disconnect_clears_online_state_immediately(self):
+        bridge=bridge_module.MotorVofaBridge(self.make_config())
+        client=object();bridge.ble_client=client;bridge.hardware_connected=True
+        bridge.mark_ble_disconnected(client)
+        self.assertFalse(bridge.hardware_connected)
+        self.assertTrue(bridge.disconnected.is_set())
+        await asyncio.sleep(0)
+
     async def test_r20_wheel_log_routes_full_rows_and_exact_batch_end(self):
         cls = bridge_module.MotorVofaBridge
         self.assertEqual(cls.expected_reply("WLOGINFO"), "WLOG,INFO")
@@ -424,6 +469,58 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(results[1], RuntimeError)
         self.assertEqual(results[2], "ACK,STOP")
         self.assertEqual(writes, ["PID,A,0.8,0.1,0", "STOP"])
+
+    async def test_drive_lease_refreshes_without_ack_wait_and_expires_to_zero(self) -> None:
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        writes = []
+
+        async def write(command):
+            writes.append(command)
+            if command == "DRV,40,0,0":
+                bridge.consume_bytes(b"ACK,DRV,40,0,0\r\n")
+            return True
+
+        bridge.send_hardware = write
+        owner = AsyncMock()
+        with patch.object(bridge_module, "DRIVE_REFRESH_INTERVAL_SECONDS", 0.005):
+            self.assertEqual(
+                await bridge.start_drive_lease(owner, 41, "DRV,40,0,0", 40),
+                "ACK,DRV,40,0,0",
+            )
+            task = bridge.drive_lease_task
+            await task
+
+        self.assertGreater(writes.count("DRV,40,0,0"), 1)
+        self.assertEqual(writes[-1], "DRV,0,0,0")
+        event = json.loads(owner.send.await_args.args[0])
+        self.assertEqual(event["type"], "drive_lease")
+        self.assertEqual(event["event"], "complete")
+        self.assertEqual(event["id"], 41)
+
+    async def test_stop_cancels_drive_lease_before_any_later_refresh(self) -> None:
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        writes = []
+
+        async def write(command):
+            writes.append(command)
+            if command.startswith("DRV,"):
+                bridge.consume_bytes((f"ACK,{command}\r\n").encode())
+            elif command == "STOP":
+                bridge.consume_bytes(b"ACK,STOP\r\n")
+            return True
+
+        bridge.send_hardware = write
+        owner = AsyncMock()
+        with patch.object(bridge_module, "DRIVE_REFRESH_INTERVAL_SECONDS", 0.005):
+            await bridge.start_drive_lease(owner, 9, "DRV,40,0,0", 1000)
+            await asyncio.sleep(0.02)
+            await bridge.execute_command("STOP")
+            count_at_stop = len(writes)
+            await asyncio.sleep(0.02)
+
+        self.assertEqual(writes[count_at_stop - 1], "STOP")
+        self.assertEqual(len(writes), count_at_stop)
+        self.assertIsNone(bridge.drive_lease_task)
 
     async def test_normal_stop_cancels_keep_without_disconnect_or_second_stop(self) -> None:
         bridge = bridge_module.MotorVofaBridge(self.make_config())

@@ -38,6 +38,7 @@ static Ps2Snapshot ps2_mock;
 static Ps2ControlSnapshot ps2_control_mock;
 static TofSnapshot tof_mock;
 static int motor_applied[4];
+static uint8_t tx_autocomplete = 1U;
 TofSnapshot Tof_GetSnapshot(void) { return tof_mock; }
 
 uint32_t HAL_GetTick(void) { return tick; }
@@ -61,7 +62,7 @@ HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *uart,
   tx_length += size;
   transmitted[tx_length] = '\0';
   /* Deliberately preempt StartTx before it returns to test busy ownership. */
-  HAL_UART_TxCpltCallback(uart);
+  if (tx_autocomplete) HAL_UART_TxCpltCallback(uart);
   return HAL_OK;
 }
 HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *uart)
@@ -103,6 +104,7 @@ static void clear_tx(void)
 { tx_length = 0U; transmitted[0] = '\0'; }
 static void init(void)
 {
+  tx_autocomplete = 1U;
   tick = 100U;
   clear_tx();
   memset(&encoder, 0, sizeof(encoder));
@@ -148,7 +150,7 @@ static void test_every_split(void)
     "SPEED,0\n", "SPEED,120\n", "STOP\n", "PING\r\n"
   };
   static const char *replies[] = {
-    "VER,VGT6_BM50_ATTITUDE_R22\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
+    "VER,VGT6_BM50_ATTITUDE_R23\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
     "ACK,SPDLIMIT\r\n", "ACK,SPEED,1\r\n", "ACK,PID\r\n",
     "ACK,SPD\r\n", "ACK,TEL,1\r\n", "ACK,SPEED,0\r\n",
     "ACK,SPEED,LIMIT\r\n", "ACK,STOP\r\n", "PONG\r\n"
@@ -300,8 +302,8 @@ static void test_tunable_gains_and_target_ceiling(void)
   line("PIDGET\n");
   assert(strstr(transmitted, "PID,0.8000,0.1000,0.0000") != NULL);
   line("PID,B,1.2,0.2,1\n"); expect("ACK,PID\r\n");
-  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R22_RANGE\r\n");
-  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R22_RANGE\r\n");
+  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R23_RANGE\r\n");
+  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R23_RANGE\r\n");
   line("SPDLIMIT,201\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPDLIMIT,65736\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPEED,1000\n"); expect("ERR,SPEED,RANGE_1_200\r\n");
@@ -350,7 +352,7 @@ static void test_attitude_cascade_and_stop(void)
 {
   AttitudeControlSnapshot a;
   init();
-  line("CAPS\n"); expect("CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40\r\n");
+  line("CAPS\n"); expect("CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS\r\n");
   line("YAW,15\n"); expect("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
   line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
   line("HEAD,-179\n"); expect("ACK,HEAD\r\n");
@@ -655,7 +657,10 @@ static void test_tof_query_and_independent_stream(void)
   clear_tx(); tick += 1U; Telemetry_Process(); drain();
   expect("TOF,400,1,1,1234,9,0,0\r\n");
   clear_tx(); tick += 300U; Telemetry_Process(); drain();
-  assert(strstr(transmitted, "TOF,700,") && strstr(transmitted, "TEL,700,"));
+  assert(strstr(transmitted, "TOF,700,") && !strstr(transmitted, "TEL,700,"));
+  assert(SerialDma_GetTxSnapshot().telemetry_skipped == 1);
+  for (unsigned i = 0; i < 5; ++i) { clear_tx(); tick += 100U; Telemetry_Process(); drain(); }
+  assert(strstr(transmitted, "TEL,1200,")); /* The staggered stream still gets a turn. */
   line("TEL,0\n"); expect("ACK,TEL,0\r\n");
   line("HLOG,START\n"); expect("HLOG,START,OK\r\n");
   clear_tx(); tick += 500U; Telemetry_Process(); drain(); expect("");
@@ -664,6 +669,31 @@ static void test_tof_query_and_independent_stream(void)
   clear_tx(); tick += 500U; Telemetry_Process(); drain(); expect("");
   line("TOF,0\n"); expect("ACK,TOF,0\r\n");
   clear_tx(); tick += 2000U; Telemetry_Process(); drain(); expect("");
+}
+
+static void test_periodic_uart_never_queues_ahead_of_replies(void)
+{
+  init();
+  tx_autocomplete = 0U;
+  assert(SerialDma_WriteTelemetry("TOF,old\r\n"));
+  drain();
+  assert(SerialDma_GetTxSnapshot().pending_frames == 1);
+  Telemetry_SetTof(1);
+  for (unsigned i = 0; i < 20; ++i) { tick += 100; Telemetry_Process(); drain(); }
+  assert(SerialDma_GetTxSnapshot().pending_frames == 1);
+  assert(SerialDma_GetTxSnapshot().telemetry_skipped == 20);
+  assert(SerialDma_Write("ACK,STOP\r\n"));
+  assert(SerialDma_GetTxSnapshot().pending_frames == 2);
+  HAL_UART_TxCpltCallback(&huart2); drain();
+  assert(SerialDma_GetTxSnapshot().pending_frames == 1);
+  assert(!strcmp(transmitted, "TOF,old\r\nACK,STOP\r\n"));
+  HAL_UART_TxCpltCallback(&huart2); drain();
+  assert(!SerialDma_GetTxSnapshot().pending_frames && !SerialDma_GetSnapshot().tx_dropped);
+  init();
+  line("PING\n"); expect("PONG\r\n");
+  tick += 79; assert(!SerialDma_WriteTelemetry("TOF,new\r\n"));
+  tick += 1; assert(SerialDma_WriteTelemetry("TOF,new\r\n")); drain();
+  line("LINKQ\n"); expect("LINKQ,0,0,1,0\r\n");
 }
 
 static void test_parallel_wheel_targets(void)
@@ -802,6 +832,7 @@ int main(void)
   test_rate_and_heading_ram_logs();
   test_tof_query_and_independent_stream();
   test_parallel_wheel_targets();
+  test_periodic_uart_never_queues_ahead_of_replies();
   test_startup_gains_remain_runtime_tunable();
   test_tracked_drive_frame_rest_and_stop();
   test_track_frame_sweep_and_split_packets();
