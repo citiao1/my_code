@@ -17,7 +17,7 @@ $BundledPython = Join-Path $env:USERPROFILE ".cache\codex-runtimes\codex-primary
 # Restart only the bridge from this exact project; unrelated listeners
 # must never be terminated simply because they use the same port.
 $BridgeScript = (Resolve-Path (Join-Path $BridgeDir "motor_vofa_bridge.py")).Path
-$BridgeScriptPattern = '(?:^|\s|")' + [regex]::Escape($BridgeScript) + '(?:"|\s|$)'
+$BridgeScriptPattern = '(?:^|\s|")' + [regex]::Escape($BridgeScript.Replace('/', '\')) + '(?:"|\s|$)'
 foreach ($BridgeListenPort in @(8766, 1347)) {
     $ExistingListener = Get-NetTCPConnection -LocalPort $BridgeListenPort -State Listen -ErrorAction SilentlyContinue
     if ($ExistingListener) {
@@ -28,7 +28,7 @@ foreach ($BridgeListenPort in @(8766, 1347)) {
         if ($ExistingProcesses.Count -ne $ExistingIds.Count -or
             @($ExistingProcesses | Where-Object {
                 $_.Name -notmatch '^python(w)?\.exe$' -or
-                $_.CommandLine -notmatch $BridgeScriptPattern
+                ($_.CommandLine -replace '/', '\') -notmatch $BridgeScriptPattern
             }).Count -ne 0) {
             throw "Port $BridgeListenPort is used by another program (PID $($ExistingIds -join ', ')). Close that program first."
         }
