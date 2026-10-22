@@ -1,0 +1,80 @@
+{
+  "DISARM": {
+    "type": "result",
+    "id": 1,
+    "ok": true,
+    "reply": "ACK,DISARM"
+  },
+  "VER": {
+    "type": "result",
+    "id": 2,
+    "ok": true,
+    "reply": "VER,VGT6_BM50_ATTITUDE_R20"
+  },
+  "CAPS": {
+    "type": "result",
+    "id": 3,
+    "ok": true,
+    "reply": "CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED"
+  },
+  "ANGLESTATUS": {
+    "type": "result",
+    "id": 4,
+    "ok": true,
+    "reply": "ATEL,375667,0,1,0,2,0,0,15715,0,0,0,0,12191"
+  },
+  "PS2STATUS": {
+    "type": "result",
+    "id": 5,
+    "ok": true,
+    "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,7"
+  },
+  "SPEEDSTATUS": {
+    "type": "result",
+    "id": 6,
+    "ok": true,
+    "reply": "TEL,375892,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12186,0,0,1,0,15711,0"
+  },
+  "PIDGET": {
+    "type": "result",
+    "id": 7,
+    "ok": true,
+    "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+  },
+  "YAWGET": {
+    "type": "result",
+    "id": 8,
+    "ok": true,
+    "reply": "YAWPID,0.1815,1.8062,60,80,20"
+  },
+  "HEADGET": {
+    "type": "result",
+    "id": 9,
+    "ok": true,
+    "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+  },
+  "TOF": {
+    "type": "result",
+    "id": 10,
+    "ok": true,
+    "reply": "TOF,376379,1,1,175,9,68,0"
+  },
+  "UART": {
+    "type": "result",
+    "id": 11,
+    "ok": true,
+    "reply": "UART,9600,42000000,4375,0x04,0,0,1,0,0"
+  },
+  "LINK": {
+    "type": "result",
+    "id": 12,
+    "ok": true,
+    "reply": "LINK,110,12,0,0,1,0"
+  },
+  "STACK": {
+    "type": "result",
+    "id": 13,
+    "ok": true,
+    "reply": "STACK,4096,2440,1656,1"
+  }
+}

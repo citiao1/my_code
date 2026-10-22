@@ -1,0 +1,734 @@
+{
+  "motion_started": false,
+  "commands": [
+    {
+      "command": "DISARM",
+      "host_monotonic": 1486.281,
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    },
+    {
+      "command": "TEL,0",
+      "host_monotonic": 1486.406,
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      }
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 1486.468,
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      }
+    },
+    {
+      "command": "ANGLESTATUS",
+      "host_monotonic": 1486.562,
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "ATEL,539947,0,1,0,0,0,0,13171,0,0,0,0,12184"
+      }
+    },
+    {
+      "command": "PS2STATUS",
+      "host_monotonic": 1486.671,
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10"
+      }
+    },
+    {
+      "command": "SPEEDSTATUS",
+      "host_monotonic": 1486.812,
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "TEL,540217,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12185,0,0,1,0,13166,0"
+      }
+    },
+    {
+      "command": "VER",
+      "host_monotonic": 1487.0,
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R20"
+      }
+    },
+    {
+      "command": "CAPS",
+      "host_monotonic": 1487.078,
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED"
+      }
+    },
+    {
+      "command": "UART",
+      "host_monotonic": 1487.281,
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x04,0,0,1,0,0"
+      }
+    },
+    {
+      "command": "LINK",
+      "host_monotonic": 1487.375,
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "LINK,205,24,0,0,1,0"
+      }
+    },
+    {
+      "command": "STACK",
+      "host_monotonic": 1487.484,
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "STACK,4096,2440,1656,1"
+      }
+    },
+    {
+      "command": "TOF,1",
+      "host_monotonic": 1487.578,
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "ACK,TOF,1"
+      }
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 1495.656,
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      }
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 1495.703,
+      "result": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      }
+    },
+    {
+      "command": "TEL,0",
+      "host_monotonic": 1495.765,
+      "result": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      }
+    },
+    {
+      "command": "DISARM",
+      "host_monotonic": 1495.843,
+      "result": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    },
+    {
+      "command": "ANGLESTATUS",
+      "host_monotonic": 1495.906,
+      "result": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "ATEL,549285,0,1,0,0,0,0,13025,0,0,0,0,12184"
+      }
+    },
+    {
+      "command": "PS2STATUS",
+      "host_monotonic": 1496.015,
+      "result": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,5"
+      }
+    },
+    {
+      "command": "SPEEDSTATUS",
+      "host_monotonic": 1496.125,
+      "result": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "TEL,549533,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12186,0,0,1,0,13021,0"
+      }
+    },
+    {
+      "command": "UART",
+      "host_monotonic": 1496.312,
+      "result": {
+        "type": "result",
+        "id": 20,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x04,0,0,1,0,0"
+      }
+    },
+    {
+      "command": "LINK",
+      "host_monotonic": 1496.406,
+      "result": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "LINK,297,35,0,0,1,0"
+      }
+    },
+    {
+      "command": "STACK",
+      "host_monotonic": 1496.484,
+      "result": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "STACK,4096,2440,1656,1"
+      }
+    },
+    {
+      "command": "YAWGET",
+      "host_monotonic": 1496.578,
+      "result": {
+        "type": "result",
+        "id": 23,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "command": "HEADGET",
+      "host_monotonic": 1496.781,
+      "result": {
+        "type": "result",
+        "id": 24,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "command": "PIDGET",
+      "host_monotonic": 1496.921,
+      "result": {
+        "type": "result",
+        "id": 25,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 1497.078,
+      "result": {
+        "type": "result",
+        "id": 26,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      }
+    },
+    {
+      "command": "TEL,0",
+      "host_monotonic": 1497.14,
+      "result": {
+        "type": "result",
+        "id": 27,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      }
+    },
+    {
+      "command": "DISARM",
+      "host_monotonic": 1497.203,
+      "result": {
+        "type": "result",
+        "id": 28,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    }
+  ],
+  "wire": [
+    {
+      "host_monotonic": 1486.281,
+      "raw": "STATUS,1,ble connected\n"
+    },
+    {
+      "host_monotonic": 1486.406,
+      "raw": "ACK,DISARM\n"
+    },
+    {
+      "host_monotonic": 1486.406,
+      "raw": "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    },
+    {
+      "host_monotonic": 1486.468,
+      "raw": "ACK,TEL,0\n"
+    },
+    {
+      "host_monotonic": 1486.468,
+      "raw": "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "host_monotonic": 1486.562,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 1486.562,
+      "raw": "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 1486.671,
+      "raw": "ATEL,539947,0,1,0,0,0,0,13171,0,0,0,0,12184\n"
+    },
+    {
+      "host_monotonic": 1486.671,
+      "raw": "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"ATEL,539947,0,1,0,0,0,0,13171,0,0,0,0,12184\"}"
+    },
+    {
+      "host_monotonic": 1486.812,
+      "raw": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10\n"
+    },
+    {
+      "host_monotonic": 1486.812,
+      "raw": "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10\"}"
+    },
+    {
+      "host_monotonic": 1487.0,
+      "raw": "TEL,540217,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12185,0,0,1,0,13166,0\n"
+    },
+    {
+      "host_monotonic": 1487.0,
+      "raw": "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"TEL,540217,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12185,0,0,1,0,13166,0\"}"
+    },
+    {
+      "host_monotonic": 1487.078,
+      "raw": "VER,VGT6_BM50_ATTITUDE_R20\n"
+    },
+    {
+      "host_monotonic": 1487.078,
+      "raw": "{\"type\": \"result\", \"id\": 7, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R20\"}"
+    },
+    {
+      "host_monotonic": 1487.281,
+      "raw": "CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED\n"
+    },
+    {
+      "host_monotonic": 1487.281,
+      "raw": "{\"type\": \"result\", \"id\": 8, \"ok\": true, \"reply\": \"CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED\"}"
+    },
+    {
+      "host_monotonic": 1487.375,
+      "raw": "UART,9600,42000000,4375,0x04,0,0,1,0,0\n"
+    },
+    {
+      "host_monotonic": 1487.375,
+      "raw": "{\"type\": \"result\", \"id\": 9, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x04,0,0,1,0,0\"}"
+    },
+    {
+      "host_monotonic": 1487.484,
+      "raw": "LINK,205,24,0,0,1,0\n"
+    },
+    {
+      "host_monotonic": 1487.484,
+      "raw": "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"LINK,205,24,0,0,1,0\"}"
+    },
+    {
+      "host_monotonic": 1487.578,
+      "raw": "STACK,4096,2440,1656,1\n"
+    },
+    {
+      "host_monotonic": 1487.578,
+      "raw": "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"STACK,4096,2440,1656,1\"}"
+    },
+    {
+      "host_monotonic": 1487.64,
+      "raw": "ACK,TOF,1\n"
+    },
+    {
+      "host_monotonic": 1487.64,
+      "raw": "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"ACK,TOF,1\"}"
+    },
+    {
+      "host_monotonic": 1488.156,
+      "raw": "TOF,541454,1,1,175,9,63,0\n"
+    },
+    {
+      "host_monotonic": 1488.687,
+      "raw": "TOF,541954,1,1,173,9,83,0\n"
+    },
+    {
+      "host_monotonic": 1489.171,
+      "raw": "TOF,542454,1,1,176,9,93,0\n"
+    },
+    {
+      "host_monotonic": 1489.671,
+      "raw": "TOF,542954,1,1,175,9,103,0\n"
+    },
+    {
+      "host_monotonic": 1490.171,
+      "raw": "TOF,543454,1,1,174,9,3,0\n"
+    },
+    {
+      "host_monotonic": 1490.656,
+      "raw": "TOF,543954,1,1,176,9,13,0\n"
+    },
+    {
+      "host_monotonic": 1491.187,
+      "raw": "TOF,544454,1,1,175,9,23,0\n"
+    },
+    {
+      "host_monotonic": 1491.671,
+      "raw": "TOF,544954,1,1,175,9,43,0\n"
+    },
+    {
+      "host_monotonic": 1492.171,
+      "raw": "TOF,545454,1,1,174,9,53,0\n"
+    },
+    {
+      "host_monotonic": 1492.656,
+      "raw": "TOF,545954,1,1,175,9,63,0\n"
+    },
+    {
+      "host_monotonic": 1493.171,
+      "raw": "TOF,546454,1,1,175,9,83,0\n"
+    },
+    {
+      "host_monotonic": 1493.671,
+      "raw": "TOF,546954,1,1,175,9,93,0\n"
+    },
+    {
+      "host_monotonic": 1494.171,
+      "raw": "TOF,547454,1,1,176,9,103,0\n"
+    },
+    {
+      "host_monotonic": 1494.671,
+      "raw": "TOF,547954,1,1,174,9,123,0\n"
+    },
+    {
+      "host_monotonic": 1495.156,
+      "raw": "TOF,548454,1,1,174,9,13,0\n"
+    },
+    {
+      "host_monotonic": 1495.671,
+      "raw": "TOF,548954,1,1,176,9,23,0\n"
+    },
+    {
+      "host_monotonic": 1495.703,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 1495.703,
+      "raw": "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 1495.765,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 1495.765,
+      "raw": "{\"type\": \"result\", \"id\": 14, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 1495.843,
+      "raw": "ACK,TEL,0\n"
+    },
+    {
+      "host_monotonic": 1495.843,
+      "raw": "{\"type\": \"result\", \"id\": 15, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "host_monotonic": 1495.906,
+      "raw": "ACK,DISARM\n"
+    },
+    {
+      "host_monotonic": 1495.906,
+      "raw": "{\"type\": \"result\", \"id\": 16, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    },
+    {
+      "host_monotonic": 1496.015,
+      "raw": "ATEL,549285,0,1,0,0,0,0,13025,0,0,0,0,12184\n"
+    },
+    {
+      "host_monotonic": 1496.015,
+      "raw": "{\"type\": \"result\", \"id\": 17, \"ok\": true, \"reply\": \"ATEL,549285,0,1,0,0,0,0,13025,0,0,0,0,12184\"}"
+    },
+    {
+      "host_monotonic": 1496.125,
+      "raw": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,5\n"
+    },
+    {
+      "host_monotonic": 1496.125,
+      "raw": "{\"type\": \"result\", \"id\": 18, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,5\"}"
+    },
+    {
+      "host_monotonic": 1496.312,
+      "raw": "TEL,549533,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12186,0,0,1,0,13021,0\n"
+    },
+    {
+      "host_monotonic": 1496.312,
+      "raw": "{\"type\": \"result\", \"id\": 19, \"ok\": true, \"reply\": \"TEL,549533,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12186,0,0,1,0,13021,0\"}"
+    },
+    {
+      "host_monotonic": 1496.406,
+      "raw": "UART,9600,42000000,4375,0x04,0,0,1,0,0\n"
+    },
+    {
+      "host_monotonic": 1496.406,
+      "raw": "{\"type\": \"result\", \"id\": 20, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x04,0,0,1,0,0\"}"
+    },
+    {
+      "host_monotonic": 1496.484,
+      "raw": "LINK,297,35,0,0,1,0\n"
+    },
+    {
+      "host_monotonic": 1496.484,
+      "raw": "{\"type\": \"result\", \"id\": 21, \"ok\": true, \"reply\": \"LINK,297,35,0,0,1,0\"}"
+    },
+    {
+      "host_monotonic": 1496.578,
+      "raw": "STACK,4096,2440,1656,1\n"
+    },
+    {
+      "host_monotonic": 1496.578,
+      "raw": "{\"type\": \"result\", \"id\": 22, \"ok\": true, \"reply\": \"STACK,4096,2440,1656,1\"}"
+    },
+    {
+      "host_monotonic": 1496.781,
+      "raw": "YAWPID,0.1815,1.8062,60,80,20\n"
+    },
+    {
+      "host_monotonic": 1496.781,
+      "raw": "{\"type\": \"result\", \"id\": 23, \"ok\": true, \"reply\": \"YAWPID,0.1815,1.8062,60,80,20\"}"
+    },
+    {
+      "host_monotonic": 1496.921,
+      "raw": "HEADPID,6.0000,1.2500,80,20,D_MEAS\n"
+    },
+    {
+      "host_monotonic": 1496.921,
+      "raw": "{\"type\": \"result\", \"id\": 24, \"ok\": true, \"reply\": \"HEADPID,6.0000,1.2500,80,20,D_MEAS\"}"
+    },
+    {
+      "host_monotonic": 1497.078,
+      "raw": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000\n"
+    },
+    {
+      "host_monotonic": 1497.078,
+      "raw": "{\"type\": \"result\", \"id\": 25, \"ok\": true, \"reply\": \"PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000\"}"
+    },
+    {
+      "host_monotonic": 1497.14,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 1497.14,
+      "raw": "{\"type\": \"result\", \"id\": 26, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 1497.203,
+      "raw": "ACK,TEL,0\n"
+    },
+    {
+      "host_monotonic": 1497.203,
+      "raw": "{\"type\": \"result\", \"id\": 27, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "host_monotonic": 1497.281,
+      "raw": "ACK,DISARM\n"
+    },
+    {
+      "host_monotonic": 1497.281,
+      "raw": "{\"type\": \"result\", \"id\": 28, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    }
+  ],
+  "phases": {
+    "distance_only": {
+      "rows": [
+        [
+          541454,
+          1,
+          1,
+          175,
+          9,
+          63,
+          0
+        ],
+        [
+          541954,
+          1,
+          1,
+          173,
+          9,
+          83,
+          0
+        ],
+        [
+          542454,
+          1,
+          1,
+          176,
+          9,
+          93,
+          0
+        ],
+        [
+          542954,
+          1,
+          1,
+          175,
+          9,
+          103,
+          0
+        ],
+        [
+          543454,
+          1,
+          1,
+          174,
+          9,
+          3,
+          0
+        ],
+        [
+          543954,
+          1,
+          1,
+          176,
+          9,
+          13,
+          0
+        ],
+        [
+          544454,
+          1,
+          1,
+          175,
+          9,
+          23,
+          0
+        ],
+        [
+          544954,
+          1,
+          1,
+          175,
+          9,
+          43,
+          0
+        ],
+        [
+          545454,
+          1,
+          1,
+          174,
+          9,
+          53,
+          0
+        ],
+        [
+          545954,
+          1,
+          1,
+          175,
+          9,
+          63,
+          0
+        ],
+        [
+          546454,
+          1,
+          1,
+          175,
+          9,
+          83,
+          0
+        ],
+        [
+          546954,
+          1,
+          1,
+          175,
+          9,
+          93,
+          0
+        ],
+        [
+          547454,
+          1,
+          1,
+          176,
+          9,
+          103,
+          0
+        ],
+        [
+          547954,
+          1,
+          1,
+          174,
+          9,
+          123,
+          0
+        ],
+        [
+          548454,
+          1,
+          1,
+          174,
+          9,
+          13,
+          0
+        ]
+      ],
+      "frames": 15,
+      "valid_frames": 15,
+      "interval_ms": {
+        "min": 500,
+        "max": 500,
+        "median": 500.0
+      },
+      "distance_mm": {
+        "min": 173,
+        "max": 176
+      },
+      "max_sample_age_ms": 123
+    }
+  },
+  "candidate_image_sha256": "422b07d54aa86cd3d28a282467748301bb0e5c20e96f0e923f215e067666a70a",
+  "note": "Observed hardware is R20, as shown by VER/CAPS in raw commands. Candidate hash is R21 build, not the old board image."
+}

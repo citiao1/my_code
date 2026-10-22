@@ -1,0 +1,60 @@
+{
+  "source_commit": "eca30203",
+  "image_sha256": "422b07d54aa86cd3d28a282467748301bb0e5c20e96f0e923f215e067666a70a",
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R21",
+  "motion_started": false,
+  "user_acceptance_scope": "refresh-rate only; user cannot move the target, no 50mm physical threshold or braking test",
+  "keil_build": "*** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\\Keil5\\ARM\\ARMCC\\Bin'\nBuild target 'vgt6_module_test'\ncompiling front_guard.c...\ncompiling tof.c...\ncompiling display.c...\ncompiling command.c...\ncompiling telemetry.c...\ncompiling app.c...\nlinking...\nProgram Size: Code=60030 RO-data=2618 RW-data=216 ZI-data=103816  \nFromELF: creating hex file...\n\"vgt6_module_test\\vgt6_module_test.axf\" - 0 Error(s), 0 Warning(s).\nBuild Time Elapsed:  00:00:07\n",
+  "keil_program_verify": "Load \"vgt6_module_test\\\\vgt6_module_test.axf\" \nErase Done.Programming Done.Verify OK.Application running ...\nFlash Load finished at 12:58:44\n",
+  "independent_readback": "VERIFIED critical addresses, vector table and R21 marker at 0x08005a60; device 0x101f6413; flash 1024 KiB\nCore state after programming: RUNNING\n",
+  "independent_postreset_readback": "VERIFIED critical addresses, vector table and R21 marker at 0x08005a60; device 0x101f6413; flash 1024 KiB\nCore state after programming: RUNNING\n",
+  "sensor_hz": 24.703317994671835,
+  "stream_phases": {
+    "distance_only": {
+      "frames": 79,
+      "valid_frames": 79,
+      "interval_ms": {
+        "min": 100,
+        "max": 100,
+        "median": 100.0
+      },
+      "distance_mm": {
+        "min": 162,
+        "max": 173
+      },
+      "max_sample_age_ms": 40
+    },
+    "distance_and_speed": {
+      "frames": 19,
+      "valid_frames": 19,
+      "interval_ms": {
+        "min": 200,
+        "max": 200,
+        "median": 200.0
+      },
+      "distance_mm": {
+        "min": 161,
+        "max": 172
+      },
+      "max_sample_age_ms": 39
+    }
+  },
+  "tests": {
+    "firmware_protocol_assertions": 2366,
+    "tof_emulated_phase_sweep": "PASS <=46 ms, 40 phases; simulation, not hardware latency",
+    "node": 74,
+    "bridge": 20,
+    "adapter_full_before_added_R21_case": 59,
+    "R19_R20_R21_angular_compatibility": 3
+  },
+  "unchanged_known_failure": "historical PS2 model reverse_arc=0.500896 deg versus <0.5 deg gate; not rerun or fixed by this change",
+  "ui_screenshot": "C:/Users/28097/.codex/visualizations/2026/10/20/01a159dd-7ace-7e23-9b1f-3af439e2da66/r21-fast-tof.png",
+  "UART": {
+    "before": "UART,9600,42000000,4375,0x04,0,0,1,0,0",
+    "after": "UART,9600,42000000,4375,0x04,0,0,1,0,0"
+  },
+  "LINK": {
+    "before": "LINK,110,11,0,0,1,0",
+    "after": "LINK,234,26,0,0,1,0"
+  }
+}

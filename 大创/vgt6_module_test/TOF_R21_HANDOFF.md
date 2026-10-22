@@ -36,4 +36,18 @@ HEX SHA256：`422B07D54AA86CD3D28A282467748301BB0E5C20E96F0E923F215E067666A70A`�
 
 烧录前 R20 已 DISARM，角环 mode=0、speed=0、四轮目标/输出零、PS2 锁定居中；TOF 有效。开机后已有 UART FE=1、LINK uart_errors=1，保留作为前置计数，不能称原计数为零。检测仅一枚匹配 PUSO DAPLink 1234:5678 / puso_daplink_lab。
 
-完成源代码备份后再烧录，烧录及实际频率结果在完成后追加。验证原始 wire/命令见 `validation/r21-before-distance.json`、`validation/r21-after-distance.json`。这些采集仅观察测距，不用于 PID 评分。
+源代码备份 **eca30203** 后已烧录。Keil 全镜像 Verify OK、Application running；独立读回 ID=0x101f6413、Flash=1024KiB、向量表及 **0x08005a60** 处 R21 标记一致；复位后独立复核 RUNNING。HEX 哈希与构建段一致。
+
+旧版 R20 连续 15 帧均有效，TOF 报文间隔固定 500 ms；新版通过 TOFINFO 样本计数增量实测 **24.7033 Hz**。距离单独开启的 8 秒采集 79 帧，MCU 报文间隔固定 **100 ms**，79/79 有效，距离 162..173 mm，最大样本年龄 40 ms；同时开启速度遥测的 4 秒采集 19 帧，间隔固定 **200 ms**，19/19 有效，距离 161..172 mm，最大年龄 39 ms。以 MCU 报文 tick 统计，不以 BLE 到达抖动或重复画面当成测量周期。
+
+新版本段采集前后 UART=9600/42000000/4375，PE/NE/ORE/DMA=0、FE=1；LINK 溢出/TX丢弃=0、uart_errors=1，均未增长。已有一次 FE，不声称错误计数为零。结束时再次 DISARM、mode=0、speed=0、四轮目标和输出零、PS2 锁定；HEAD/YAW/四轮 PID 读回不变。
+
+用户随后明确暂时不能移动白纸，只记录刷新率。因此没有覆盖实物 40..60 mm 阈值、无效近距状态转换或真实刹停距离；模拟的 ≤46 ms 不能替代这些验收。
+
+验证原始 wire/命令见 `validation/r21-before-distance.json`、`validation/r21-after-distance.json`，构建/烧录/读回/频率摘要见 `validation/r21-verification.json`，烧录前停车查询见 `validation/r21-flash-preflight.json`。这些采集仅观察测距，不用于 PID 评分。
+
+网页实际连接 R21 并已勾选实时距离，显示有效约168mm、模式停止，未点击 ARM/速度环/运动。界面证据：`C:/Users/28097/.codex/visualizations/2026/10/20/01a159dd-7ace-7e23-9b1f-3af439e2da66/r21-fast-tof.png`。桥接和 http://127.0.0.1:8088/ 保留运行。
+
+## 并行工作边界
+
+本次固件备份提交后，检测到独立并行工作正在修改 wheel_tuner.py / wheel_log.py / test_wheel_log.py / replay_wlog.py 及 PID skill，将实验改为四轮同步测量。本窗口没有覆盖或纳入这些未提交改动，也没有把本轮旧快照的 59 项测试当成其新版本验收。上文单轮限制说明对应核查时和 eca30203 源码快照；当前自动整定入口请以并行工作最终交付为准。本次仅同步 R21 身份和 TOF 能力识别，不授权运动或参数写入。
