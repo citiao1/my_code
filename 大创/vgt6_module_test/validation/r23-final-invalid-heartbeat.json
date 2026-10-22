@@ -1,0 +1,46 @@
+{
+  "motion_started": false,
+  "frames": [
+    {
+      "elapsed_s": 0.10900000000037835,
+      "line": "TOF,432907,1,0,-1,4,36,0"
+    },
+    {
+      "elapsed_s": 1.1090000000003783,
+      "line": "TOF,433907,1,0,-1,4,22,0"
+    },
+    {
+      "elapsed_s": 2.0940000000009604,
+      "line": "TOF,434907,1,0,-1,4,8,0"
+    },
+    {
+      "elapsed_s": 3.1090000000003783,
+      "line": "TOF,435907,1,0,-1,4,36,0"
+    },
+    {
+      "elapsed_s": 4.09400000000096,
+      "line": "TOF,436907,1,0,-1,4,22,0"
+    }
+  ],
+  "wire": [
+    "STATUS,1,ble connected\n",
+    "ACK,DISARM\n",
+    "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,DISARM\"}",
+    "ACK,TEL,0\n",
+    "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"ACK,TEL,0\"}",
+    "ACK,TOF,1\n",
+    "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"ACK,TOF,1\"}",
+    "TOF,432907,1,0,-1,4,36,0\n",
+    "TOF,433907,1,0,-1,4,22,0\n",
+    "TOF,434907,1,0,-1,4,8,0\n",
+    "TOF,435907,1,0,-1,4,36,0\n",
+    "TOF,436907,1,0,-1,4,22,0\n",
+    "TOF,437907,1,0,-1,4,10,0\n",
+    "ACK,TOF,0\n",
+    "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"ACK,TOF,0\"}",
+    "ACK,TEL,0\n",
+    "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"ACK,TEL,0\"}",
+    "ACK,DISARM\n",
+    "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+  ]
+}
