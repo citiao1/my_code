@@ -39,17 +39,21 @@ static uint8_t tof_stream;
 static uint32_t tof_tick, hlog_read_tick;
 static uint8_t hlog_read_seen;
 static uint8_t periodic_send;
+static TofSnapshot last_tof_report;
+static uint32_t tof_report_tick;
+static uint8_t tof_report_seen;
 
-static void write_live(const char *message)
+static uint8_t write_live(const char *message)
 {
-  if (periodic_send) (void)SerialDma_WriteTelemetry(message);
-  else (void)SerialDma_Write(message);
+  if (periodic_send) return SerialDma_WriteTelemetry(message);
+  return SerialDma_Write(message);
 }
 
 void Telemetry_Init(void)
 {
   telemetry_periodic = 0U;
   periodic_send = 0U;
+  tof_report_seen = 0U;
   attitude_stream = 0U;
   telemetry_tick = HAL_GetTick();
   Telemetry_Hlog_Clear();
@@ -72,8 +76,16 @@ void Telemetry_Process(void)
    * downloads retain their UART budget; the local guard never pauses. */
   if (ranging_stream && now - tof_tick >= tof_period)
   {
+    TofSnapshot tof = Tof_GetSnapshot();
     tof_tick = now;
-    Telemetry_SendTof();
+    /* Repeating one invalid result at 5..10 Hz wastes BLE UART capacity.
+     * Report every transition promptly, then a 1 Hz invalid-state heartbeat.
+     * Valid ranges retain their normal rate; local ranging never pauses. */
+    if (tof.valid || !tof_report_seen || last_tof_report.valid ||
+        tof.connected != last_tof_report.connected ||
+        tof.range_status != last_tof_report.range_status ||
+        tof.errors != last_tof_report.errors || now - tof_report_tick >= 1000U)
+      Telemetry_SendTof();
   }
 
   if ((telemetry_periodic != 0U) &&
@@ -102,6 +114,7 @@ void Telemetry_SetAttitude(uint8_t enable)
 void Telemetry_SetTof(uint8_t enable)
 {
   tof_stream = enable != 0U;
+  tof_report_seen = 0U;
   tof_tick = HAL_GetTick();
 }
 
@@ -113,7 +126,12 @@ void Telemetry_SendTof(void)
       (unsigned long)HAL_GetTick(), tof.connected, tof.valid,
       tof.valid ? (int)tof.distance_mm : -1, tof.range_status,
       (unsigned long)tof.age_ms, (unsigned long)tof.errors);
-  write_live(message);
+  if (write_live(message))
+  {
+    last_tof_report = tof;
+    tof_report_tick = HAL_GetTick();
+    tof_report_seen = 1U;
+  }
 }
 
 void Telemetry_SendAttitude(void)

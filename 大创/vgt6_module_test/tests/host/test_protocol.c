@@ -671,6 +671,27 @@ static void test_tof_query_and_independent_stream(void)
   clear_tx(); tick += 2000U; Telemetry_Process(); drain(); expect("");
 }
 
+static void test_invalid_distance_reports_transitions_then_one_hz(void)
+{
+  init();
+  tof_mock.connected = 1U; tof_mock.range_status = 4U;
+  line("TOF,1\n"); expect("ACK,TOF,1\r\n");
+  clear_tx(); tick += 100; Telemetry_Process(); drain();
+  expect("TOF,200,1,0,-1,4,0,0\r\n");
+  for (unsigned i = 0; i < 9; ++i)
+  { clear_tx(); tick += 100; Telemetry_Process(); drain(); expect(""); }
+  clear_tx(); tick += 100; Telemetry_Process(); drain();
+  expect("TOF,1200,1,0,-1,4,0,0\r\n");
+  tof_mock.range_status = 7;
+  clear_tx(); tick += 100; Telemetry_Process(); drain();
+  expect("TOF,1300,1,0,-1,7,0,0\r\n");
+  tof_mock.valid = 1U; tof_mock.range_status = 9U; tof_mock.distance_mm = 100U;
+  clear_tx(); tick += 100; Telemetry_Process(); drain();
+  expect("TOF,1400,1,1,100,9,0,0\r\n");
+  clear_tx(); tick += 100; Telemetry_Process(); drain();
+  expect("TOF,1500,1,1,100,9,0,0\r\n");
+}
+
 static void test_periodic_uart_never_queues_ahead_of_replies(void)
 {
   init();
@@ -833,6 +854,7 @@ int main(void)
   test_tof_query_and_independent_stream();
   test_parallel_wheel_targets();
   test_periodic_uart_never_queues_ahead_of_replies();
+  test_invalid_distance_reports_transitions_then_one_hz();
   test_startup_gains_remain_runtime_tunable();
   test_tracked_drive_frame_rest_and_stop();
   test_track_frame_sweep_and_split_packets();
