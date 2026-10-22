@@ -86,7 +86,7 @@ void Display_Process(void)
                  (long)(encoder.rpm_x10[3] / 10L));
   Display_PrintLine(48U, line);
   /* Fixed marker lets the independent DAP verifier identify this image. */
-  (void)snprintf(line, sizeof(line), "R21 F:%u P:%c S:%u V:%u",
+  (void)snprintf(line, sizeof(line), "R22 F:%u P:%c S:%u V:%u",
                  1U,
                  (ps2.connected != 0U) ? '1' : '0',
                  ps2_control.enabled, ps2_control.speed_rpm);

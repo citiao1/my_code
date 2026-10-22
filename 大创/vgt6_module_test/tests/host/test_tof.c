@@ -95,19 +95,26 @@ int main(void)
   assert(memory[0x61] == 0 && memory[0x62] == 0x6E);
   assert(memory[0x6C] == 0 && memory[0x6D] == 0 && memory[0x6E] == 0x56 && memory[0x6F] == 0);
   /* Move a target at every phase of the 40 ms cycle. No stale repeated
-   * samples may hide a <=50 mm obstacle beyond one measurement + bus reads. */
+   * samples may hide a <=100 mm obstacle beyond one measurement + bus reads. */
   for (uint32_t offset = 0; offset < 40; ++offset)
   {
     next_distance = 500; advance(50 + offset);
     assert(FrontGuard_ForwardLimit(160) == 160);
     uint32_t before_tick = tick;
-    next_distance = 50;
-    while (Tof_GetSnapshot().distance_mm != 50 && tick - before_tick <= 50) advance(1);
+    next_distance = 100;
+    while (Tof_GetSnapshot().distance_mm != 100 && tick - before_tick <= 50) advance(1);
     assert(tick - before_tick <= 46);
     assert(FrontGuard_ForwardLimit(160) == 0);
   }
-  next_distance = 75; advance(50);
-  assert(FrontGuard_ForwardLimit(160) == 80);
+  /* Boundary, monotonicity and a lower global ceiling must all hold. */
+  const uint16_t distances[] = {1, 99, 100, 101, 125, 150, 175, 199, 200, 201};
+  const uint16_t limits[] = {0, 0, 0, 0, 10, 20, 30, 39, 40, 160};
+  for (unsigned i = 0; i < sizeof(distances) / sizeof(distances[0]); ++i)
+  {
+    next_distance = distances[i]; advance(50);
+    assert(FrontGuard_ForwardLimit(160) == limits[i]);
+    assert(FrontGuard_ForwardLimit(15) == (limits[i] < 15 ? limits[i] : 15));
+  }
   next_status = 4;
   advance(180);
   assert(!Tof_GetSnapshot().valid && !Tof_GetSnapshot().distance_mm);

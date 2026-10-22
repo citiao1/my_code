@@ -1,7 +1,7 @@
 const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
 const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R17';
-const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20', 'VGT6_BM50_ATTITUDE_R21'];
+const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20', 'VGT6_BM50_ATTITUDE_R21', 'VGT6_BM50_ATTITUDE_R22'];
 const MAX_TARGET_RPM = 160;
 const HLOG_REQUEST_TIMEOUT_MS = 25000; // Bridge allows 20 s for a stopped RAM batch.
 
@@ -91,11 +91,12 @@ const chartSamples = [];
 const pending = new Map();
 const logLines = [];
 const firmware = {
-  speedEnabled: false, telemetryEnabled: false,
+  speedEnabled: false, telemetryEnabled: false, targetLimit: MAX_TARGET_RPM,
   receivedAt: 0, expectedAt: 0, timeoutReported: false,
   hlogSupported: false,
   hlogMicros: false,
   tofSupported: false, tofReceivedAt: 0, tofStreaming: false, tofMaxAge: 350,
+  guardStopMm: 50, guardSlowMm: 100, guardSlowRpm: MAX_TARGET_RPM,
   hlog: { active: false, count: 0, capacity: 0, overflow: 0, sequence: 0, lastBatch: 0 },
 };
 const hlogRows = [];
@@ -403,10 +404,15 @@ function handleLine(line) {
     firmware.wlogSupported = fields.includes('WLOG_US');
     firmware.frontReversed = fields.includes('FRONT_REVERSED');
     firmware.tofGuard = fields.includes('TOF_GUARD');
+    const newGuard = fields.includes('TOF_GUARD_200_100_40');
+    firmware.guardStopMm = newGuard ? 100 : 50;
+    firmware.guardSlowMm = newGuard ? 200 : 100;
+    firmware.guardSlowRpm = newGuard ? 40 : MAX_TARGET_RPM;
     document.querySelector('#frontFrameState').textContent = firmware.frontReversed ?
       'TOF 端为车头 · 新轮位：右前 C / 左前 D / 左后 A / 右后 B · A/B/C/D 仍为物理通道' : '旧版车头方向';
     document.querySelector('#frontGuardState').textContent = firmware.tofGuard ?
-      '前进保护：100→50 mm 限速，≤50 mm 停止前进；倒退/横移可用' : '当前固件未启用距离保护';
+      (newGuard ? '前进保护：≤200 mm 上限40 RPM，向100 mm线性减速至停车；倒退/横移可用' :
+      '前进保护：100→50 mm 限速，≤50 mm 停止前进；倒退/横移可用') : '当前固件未启用距离保护';
     if (!firmware.tofSupported) {
       ui.tofState.textContent = '当前固件不支持 TOF';
       ui.tofDistance.textContent = '— mm';
@@ -438,9 +444,12 @@ function handleLine(line) {
       age > firmware.tofMaxAge ? '等待新测量 / 数据已过期' : `测量无效 · 状态 ${status}`;
     if (errors) ui.tofState.textContent += ` · 通信/超时 ${errors}`;
     if (firmware.tofGuard) document.querySelector('#frontGuardState').textContent = !valid || !present ?
-      '测距异常：按设置保持原速度，距离保护暂不可用' : mm <= 50 ?
-      '距离≤50 mm：禁止前进，允许倒退/横移' : mm < 100 ?
-      `前进上限约 ${Math.floor(MAX_TARGET_RPM * (mm - 50) / 50)} RPM（100→50 mm 限速）` : '距离≥100 mm：不额外限制前进';
+      '测距异常：按设置保持原速度，距离保护暂不可用' : mm <= firmware.guardStopMm ?
+      `距离≤${firmware.guardStopMm} mm：禁止前进，允许倒退/横移` :
+      (firmware.guardStopMm === 100 ? mm <= firmware.guardSlowMm : mm < firmware.guardSlowMm) ?
+      `前进上限约 ${Math.min(firmware.targetLimit, Math.floor(firmware.guardSlowRpm * (mm - firmware.guardStopMm) /
+      (firmware.guardSlowMm - firmware.guardStopMm)))} RPM（${firmware.guardSlowMm}→${firmware.guardStopMm} mm 限速）` :
+      `距离${firmware.guardStopMm === 100 ? '>' : '≥'}${firmware.guardSlowMm} mm：不额外限制前进`;
     return;
   }
   if (fields[0] === 'WLOG') {
@@ -555,6 +564,7 @@ function handleLine(line) {
   if (fields[0] === 'SPEEDLIMIT' && fields.length === 2) {
     const limit = Number(fields[1]);
     if (Number.isInteger(limit) && limit >= 1 && limit <= MAX_TARGET_RPM) {
+      firmware.targetLimit = limit;
       ui.limit.value = limit;
       logCommand(`收到 < ${line}`);
     } else {

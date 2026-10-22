@@ -148,7 +148,7 @@ static void test_every_split(void)
     "SPEED,0\n", "SPEED,120\n", "STOP\n", "PING\r\n"
   };
   static const char *replies[] = {
-    "VER,VGT6_BM50_ATTITUDE_R21\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
+    "VER,VGT6_BM50_ATTITUDE_R22\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
     "ACK,SPDLIMIT\r\n", "ACK,SPEED,1\r\n", "ACK,PID\r\n",
     "ACK,SPD\r\n", "ACK,TEL,1\r\n", "ACK,SPEED,0\r\n",
     "ACK,SPEED,LIMIT\r\n", "ACK,STOP\r\n", "PONG\r\n"
@@ -300,8 +300,8 @@ static void test_tunable_gains_and_target_ceiling(void)
   line("PIDGET\n");
   assert(strstr(transmitted, "PID,0.8000,0.1000,0.0000") != NULL);
   line("PID,B,1.2,0.2,1\n"); expect("ACK,PID\r\n");
-  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R21_RANGE\r\n");
-  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R21_RANGE\r\n");
+  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R22_RANGE\r\n");
+  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R22_RANGE\r\n");
   line("SPDLIMIT,201\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPDLIMIT,65736\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPEED,1000\n"); expect("ERR,SPEED,RANGE_1_200\r\n");
@@ -350,7 +350,7 @@ static void test_attitude_cascade_and_stop(void)
 {
   AttitudeControlSnapshot a;
   init();
-  line("CAPS\n"); expect("CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST\r\n");
+  line("CAPS\n"); expect("CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40\r\n");
   line("YAW,15\n"); expect("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
   line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
   line("HEAD,-179\n"); expect("ACK,HEAD\r\n");
@@ -716,15 +716,15 @@ static void test_front_guard_and_wheel_capture(void)
   line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
   line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
   tof_mock.connected = tof_mock.valid = 1U;
-  tof_mock.distance_mm = 100U;
+  tof_mock.distance_mm = 201U;
   assert(SpeedControl_SetDrive(160, 0, 0));
   tick += 10U; SpeedControl_Process(10U);
   for (unsigned i = 0; i < 4; ++i) assert(SpeedControl_GetSnapshot().target_rpm[i] == -160);
-  tof_mock.distance_mm = 75U;
+  tof_mock.distance_mm = 150U;
   tick += 10U; SpeedControl_Process(10U); /* Limit changes without another command. */
-  for (unsigned i = 0; i < 4; ++i) assert(SpeedControl_GetSnapshot().target_rpm[i] == -80);
+  for (unsigned i = 0; i < 4; ++i) assert(SpeedControl_GetSnapshot().target_rpm[i] == -20);
   assert(SpeedControl_GetSnapshot().tof_limited);
-  tof_mock.distance_mm = 50U;
+  tof_mock.distance_mm = 100U;
   tick += 10U; SpeedControl_Process(10U);
   speed = SpeedControl_GetSnapshot();
   for (unsigned i = 0; i < 4; ++i) assert(!speed.target_rpm[i] && !speed.output_percent[i]);
@@ -777,12 +777,12 @@ static void test_front_guard_and_wheel_capture(void)
   assert(SpeedControl_GetSnapshot().target_rpm[0] == 0);
   line("STOP\n"); expect("ACK,STOP\r\n");
   tof_mock.valid = tof_mock.connected = 1U;
-  tof_mock.distance_mm = 75U;
+  tof_mock.distance_mm = 150U;
   line("JOG,A,-20,1000\n"); expect("ACK,JOG\r\n");
-  assert(motor_applied[0] == -10);
+  assert(motor_applied[0] == -4);
   tick += 10U; SpeedControl_Process(10U);
-  assert(motor_applied[0] == -10); /* Disabled recorder cannot cancel JOG. */
-  tof_mock.distance_mm = 50U; ChassisTest_Process();
+  assert(motor_applied[0] == -4); /* Disabled recorder cannot cancel JOG. */
+  tof_mock.distance_mm = 100U; ChassisTest_Process();
   assert(motor_applied[0] == 0);
   tof_mock.valid = 0U; ChassisTest_Process();
   assert(motor_applied[0] == -20); /* Same explicit fail-open policy. */

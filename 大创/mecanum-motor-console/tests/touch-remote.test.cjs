@@ -234,6 +234,24 @@ test('R20 advertises reversed front, wheel logger and the explicit fail-open dis
   assert.equal(f.sent.length,0);
 });
 
+test('R22 advertises 200/100 mm guard and 40 RPM ceiling while R21 retains its old policy', () => {
+  const f = consoleFixture();
+  f.line('VER,VGT6_BM50_ATTITUDE_R22');
+  f.line('CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40');
+  assert.equal(f.eval('firmwareCompatible'), true);
+  for (const [mm, expected] of [[201,/不额外限制/],[200,/40 RPM/],[150,/20 RPM/],[100,/禁止前进/],[50,/禁止前进/]]) {
+    f.line(`TOF,100,1,1,${mm},9,0,0`);
+    assert.match(f.elements.get('#frontGuardState').textContent, expected);
+  }
+  f.line('SPEEDLIMIT,15');
+  f.line('TOF,100,1,1,200,9,0,0');
+  assert.match(f.elements.get('#frontGuardState').textContent, /15 RPM/);
+  f.line('CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST');
+  f.line('TOF,100,1,1,150,9,0,0');
+  assert.match(f.elements.get('#frontGuardState').textContent, /不额外限制/);
+  assert.equal(f.sent.length, 0);
+});
+
 test('R21 accepts fast distance frames and rejects measurements older than 120 ms', () => {
   const f = consoleFixture();
   f.line('VER,VGT6_BM50_ATTITUDE_R21');
