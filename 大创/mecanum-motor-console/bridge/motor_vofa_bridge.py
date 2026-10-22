@@ -69,6 +69,8 @@ class MotorVofaBridge:
         self.ble_target_name: Optional[str] = None
         self.hardware_connected = False
         self.rx_buffer = ""
+        self.rx_publish_queue = asyncio.Queue()
+        self.rx_publish_task = None
         self.tcp_clients: set[asyncio.StreamWriter] = set()
         self.ws_clients: set = set()
         self.write_lock = asyncio.Lock()
@@ -220,16 +222,31 @@ class MotorVofaBridge:
 
         return None
 
-    async def publish_line(self, line: str) -> None:
+    async def publish_line(self, line: str, reply_epoch=None) -> None:
         if not line.startswith(("TEL,", "ATEL,", "TOF,", "HLOG,DATA", "WLOG,DATA")):
             print(f"[HW<-] {line}")
         await self.broadcast_web(f"{line}\n")
         # The page must receive the state before the matching JSON result
         # lets its sequential preflight inspect that state.
-        self.resolve_reply(line)
+        if reply_epoch is None or reply_epoch == self.command_epoch:
+            self.resolve_reply(line)
         firewater = self.to_firewater(line)
         if firewater is not None:
             await self.broadcast_tcp(firewater)
+
+    async def publish_queued_lines(self) -> None:
+        while not self.rx_publish_queue.empty():
+            reply_epoch, line = self.rx_publish_queue.get_nowait()
+            try:
+                await self.publish_line(line, reply_epoch=reply_epoch)
+            except asyncio.CancelledError:
+                raise
+            except Exception as error:
+                print(f"[HW] receive publish failed: {error}")
+                self.fail_pending("failed to publish hardware response")
+            finally:
+                self.rx_publish_queue.task_done()
+        self.rx_publish_task = None
 
     def consume_bytes(self, payload: bytes) -> None:
         self.rx_buffer += payload.decode("utf-8", errors="ignore")
@@ -238,7 +255,10 @@ class MotorVofaBridge:
         for line in lines:
             line = line.strip()
             if line:
-                asyncio.create_task(self.publish_line(line))
+                self.rx_publish_queue.put_nowait((self.command_epoch, line))
+        if (not self.rx_publish_queue.empty() and
+                (self.rx_publish_task is None or self.rx_publish_task.done())):
+            self.rx_publish_task = asyncio.create_task(self.publish_queued_lines())
         if len(self.rx_buffer) > 4096:
             self.rx_buffer = ""
             self.fail_pending("receive line too long")
@@ -378,7 +398,9 @@ class MotorVofaBridge:
                 if not self.serial_handle or not self.serial_handle.is_open:
                     await self.broadcast_web("STATUS,0,serial disconnected\n")
                     return False
-                await asyncio.to_thread(self.serial_handle.write, payload)
+                written = await asyncio.to_thread(self.serial_handle.write, payload)
+                if written != len(payload):
+                    raise serial.SerialTimeoutException("incomplete serial command write")
                 return True
 
             if not self.ble_client or not self.ble_client.is_connected or not self.ble_write_uuid:
@@ -515,25 +537,48 @@ class MotorVofaBridge:
                 print("[SERIAL] no COM port found; retrying in 2 seconds...")
                 await asyncio.sleep(2)
 
+    async def monitor_serial(self, port: str) -> None:
+        # Opening a USB COM port does not prove that the remote radio/MCU is up.
+        try:
+            for command in ("STOP", "DISARM", "PING"):
+                await self.execute_command(command)
+            await self.set_hardware_status(True, f"serial {port} @ {self.config.baud} verified")
+            while True:
+                await asyncio.sleep(1)
+                if self.command_lock.locked():
+                    continue
+                await self.execute_command("PING")
+        except asyncio.CancelledError:
+            raise
+        except Exception as error:
+            self.disconnected.set()
+            await self.set_hardware_status(False, f"serial remote unavailable: {error}")
+
     async def serial_loop(self) -> None:
         port = await self.choose_serial_port()
         while True:
+            monitor = None
+            self.disconnected.clear()
             try:
-                self.serial_handle = serial.Serial(
+                self.serial_handle = await asyncio.to_thread(serial.Serial,
                     port=port,
                     baudrate=self.config.baud,
-                    timeout=0.1,
+                    timeout=0.02,
                     write_timeout=1.0,
                 )
-                print(f"[SERIAL] connected: {port} @ {self.config.baud}")
-                await self.set_hardware_status(True, f"serial {port} connected")
-                while self.serial_handle.is_open:
-                    payload = await asyncio.to_thread(self.serial_handle.read, 256)
+                print(f"[SERIAL] opened: {port} @ {self.config.baud}; verifying MCU")
+                monitor = asyncio.create_task(self.monitor_serial(port))
+                while self.serial_handle.is_open and not self.disconnected.is_set():
+                    count = max(1, min(self.serial_handle.in_waiting, 4096))
+                    payload = await asyncio.to_thread(self.serial_handle.read, count)
                     if payload:
                         self.consume_bytes(payload)
             except (serial.SerialException, OSError) as error:
                 print(f"[SERIAL] connection error: {error}")
             finally:
+                if monitor is not None:
+                    monitor.cancel()
+                    await asyncio.gather(monitor, return_exceptions=True)
                 if self.serial_handle:
                     try:
                         self.serial_handle.close()
@@ -708,10 +753,10 @@ class MotorVofaBridge:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="BM50 speed-loop BLE/VOFA bridge")
-    parser.add_argument("--transport", choices=("serial", "ble"), required=True)
+    parser = argparse.ArgumentParser(description="BM50 serial/BLE/VOFA bridge")
+    parser.add_argument("--transport", choices=("serial", "ble"), default="serial")
     parser.add_argument("--port", help="serial COM port, for example COM5")
-    parser.add_argument("--baud", type=int, default=9600)
+    parser.add_argument("--baud", type=int, default=115200)
     parser.add_argument("--device", help="BLE device name or address")
     parser.add_argument("--tcp-host", default="127.0.0.1")
     parser.add_argument("--tcp-port", type=int, default=1347)

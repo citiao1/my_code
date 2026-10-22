@@ -11,11 +11,14 @@ R22_VERSION = 'VER,VGT6_BM50_ATTITUDE_R22'
 R22_CAPS = CAPS.replace('ATTITUDE_R21', 'ATTITUDE_R22') + ',TOF_GUARD_200_100_40'
 R23_VERSION = 'VER,VGT6_BM50_ATTITUDE_R23'
 R23_CAPS = R22_CAPS.replace('ATTITUDE_R22', 'ATTITUDE_R23') + ',UART_QOS'
+R24_VERSION = 'VER,VGT6_BM50_ATTITUDE_R24'
+R24_CAPS = R23_CAPS.replace('ATTITUDE_R23', 'ATTITUDE_R24') + ',SERIAL_115200'
 INFO = 'WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED'
 FIRMWARE_PROFILES = {
     (VERSION, CAPS, INFO),
     (R22_VERSION, R22_CAPS, INFO),
     (R23_VERSION, R23_CAPS, INFO),
+    (R24_VERSION, R24_CAPS, INFO),
 }
 HEADER = ['sequence','tick_ms','tick_us','enabled','armed','angle_mode']
 for wheel in 'ABCD':
@@ -24,8 +27,10 @@ HEADER += ['saturated_mask','tof_limited','battery_mv','tof_mm','tof_valid','enc
 
 def parse(line):
     p = line.strip().split(',')
-    if len(p) != 30 or p[:2] != ['WLOG','DATA']:
-        raise ValueError('invalid WLOG field count/type')
+    if p[:2] != ['WLOG','DATA']:
+        raise ValueError('invalid WLOG record type')
+    if len(p) != 30:
+        raise ValueError(f'invalid WLOG field count: expected 30, got {len(p)}')
     if any(not x or not x.lstrip('-').isdigit() or x.startswith('--') for x in p[2:]):
         raise ValueError('noninteger WLOG field')
     v = tuple(map(int, p[2:]))

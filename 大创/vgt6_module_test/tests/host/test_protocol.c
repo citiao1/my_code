@@ -23,8 +23,8 @@
 #include "tof.h"
 
 static DMA_HandleTypeDef mock_dma;
-static USART_TypeDef mock_usart = {4375U};
-UART_HandleTypeDef huart2 = { &mock_dma, {9600U}, &mock_usart, 0U };
+static USART_TypeDef mock_usart = {365U};
+UART_HandleTypeDef huart2 = { &mock_dma, {115200U}, &mock_usart, 0U };
 static uint8_t *rx_buffer;
 static uint16_t rx_capacity;
 static uint32_t tick;
@@ -150,7 +150,7 @@ static void test_every_split(void)
     "SPEED,0\n", "SPEED,120\n", "STOP\n", "PING\r\n"
   };
   static const char *replies[] = {
-    "VER,VGT6_BM50_ATTITUDE_R23\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
+    "VER,VGT6_BM50_ATTITUDE_R24\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
     "ACK,SPDLIMIT\r\n", "ACK,SPEED,1\r\n", "ACK,PID\r\n",
     "ACK,SPD\r\n", "ACK,TEL,1\r\n", "ACK,SPEED,0\r\n",
     "ACK,SPEED,LIMIT\r\n", "ACK,STOP\r\n", "PONG\r\n"
@@ -253,13 +253,13 @@ static void test_uart_fault_drops_partial_targets(void)
   line("\nSPD,A,30\n"); expect("ACK,SPD\r\n");
   assert(SpeedControl_GetSnapshot().target_rpm[0] == 30);
   line("\nUART\n");
-  expect("UART,9600,42000000,4375,0x0C,0,0,1,1,0\r\n");
+  expect("UART,115200,42000000,365,0x0C,0,0,1,1,0\r\n");
 }
 static void test_stack_guard_and_diagnostics(void)
 {
   init();
   line("STACK\n"); expect("STACK,4096,1200,2896,1\r\n");
-  line("UART\n"); expect("UART,9600,42000000,4375,0x00,0,0,0,0,0\r\n");
+  line("UART\n"); expect("UART,115200,42000000,365,0x00,0,0,0,0,0\r\n");
   line("STATUS\n");
   assert(strstr(transmitted, "IMU,") != NULL);
   assert(strstr(transmitted, "TEL,") != NULL);
@@ -302,8 +302,8 @@ static void test_tunable_gains_and_target_ceiling(void)
   line("PIDGET\n");
   assert(strstr(transmitted, "PID,0.8000,0.1000,0.0000") != NULL);
   line("PID,B,1.2,0.2,1\n"); expect("ACK,PID\r\n");
-  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R23_RANGE\r\n");
-  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R23_RANGE\r\n");
+  line("PID,A,NAN,0.2,0\n"); expect("ERR,PID,SPEED_TUNABLE_R24_RANGE\r\n");
+  line("PID,A,1.2,INF,0\n"); expect("ERR,PID,SPEED_TUNABLE_R24_RANGE\r\n");
   line("SPDLIMIT,201\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPDLIMIT,65736\n"); expect("ERR,SPDLIMIT,RANGE_1_200\r\n");
   line("SPEED,1000\n"); expect("ERR,SPEED,RANGE_1_200\r\n");
@@ -352,7 +352,7 @@ static void test_attitude_cascade_and_stop(void)
 {
   AttitudeControlSnapshot a;
   init();
-  line("CAPS\n"); expect("CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS\r\n");
+  line("CAPS\n"); expect("CAPS,ATTITUDE_R24,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200\r\n");
   line("YAW,15\n"); expect("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
   line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
   line("HEAD,-179\n"); expect("ACK,HEAD\r\n");

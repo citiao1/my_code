@@ -117,6 +117,15 @@ class WheelQualityTests(unittest.TestCase):
         with self.assertRaises(ValueError):timed_leg_seconds(1,0)
 
 class WheelSessionTests(unittest.IsolatedAsyncioTestCase):
+    async def test_r24_exact_profile_is_readonly_and_preserves_wlog_equations(self):
+        from wheel_log import R24_VERSION, R24_CAPS
+        ws=FakeWS();ws.version,ws.caps=R24_VERSION,R24_CAPS;await ws.recv()
+        session=WheelSession(ws,"A",Path("."))
+        await session.health()
+        self.assertEqual(session.firmware,R24_VERSION)
+        self.assertEqual(session.caps,R24_CAPS)
+        self.assertFalse(any(c=="ARM" or c.startswith(("PID,","DRV,")) for c in ws.commands))
+
     async def test_r23_exact_profile_is_readonly_and_preserves_wlog_equations(self):
         from wheel_log import R23_VERSION, R23_CAPS
         ws=FakeWS();ws.version,ws.caps=R23_VERSION,R23_CAPS;await ws.recv()

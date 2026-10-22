@@ -1,7 +1,10 @@
 """Read-only image verification after programming; no halt or reset."""
 import argparse
+import logging
 from intelhex import IntelHex
 from pyocd.core.helpers import ConnectHelper
+from pyocd.core.session import Session
+from pyocd.probe.shared_probe_proxy import SharedDebugProbeProxy
 
 p = argparse.ArgumentParser()
 p.add_argument("--pack", required=True)
@@ -12,13 +15,20 @@ p.add_argument("--critical-only", action="store_true",
                 help="check device, vectors, marker, and run state without rereading the full image")
 p.add_argument("--require-running", action="store_true")
 a = p.parse_args()
+logging.basicConfig(level=logging.WARNING)
 image = IntelHex(a.image)
-with ConnectHelper.session_with_chosen_probe(
-    unique_id=a.probe, target_override="stm32f407vgtx",
+probe = ConnectHelper.choose_probe(unique_id=a.probe, blocking=False)
+if probe is None:
+    raise RuntimeError("requested probe is unavailable")
+# Use the same session/proxy setup as the installed pyOCD commander backend.
+with Session(
+    SharedDebugProbeProxy(probe), target_override="stm32f407vgtx",
+    pack=[a.pack], connect_mode="attach", frequency=a.frequency,
     options={
-        "pack": a.pack, "connect_mode": "attach", "frequency": a.frequency,
         "cmsis_dap.deferred_transfers": False,
         "cmsis_dap.limit_packets": True,
+        "auto_unlock": False,
+        "resume_on_disconnect": False,
     },
 ) as session:
     target = session.target
@@ -31,9 +41,9 @@ with ConnectHelper.session_with_chosen_probe(
             raise RuntimeError("image contains data outside application flash")
     checks = [0x08000000, 0x08000004, 0x08000008]
     marker = next((addr for addr in range(0x08000000, 0x08100000 - 6)
-                   if bytes(image[addr + i] for i in range(6)) == b"R23 F:"), None)
+                   if bytes(image[addr + i] for i in range(6)) == b"R24 F:"), None)
     if marker is None:
-        raise RuntimeError("R23 marker is absent from the image")
+        raise RuntimeError("R24 marker is absent from the image")
     checks.append(marker & ~3)
     for address in checks:
         observed = target.read32(address)
@@ -80,7 +90,7 @@ with ConnectHelper.session_with_chosen_probe(
                     print(f"Readback: {verified_bytes} bytes verified", flush=True)
     verification = (f"full image ({verified_bytes} bytes)" if not a.critical_only
                     else "critical addresses")
-    print(f"VERIFIED {verification}, vector table and R23 marker at {marker:#010x}; "
+    print(f"VERIFIED {verification}, vector table and R24 marker at {marker:#010x}; "
           f"device {device_id:#010x}; flash {flash_kib} KiB")
     state = target.get_state().name
     print(f"Core state after programming: {state}")

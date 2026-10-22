@@ -1,3 +1,5 @@
+2026-10-22 R24：已切换配对的LQ208BLE V2.0 USB串口透传，固定115200/8N1。双击`启动上位机.bat`默认串口模式并自动选择唯一CH340/CH910；当前端口COM9，必要时用`bridge/start-bridge.ps1 -Transport serial -Port COM9 -Baud 115200`。旧BLE仍可显式选`-Transport ble`。打开COM后必须收到下位机STOP/DISARM/PING才在线，网页JS v36支持R24，旧页面Ctrl+F5。PID工具仍连接WS8766；禁止同时用串口助手占用COM。[R24交接](../vgt6_module_test/LINK_R24_HANDOFF.md)。以下为历史版本说明。
+
 # BM50 VGT6 纯蓝牙控制台
 
 R23/JSv35：松键立即发STOP，不等待上一条MOVE；MOVE失败也停车。桥接拒绝250ms前的过时运动目标，慢观察客户端有限时。固件让周期遥测在命令后80ms及TX忙时退让，TOF本地测量仍约25Hz，100mm/200mm/40RPM保护不变。`LINKQ`可查询待发帧/字节及主动跳过的显示帧；后者不等于UART错误。[R23诊断与验收](../vgt6_module_test/LINK_R23_HANDOFF.md)。更新后桥接需重启、网页需刷新，本轮已授权烧录。

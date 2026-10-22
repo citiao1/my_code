@@ -1,7 +1,7 @@
 const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
 const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R17';
-const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20', 'VGT6_BM50_ATTITUDE_R21', 'VGT6_BM50_ATTITUDE_R22', 'VGT6_BM50_ATTITUDE_R23'];
+const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20', 'VGT6_BM50_ATTITUDE_R21', 'VGT6_BM50_ATTITUDE_R22', 'VGT6_BM50_ATTITUDE_R23', 'VGT6_BM50_ATTITUDE_R24'];
 const MAX_TARGET_RPM = 160;
 const HLOG_REQUEST_TIMEOUT_MS = 25000; // Bridge allows 20 s for a stopped RAM batch.
 
@@ -150,8 +150,8 @@ function updateUi() {
   });
   ui.testDownload.disabled = chassisTestActive || !chassisTestRows.length;
   ui.speed.textContent = firmware.speedEnabled ? '关闭速度环' : '启用速度环';
-  if (connected()) setBadge('online', '蓝牙在线');
-  else if (isOpen()) setBadge('waiting', '等待蓝牙');
+  if (connected()) setBadge('online', '通信在线');
+  else if (isOpen()) setBadge('waiting', '等待设备');
   else setBadge('offline', '未连接');
 }
 
@@ -209,7 +209,7 @@ function setTelemetry(enabled) {
 }
 
 function writeCommand(command) {
-  if (!connected()) return Promise.reject(new Error('蓝牙未连接'));
+  if (!connected()) return Promise.reject(new Error('设备未连接'));
   const diagnostic = ['VER', 'UART', 'LINK', 'STACK', 'LINKQ', 'SPEEDSTATUS', 'SPEEDLIMIT', 'PIDGET', 'PING', 'STOP', 'CAPS', 'YAWGET', 'HEADGET', 'ANGLESTATUS', 'PS2STATUS', 'PS2RAW', 'TOF', 'TOF,0', 'TOF,1'].includes(command) ||
     command.startsWith('HLOG,') || command.startsWith('WLOG,') || command === 'WLOGINFO';
   if (!diagnostic && (!firmwareCompatible || !stackHealthy)) {
@@ -355,7 +355,7 @@ function handleLine(line) {
     const wasConnected = hardwareConnected;
     hardwareConnected = fields[1] === '1';
     if (!hardwareConnected) resetLinkState();
-    setEvent(bridgeReady ? (fields.slice(2).join(',') || '蓝牙状态更新') :
+    setEvent(bridgeReady ? (fields.slice(2).join(',') || '设备状态更新') :
       '旧桥接程序仍在运行，请关闭启动窗口，再重新运行“启动上位机.bat”');
     updateUi();
     if (hardwareConnected && !wasConnected && bridgeReady) {
@@ -713,7 +713,7 @@ function consumeText(text) {
 async function connectBridge() {
   if (connecting || isOpen()) return;
   if (!BRIDGE_URL) {
-    setEvent('请使用启动脚本打开纯蓝牙上位机');
+    setEvent('请使用启动脚本打开本地通信上位机');
     return;
   }
   connecting = true;
@@ -737,14 +737,14 @@ async function connectBridge() {
     setEvent(`本地 WebSocket 已断开，代码 ${event.code}：${event.reason || '无关闭说明'}；测试不会自动恢复`);
     updateUi();
   });
-  candidate.addEventListener('error', () => setEvent('无法连接本地蓝牙桥接'));
+  candidate.addEventListener('error', () => setEvent('无法连接本地通信桥接'));
   try {
     await new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error('连接超时')), 5000);
       candidate.addEventListener('open', () => { clearTimeout(timeout); resolve(); }, { once: true });
       candidate.addEventListener('error', () => { clearTimeout(timeout); reject(new Error('桥接连接失败')); }, { once: true });
     });
-    setEvent('桥接已连接，正在扫描蓝牙');
+    setEvent('桥接已连接，正在连接设备');
   } catch (error) {
     candidate.close();
     socket = undefined;

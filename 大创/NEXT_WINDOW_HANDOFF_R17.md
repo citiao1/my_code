@@ -1,3 +1,5 @@
+R24链路迁移：LQ208BLE V2.0已配对，115200/8N1 USB串口；当前COM9，不再默认旧BLE。详见[vgt6_module_test/LINK_R24_HANDOFF.md](vgt6_module_test/LINK_R24_HANDOFF.md)。本轮只授权烧录/停机通信验证，勿沿用其他窗口运动许可。
+
 # VGT6 麦轮车 / R17 高频日志与整定交接
 
 2026-10-22 最新R23：蓝牙松键延迟STOP、桥接排队和遥测发送退让修复见 `vgt6_module_test/LINK_R23_HANDOFF.md`；本轮用户要求检查后烧录，实际结果以该交接追加验证和VER/CAPS为准。

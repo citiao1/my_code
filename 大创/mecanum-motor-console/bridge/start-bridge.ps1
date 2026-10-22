@@ -1,8 +1,9 @@
 param(
-    [Parameter(Mandatory = $true)]
     [ValidateSet("serial", "ble")]
-    [string]$Transport,
+    [string]$Transport = "serial",
     [string]$Port,
+    [ValidateRange(1200, 2000000)]
+    [int]$Baud = 115200,
     [string]$Device
 )
 
@@ -70,7 +71,7 @@ if (-not $WebPortInUse) {
         -WorkingDirectory $WebRoot -WindowStyle Hidden -PassThru
 }
 
-$BridgeArgs = @("--transport", $Transport)
+$BridgeArgs = @("--transport", $Transport, "--baud", "$Baud")
 if ($Port) { $BridgeArgs += @("--port", $Port) }
 if ($Device) { $BridgeArgs += @("--device", $Device) }
 
@@ -78,7 +79,7 @@ Write-Host ""
 Write-Host "Web console: http://127.0.0.1:8088"
 Write-Host "Transport:  $Transport"
 Write-Host "Bridge: BM50_ACK_R3 (LF resync; commands wait for MCU replies)."
-Write-Host "BLE scan accepts FFE0 advertisements and named UART modules."
+Write-Host "Serial baud: $Baud (8N1); auto-selects a unique CH340/CH910 USB port."
 Write-Host "Close this window to stop the bridge."
 Write-Host ""
 

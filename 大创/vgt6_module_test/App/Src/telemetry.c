@@ -14,8 +14,8 @@
 #include "stm32f4xx_hal.h"
 #include "tof.h"
 
-/* 9600 baud provides ~960 bytes/s. Leave room for command ACKs and for
- * BLE notification buffering instead of saturating UART at 5 Hz. */
+/* Keep the conservative display rate at 115200 baud: radio buffering and
+ * control reply latency still matter more than UART line capacity. */
 #define TELEMETRY_PERIOD_MS 300U
 
 static uint8_t telemetry_periodic;
@@ -71,7 +71,7 @@ void Telemetry_Process(void)
       (attitude_stream ? 200U : TELEMETRY_PERIOD_MS);
   periodic_send = 1U;
 
-  /* Distance: 10 Hz alone, 5 Hz alongside 2 Hz TEL/ATEL. At 9600 baud,
+  /* Distance: 10 Hz alone, 5 Hz alongside 2 Hz TEL/ATEL. With conservative rates,
    * even 55-byte TOF + 255-byte TEL stays below 800 bytes/s. Captures and
    * downloads retain their UART budget; the local guard never pauses. */
   if (ranging_stream && now - tof_tick >= tof_period)

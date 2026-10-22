@@ -25,6 +25,9 @@ class TofFirmwareCompatibilityTests(unittest.IsolatedAsyncioTestCase):
     async def test_r23_readonly_preflight_keeps_angular_semantics(self):
         await self.check_preflight("VER,VGT6_BM50_ATTITUDE_R23")
 
+    async def test_r24_serial_readonly_preflight_keeps_angular_semantics(self):
+        await self.check_preflight("VER,VGT6_BM50_ATTITUDE_R24")
+
     async def check_preflight(self, version):
         bridge = FakeBridge()
         bridge.firmware_version = version

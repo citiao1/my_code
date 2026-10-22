@@ -6,7 +6,7 @@ import json
 import socket
 import unittest
 from dataclasses import dataclass
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import websockets
 
@@ -213,6 +213,49 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
             "ble", None, 9600, None,
             "127.0.0.1", tcp_port, "127.0.0.1", ws_port, 0.01,
         )
+
+    def test_serial_defaults_are_115200(self):
+        with patch("sys.argv", ["motor_vofa_bridge.py"]):
+            args = bridge_module.parse_args()
+        self.assertEqual((args.transport, args.baud), ("serial", 115200))
+
+    async def test_serial_online_requires_stop_disarm_and_ping(self):
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        bridge.config.transport = "serial"
+        bridge.config.baud = 115200
+        bridge.execute_command = AsyncMock(return_value="PONG")
+        online = asyncio.Event()
+        async def status(connected, detail):
+            self.assertTrue(connected)
+            self.assertIn("COM9 @ 115200", detail)
+            self.assertEqual([x.args[0] for x in bridge.execute_command.await_args_list],
+                             ["STOP", "DISARM", "PING"])
+            online.set()
+        bridge.set_hardware_status = status
+        task = asyncio.create_task(bridge.monitor_serial("COM9"))
+        await asyncio.wait_for(online.wait(), 1)
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+
+    async def test_serial_missing_remote_does_not_report_online(self):
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        bridge.execute_command = AsyncMock(side_effect=TimeoutError("no MCU reply"))
+        bridge.set_hardware_status = AsyncMock()
+        await bridge.monitor_serial("COM9")
+        self.assertTrue(bridge.disconnected.is_set())
+        self.assertFalse(bridge.set_hardware_status.await_args.args[0])
+
+    async def test_serial_command_is_one_write_without_ble_chunking(self):
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        bridge.config.transport = "serial"
+        payload = b"\nTRACKMOVE,90,25.50,-17.25\n"
+        bridge.serial_handle = Mock(is_open=True)
+        bridge.serial_handle.write.return_value = len(payload)
+        self.assertTrue(await bridge.send_hardware("TRACKMOVE,90,25.50,-17.25"))
+        bridge.serial_handle.write.assert_called_once_with(payload)
+        bridge.serial_handle.write.return_value = 1
+        with self.assertRaises(bridge_module.serial.SerialTimeoutException):
+            await bridge.send_hardware("TRACKMOVE,90,25.50,-17.25")
 
     def test_old_vehicle_packet_is_not_misinterpreted_as_bm50(self) -> None:
         line = (
