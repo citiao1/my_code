@@ -1,0 +1,649 @@
+{
+  "motion_started": false,
+  "commands": [
+    {
+      "command": "DISARM",
+      "reply": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      },
+      "latency_ms": 109.00000000037835
+    },
+    {
+      "command": "TEL,0",
+      "reply": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      },
+      "latency_ms": 140.99999999962165
+    },
+    {
+      "command": "TOF,0",
+      "reply": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      },
+      "latency_ms": 156.00000000267755
+    },
+    {
+      "command": "UART",
+      "reply": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0"
+      },
+      "latency_ms": 155.99999999903957
+    },
+    {
+      "command": "LINK",
+      "reply": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "LINK,4661,686,0,0,0,0"
+      },
+      "latency_ms": 140.99999999962165
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 155.99999999903957
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 280.9999999990396
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 20,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 202.9999999977008
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 155.99999999903957
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 23,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 141.00000000325963
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 24,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 219.00000000096043
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 25,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 26,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 141.00000000325963
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 27,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 28,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 218.0000000007567
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 29,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 141.00000000325963
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 30,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 203.00000000133878
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 31,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 296.9999999986612
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 32,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 155.99999999903957
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 33,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 141.00000000325963
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 34,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 375.0
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 35,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 140.99999999962165
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 36,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 37,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 141.00000000325963
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 38,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 39,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 40,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 140.99999999962165
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 41,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 42,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 360.0000000005821
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 43,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "STOP",
+      "reply": {
+        "type": "result",
+        "id": 44,
+        "ok": true,
+        "reply": "ACK,STOP"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "PING",
+      "reply": {
+        "type": "result",
+        "id": 45,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "DISARM",
+      "reply": {
+        "type": "result",
+        "id": 46,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "ANGLESTATUS",
+      "reply": {
+        "type": "result",
+        "id": 47,
+        "ok": true,
+        "reply": "ATEL,407192,0,1,0,0,0,0,27,0,0,0,0,12511"
+      },
+      "latency_ms": 155.99999999903957
+    },
+    {
+      "command": "PS2STATUS",
+      "reply": {
+        "type": "result",
+        "id": 48,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,13"
+      },
+      "latency_ms": 219.00000000096043
+    },
+    {
+      "command": "SPEEDSTATUS",
+      "reply": {
+        "type": "result",
+        "id": 49,
+        "ok": true,
+        "reply": "TEL,407569,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12508,0,-1,1,-1,27,0"
+      },
+      "latency_ms": 155.99999999903957
+    },
+    {
+      "command": "UART",
+      "reply": {
+        "type": "result",
+        "id": 50,
+        "ok": true,
+        "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0"
+      },
+      "latency_ms": 140.99999999962165
+    },
+    {
+      "command": "LINK",
+      "reply": {
+        "type": "result",
+        "id": 51,
+        "ok": true,
+        "reply": "LINK,4976,735,0,0,0,0"
+      },
+      "latency_ms": 155.99999999903957
+    },
+    {
+      "command": "LINKQ",
+      "reply": {
+        "type": "result",
+        "id": 52,
+        "ok": true,
+        "reply": "LINKQ,0,0,80,0"
+      },
+      "latency_ms": 297.0000000022992
+    }
+  ],
+  "wire": [
+    "BRIDGE,BM50_ACK_R3\n",
+    "STATUS,1,serial connected\n",
+    "ACK,DISARM\n",
+    "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,DISARM\"}",
+    "ACK,TEL,0\n",
+    "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"ACK,TEL,0\"}",
+    "ACK,TOF,0\n",
+    "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"ACK,TOF,0\"}",
+    "UART,115200,42000000,364,0x00,0,0,0,0,0\n",
+    "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"UART,115200,42000000,364,0x00,0,0,0,0,0\"}",
+    "LINK,4661,686,0,0,0,0\n",
+    "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"LINK,4661,686,0,0,0,0\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 7, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 8, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 9, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG\n",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 14, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 15, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 16, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 17, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 18, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 19, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 20, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 21, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 22, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 23, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 24, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 25, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 26, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 27, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 28, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 29, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 30, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 31, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 32, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 33, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG\n",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 34, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 35, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 36, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 37, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 38, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 39, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 40, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 41, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG\n",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 42, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 43, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,STOP\n",
+    "{\"type\": \"result\", \"id\": 44, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "PONG\n",
+    "{\"type\": \"result\", \"id\": 45, \"ok\": true, \"reply\": \"PONG\"}",
+    "ACK,DISARM\n",
+    "{\"type\": \"result\", \"id\": 46, \"ok\": true, \"reply\": \"ACK,DISARM\"}",
+    "ATEL,407192,0,1,0,0,0,0,27,0,0,0,0,12511\n",
+    "{\"type\": \"result\", \"id\": 47, \"ok\": true, \"reply\": \"ATEL,407192,0,1,0,0,0,0,27,0,0,0,0,12511\"}",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,13\n",
+    "{\"type\": \"result\", \"id\": 48, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,13\"}",
+    "TEL,407569,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12508,0,-1,1,-1,27,0\n",
+    "{\"type\": \"result\", \"id\": 49, \"ok\": true, \"reply\": \"TEL,407569,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12508,0,-1,1,-1,27,0\"}",
+    "UART,115200,42000000,364,0x00,0,0,0,0,0\n",
+    "{\"type\": \"result\", \"id\": 50, \"ok\": true, \"reply\": \"UART,115200,42000000,364,0x00,0,0,0,0,0\"}",
+    "LINK,4976,735,0,0,0,0\n",
+    "{\"type\": \"result\", \"id\": 51, \"ok\": true, \"reply\": \"LINK,4976,735,0,0,0,0\"}",
+    "LINKQ,0,0,80,0\n",
+    "{\"type\": \"result\", \"id\": 52, \"ok\": true, \"reply\": \"LINKQ,0,0,80,0\"}"
+  ],
+  "disconnects": [],
+  "bridge_commit": "c07bfd8c",
+  "status": "passed",
+  "STOP": {
+    "count": 20,
+    "median_ms": 141.00000000144064,
+    "max_ms": 375.0
+  },
+  "PING": {
+    "count": 20,
+    "median_ms": 139.99999999941792,
+    "max_ms": 296.9999999986612
+  }
+}

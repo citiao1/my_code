@@ -1,0 +1,26 @@
+{
+  "DISARM": {
+    "type": "result",
+    "id": 1,
+    "ok": true,
+    "reply": "ACK,DISARM"
+  },
+  "ANGLESTATUS": {
+    "type": "result",
+    "id": 2,
+    "ok": true,
+    "reply": "ATEL,566145,0,1,0,0,0,0,-2368,0,0,0,0,12531"
+  },
+  "PS2STATUS": {
+    "type": "result",
+    "id": 3,
+    "ok": true,
+    "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,5"
+  },
+  "SPEEDSTATUS": {
+    "type": "result",
+    "id": 4,
+    "ok": true,
+    "reply": "TEL,566445,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12528,10,1,1,1,-2368,0"
+  }
+}

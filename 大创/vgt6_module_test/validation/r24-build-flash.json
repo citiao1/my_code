@@ -1,0 +1,26 @@
+{
+  "build-r24.log": "*** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\\Keil5\\ARM\\ARMCC\\Bin'\nBuild target 'vgt6_module_test'\ncompiling main.c...\ncompiling telemetry.c...\ncompiling display.c...\ncompiling command.c...\nlinking...\nProgram Size: Code=60442 RO-data=2662 RW-data=236 ZI-data=103836  \nFromELF: creating hex file...\n\"vgt6_module_test\\vgt6_module_test.axf\" - 0 Error(s), 0 Warning(s).\nBuild Time Elapsed:  00:00:03\n",
+  "flash-r24.log": "Load \"vgt6_module_test\\\\vgt6_module_test.axf\" \nErase Done.Programming Done.Verify OK.Application running ...\nFlash Load finished at 20:00:01\n",
+  "flash-r24-verify.log": "VERIFIED critical addresses, vector table and R24 marker at 0x08005ab8; device 0x101f6413; flash 1024 KiB\nCore state after programming: RUNNING\n",
+  "flash-r24-reset.log": "Setting SWD clock to 100 kHz\nConnected to STM32F407VGTx [Running]: puso_daplink_lab\npyocd> Resetting target\npyocd> \n",
+  "flash-r24-postverify.log": "VERIFIED critical addresses, vector table and R24 marker at 0x08005ab8; device 0x101f6413; flash 1024 KiB\nCore state after programming: RUNNING\n",
+  "probe_detection_log": "{\r\n  \"probes\": [\r\n    {\r\n      \"kind\": \"cmsis-dap\",\r\n      \"display_name\": \"USB Composite Device\",\r\n      \"manufacturer\": \"(标准 USB 主控制器)\",\r\n      \"usb_id\": \"1234:5678\",\r\n      \"serial_ports\": [\r\n        \"COM8\"\r\n      ],\r\n      \"confidence\": \"high\",\r\n      \"possible_backends\": [\r\n        \"Keil/uVision\",\r\n        \"OpenOCD when target-supported\"\r\n      ],\r\n      \"evidence\": [\r\n        \"USB Composite Device\",\r\n        \"(标准 USB 主控制器)\",\r\n        \"USB\\\\VID_1234&PID_5678\\\\PUSO_DAPLINK_LAB\"\r\n      ]\r\n    }\r\n  ]\r\n}\r\n",
+  "source_commit": "e71be4f9",
+  "image_sha256": "4D92496210545D3ECFC03F97004E4546A5E01070CAD36705CEB587B67B6D84A9",
+  "preflight_stopped_memory": "Setting SWD clock to 100 kHz\n2001c3ec:  01 00 00 00                                         |....|\n20016836:  00 00                                              |..|\n200167b4:  00000000 00000000 00000000 00000000    |................|\n40010434:  00000000 00000000 00000000 00000000    |................|\n40004408:  00001117                               |....|\n",
+  "temporary_brr_write": "Setting SWD clock to 100 kHz\n40004408:  0000016d                               |...m|\n",
+  "skill_files": [
+    {
+      "path": "C:\\Users\\28097\\.codex\\skills\\pid-tuning\\SKILL.md",
+      "sha256": "de142b00b81d6f241e7f7365a1127492effd9b1820d02a960b2fb148e3e33c31"
+    },
+    {
+      "path": "C:\\Users\\28097\\.codex\\skills\\pid-tuning\\references\\vgt6-attitude.md",
+      "sha256": "30692356da6ef03842dc9ce0bc7ffd3a6209bd666ec9f74612a4f0538e026c2a"
+    },
+    {
+      "path": "C:\\Users\\28097\\.codex\\skills\\pid-tuning\\references\\vgt6-wheel.md",
+      "sha256": "8c15370a3bbabcf60f90b47490b2c2caaf10cb6eaa9b5e81da2f54099d35d4e7"
+    }
+  ]
+}

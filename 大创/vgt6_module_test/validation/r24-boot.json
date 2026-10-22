@@ -1,0 +1,80 @@
+{
+  "DISARM": {
+    "type": "result",
+    "id": 1,
+    "ok": true,
+    "reply": "ACK,DISARM"
+  },
+  "VER": {
+    "type": "result",
+    "id": 2,
+    "ok": true,
+    "reply": "VER,VGT6_BM50_ATTITUDE_R24"
+  },
+  "CAPS": {
+    "type": "result",
+    "id": 3,
+    "ok": true,
+    "reply": "CAPS,ATTITUDE_R24,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200"
+  },
+  "UART": {
+    "type": "result",
+    "id": 4,
+    "ok": true,
+    "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0"
+  },
+  "LINK": {
+    "type": "result",
+    "id": 5,
+    "ok": true,
+    "reply": "LINK,107,17,0,0,0,0"
+  },
+  "LINKQ": {
+    "type": "result",
+    "id": 6,
+    "ok": true,
+    "reply": "LINKQ,0,0,0,0"
+  },
+  "ANGLESTATUS": {
+    "type": "result",
+    "id": 7,
+    "ok": true,
+    "reply": "ATEL,25448,0,1,0,0,0,0,-8,0,0,0,0,12530"
+  },
+  "PS2STATUS": {
+    "type": "result",
+    "id": 8,
+    "ok": true,
+    "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,8"
+  },
+  "SPEEDSTATUS": {
+    "type": "result",
+    "id": 9,
+    "ok": true,
+    "reply": "TEL,25748,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12528,0,0,1,0,-7,0"
+  },
+  "PIDGET": {
+    "type": "result",
+    "id": 10,
+    "ok": true,
+    "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+  },
+  "YAWGET": {
+    "type": "result",
+    "id": 11,
+    "ok": true,
+    "reply": "YAWPID,0.1815,1.8062,60,80,20"
+  },
+  "HEADGET": {
+    "type": "result",
+    "id": 12,
+    "ok": true,
+    "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+  },
+  "TOFINFO": {
+    "type": "result",
+    "id": 13,
+    "ok": true,
+    "reply": "TOFINFO,LONG,33,40,2,120,646,26347,27"
+  }
+}
