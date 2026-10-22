@@ -4,6 +4,7 @@
 #include <string.h>
 #include "tof.h"
 #include "tof_bus.h"
+#include "front_guard.h"
 
 static uint32_t tick, last_measurement, calls;
 static uint8_t memory[512], online, ranging, ready_enabled, next_status;
@@ -56,7 +57,11 @@ static void advance(uint32_t ms)
   for (uint32_t i = 0; i < ms; ++i)
   {
     ++tick;
-    if (ranging && ready_enabled && tick - last_measurement >= 120)
+    uint32_t period = ((uint32_t)memory[0x6C] << 24) |
+        ((uint32_t)memory[0x6D] << 16) | ((uint32_t)memory[0x6E] << 8) | memory[0x6F];
+    /* Default calibration uses 120 ms; user configuration uses OSC=512. */
+    period = period == 512U * 40U * 1075U / 1000U ? 40U : 120U;
+    if (ranging && ready_enabled && tick - last_measurement >= period)
     {
       memory[0x31] = 1;
       memory[0x89] = next_status;
@@ -86,9 +91,23 @@ int main(void)
   assert(s.connected && s.ready && s.valid && s.distance_mm == 1234);
   assert(s.model_id == 0xEACC && s.samples && !s.errors);
   assert(memory[0x2E] == 1 && memory[0x2F] == 1);
-  assert(memory[0x5E] == 1 && memory[0x5F] == 0xCC);
-  assert(memory[0x61] == 1 && memory[0x62] == 0xEA);
-  assert(memory[0x6C] == 0 && memory[0x6D] == 1 && memory[0x6E] == 2 && memory[0x6F] == 0);
+  assert(memory[0x5E] == 0 && memory[0x5F] == 0x60);
+  assert(memory[0x61] == 0 && memory[0x62] == 0x6E);
+  assert(memory[0x6C] == 0 && memory[0x6D] == 0 && memory[0x6E] == 0x56 && memory[0x6F] == 0);
+  /* Move a target at every phase of the 40 ms cycle. No stale repeated
+   * samples may hide a <=50 mm obstacle beyond one measurement + bus reads. */
+  for (uint32_t offset = 0; offset < 40; ++offset)
+  {
+    next_distance = 500; advance(50 + offset);
+    assert(FrontGuard_ForwardLimit(160) == 160);
+    uint32_t before_tick = tick;
+    next_distance = 50;
+    while (Tof_GetSnapshot().distance_mm != 50 && tick - before_tick <= 50) advance(1);
+    assert(tick - before_tick <= 46);
+    assert(FrontGuard_ForwardLimit(160) == 0);
+  }
+  next_distance = 75; advance(50);
+  assert(FrontGuard_ForwardLimit(160) == 80);
   next_status = 4;
   advance(180);
   assert(!Tof_GetSnapshot().valid && !Tof_GetSnapshot().distance_mm);
@@ -98,7 +117,7 @@ int main(void)
   next_distance = 500;
   advance(180);
   assert(Tof_GetSnapshot().valid && Tof_GetSnapshot().distance_mm == 500);
-  tick += 351;
+  tick += TOF_MAX_AGE_MS + 1;
   assert(!Tof_GetSnapshot().valid && !Tof_GetSnapshot().distance_mm);
   online = 0;
   advance(50);
@@ -121,6 +140,6 @@ int main(void)
   ready_enabled = 0;
   advance(1300);
   assert(!Tof_GetSnapshot().ready && Tof_GetSnapshot().errors);
-  puts("PASS: ToF reset/ID/config/calibration, mm endian/status, staleness, unplug/retry, wrap and no-ready timeout");
+  puts("PASS: ToF 33/40 ms configuration, 40-phase near-stop latency <=46 ms, validity/staleness, unplug/retry and wrap");
   return 0;
 }

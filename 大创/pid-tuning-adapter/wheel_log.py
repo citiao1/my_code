@@ -1,12 +1,12 @@
-"""R20 WLOG provenance and single-wheel step quality; no hardware writes."""
+"""R21 WLOG provenance and single-wheel step quality; no hardware writes."""
 from __future__ import annotations
 import math
 from statistics import mean
 from closed_loop_tuning import score_step
 from pid_tuning import Sample
 
-VERSION = 'VER,VGT6_BM50_ATTITUDE_R20'
-CAPS = 'CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED'
+VERSION = 'VER,VGT6_BM50_ATTITUDE_R21'
+CAPS = 'CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST'
 INFO = 'WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED'
 HEADER = ['sequence','tick_ms','tick_us','enabled','armed','angle_mode']
 for wheel in 'ABCD':

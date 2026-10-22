@@ -168,6 +168,7 @@ class MotorVofaBridge:
         name = command.split(",")[0].upper()
         queries = {
             "TOF": "TOF",
+            "TOFINFO": "TOFINFO",
             "WLOGINFO": "WLOG,INFO",
             "PING": "PONG", "VER": "VER", "VERSION": "VER", "LINK": "LINK",
             "SPEEDSTATUS": "TEL", "STATUS": "TEL", "PIDGET": "PID",

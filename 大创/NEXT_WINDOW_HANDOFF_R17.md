@@ -1,5 +1,7 @@
 # VGT6 麦轮车 / R17 高频日志与整定交接
 
+2026-10-22 最新 R21：TOF 测量约 25 Hz、显示 5–10 Hz，单轮限制来源核查见 `vgt6_module_test/TOF_R21_HANDOFF.md`；烧录状态及频率以该文档追加实测和实际 VER/CAPS 为准。
+
 2026-10-21最新R20：轮速100Hz日志、TOF限速和车头180°变更见 `vgt6_module_test/CONTROL_R20_HANDOFF.md`。R19及下文保留历史；实际烧录状态以R20交接追加验证为准。
 
 2026-10-21最新：DL1B 测距、网页距离与用户指定开机PID见 `vgt6_module_test/TOF_R19_HANDOFF.md`；R19烧录和实测状态以该文档追加记录为准。下文为历史。

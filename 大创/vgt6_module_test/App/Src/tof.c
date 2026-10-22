@@ -5,7 +5,7 @@
 #include <string.h>
 
 /* DL1B/VL53L1X, PB8/PB9 only. XSHUT is not wired to the MCU.
- * Long distance mode, 100 ms timing budget, 120 ms intermeasurement.
+ * Long distance mode, 33 ms timing budget, 40 ms intermeasurement.
  * Sequence follows ST's ULD SensorInit calibration without its polling loops. */
 typedef enum
 {
@@ -88,7 +88,7 @@ static void completed(uint32_t now)
     case OSCILLATOR:
     {
       uint32_t clock = ((uint16_t)(rx[0] << 8) | rx[1]) & 0x3FFU;
-      uint32_t period = clock * 120U * 1075U / 1000U;
+      uint32_t period = clock * TOF_PERIOD_MS * 1075U / 1000U;
       if (!clock) { fail(now); break; }
       tx[0] = (uint8_t)(period >> 24); tx[1] = (uint8_t)(period >> 16);
       tx[2] = (uint8_t)(period >> 8); tx[3] = (uint8_t)period;
@@ -98,12 +98,12 @@ static void completed(uint32_t now)
     case PERIOD: phase = START; break;
     case START:
       state.ready = 1U;
-      phase = POLL; due_tick = now + 10U; deadline_tick = now + 600U;
+      phase = POLL; due_tick = now + TOF_POLL_MS; deadline_tick = now + 200U;
       break;
     case POLL:
       if (rx[0] & 1U) phase = RESULT;
       else if (expired(now, deadline_tick)) fail(now);
-      else due_tick = now + 10U;
+      else due_tick = now + TOF_POLL_MS;
       break;
     case RESULT:
       state.range_status = rx[0] & 0x1FU;
@@ -115,7 +115,7 @@ static void completed(uint32_t now)
       phase = CLEAR;
       break;
     case CLEAR:
-      phase = POLL; due_tick = now + 10U; deadline_tick = now + 600U;
+      phase = POLL; due_tick = now + TOF_POLL_MS; deadline_tick = now + 200U;
       break;
     default: fail(now); break;
   }
@@ -128,8 +128,9 @@ static uint8_t write_byte(uint16_t reg, uint8_t value)
 
 static uint8_t launch(void)
 {
-  static const uint8_t budget_a[] = {0x01U, 0xCCU};
-  static const uint8_t budget_b[] = {0x01U, 0xEAU};
+  /* ST VL53L1X_SetTimingBudgetInMs(33), long mode. */
+  static const uint8_t budget_a[] = {0x00U, 0x60U};
+  static const uint8_t budget_b[] = {0x00U, 0x6EU};
   switch (phase)
   {
     case RESET_LOW: return write_byte(0x0000U, 0U);
@@ -182,7 +183,7 @@ TofSnapshot Tof_GetSnapshot(void)
 {
   TofSnapshot copy = state;
   copy.age_ms = copy.samples ? HAL_GetTick() - copy.sample_tick : 0xFFFFFFFFU;
-  if (!copy.ready || copy.age_ms > 350U) copy.valid = 0U;
+  if (!copy.ready || copy.age_ms > TOF_MAX_AGE_MS) copy.valid = 0U;
   if (!copy.valid) copy.distance_mm = 0U;
   return copy;
 }

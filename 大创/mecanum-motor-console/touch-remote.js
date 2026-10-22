@@ -1,7 +1,7 @@
 const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
 const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R17';
-const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20'];
+const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20', 'VGT6_BM50_ATTITUDE_R21'];
 const MAX_TARGET_RPM = 160;
 const HLOG_REQUEST_TIMEOUT_MS = 25000; // Bridge allows 20 s for a stopped RAM batch.
 
@@ -95,7 +95,7 @@ const firmware = {
   receivedAt: 0, expectedAt: 0, timeoutReported: false,
   hlogSupported: false,
   hlogMicros: false,
-  tofSupported: false, tofReceivedAt: 0, tofStreaming: false,
+  tofSupported: false, tofReceivedAt: 0, tofStreaming: false, tofMaxAge: 350,
   hlog: { active: false, count: 0, capacity: 0, overflow: 0, sequence: 0, lastBatch: 0 },
 };
 const hlogRows = [];
@@ -397,6 +397,9 @@ function handleLine(line) {
     firmware.hlogSupported = fields.includes('HLOG') && fields.includes('HLOG_MODE');
     firmware.hlogMicros = fields.includes('HLOG_US');
     firmware.tofSupported = fields.includes('TOF_DL1B');
+    firmware.tofMaxAge = fields.includes('TOF_FAST') ? 120 : 350;
+    ui.tofRealtime.title = fields.includes('TOF_FAST') ?
+      '传感器约 25 Hz；显示 10 Hz，与周期遥测同时开启时显示 5 Hz' : '开启实时距离';
     firmware.wlogSupported = fields.includes('WLOG_US');
     firmware.frontReversed = fields.includes('FRONT_REVERSED');
     firmware.tofGuard = fields.includes('TOF_GUARD');
@@ -421,7 +424,7 @@ function handleLine(line) {
         ![0, 1].includes(values[1]) || ![0, 1].includes(values[2]) ||
         values.some((x, i) => i !== 3 && (x < 0 || x > 0xffffffff)) ||
         values[4] > 255 ||
-        (values[2] === 1 && (values[1] !== 1 || values[3] < 1 || values[3] > 4000 || values[4] !== 9 || values[5] > 350)) ||
+        (values[2] === 1 && (values[1] !== 1 || values[3] < 1 || values[3] > 4000 || values[4] !== 9 || values[5] > firmware.tofMaxAge)) ||
         (values[2] === 0 && values[3] !== -1)) {
       ui.tofDistance.textContent = '— mm';
       ui.tofState.textContent = '距离报文无效';
@@ -432,7 +435,7 @@ function handleLine(line) {
     ui.tofDistance.textContent = valid ? `${mm} mm` : '— mm';
     ui.tofState.textContent = !present ? '传感器未连接 / 初始化失败' : valid ?
       `${(mm / 10).toFixed(1)} cm · 更新于 ${age} ms 前` :
-      age > 350 ? '等待新测量 / 数据已过期' : `测量无效 · 状态 ${status}`;
+      age > firmware.tofMaxAge ? '等待新测量 / 数据已过期' : `测量无效 · 状态 ${status}`;
     if (errors) ui.tofState.textContent += ` · 通信/超时 ${errors}`;
     if (firmware.tofGuard) document.querySelector('#frontGuardState').textContent = !valid || !present ?
       '测距异常：按设置保持原速度，距离保护暂不可用' : mm <= 50 ?

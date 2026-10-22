@@ -52,18 +52,23 @@ void Telemetry_Init(void)
 void Telemetry_Process(void)
 {
   uint32_t now = HAL_GetTick();
+  uint8_t ranging_stream = tof_stream && !heading_log_active &&
+      (!hlog_read_seen || now - hlog_read_tick >= 1500U);
+  uint32_t tof_period = telemetry_periodic ? 200U : 100U;
+  uint32_t status_period = ranging_stream ? 500U :
+      (attitude_stream ? 200U : TELEMETRY_PERIOD_MS);
 
-  /* Dedicated 2 Hz distance stream (~80 bytes/s); keep UART room for ACKs.
-   * Pause during a capture and contiguous stopped HLOG downloads. */
-  if (tof_stream && !heading_log_active && now - tof_tick >= 500U &&
-      (!hlog_read_seen || now - hlog_read_tick >= 1500U))
+  /* Distance: 10 Hz alone, 5 Hz alongside 2 Hz TEL/ATEL. At 9600 baud,
+   * even 55-byte TOF + 255-byte TEL stays below 800 bytes/s. Captures and
+   * downloads retain their UART budget; the local guard never pauses. */
+  if (ranging_stream && now - tof_tick >= tof_period)
   {
     tof_tick = now;
     Telemetry_SendTof();
   }
 
   if ((telemetry_periodic != 0U) &&
-      ((now - telemetry_tick) >= (attitude_stream ? 200U : TELEMETRY_PERIOD_MS)))
+      ((now - telemetry_tick) >= status_period))
   {
     telemetry_tick = now;
     if (attitude_stream) Telemetry_SendAttitude();

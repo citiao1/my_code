@@ -73,6 +73,8 @@ void App_Process(void)
     return;
   }
   SerialDma_Process();
+  /* Consume completed range reads before the next motor protection update. */
+  Tof_Process();
   Ps2_Process();
   Ps2Control_Process();
   ChassisTest_Process();
@@ -108,7 +110,6 @@ void App_Process(void)
     Timebase_Capture(&control_end_ms, &control_end_us);
   }
 
-  Tof_Process();
   Display_Process();
   SerialDma_Process();
 }

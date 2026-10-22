@@ -1,4 +1,4 @@
-"""R20 single-wheel WLOG tuning. Default is read-only; --live requires a full plan."""
+"""R21 single-wheel WLOG tuning. Default is read-only; --live requires a full plan."""
 from __future__ import annotations
 import argparse, asyncio, csv, json, math, time
 from dataclasses import asdict
@@ -54,7 +54,7 @@ class WheelSession:
 
     async def health(self):
         if await self.command('VER')!=VERSION or await self.command('CAPS')!=CAPS or await self.command('WLOGINFO')!=INFO:
-            raise RuntimeError('R20 exact firmware/controller/encoder profile required')
+            raise RuntimeError('R21 exact firmware/controller/encoder profile required')
         u=(await self.command('UART')).split(',')
         l=(await self.command('LINK')).split(',')
         k=(await self.command('STACK')).split(',')

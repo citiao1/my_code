@@ -34,7 +34,7 @@ try {
     & "tests/host/test_timebase.exe"
     if ($LASTEXITCODE -ne 0) { throw "Timebase regression failed." }
     & gcc -std=c11 -Wall -Wextra -Werror -I tests/host -I Bsp/Inc -I App/Inc `
-        tests/host/test_tof.c App/Src/tof.c -o tests/host/test_tof.exe
+        tests/host/test_tof.c App/Src/tof.c App/Src/front_guard.c -o tests/host/test_tof.exe
     if ($LASTEXITCODE -ne 0) { throw "ToF host compilation failed." }
     & "tests/host/test_tof.exe"
     if ($LASTEXITCODE -ne 0) { throw "ToF regression failed." }

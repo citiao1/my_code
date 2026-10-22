@@ -29,6 +29,9 @@ FIRMWARE_CAPS = {
     FIRMWARE_VERSION.replace("R17", "R19"): CAPS.replace("R17", "R19") + ",HLOG_US,TOF_DL1B",
     FIRMWARE_VERSION.replace("R17", "R20"): CAPS.replace("R17", "R20") + ",HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED",
 }
+FIRMWARE_CAPS[FIRMWARE_VERSION.replace("R17", "R21")] = (
+    FIRMWARE_CAPS[FIRMWARE_VERSION.replace("R17", "R20")].replace("R20", "R21") + ",TOF_FAST"
+)
 TARGET_WHEEL_LIMIT = 160
 HEADING_FINAL_SETTLE_S = 1.0
 HEADING_REVERSAL_PAUSE_S = 1.5
@@ -526,7 +529,7 @@ class Session:
                     # without racing a TEL stream switch during reversal.
                     parsed = speed_drive_row(
                         await self.command("SPEEDSTATUS"), first_tick,
-                        front_reversed=getattr(self, 'firmware_version', '').endswith('R20')
+                        front_reversed=getattr(self, 'firmware_version', '').endswith(('R20', 'R21'))
                     )
                     next_speed_poll = time.monotonic() + 0.25
                     if parsed is not None:
@@ -577,7 +580,7 @@ async def run(args):
             version = await s.command("VER")
             if version not in FIRMWARE_CAPS:
                 raise RuntimeError("supported R17/R18/R19 firmware with mode-tagged 50 Hz HLOG required")
-            s.require_hlog_us = version.endswith(("R18", "R19", "R20"))
+            s.require_hlog_us = version.endswith(("R18", "R19", "R20", "R21"))
             s.expected_caps = FIRMWARE_CAPS[version]
             s.firmware_version = version
             s.uart_baseline = await s.command("UART")

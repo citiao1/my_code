@@ -234,6 +234,22 @@ test('R20 advertises reversed front, wheel logger and the explicit fail-open dis
   assert.equal(f.sent.length,0);
 });
 
+test('R21 accepts fast distance frames and rejects measurements older than 120 ms', () => {
+  const f = consoleFixture();
+  f.line('VER,VGT6_BM50_ATTITUDE_R21');
+  f.line('CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST');
+  assert.equal(f.eval('firmwareCompatible'), true);
+  assert.match(f.elements.get('#tofRealtime').title, /25 Hz/);
+  for (let tick = 100; tick <= 1000; tick += 100) {
+    f.line(`TOF,${tick},1,1,50,9,40,0`);
+    assert.equal(f.elements.get('#tofDistance').textContent, '50 mm');
+    assert.match(f.elements.get('#frontGuardState').textContent, /禁止前进/);
+  }
+  f.line('TOF,1100,1,1,50,9,121,0');
+  assert.equal(f.elements.get('#tofDistance').textContent, '— mm');
+  assert.equal(f.sent.length, 0);
+});
+
 test('ToF realtime sends only stream/query commands and old firmware leaves it disabled', async () => {
   const f = consoleFixture();
   f.line('CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,HLOG_MODE,HLOG_US');

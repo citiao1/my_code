@@ -202,6 +202,7 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
     async def test_tof_query_stream_acks_and_fragmented_frames(self):
         cls = bridge_module.MotorVofaBridge
         self.assertEqual(cls.expected_reply("TOF"), "TOF")
+        self.assertEqual(cls.expected_reply("TOFINFO"), "TOFINFO")
         self.assertEqual(cls.expected_reply("TOF,1"), "ACK,TOF,1")
         self.assertEqual(cls.expected_reply("TOF,0"), "ACK,TOF,0")
         bridge = cls(self.make_config())
