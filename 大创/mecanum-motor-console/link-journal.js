@@ -3,7 +3,9 @@
   'use strict';
   const key='bm50-link-incidents-v1';
   const labels={command_timeout:'命令应答超时',fault:'串口会话中断',open_failed:'串口打开或验证失败',
-    safe_recovery_start:'STOP 确认缺失，重新验证停车',safe_recovery_verified:'停车重新验证成功（串口未断开）',
+    safe_recovery_start:'保护性停车验证',safe_recovery_verified:'停车重新验证成功（串口未断开）',
+    direct_keep_failed:'速度环保活未确认，取消运动',safe_stop_retry:'DISARM 未确认，重发一次停车命令',
+    command_rejected:'车端拒绝命令',
     safe_recovery_failed:'停车重新验证失败',keep_ack_missing:'单次 KEEP 确认缺失（仍有运行回传）',
     native_disconnect:'USB/串口设备移除事件',read_error:'串口接收异常',read_ended:'串口接收流结束',
     write_error:'串口写入异常',manual_disconnect:'手动断开',pagehide:'页面退出',

@@ -141,7 +141,7 @@ test('speed-only mode stops first, never arms, sends raw DRV, and blocks angle/h
   assert.deepEqual(f.sent,['STOP','ANGLESTATUS','TEL,1']);assert.equal(f.eval('speedOnlyMode'),true);
   assert.equal(f.elements.get('#chartLoop').value,'wheel_all');
   f.sent.length=0;f.eval('sendDriveVector(-1,0,0)');await f.flush();
-  assert.deepEqual(f.sent,['DRV,-30,0,0','TEL,1']);assert.equal(f.eval('ownsAngleMotion'),false);
+  assert.deepEqual(f.sent,['DRV,-30,0,0']);assert.equal(f.eval('ownsAngleMotion'),false);
   assert.equal(f.eval('ownsSpeedMotion'),true);
   const rejection=f.eval("writeCommand('YAW,10')");await assert.rejects(rejection,/停用/);
   assert.ok(!f.sent.some(x=>/^(MOVE|YAW|HEAD),/.test(x)));
@@ -162,12 +162,32 @@ test('leaving speed-only mode stops and restores angular telemetry without start
   assert.equal(f.eval('speedOnlyMode'),false);assert.equal(f.elements.get('#chartLoop').value,'rate');
   assert.equal(f.eval('ownsAngleMotion'),false);assert.equal(f.eval('ownsSpeedMotion'),false);
 });
+
+test('direct speed target preserves an explicit telemetry-off choice for low-load diagnosis',async()=>{
+  const f=consoleFixture();f.eval('speedOnlyMode=true;setTelemetry(false)');
+  f.eval('sendDriveVector(-1,0,0)');await f.flush();
+  assert.deepEqual(f.sent,['DRV,-30,0,0']);assert.equal(f.eval('firmware.telemetryEnabled'),false);
+  f.eval('releaseDrive()');await f.flush();assert.equal(f.sent.at(-1),'STOP');
+});
 test('R25 without RAM logs is compatible and never queries unsupported log status',async()=>{
   const f=consoleFixture();f.line('VER,VGT6_BM50_ATTITUDE_R25');
   f.line('CAPS,ATTITUDE_R25,20,10,160,60,60,80,SPEED_TUNABLE,DKEEP,LOG_DISABLED');
   assert.equal(f.eval('firmwareCompatible'),true);assert.equal(f.eval('firmware.directSpeedKeep'),true);
   assert.equal(f.elements.get('#wlogStartButton').disabled,true);
   assert.match(f.elements.get('#hlogStatus').textContent,/88 KiB/);
+});
+
+test('reconnect waits for the previous port release and prevents a second click from opening it twice',async()=>{
+  let release,closeCalls=0,openCalls=0,closed=false;
+  const closing=new Promise(resolve=>{release=()=>{closed=true;resolve();};});
+  const port={getInfo:()=>({usbVendorId:0x1a86}),
+    open:async()=>{assert.equal(closed,true);openCalls++;throw new Error('intentional test open failure');},close:async()=>{}};
+  const f=consoleFixture({port,authorized:true,forbidChooser:true});
+  f.context.previous={isOpen:()=>false,close:()=>{closeCalls++;return closing;},diagnostic:()=>({mode:'direct_web_serial'})};
+  f.eval('serialTransport=previous');const connect=f.eval('connectSerial()');
+  assert.equal(f.eval('connecting'),true);assert.equal(openCalls,0);assert.equal(closeCalls,1);
+  await f.eval('connectSerial()');assert.equal(closeCalls,1);
+  release();await connect;assert.equal(openCalls,1);assert.equal(f.eval('connecting'),false);
 });
 
 test('HLOG batch download waits longer than the bridge 20 second allowance', () => {

@@ -1,6 +1,7 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const Serial=require('../serial-transport.js');
+const motionFault=require('./fixtures/r25-motion-fault.json');
 const tick=()=>new Promise(setImmediate);
 
 function fixture(options={}) {
@@ -197,19 +198,20 @@ test('STOP recovery rejects new motion and fails closed on an active state readb
 
 test('bare STOP or ongoing TOF alone cannot authorize STOP recovery',async()=>{
   const f=fixture();await f.transport.open(f.port);f.sent.length=0;f.state.reply=false;
-  // No recent stopped ATEL or completed STOP exists in the eligibility window.
+  // Attempts to stop are safe; TOF/bare STOP cannot prove that they succeeded.
   f.transport.motionReport=null;
-  const stop=f.transport.command('STOP',40);const failed=assert.rejects(stop,e=>!e.stopAckMissing);
-  await tick();f.feed('STOP\nTOF,100,1,1,3300,9,5,0\r\n');await failed;await f.transport.close(false);
-  assert.deepEqual(f.sent,['STOP']);assert.equal(f.transport.stats.stopRecoveries,0);assert.equal(f.port.closed,true);
+  const stop=f.transport.command('STOP',40);const failed=assert.rejects(stop,e=>e.stopAckMissing);
+  await tick();f.feed('STOP\nTOF,100,1,1,3300,9,5,0\r\n');await failed;
+  await f.transport.recoveryTask;await f.transport.close(false);
+  assert.deepEqual(f.sent,['STOP','DISARM','DISARM']);assert.equal(f.transport.stats.stopRecoveries,0);assert.equal(f.port.closed,true);
 });
 
-test('missing DISARM ACK during STOP recovery closes the link without retrying or running queued motion',async()=>{
+test('missing DISARM ACK during STOP recovery retries parking once then closes without motion replay',async()=>{
   const f=fixture();await f.transport.open(f.port);f.sent.length=0;f.state.reply=false;
   const stop=f.transport.command('STOP',40);const missing=assert.rejects(stop,e=>e.stopAckMissing===true);
   await tick();f.feed('ATEL,100,0,1,0,0,0,0,0,0,0,0,0,12000\r\n');
   await missing;await f.transport.recoveryTask;await f.transport.close(false);
-  assert.deepEqual(f.sent,['STOP','DISARM']);assert.equal(f.transport.stats.stopRecoveries,0);assert.equal(f.port.closed,true);
+  assert.deepEqual(f.sent,['STOP','DISARM','DISARM']);assert.equal(f.transport.stats.stopRecoveries,0);assert.equal(f.port.closed,true);
 });
 
 test('write failure takes the connection offline rather than advancing queued commands',async()=>{
@@ -233,4 +235,89 @@ test('native USB removal records the observed cause before fault and unregisters
   await f.transport.open(f.port);disconnect();await f.transport.close(false);
   assert.deepEqual(events.slice(-2).map(x=>x.event),['native_disconnect','fault']);
   assert.match(events.at(-1).detail.message,/移除/);assert.equal(removed,true);
+});
+
+test('actual 60-byte corruption and bare DKEEP trigger verified parking without port closure or motion replay',async()=>{
+  let recovered=0,offline=0,reason;
+  const f=fixture({onRecovered:()=>recovered++,onDisconnect:()=>offline++,onRecovering:trigger=>{reason=trigger;}});
+  await f.transport.open(f.port);f.sent.length=0;
+  f.state.replies={ANGLESTATUS:'ATEL,100,0,1,0,0,0,0,0,0,0,0,0,12000'};
+  f.state.onWrite=command=>{f.state.reply=command!=='DKEEP';if(command==='DISARM')f.feed('ACK,DKEEP\r\n');};
+  for(const hex of motionFault.corruptChunks)f.transport.consume(Uint8Array.from(Buffer.from(hex,'hex')));
+  const keep=f.transport.command('DKEEP',40);const missing=assert.rejects(keep,e=>e.directHeartbeatFailed);
+  await tick();for(const hex of motionFault.residualChunks)f.transport.consume(Uint8Array.from(Buffer.from(hex,'hex')));
+  const stale=f.transport.command('DRV,30,0,0');const cancelled=assert.rejects(stale,/cancelled/);
+  await missing;await f.transport.recoveryTask;await cancelled;
+  assert.equal(f.transport.stats.badBytes,60);assert.equal(reason,'DKEEP');
+  assert.equal(recovered,1);assert.equal(offline,0);assert.equal(f.transport.isOpen(),true);
+  assert.equal(f.port.closed,undefined);assert.equal(f.transport.verified,true);
+  assert.deepEqual(f.sent,['DKEEP','DISARM','ANGLESTATUS','PING']);
+  await f.transport.close(false);
+});
+
+test('DKEEP silence records no RX during wait and rejects new motion until fresh stop proof arrives',async()=>{
+  const f=fixture();await f.transport.open(f.port);f.sent.length=0;f.state.reply=false;
+  const keep=f.transport.command('DKEEP',40),missing=assert.rejects(keep,e=>e.directHeartbeatFailed);
+  await missing;await tick();assert.equal(f.transport.recovering,true);
+  await assert.rejects(f.transport.command('DRV,30,0,0'),/验证/);
+  const timeout=f.transport.trace.find(x=>x.event==='command_timeout');assert.equal(timeout.detail.rxDuringWait,false);
+  f.state.reply=true;f.state.replies={ANGLESTATUS:'ATEL,100,0,1,0,0,0,0,0,0,0,0,0,12000'};
+  f.feed('ACK,DISARM\r\n');await f.transport.recoveryTask;
+  assert.deepEqual(f.sent,['DKEEP','DISARM','ANGLESTATUS','PING']);assert.equal(f.transport.verified,true);
+  await f.transport.close(false);
+});
+
+test('one missing DISARM ACK retries only DISARM; no ARM, DRV or DKEEP is automatically retried',async()=>{
+  const f=fixture();await f.transport.open(f.port);f.sent.length=0;let attempts=0;
+  f.state.replies={ANGLESTATUS:'ATEL,100,0,1,0,0,0,0,0,0,0,0,0,12000'};
+  f.state.onWrite=command=>{f.state.reply=command==='DKEEP'?false:command==='DISARM'?++attempts>1:true;};
+  await assert.rejects(f.transport.command('DKEEP',40),e=>e.directHeartbeatFailed);
+  await f.transport.recoveryTask;
+  assert.equal(f.transport.verified,true);assert.deepEqual(f.sent,['DKEEP','DISARM','DISARM','ANGLESTATUS','PING']);
+  assert.ok(f.transport.trace.some(x=>x.event==='safe_stop_retry'));await f.transport.close(false);
+});
+
+test('DKEEP recovery fails closed if DISARM is unconfirmed twice or stopped state is false',async()=>{
+  for(const mode of ['silence','active']) {
+    const f=fixture();await f.transport.open(f.port);f.sent.length=0;
+    f.state.replies={ANGLESTATUS:'ATEL,100,1,1,0,0,0,0,0,0,0,0,1,12000'};
+    f.state.onWrite=command=>{f.state.reply=mode==='active'&&command!=='DKEEP';};
+    await assert.rejects(f.transport.command('DKEEP',40),e=>e.directHeartbeatFailed);
+    await f.transport.recoveryTask;await f.transport.close(false);
+    assert.equal(f.transport.verified,false);assert.ok(f.transport.fault);assert.equal(f.port.closed,true);
+    assert.deepEqual(f.sent,mode==='silence'?['DKEEP','DISARM','DISARM']:['DKEEP','DISARM','ANGLESTATUS']);
+  }
+});
+
+test('an incomplete DKEEP write cannot enter soft recovery; valid SPEEDLIMIT is not a corruption event',async()=>{
+  const f=fixture(),events=[];await f.transport.open(f.port);f.sent.length=0;
+  f.transport.onEvent=e=>events.push(e);f.feed('SPEEDLIMIT,160\r\n');await tick();
+  assert.ok(!events.includes('rx_unknown_line'));
+  await f.transport.writer.abort();f.transport.writer.releaseLock();let finish;
+  f.port.writable=new WritableStream({write:()=>new Promise(resolve=>{finish=resolve;})});
+  f.transport.writer=f.port.writable.getWriter();
+  await assert.rejects(f.transport.command('DKEEP',40),e=>!e.directHeartbeatFailed);
+  assert.ok(f.transport.fault);assert.ok(!events.includes('safe_recovery_start'));
+  finish();await f.transport.close(false);
+});
+
+test('TEL snapshot records current raw speed state separately from the last angular/ARM report',async()=>{
+  const f=fixture();await f.transport.open(f.port);
+  f.feed('TEL,100,0,1,30,30,30,30,1,2,3,4,110,220,330,440,30,30,30,30,12000,0,0,1,0,0,1\r\n');
+  await tick();assert.equal(f.transport.speedReport.enabled,true);
+  assert.deepEqual(f.transport.speedReport.targets,[30,30,30,30]);
+  assert.deepEqual(f.transport.speedReport.actualX10,[110,220,330,440]);
+  await f.transport.close(false);
+});
+
+test('lost STOP ACK with stale active MOVE state can recover only after fresh DISARM/ATEL/PING proof',async()=>{
+  const f=fixture();await f.transport.open(f.port);f.sent.length=0;
+  f.transport.motionReport={receivedAt:0,mode:1,enabled:true,source:'ACK,MOVE'};
+  f.state.replies={ANGLESTATUS:'ATEL,500,0,1,0,0,0,0,0,0,0,0,0,12000'};
+  f.state.onWrite=command=>{f.state.reply=command!=='STOP';};
+  await assert.rejects(f.transport.command('STOP',40),e=>e.stopAckMissing);
+  await f.transport.recoveryTask;
+  assert.equal(f.transport.verified,true);assert.equal(f.transport.motionReport.mode,0);
+  assert.deepEqual(f.sent,['STOP','DISARM','ANGLESTATUS','PING']);assert.equal(f.port.closed,undefined);
+  await f.transport.close(false);
 });

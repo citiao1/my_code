@@ -29,7 +29,7 @@
       this.queue=[]; this.pending=null; this.epoch=0; this.buffer=''; this.discard=false;
       this.opened=false; this.verified=false; this.fault=null; this.pumping=false;
       this.lastReplyAt=0;
-      this.lastRxAt=null; this.motionReport=null; this.heartbeatAckMisses=0;
+      this.lastRxAt=null; this.motionReport=null; this.speedReport=null; this.heartbeatAckMisses=0;
       this.writeChain=Promise.resolve(); this.trace=[]; this.traceDropped=0;
       this.stats={rxBytes:0,rxLines:0,badBytes:0,timeouts:0,txCommands:0,keepAckMisses:0,stopRecoveries:0};
     }
@@ -43,7 +43,7 @@
     }
     diagnostic() { return {mode:'direct_web_serial',baud:115200,port:this.info,
       verified:this.verified,recovering:this.recovering,fault:this.fault?.message,stats:{...this.stats},
-      heartbeatAckMisses:this.heartbeatAckMisses,lastRxAt:this.lastRxAt,motionReport:this.motionReport,
+      heartbeatAckMisses:this.heartbeatAckMisses,lastRxAt:this.lastRxAt,motionReport:this.motionReport,speedReport:this.speedReport,
       traceDropped:this.traceDropped,trace:this.trace.slice()}; }
     isOpen() { return this.opened && !this.closing && !this.fault; }
     async open(port) {
@@ -85,7 +85,7 @@
           if (this.discard) { this.discard=false; continue; }
           if (!line) continue;
           this.stats.rxLines++;
-          if(!/^(ACK|ERR|PONG|VER|UART|LINK|LINKQ|STACK|CAPS|TEL|ATEL|TOF|TOFINFO|PID|YAWPID|HEADPID|PS2|PS2RAW|HLOG|WLOG|ENC|BAT|WHO|CMD|IMU|DRV)(,|$)/.test(line))
+          if(!/^(ACK|ERR|PONG|VER|UART|LINK|LINKQ|STACK|CAPS|TEL|ATEL|TOF|TOFINFO|PID|YAWPID|HEADPID|PS2|PS2RAW|HLOG|WLOG|ENC|BAT|WHO|CMD|IMU|DRV|SPEEDLIMIT)(,|$)/.test(line))
           {
             this.record('rx_unknown_line',{line:line.slice(0,160),pending:this.pending?.entry.command});
             this.onWarning(`串口收到未知或损坏行：${line.slice(0,100)}`);
@@ -96,10 +96,20 @@
                 ['0','1','2'].includes(p[2]) && ['0','1'].includes(p[3]) && ['0','1'].includes(p[12]))
               this.motionReport={receivedAt:this.clock(),tick:Number(p[1]),mode:Number(p[2]),imuReady:p[3]==='1',enabled:p[12]==='1'};
           }
+          if(line.startsWith('TEL,')) {
+            const p=line.split(',');
+            if(p.length===27 && p.slice(1).every(x=>/^-?\d+$/.test(x)&&Number.isSafeInteger(Number(x))) &&
+                ['0','1'].includes(p[26]) && p[3]===p[26])
+              this.speedReport={receivedAt:this.clock(),tick:Number(p[1]),enabled:p[26]==='1',
+                targets:p.slice(4,8).map(Number),actualX10:p.slice(12,16).map(Number)};
+          }
           this.onLine(line); // State and all log rows reach the page before ACK completion.
           const pending=this.pending;
           if (pending && pending.epoch===this.epoch) {
-            if (line.startsWith('ERR,')) pending.reject(new Error(line));
+            if (line.startsWith('ERR,')) {
+              this.record('command_rejected',{command:pending.entry.command,line,elapsedMs:this.clock()-pending.entry.startedAt});
+              pending.reject(new Error(line));
+            }
             else if (matches(line,pending.expected)) {
               this.lastReplyAt=this.clock();
               if(pending.entry.command==='KEEP')this.heartbeatAckMisses=0;
@@ -158,8 +168,8 @@
             if(!urgent && this.clock()-entry.enqueued>(entry.realtime?250:3000)) throw new Error('拒绝执行已过期的排队命令');
             entry.resolve(await this.execute(entry));
           } catch(error) {
-            if(error?.stopAckMissing && this.opened && !this.closing) {
-              this.recoveryTask=this.recoverStoppedLink();
+            if((error?.stopAckMissing || error?.directHeartbeatFailed) && this.opened && !this.closing) {
+              this.recoveryTask=this.recoverStoppedLink(error.directHeartbeatFailed?'DKEEP':'STOP');
               entry.reject(error);await this.recoveryTask;
             } else entry.reject(error);
           }
@@ -174,14 +184,22 @@
         timer=setTimeout(()=>{
           this.stats.timeouts++;
           const rxAgeMs=this.lastRxAt===null?null:this.clock()-this.lastRxAt;
-          this.record('command_timeout',{command:entry.command,rxAgeMs,writeDone:!!entry.writeDone,motionReport:this.motionReport});
+          const rxDuringWait=this.lastRxAt!==null && this.lastRxAt>=entry.startedAt;
+          this.record('command_timeout',{command:entry.command,expected:expected(entry.command),rxAgeMs,rxDuringWait,
+            lastAckAgeMs:this.clock()-this.lastReplyAt,writeDone:!!entry.writeDone,
+            motionReport:this.motionReport,speedReport:this.speedReport});
+          if(entry.command==='DKEEP' && entry.writeDone && this.verified && !this.closing) {
+            const error=Object.assign(new Error('DKEEP 未确认；已取消运动，正在发送DISARM并验证停车'),{directHeartbeatFailed:true});
+            this.record('direct_keep_failed',{message:error.message,rxDuringWait});reject(error);return;
+          }
           // Waiting 3 s for KEEP's ACK starves the MCU's 1.5 s watchdog.
           // Permit ONE missed ACK only with a completed write and recent active
           // ATEL plus ongoing RX. The next scheduled KEEP cannot restart mode=0.
           const state=this.motionReport;
-          if(entry.command==='STOP' && entry.writeDone && this.verified && !this.closing &&
-              rxAgeMs!==null && rxAgeMs<500 && state && this.clock()-state.receivedAt<=1000 &&
-              state.mode===0 && !state.enabled) {
+          // With TEL selected, no fresh ATEL exists to prove angle mode=0.
+          // Attempt only DISARM + fresh state/PING; neither old state nor
+          // continued bytes can authorize recovery by themselves.
+          if(entry.command==='STOP' && entry.writeDone && this.verified && !this.closing) {
             const error=Object.assign(new Error('STOP 确认丢失；正在重新验证DISARM和停车状态，旧运动已取消'),{stopAckMissing:true});
             this.record('stop_ack_missing',error.message);reject(error);return;
           }
@@ -193,8 +211,9 @@
             const error=Object.assign(new Error('KEEP 确认丢失一次；车端仍回传运行状态，等待下一次保活'),{heartbeatAckMissing:true});
             this.record('keep_ack_missing',error.message);reject(error);return;
           }
-          const error=new Error(`车端应答超时：${entry.command}；${rxAgeMs!==null&&rxAgeMs<500?'仍有回传，但该命令未确认':'未获得可靠车端应答'}`);
-          reject(error);this.fail(error);
+          const error=Object.assign(new Error(`车端应答超时：${entry.command}；${rxDuringWait?'等待期间收到字节，但未收到该命令确认':'等待期间没有收到任何字节'}`),
+            {safeValidationTimeout:!!entry.safeValidation});
+          reject(error);if(!entry.safeValidation)this.fail(error);
         },entry.timeout);
       });
       // Observe rejection even if a stalled write outlives the ACK deadline.
@@ -214,16 +233,27 @@
         return await ack;
       } finally {clearTimeout(timer);if(this.pending?.entry===entry)this.pending=null;}
     }
-    async recoverStoppedLink() {
+    async recoverStoppedLink(trigger='STOP') {
       this.recovering=true;this.verified=false;this.epoch++;
       const epoch=this.epoch;
       this.queue.splice(0).forEach(entry=>entry.reject(cancelled()));
-      this.record('safe_recovery_start','STOP ACK missing; DISARM / ANGLESTATUS / PING only');
+      this.record('safe_recovery_start',{trigger,action:'Cancel motion; DISARM / ANGLESTATUS / PING only'});
       try {
-        this.onRecovering();
+        this.onRecovering(trigger);
         for(const command of ['DISARM','ANGLESTATUS','PING']) {
           if(this.closing || !this.opened || this.epoch!==epoch)throw cancelled();
-          const reply=await this.execute({command,epoch,timeout:1000});
+          let reply;
+          if(command==='DISARM') {
+            // Radio may pause before reconnecting. Retry only idempotent DISARM,
+            // never DRV/DKEEP/ARM. The MCU's 300ms drive watchdog is unchanged.
+            for(let attempt=0;attempt<2;attempt++) {
+              try {reply=await this.execute({command,epoch,timeout:attempt?3000:1000,safeValidation:true});break;}
+              catch(error) {
+                if(!error?.safeValidationTimeout || attempt || this.closing || !this.opened || this.epoch!==epoch)throw error;
+                this.record('safe_stop_retry',{trigger,command,reason:'first DISARM not confirmed'});
+              }
+            }
+          } else reply=await this.execute({command,epoch,timeout:1000});
           if(command==='ANGLESTATUS') {
             const p=reply.split(',');
             if(p.length!==14 || !p.slice(1).every(x=>/^-?\d+$/.test(x)&&Number.isSafeInteger(Number(x))) ||
@@ -232,7 +262,7 @@
         }
         if(this.closing || !this.opened || this.epoch!==epoch)throw cancelled();
         this.heartbeatAckMisses=0;this.verified=true;this.recovering=false;
-        this.stats.stopRecoveries++;this.record('safe_recovery_verified','DISARM ACK + stopped ATEL + PONG; no motion replay');
+        this.stats.stopRecoveries++;this.record('safe_recovery_verified',{trigger,proof:'DISARM ACK + stopped ATEL + PONG; no motion replay'});
         this.onRecovered();
       } catch(error) {this.record('safe_recovery_failed',{name:error.name,message:error.message});this.fail(error);}
       finally {this.recovering=false;}

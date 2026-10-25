@@ -139,7 +139,7 @@ function linkDiagnostic() {
   const current=ui.transport?.value==='bridge'?{mode:'bridge',commands:logLines.slice()}:
     serialTransport?.diagnostic()||lastSerialDiagnostic||{mode:'direct_web_serial'};
   return {...current,
-    clientVersion:'safe-link-v40',incidentHistory:linkJournal.snapshot(),uiTrace:uiTrace.slice(),uiTraceDropped,
+    clientVersion:'safe-link-v41',incidentHistory:linkJournal.snapshot(),uiTrace:uiTrace.slice(),uiTraceDropped,
     inputState:{keys:[...driveKeys],vector:{...driveVector},ownsAngleMotion,ownsSpeedMotion,speedOnlyMode,driveActive,keepPending}};
 }
 function logCommand(text) {
@@ -854,12 +854,23 @@ async function connectSerial() {
     setEvent('请使用电脑 Chrome / Edge 打开本地页面，点击连接后选择 LQ208 的 CH340 串口');
     return;
   }
-  if(serialTransport)lastSerialDiagnostic=serialTransport.diagnostic();
-  serialTransport=undefined;
+  const previousTransport=serialTransport;
   linkJournal.start('direct_web_serial');
   connecting=true; updateUi();
   let candidate;
   try {
+    // Windows may still be closing the old SerialPort after a fault. Wait for
+    // release before asking the same authorized object to open again.
+    if(previousTransport) {
+      let closeTimer;
+      try {
+        await Promise.race([previousTransport.close(false),new Promise((_,reject)=>{
+          closeTimer=setTimeout(()=>reject(Object.assign(new Error('旧串口5秒内未能释放；请先关闭其他串口工具，必要时拔插电脑端模块'),{phase:'previous_close'})),5000);
+        })]);
+      } finally {clearTimeout(closeTimer);}
+      lastSerialDiagnostic=previousTransport.diagnostic();
+      if(serialTransport===previousTransport)serialTransport=undefined;
+    }
     // Reuse only a uniquely authorized, attached CH340/CH910 port after a click.
     const authorized=await navigator.serial.getPorts?.()||[];
     const available=authorized.filter(port=>port.getInfo().usbVendorId===0x1a86 && port.connected!==false);
@@ -869,11 +880,11 @@ async function connectSerial() {
       onEvent:(event,detail)=>incident(event,detail,linkDiagnosticEvidence(candidate)),
       onLine:line=>{if(serialTransport===candidate)handleLine(line);},
       onWarning:message=>{logCommand(message);setEvent(message);},
-      onRecovering:()=>{
+      onRecovering:trigger=>{
         if(serialTransport!==candidate)return;
-        recordUi('safe_recovery_start',{});
+        recordUi('safe_recovery_start',{trigger});
         hardwareConnected=false;bridgeReady=false;resetLinkState();connecting=true;updateUi();
-        setEvent('STOP 确认丢失，正在确认DISARM和停车状态；旧运动已取消');
+        setEvent(`${trigger==='DKEEP'?'速度环保活未确认':'STOP 确认丢失'}，正在确认DISARM和停车状态；旧运动已取消`);
       },
       onRecovered:()=>{
         if(serialTransport!==candidate)return;
@@ -893,7 +904,7 @@ async function connectSerial() {
     bridgeReady=true;
     handleLine('STATUS,1,串口直连 115200 / 8N1，车端应答已验证；未运行桥接');
   } catch(error) {
-    if(!candidate)incident('open_failed',{name:error.name,message:error.message},linkDiagnosticEvidence());
+    if(!candidate)incident('open_failed',{name:error.name,message:error.message,phase:error.phase},linkDiagnosticEvidence());
     if(candidate) {lastSerialDiagnostic=candidate.diagnostic();await candidate.close(false);}
     hardwareConnected=false;bridgeReady=false;resetLinkState();
     setEvent(`串口直连失败：${error.message}；请退出“启动桥接兼容模式.bat”的窗口及其他串口页面，再用“启动上位机.bat”打开直连`);
@@ -1306,8 +1317,10 @@ async function flushDriveVector() {
       if (epoch !== motionEpoch) return; // A late MOVE reply cannot undo release/STOP.
       driveActive = true;
       ownsSpeedMotion=speedOnlyMode;ownsAngleMotion=!speedOnlyMode;speedLeaseSentAt=performance.now();
-      if(speedOnlyMode)await writeCommand('TEL,1');
-      else if(document.querySelector('#chartLoop').value.startsWith('wheel'))await writeCommand('TEL,1');
+      // DRV preserves the selected stream. SPEED,1 already enables TEL;
+      // respect an explicit TEL,0 for low-load comparisons and avoid an extra
+      // radio exchange on every raw-speed target change.
+      if(!speedOnlyMode && document.querySelector('#chartLoop').value.startsWith('wheel'))await writeCommand('TEL,1');
       if (serial === driveVectorSerial) break;
     }
   } catch (error) {
