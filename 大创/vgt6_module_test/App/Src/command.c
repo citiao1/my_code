@@ -125,7 +125,7 @@ static uint8_t Command_Attitude(const char *command)
   }
   if (!strcmp(command, "CAPS"))
   {
-    SerialDma_Write("CAPS,ATTITUDE_R25,20,10,160,60,60,80,SPEED_TUNABLE,PS2,TRACKMOVE,TOF_DL1B,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200,DKEEP"
+    SerialDma_Write("CAPS,ATTITUDE_R26,20,10,160,60,60,80,SPEED_TUNABLE,PS2,TRACKMOVE,TOF_DL1B,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200,DKEEP"
 #if APP_ENABLE_TUNING_LOG
         ",HLOG,HLOG_MODE,HLOG_US,WLOG_US"
 #else
@@ -428,7 +428,7 @@ void Command_HandleLine(const char *line)
   if ((strcmp(command, "VER") == 0) ||
       (strcmp(command, "VERSION") == 0))
   {
-    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R25\r\n");
+    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R26\r\n");
     return;
   }
   if (strcmp(command, "PS2STATUS") == 0)

@@ -1,7 +1,7 @@
 const TARGET_STORAGE_KEY = 'bm50-console-target';
 const GITHUB_PAGES_HOST = 'citiao1.github.io';
 const REQUIRED_FIRMWARE = 'VGT6_BM50_ATTITUDE_R17';
-const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20', 'VGT6_BM50_ATTITUDE_R21', 'VGT6_BM50_ATTITUDE_R22', 'VGT6_BM50_ATTITUDE_R23', 'VGT6_BM50_ATTITUDE_R24', 'VGT6_BM50_ATTITUDE_R25'];
+const SUPPORTED_FIRMWARE = [REQUIRED_FIRMWARE, 'VGT6_BM50_ATTITUDE_R18', 'VGT6_BM50_ATTITUDE_R19', 'VGT6_BM50_ATTITUDE_R20', 'VGT6_BM50_ATTITUDE_R21', 'VGT6_BM50_ATTITUDE_R22', 'VGT6_BM50_ATTITUDE_R23', 'VGT6_BM50_ATTITUDE_R24', 'VGT6_BM50_ATTITUDE_R25', 'VGT6_BM50_ATTITUDE_R26'];
 const MAX_TARGET_RPM = 160;
 const HLOG_REQUEST_TIMEOUT_MS = 25000; // Bridge allows 20 s for a stopped RAM batch.
 
@@ -139,7 +139,7 @@ function linkDiagnostic() {
   const current=ui.transport?.value==='bridge'?{mode:'bridge',commands:logLines.slice()}:
     serialTransport?.diagnostic()||lastSerialDiagnostic||{mode:'direct_web_serial'};
   return {...current,
-    clientVersion:'safe-link-v41',incidentHistory:linkJournal.snapshot(),uiTrace:uiTrace.slice(),uiTraceDropped,
+    clientVersion:'safe-link-v42',incidentHistory:linkJournal.snapshot(),uiTrace:uiTrace.slice(),uiTraceDropped,
     inputState:{keys:[...driveKeys],vector:{...driveVector},ownsAngleMotion,ownsSpeedMotion,speedOnlyMode,driveActive,keepPending}};
 }
 function logCommand(text) {
@@ -479,7 +479,7 @@ function handleLine(line) {
   }
   if (fields[0] === 'CAPS') {
     firmware.directSpeedKeep=fields.includes('DKEEP');
-    if(fields.includes('LOG_DISABLED'))document.querySelector('#wlogStatus').textContent='R25 已编译关闭高频日志；实时曲线可用';
+    if(fields.includes('LOG_DISABLED'))document.querySelector('#wlogStatus').textContent='固件已编译关闭高频日志；实时曲线可用';
     firmware.hlogSupported = fields.includes('HLOG') && fields.includes('HLOG_MODE');
     firmware.hlogMicros = fields.includes('HLOG_US');
     firmware.tofSupported = fields.includes('TOF_DL1B');
@@ -504,7 +504,7 @@ function handleLine(line) {
       ui.tofRealtime.checked = firmware.tofStreaming = false;
     }
     logCommand(`收到 < ${line}`);
-    if (!firmware.hlogSupported) ui.hlogStatus.textContent = fields.includes('LOG_DISABLED')?'R25 已编译关闭高频日志，释放88 KiB RAM':'固件不支持 HLOG';
+    if (!firmware.hlogSupported) ui.hlogStatus.textContent = fields.includes('LOG_DISABLED')?'固件已编译关闭高频日志，释放88 KiB RAM':'固件不支持 HLOG';
     updateUi();
     return;
   }

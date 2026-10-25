@@ -10,10 +10,10 @@ $FirmwareRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $PythonExe = Join-Path (Split-Path $FirmwareRoot -Parent) "mecanum-motor-console\bridge\.venv\Scripts\python.exe"
 $ImageFile = Join-Path $FirmwareRoot "MDK-ARM\vgt6_module_test\vgt6_module_test.hex"
 $ProjectFile = Join-Path $FirmwareRoot "MDK-ARM\vgt6_module_test.uvprojx"
-$FlashLog = Join-Path $FirmwareRoot "MDK-ARM\flash-r25.log"
-$ResetLog = Join-Path $FirmwareRoot "MDK-ARM\flash-r25-reset.log"
-$VerifyLog = Join-Path $FirmwareRoot "MDK-ARM\flash-r25-verify.log"
-$PostVerifyLog = Join-Path $FirmwareRoot "MDK-ARM\flash-r25-postverify.log"
+$FlashLog = Join-Path $FirmwareRoot "MDK-ARM\flash-r26.log"
+$ResetLog = Join-Path $FirmwareRoot "MDK-ARM\flash-r26-reset.log"
+$VerifyLog = Join-Path $FirmwareRoot "MDK-ARM\flash-r26-verify.log"
+$PostVerifyLog = Join-Path $FirmwareRoot "MDK-ARM\flash-r26-postverify.log"
 if (!(Test-Path -LiteralPath $ImageFile)) { throw "Build firmware in Keil first." }
 $NeedFullReadback = $true
 if ($UseKeil -and (Test-Path -LiteralPath $KeilExe) -and (Test-Path -LiteralPath $ProjectFile)) {

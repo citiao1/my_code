@@ -4,6 +4,24 @@ const Serial=require('../serial-transport.js');
 const motionFault=require('./fixtures/r25-motion-fault.json');
 const tick=()=>new Promise(setImmediate);
 
+test('CR is a frame boundary and cannot splice a damaged heartbeat ACK',async()=>{
+  const f=fixture();await f.transport.open(f.port);f.state.reply=false;
+  const keep=f.transport.command('DKEEP');await tick();
+  f.feed('ACK,DKE\rEP\n');await tick();
+  assert.ok(f.transport.pending,'embedded CR must not manufacture ACK,DKEEP');
+  f.feed('ACK,DKEEP\r\n');assert.equal(await keep,'ACK,DKEEP');
+  await f.transport.close(false);
+});
+
+test('a page rendering failure cannot break receive processing or close the port',async()=>{
+  const f=fixture();await f.transport.open(f.port);
+  f.transport.onLine=()=>{throw new Error('render failed');};
+  assert.equal(await f.transport.command('PING'),'PONG');
+  assert.equal(f.transport.isOpen(),true);
+  assert.ok(f.transport.trace.some(row=>row.event==='observer_error'));
+  await f.transport.close(false);
+});
+
 function fixture(options={}) {
   let controller;
   const sent=[];

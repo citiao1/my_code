@@ -23,6 +23,16 @@ uint32_t HAL_RCC_GetPCLK1Freq(void);
 HAL_StatusTypeDef HAL_UARTEx_ReceiveToIdle_DMA(UART_HandleTypeDef *, uint8_t *, uint16_t);
 HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *, uint8_t *, uint16_t);
 HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *);
+HAL_StatusTypeDef HAL_UART_AbortTransmit(UART_HandleTypeDef *);
+#ifndef __get_PRIMASK
+#define __get_PRIMASK() 0U
+#endif
+#ifndef __disable_irq
+#define __disable_irq() ((void)0)
+#endif
+#ifndef __set_PRIMASK
+#define __set_PRIMASK(mask) ((void)(mask))
+#endif
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *, uint16_t);
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *);
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *);

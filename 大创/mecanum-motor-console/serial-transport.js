@@ -41,6 +41,10 @@
         try {this.onEvent(event,detail);}catch(_){} // Diagnostics cannot interrupt control.
       }
     }
+    observe(name, value) {
+      try { this[name](value); }
+      catch(error) { this.record('observer_error',{callback:name,message:String(error?.message||error)}); }
+    }
     diagnostic() { return {mode:'direct_web_serial',baud:115200,port:this.info,
       verified:this.verified,recovering:this.recovering,fault:this.fault?.message,stats:{...this.stats},
       heartbeatAckMisses:this.heartbeatAckMisses,lastRxAt:this.lastRxAt,motionReport:this.motionReport,speedReport:this.speedReport,
@@ -79,8 +83,9 @@
       if(bytes.length)this.lastRxAt=this.clock();
       this.record('rx',Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join(''));
       for (const byte of bytes) {
-        if (byte===13) continue;
-        if (byte===10) {
+        // CR and LF both delimit frames, as on the MCU. Never delete an
+        // embedded CR and join damaged fragments into a valid ACK.
+        if (byte===13 || byte===10) {
           const line=this.buffer; this.buffer='';
           if (this.discard) { this.discard=false; continue; }
           if (!line) continue;
@@ -88,7 +93,7 @@
           if(!/^(ACK|ERR|PONG|VER|UART|LINK|LINKQ|STACK|CAPS|TEL|ATEL|TOF|TOFINFO|PID|YAWPID|HEADPID|PS2|PS2RAW|HLOG|WLOG|ENC|BAT|WHO|CMD|IMU|DRV|SPEEDLIMIT)(,|$)/.test(line))
           {
             this.record('rx_unknown_line',{line:line.slice(0,160),pending:this.pending?.entry.command});
-            this.onWarning(`串口收到未知或损坏行：${line.slice(0,100)}`);
+            this.observe('onWarning',`串口收到未知或损坏行：${line.slice(0,100)}`);
           }
           if(line.startsWith('ATEL,')) {
             const p=line.split(',');
@@ -103,7 +108,7 @@
               this.speedReport={receivedAt:this.clock(),tick:Number(p[1]),enabled:p[26]==='1',
                 targets:p.slice(4,8).map(Number),actualX10:p.slice(12,16).map(Number)};
           }
-          this.onLine(line); // State and all log rows reach the page before ACK completion.
+          this.observe('onLine',line); // A page failure is not a serial read failure.
           const pending=this.pending;
           if (pending && pending.epoch===this.epoch) {
             if (line.startsWith('ERR,')) {
@@ -130,7 +135,7 @@
       }
       if(this.stats.badBytes>badBefore) {
         this.record('rx_corruption',{badBytes:this.stats.badBytes-badBefore,pending:this.pending?.entry.command});
-        this.onWarning('串口收到损坏字节或超长行；已保留原始数据，丢弃该行');
+        this.observe('onWarning','串口收到损坏字节或超长行；已保留原始数据，丢弃该行');
       }
     }
     command(text, timeout) {

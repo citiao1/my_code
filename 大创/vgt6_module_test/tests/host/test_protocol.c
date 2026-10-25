@@ -40,6 +40,7 @@ static Ps2ControlSnapshot ps2_control_mock;
 static TofSnapshot tof_mock;
 static int motor_applied[4];
 static uint8_t tx_autocomplete = 1U;
+static unsigned tx_aborts;
 TofSnapshot Tof_GetSnapshot(void) { return tof_mock; }
 
 uint32_t HAL_GetTick(void) { return tick; }
@@ -68,6 +69,8 @@ HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *uart,
 }
 HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *uart)
 { (void)uart; return HAL_OK; }
+HAL_StatusTypeDef HAL_UART_AbortTransmit(UART_HandleTypeDef *uart)
+{ (void)uart; ++tx_aborts; return HAL_OK; }
 uint8_t Motor_Init(void) { return 1U; }
 void Motor_Stop(MotorChannel channel) { motor_applied[channel] = 0; }
 void Motor_StopAll(void) { memset(motor_applied, 0, sizeof(motor_applied)); }
@@ -151,7 +154,7 @@ static void test_every_split(void)
     "SPEED,0\n", "SPEED,120\n", "STOP\n", "PING\r\n"
   };
   static const char *replies[] = {
-    "VER,VGT6_BM50_ATTITUDE_R25\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
+    "VER,VGT6_BM50_ATTITUDE_R26\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
     "ACK,SPDLIMIT\r\n", "ACK,SPEED,1\r\n", "ACK,PID\r\n",
     "ACK,SPD\r\n", "ACK,TEL,1\r\n", "ACK,SPEED,0\r\n",
     "ACK,SPEED,LIMIT\r\n", "ACK,STOP\r\n", "PONG\r\n"
@@ -256,6 +259,38 @@ static void test_uart_fault_drops_partial_targets(void)
   line("\nUART\n");
   expect("UART,115200,42000000,364,0x0C,0,0,1,1,0\r\n");
 }
+static void test_overflow_cannot_splice_a_target(void)
+{
+  char data[64];
+  init(); ChassisTest_Arm();
+  /* 255 queued bytes: newline + padding lines + incomplete SPD,A,3.
+   * The lost '0' must never turn SPD,A,30 into SPD,A,3. */
+  memset(data, '\n', sizeof(data));
+  for (unsigned i=0; i<3; ++i) burst(data, 64, 0);
+  memset(data, '\n', sizeof(data));
+  memcpy(data + 56, "SPD,A,30", 8);
+  burst(data, 64, 0);
+  drain();
+  assert(SpeedControl_GetSnapshot().target_rpm[0] == 0);
+  clear_tx(); burst("\n", 1, 1);
+  expect("");
+  assert(SpeedControl_GetSnapshot().target_rpm[0] == 0);
+  line("\nPING\n"); expect("PONG\r\n");
+}
+static void test_dma_error_does_not_wedge_tx_or_replay_ack(void)
+{
+  init(); tx_autocomplete = 0U; tx_aborts = 0U;
+  line("PING\n"); expect("PONG\r\n");
+  assert(SerialDma_Write("ACK,DRV\r\n"));
+  huart2.ErrorCode = HAL_UART_ERROR_DMA;
+  HAL_UART_ErrorCallback(&huart2);
+  tx_autocomplete = 1U; clear_tx(); drain();
+  assert(tx_aborts == 1U);
+  assert(strstr(transmitted, "ACK,DRV") == NULL);
+  assert(strstr(transmitted, "ERR,UART_TX") != NULL);
+  line("\nPING\n"); expect("PONG\r\n");
+  assert(SerialDma_GetTxSnapshot().pending_frames == 0U);
+}
 static void test_stack_guard_and_diagnostics(void)
 {
   init();
@@ -354,7 +389,7 @@ static void __attribute__((unused)) test_attitude_cascade_and_stop(void)
   AttitudeControlSnapshot a;
   init();
   line("CAPS\n");
-  expect("CAPS,ATTITUDE_R25,20,10,160,60,60,80,SPEED_TUNABLE,PS2,TRACKMOVE,TOF_DL1B,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200,DKEEP"
+  expect("CAPS,ATTITUDE_R26,20,10,160,60,60,80,SPEED_TUNABLE,PS2,TRACKMOVE,TOF_DL1B,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200,DKEEP"
 #if APP_ENABLE_TUNING_LOG
       ",HLOG,HLOG_MODE,HLOG_US,WLOG_US\r\n");
 #else
@@ -918,6 +953,8 @@ int main(void)
   test_stop_restart_and_tel();
   test_bad_lines_and_recovery();
   test_uart_fault_drops_partial_targets();
+  test_overflow_cannot_splice_a_target();
+  test_dma_error_does_not_wedge_tx_or_replay_ack();
   test_stack_guard_and_diagnostics();
   test_tunable_gains_and_target_ceiling();
 #if APP_ENABLE_TUNING_LOG

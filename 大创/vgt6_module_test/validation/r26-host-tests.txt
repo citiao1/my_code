@@ -1,0 +1,4 @@
+PASS: 2674 real-firmware protocol assertions
+PASS: 2748 real-firmware protocol assertions
+PASS: tilted quaternion yaw, calibration, motor-motion bias guard, acceleration gate
+Assertion failed: reverse_arc < 0.5f, file tests/host/test_ps2.c, line 383
