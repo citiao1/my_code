@@ -23,4 +23,22 @@ Source/build backup commit: `ab6e29c9`.
 
 ## Programming status
 
-Not programmed. After STOP/DISARM acknowledgement, two read-only attach attempts at 100 kHz failed in DebugPortSetup with SWD/JTAG No ACK. No flash/reset/unlock command was issued. The board's startup defaults therefore remain the previously flashed values until the debug connection is restored and the built image is programmed. No closed-loop or motion test was performed. Build log and DAP failure log remain local ignored artifacts.
+Initial attempt: after STOP/DISARM acknowledgement, two read-only attach attempts at 100 kHz failed in DebugPortSetup with SWD/JTAG No ACK. No flash/reset/unlock command was issued in that attempt. Build log and DAP failure log remain local ignored artifacts.
+
+## User-requested retry: successfully programmed
+
+The same image SHA256 above was rechecked, source backup verified, and the single PUSO 1234:5678 probe detected again. Read-only preflight succeeded: RUNNING, chassis disarmed, angle/speed disabled, all four targets/output zero, no CPU fault registers set.
+
+Existing `tools/flash-dap.ps1` used the native Keil target. Keil reported `Erase Done.Programming Done.Verify OK.Application running` and `Flash Load finished`. Independent readback confirmed STM32F4 device `0x101f6413`, 1024 KiB flash, vectors and R26 marker at `0x08005934`. Reset completed; post-reset critical readback passed with core RUNNING. No mass erase, unlock or option-byte change.
+
+Post-reset serial readback through the already-running compatibility bridge:
+
+```text
+PID,1.1000,0.0991,0.0000,1.1000,0.0998,0.0000,1.1000,0.0998,0.0000,1.1000,0.1008,0.0000
+HEADPID,5.5000,2.5000,80,20,D_MEAS
+YAWPID,0.1815,1.8062,60,80,20
+STACK,4096,2456,1640,1
+```
+
+STOP/DISARM acknowledged; angle/speed off, PS2 locked. Readback assertions confirmed all requested startup gains and unchanged rate PI. No ARM, motor command, live tuning or closed-loop motion test performed.
+Evidence: `r26-pid-defaults-retry-preflight-20261026.json`, `r26-pid-defaults-postflash-20261026.json`; flash helper/native Keil logs remain local ignored artifacts.
