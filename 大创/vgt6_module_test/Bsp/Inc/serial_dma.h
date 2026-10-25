@@ -38,6 +38,7 @@ void SerialDma_Process(void);
 uint8_t SerialDma_Write(const char *text);
 /* Optional current-state telemetry: never build a queue ahead of command replies. */
 uint8_t SerialDma_WriteTelemetry(const char *text);
+uint8_t SerialDma_CanWriteTelemetry(void);
 SerialTxSnapshot SerialDma_GetTxSnapshot(void);
 uint8_t SerialDma_IsReady(void);
 SerialDmaSnapshot SerialDma_GetSnapshot(void);

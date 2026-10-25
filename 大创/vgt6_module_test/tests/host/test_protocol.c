@@ -666,8 +666,8 @@ static void __attribute__((unused)) test_tof_query_and_independent_stream(void)
   clear_tx(); tick += 300U; Telemetry_Process(); drain();
   assert(strstr(transmitted, "TOF,700,") && !strstr(transmitted, "TEL,700,"));
   assert(SerialDma_GetTxSnapshot().telemetry_skipped == 1);
-  for (unsigned i = 0; i < 5; ++i) { clear_tx(); tick += 100U; Telemetry_Process(); drain(); }
-  assert(strstr(transmitted, "TEL,1200,")); /* The staggered stream still gets a turn. */
+  clear_tx(); tick += 10U; Telemetry_Process(); drain();
+  assert(strstr(transmitted, "TEL,710,")); /* Retry latest state after TOF drains. */
   line("TEL,0\n"); expect("ACK,TEL,0\r\n");
   line("HLOG,START\n"); expect("HLOG,START,OK\r\n");
   clear_tx(); tick += 500U; Telemetry_Process(); drain(); expect("");
@@ -709,7 +709,7 @@ static void test_periodic_uart_never_queues_ahead_of_replies(void)
   Telemetry_SetTof(1);
   for (unsigned i = 0; i < 20; ++i) { tick += 100; Telemetry_Process(); drain(); }
   assert(SerialDma_GetTxSnapshot().pending_frames == 1);
-  assert(SerialDma_GetTxSnapshot().telemetry_skipped == 20);
+  assert(SerialDma_GetTxSnapshot().telemetry_skipped == 0); /* Deferred before formatting. */
   assert(SerialDma_Write("ACK,STOP\r\n"));
   assert(SerialDma_GetTxSnapshot().pending_frames == 2);
   HAL_UART_TxCpltCallback(&huart2); drain();
@@ -882,6 +882,36 @@ static void test_direct_speed_lease(void)
   line("DKEEP\n");expect("ERR,DKEEP,EXPIRED_OR_NOT_DIRECT\r\n");
 }
 
+static void test_heartbeat_cannot_starve_speed_curves(void)
+{
+  for(unsigned with_tof=0;with_tof<=1;with_tof++)
+  for(unsigned phase=0;phase<120;phase+=20)
+  {
+    unsigned reports=0;
+    uint32_t last_report=100U;
+    init();
+    line("ARM\n");expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+    line("SPEED,1\n");expect("ACK,SPEED,1\r\n");
+    line("DRV,-30,0,0\n");expect("ACK,DRV\r\n");
+    tof_mock.connected=tof_mock.valid=1U;tof_mock.distance_mm=500U;
+    if(with_tof){line("TOF,1\n");expect("ACK,TOF,1\r\n");}
+    for(unsigned step=0;step<=3000;step+=10)
+    {
+      tick=100U+step;
+      if(step>=phase && (step-phase)%120U==0U)
+      {line("DKEEP\n");expect("ACK,DKEEP\r\n");}
+      clear_tx();Telemetry_Process();drain();
+      if(strstr(transmitted,"TEL,"))
+      {
+        ++reports;assert(tick-last_report<=650U);last_report=tick;
+      }
+      assert(!SerialDma_GetTxSnapshot().pending_frames);
+    }
+    assert(reports >= (with_tof?4U:7U));
+    assert(tick-last_report<=650U);
+  }
+}
+
 int main(void)
 {
   test_every_split();
@@ -915,6 +945,7 @@ int main(void)
   line("WLOGINFO\n"); expect("ERR,LOG,DISABLED\r\n");
 #endif
   test_direct_speed_lease();
+  test_heartbeat_cannot_starve_speed_curves();
   printf("PASS: %u real-firmware protocol assertions\n", cases);
   return 0;
 }

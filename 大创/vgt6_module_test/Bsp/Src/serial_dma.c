@@ -232,12 +232,18 @@ uint8_t SerialDma_Write(const char *text)
   return SerialDma_QueueWrite(text, length);
 }
 
+uint8_t SerialDma_CanWriteTelemetry(void)
+{
+  return serial_port.ready &&
+      (!command_seen || HAL_GetTick() - last_command_tick >= 80U) &&
+      serial_port.tx_head == serial_port.tx_tail;
+}
+
 uint8_t SerialDma_WriteTelemetry(const char *text)
 {
   /* A query/target/heartbeat owns the UART first. Keep at most one periodic
    * frame in flight; obsolete live readings are skipped, never replayed. */
-  if ((command_seen && HAL_GetTick() - last_command_tick < 80U) ||
-      serial_port.tx_head != serial_port.tx_tail)
+  if (!SerialDma_CanWriteTelemetry())
   {
     ++telemetry_skipped;
     return 0U;

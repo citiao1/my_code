@@ -42,13 +42,18 @@ static uint8_t tof_stream;
 static uint32_t tof_tick, hlog_read_tick;
 static uint8_t hlog_read_seen;
 static uint8_t periodic_send;
+static uint8_t periodic_written;
 static TofSnapshot last_tof_report;
 static uint32_t tof_report_tick;
 static uint8_t tof_report_seen;
 
 static uint8_t write_live(const char *message)
 {
-  if (periodic_send) return SerialDma_WriteTelemetry(message);
+  if (periodic_send)
+  {
+    periodic_written = SerialDma_WriteTelemetry(message);
+    return periodic_written;
+  }
   return SerialDma_Write(message);
 }
 
@@ -72,6 +77,9 @@ void Telemetry_Process(void)
   uint32_t tof_period = telemetry_periodic ? 200U : 100U;
   uint32_t status_period = ranging_stream ? 500U :
       (attitude_stream ? 200U : TELEMETRY_PERIOD_MS);
+  /* Wait cheaply for the command quiet window. A 120ms heartbeat can otherwise
+   * repeatedly collide with a 300ms status slot and suppress every curve point. */
+  if (!SerialDma_CanWriteTelemetry()) return;
   periodic_send = 1U;
 
   /* Distance: 10 Hz alone, 5 Hz alongside 2 Hz TEL/ATEL. With conservative rates,
@@ -94,9 +102,11 @@ void Telemetry_Process(void)
   if ((telemetry_periodic != 0U) &&
       ((now - telemetry_tick) >= status_period))
   {
-    telemetry_tick = now;
+    periodic_written = 0U;
     if (attitude_stream) Telemetry_SendAttitude();
     else Telemetry_SendSpeedStatus();
+    /* Retry the current state when TX is free; never queue missed samples. */
+    if (periodic_written) telemetry_tick = now;
   }
   periodic_send = 0U;
 }
