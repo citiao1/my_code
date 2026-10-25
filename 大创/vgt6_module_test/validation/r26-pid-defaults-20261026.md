@@ -19,4 +19,8 @@ HEX SHA256: `8137B3A0DA42FDF0462638C949AF644F32FC502ADCE3469E34BD71AB362C69E9`.
 
 PUSO 1234:5678 detected. Read-only preflight showed zero targets/output, angle/speed off, but chassis armed. COM12 was owned by existing compatibility bridge; STOP/DISARM sent through its localhost WebSocket, both acknowledged. PS2 locked. No ARM or motion commanded.
 
-Programming and post-reset parameter readback are recorded separately after the source backup commit.
+Source/build backup commit: `ab6e29c9`.
+
+## Programming status
+
+Not programmed. After STOP/DISARM acknowledgement, two read-only attach attempts at 100 kHz failed in DebugPortSetup with SWD/JTAG No ACK. No flash/reset/unlock command was issued. The board's startup defaults therefore remain the previously flashed values until the debug connection is restored and the built image is programmed. No closed-loop or motion test was performed. Build log and DAP failure log remain local ignored artifacts.
