@@ -1,8 +1,8 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-echo LQ208 serial console - 115200 8N1
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0bridge\start-bridge.ps1" -Transport serial -Baud 115200 %*
+echo LQ208 direct Web Serial console - no serial bridge
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0bridge\start-serial-console.ps1" %*
 set "BRIDGE_EXIT=%ERRORLEVEL%"
 if not "%BRIDGE_EXIT%"=="0" echo Startup failed. See the error above.
 pause

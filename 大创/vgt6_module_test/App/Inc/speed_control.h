@@ -37,6 +37,7 @@ void SpeedControl_Init(void);
 void SpeedControl_Process(uint32_t elapsed_ms);
 void SpeedControl_Stop(void);
 uint8_t SpeedControl_KeepAlive(void);
+uint8_t SpeedControl_DriveKeepAlive(void);
 uint8_t SpeedControl_Enable(uint8_t enable);
 uint8_t SpeedControl_SetTarget(MotorChannel channel, int32_t rpm);
 uint8_t SpeedControl_SetDrive(int16_t forward_rpm,

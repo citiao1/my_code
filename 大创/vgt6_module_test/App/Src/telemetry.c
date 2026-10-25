@@ -1,4 +1,5 @@
 #include "telemetry.h"
+#include "app_config.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -23,6 +24,7 @@ static uint32_t telemetry_tick;
 static uint8_t attitude_stream;
 /* One capture at a time; union keeps four-wheel 100 Hz recording inside SRAM.
  * CLEAR explicitly selects the format. No dynamic allocation or ISR logging. */
+#if APP_ENABLE_TUNING_LOG
 static union
 {
   TelemetryHeadingLogRecord heading[TELEMETRY_HLOG_CAPACITY];
@@ -35,6 +37,7 @@ static uint16_t heading_log_count;
 static uint32_t heading_log_sequence;
 static uint8_t heading_log_active;
 static uint8_t heading_log_overflow;
+#endif
 static uint8_t tof_stream;
 static uint32_t tof_tick, hlog_read_tick;
 static uint8_t hlog_read_seen;
@@ -64,7 +67,7 @@ void Telemetry_Init(void)
 void Telemetry_Process(void)
 {
   uint32_t now = HAL_GetTick();
-  uint8_t ranging_stream = tof_stream && !heading_log_active &&
+  uint8_t ranging_stream = tof_stream && !Telemetry_Hlog_IsActive() &&
       (!hlog_read_seen || now - hlog_read_tick >= 1500U);
   uint32_t tof_period = telemetry_periodic ? 200U : 100U;
   uint32_t status_period = ranging_stream ? 500U :
@@ -150,6 +153,7 @@ void Telemetry_SendAttitude(void)
   write_live(message);
 }
 
+#if APP_ENABLE_TUNING_LOG
 void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude,
                            uint32_t tick_ms, uint32_t tick_us)
 {
@@ -396,6 +400,29 @@ uint8_t Telemetry_Wlog_SendRead(uint32_t offset, uint32_t count)
       (unsigned long)offset, (unsigned long)count_read, heading_log_count);
   return SerialDma_Write(message);
 }
+
+#else
+void Telemetry_Hlog_Record(const AttitudeControlSnapshot *a, uint32_t ms, uint32_t us)
+{ (void)a; (void)ms; (void)us; }
+void Telemetry_Wlog_Record(const SpeedControlSnapshot *s, const EncoderSnapshot *e,
+                          uint32_t ms, uint32_t us)
+{ (void)s; (void)e; (void)ms; (void)us; }
+void Telemetry_Hlog_Clear(void) {}
+void Telemetry_Wlog_Clear(void) {}
+uint8_t Telemetry_Hlog_Start(void) { return 0U; }
+uint8_t Telemetry_Wlog_Start(void) { return 0U; }
+uint8_t Telemetry_Hlog_Stop(void) { return 1U; }
+uint8_t Telemetry_Hlog_IsActive(void) { return 0U; }
+uint16_t Telemetry_Hlog_Count(void) { return 0U; }
+uint8_t Telemetry_Hlog_SendStatus(void)
+{ return SerialDma_Write("HLOG,STATUS,0,0,0,0,0\r\n"); }
+uint8_t Telemetry_Wlog_SendStatus(void)
+{ return SerialDma_Write("WLOG,STATUS,0,0,0,0,0\r\n"); }
+uint8_t Telemetry_Hlog_SendRead(uint32_t offset, uint32_t count)
+{ (void)offset; (void)count; return SerialDma_Write("ERR,LOG,DISABLED\r\n"); }
+uint8_t Telemetry_Wlog_SendRead(uint32_t offset, uint32_t count)
+{ return Telemetry_Hlog_SendRead(offset, count); }
+#endif
 
 uint8_t Telemetry_IsPeriodic(void)
 {

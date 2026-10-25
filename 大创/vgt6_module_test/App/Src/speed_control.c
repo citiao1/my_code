@@ -176,6 +176,17 @@ uint8_t SpeedControl_KeepAlive(void)
   return 1U;
 }
 
+/* A stale lease cannot be revived by heartbeat alone. A new deliberate DRV
+ * command is required after the 300 ms watchdog, STOP or DISARM. */
+uint8_t SpeedControl_DriveKeepAlive(void)
+{
+  uint32_t now = HAL_GetTick();
+  if (!speed_state.enabled || !drive_mode || !drive_watchdog_enabled ||
+      now - last_drive_tick > SPEED_CONTROL_WATCHDOG_MS) return 0U;
+  last_drive_tick = now;
+  return 1U;
+}
+
 static void apply_front_guard(void)
 {
   uint16_t limit = FrontGuard_ForwardLimit(speed_state.target_limit_rpm);

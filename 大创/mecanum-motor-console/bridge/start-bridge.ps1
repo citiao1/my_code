@@ -83,7 +83,7 @@ Write-Host "Serial baud: $Baud (8N1); auto-selects a unique CH340/CH910 USB port
 Write-Host "Close this window to stop the bridge."
 Write-Host ""
 
-Start-Process "http://127.0.0.1:8088"
+Start-Process "http://127.0.0.1:8088/?transport=bridge"
 try {
     & $VenvPython (Join-Path $BridgeDir "motor_vofa_bridge.py") @BridgeArgs
 } finally {

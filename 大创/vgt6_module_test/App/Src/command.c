@@ -1,4 +1,5 @@
 #include "command.h"
+#include "app_config.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -21,6 +22,7 @@
 
 #define COMMAND_SIZE 64U
 
+#if APP_ENABLE_TUNING_LOG
 static void Command_LogReply(const char *name, const char *text)
 {
   char message[96];
@@ -28,8 +30,20 @@ static void Command_LogReply(const char *name, const char *text)
   SerialDma_Write(message);
 }
 
+#endif
+
 static uint8_t Command_Hlog(const char *command)
 {
+#if !APP_ENABLE_TUNING_LOG
+  if (strncmp(command, "HLOG,", 5U) && strncmp(command, "WLOG,", 5U)) return 0U;
+  if (!strcmp(command + 5, "STATUS"))
+  {
+    if (command[0] == 'W') (void)Telemetry_Wlog_SendStatus();
+    else (void)Telemetry_Hlog_SendStatus();
+  }
+  else SerialDma_Write("ERR,LOG,DISABLED\r\n");
+  return 1U;
+#else
   unsigned long offset, count;
   int end = 0;
   uint8_t wheel = !strncmp(command, "WLOG,", 5U);
@@ -91,6 +105,7 @@ static uint8_t Command_Hlog(const char *command)
   }
   SerialDma_Write("ERR,LOG,USE_READ,OFFSET,COUNT_0_8\r\n");
   return 1U;
+#endif
 }
 
 static uint8_t Command_Attitude(const char *command)
@@ -110,7 +125,13 @@ static uint8_t Command_Attitude(const char *command)
   }
   if (!strcmp(command, "CAPS"))
   {
-    SerialDma_Write("CAPS,ATTITUDE_R24,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200\r\n");
+    SerialDma_Write("CAPS,ATTITUDE_R25,20,10,160,60,60,80,SPEED_TUNABLE,PS2,TRACKMOVE,TOF_DL1B,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200,DKEEP"
+#if APP_ENABLE_TUNING_LOG
+        ",HLOG,HLOG_MODE,HLOG_US,WLOG_US"
+#else
+        ",LOG_DISABLED"
+#endif
+        "\r\n");
     return 1U;
   }
   if (!strcmp(command, "TOF"))
@@ -137,10 +158,20 @@ static uint8_t Command_Attitude(const char *command)
   }
   if (!strcmp(command, "WLOGINFO"))
   {
+#if APP_ENABLE_TUNING_LOG
     (void)snprintf(message, sizeof(message),
         "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,%u,FRONT_REVERSED\r\n",
         Encoder_GetSnapshot().counts_per_revolution);
     SerialDma_Write(message);
+#else
+    SerialDma_Write("ERR,LOG,DISABLED\r\n");
+#endif
+    return 1U;
+  }
+  if (!strcmp(command, "DKEEP"))
+  {
+    SerialDma_Write(!Ps2Control_IsActive() && !AttitudeControl_GetSnapshot().mode &&
+        SpeedControl_DriveKeepAlive() ? "ACK,DKEEP\r\n" : "ERR,DKEEP,EXPIRED_OR_NOT_DIRECT\r\n");
     return 1U;
   }
   if (!strcmp(command, "WKEEP"))
@@ -397,7 +428,7 @@ void Command_HandleLine(const char *line)
   if ((strcmp(command, "VER") == 0) ||
       (strcmp(command, "VERSION") == 0))
   {
-    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R24\r\n");
+    SerialDma_Write("VER,VGT6_BM50_ATTITUDE_R25\r\n");
     return;
   }
   if (strcmp(command, "PS2STATUS") == 0)

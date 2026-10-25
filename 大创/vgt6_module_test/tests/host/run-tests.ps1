@@ -2,7 +2,8 @@ $ErrorActionPreference = "Stop"
 $ProjectDir = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 Push-Location $ProjectDir
 try {
-    & gcc -std=c11 -Wall -Wextra -Werror `
+    foreach ($LogEnabled in @(0, 1)) {
+    & gcc -std=c11 -Wall -Wextra -Werror "-DAPP_ENABLE_TUNING_LOG=$LogEnabled" `
         -I tests/host -I Bsp/Inc -I App/Inc -I Algorithm/Inc `
         tests/host/test_protocol.c Bsp/Src/serial_dma.c App/Src/command.c `
         App/Src/telemetry.c App/Src/speed_control.c App/Src/front_guard.c App/Src/chassis_test.c `
@@ -12,6 +13,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Host compilation failed." }
     & "tests/host/test_protocol.exe"
     if ($LASTEXITCODE -ne 0) { throw "Protocol regression failed." }
+    }
     & gcc -std=c11 -Wall -Wextra -Werror `
         -I tests/host -I Bsp/Inc -I App/Inc -I Algorithm/Inc `
         tests/host/test_gyro.c App/Src/gyro.c Algorithm/Src/attitude_filter.c `

@@ -10,10 +10,13 @@
   <header class="topbar">
     <div><h1>VGT6 VEHICLE CONSOLE</h1><p>BM50 四轮 · IMU660RC · 级联控制</p></div>
     <div class="connection-tools">
+      <select id="transportSelect" aria-label="连接方式"><option value="serial" selected>串口直连</option><option value="bridge">桥接（兼容）</option></select>
       <span id="connectionBadge" class="badge offline"><span class="dot"></span>未连接</span>
       <button id="connectButton" class="button connect" type="button">连接</button>
+      <button id="linkLogButton" class="button secondary" type="button">导出链路诊断</button>
     </div>
   </header>
+  <p class="event-text">串口直连与桥接不能同时占用串口。使用直连前请退出兼容模式窗口及其他串口工具，再点击连接。</p>
   <main class="workspace">
     <section class="tuning-section">
       <div class="section-heading">
@@ -123,16 +126,19 @@
       </section>
     </section>
     <section class="tuning-section telemetry-surface">
-        <div class="section-heading"><div><span>TELEMETRY</span><h2>实时反馈</h2></div><select id="chartLoop"><option value="rate">角速度 °/s</option><option value="heading">方向 °</option><option value="wheel">1 号轮 RPM</option></select></div>
+        <div class="section-heading"><div><span>TELEMETRY</span><h2>实时反馈</h2></div><select id="chartLoop"><option value="rate">角速度 °/s</option><option value="heading">方向 °</option><option value="wheel_all">四轮同屏 RPM</option><option value="wheel1">1 号轮（A）RPM</option><option value="wheel2">2 号轮（B）RPM</option><option value="wheel3">3 号轮（C）RPM</option><option value="wheel4">4 号轮（D）RPM</option></select></div>
       <div class="metrics"><div><span>角速度</span><output id="rateActual">— °/s</output></div><div><span>航向</span><output id="yawActual">— °</output></div><div><span>电池</span><output id="batteryActual">— V</output></div><div><span>模式</span><output id="angleMode">停止</output></div></div>
       <div class="tof-reading" aria-live="polite">
         <div><span>TOF 距离</span><output id="tofDistance">— mm</output><small id="tofState">等待查询</small><small id="frontGuardState">等待保护能力查询</small></div>
         <label><input id="tofRealtime" type="checkbox">实时距离</label>
       </div>
+      <button id="speedOnlyButton" class="button secondary" type="button" disabled>速度环专用模式（暂时停用外环）</button>
+      <p id="speedOnlyStatus" class="hint"></p>
       <canvas id="responseChart" width="700" height="320" aria-label="目标与实际响应波形"></canvas>
-      <p class="hint chart-legend">绿色：目标 · 蓝色：实际 · 切换观察量会清空图表</p>
+      <p class="hint chart-legend">虚线：目标 · 实线：实际；四轮同屏 A绿 / B蓝 / C橙 / D紫。单轮目标绿、实际蓝。低频显示，切换清空。</p>
       <p class="hint">VOFA / FireWater / TCP 127.0.0.1:1347<br>角环：I1/I2 目标/实际 °/s，I4/I5 目标/实际 °<br>速度：I1..I4 实际 A..D，I5..I8 目标 A..D</p>
-      <p id="eventText" class="event-text">等待通信桥接</p>
+      <details><summary>断线与停车验证历史（刷新后保留）</summary><p id="linkHistoryStatus" class="hint"></p><pre id="linkHistory" style="white-space:pre-wrap;max-height:280px;overflow:auto"></pre></details>
+      <p id="eventText" class="event-text">等待连接</p>
       <p class="event-text">固件：<span id="firmwareVersion">未查询</span></p>
       <p class="event-text">链路：<span id="linkStatus">未查询</span></p>
       <p class="event-text">串口：<span id="uartStatus">未查询</span></p>
@@ -146,6 +152,8 @@
   </main>
   <script src="wheel-log.js?v=1"></script>
   <script src="chassis-test.js?v=3"></script>
-<script src="touch-remote.js?v=36"></script>
+  <script src="serial-transport.js?v=4"></script>
+<script src="link-journal.js?v=1"></script>
+<script src="touch-remote.js?v=40"></script>
 </body>
 </html>

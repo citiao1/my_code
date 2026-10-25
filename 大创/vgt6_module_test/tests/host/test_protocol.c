@@ -9,6 +9,7 @@
 #include "usart.h"
 #include "serial_dma.h"
 #include "command.h"
+#include "app_config.h"
 #include "chassis_test.h"
 #include "speed_control.h"
 #include "telemetry.h"
@@ -150,7 +151,7 @@ static void test_every_split(void)
     "SPEED,0\n", "SPEED,120\n", "STOP\n", "PING\r\n"
   };
   static const char *replies[] = {
-    "VER,VGT6_BM50_ATTITUDE_R24\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
+    "VER,VGT6_BM50_ATTITUDE_R25\r\n", "ACK,ARM,WHEELS_OFF_GROUND\r\n",
     "ACK,SPDLIMIT\r\n", "ACK,SPEED,1\r\n", "ACK,PID\r\n",
     "ACK,SPD\r\n", "ACK,TEL,1\r\n", "ACK,SPEED,0\r\n",
     "ACK,SPEED,LIMIT\r\n", "ACK,STOP\r\n", "PONG\r\n"
@@ -348,11 +349,17 @@ static void test_tunable_gains_and_target_ceiling(void)
   assert(SpeedControl_GetSnapshot().target_limit_rpm == 160U);
   assert(SpeedControl_GetSnapshot().ki[0] == ki[0]);
 }
-static void test_attitude_cascade_and_stop(void)
+static void __attribute__((unused)) test_attitude_cascade_and_stop(void)
 {
   AttitudeControlSnapshot a;
   init();
-  line("CAPS\n"); expect("CAPS,ATTITUDE_R24,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200\r\n");
+  line("CAPS\n");
+  expect("CAPS,ATTITUDE_R25,20,10,160,60,60,80,SPEED_TUNABLE,PS2,TRACKMOVE,TOF_DL1B,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200,DKEEP"
+#if APP_ENABLE_TUNING_LOG
+      ",HLOG,HLOG_MODE,HLOG_US,WLOG_US\r\n");
+#else
+      ",LOG_DISABLED\r\n");
+#endif
   line("YAW,15\n"); expect("ERR,ANGLE,ARM_IMU_OR_RANGE\r\n");
   line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
   line("HEAD,-179\n"); expect("ACK,HEAD\r\n");
@@ -434,7 +441,7 @@ static void test_mecanum_installed_numbering(void)
   ++cases;
 }
 
-static void test_rate_and_heading_ram_logs(void)
+static void __attribute__((unused)) test_rate_and_heading_ram_logs(void)
 {
   AttitudeControlSnapshot sample;
   init();
@@ -633,7 +640,7 @@ static void test_mecanum_matrix_and_scaling(void)
   }
 }
 
-static void test_tof_query_and_independent_stream(void)
+static void __attribute__((unused)) test_tof_query_and_independent_stream(void)
 {
   init();
   memset(&tof_mock, 0, sizeof(tof_mock));
@@ -755,7 +762,7 @@ static void test_startup_gains_remain_runtime_tunable(void)
   line("HEADGET\n"); expect("HEADPID,5.0000,1.0000,80,20,D_MEAS\r\n");
 }
 
-static void test_front_guard_and_wheel_capture(void)
+static void __attribute__((unused)) test_front_guard_and_wheel_capture(void)
 {
   SpeedControlSnapshot speed;
   init();
@@ -841,6 +848,40 @@ static void test_front_guard_and_wheel_capture(void)
   assert(motor_applied[0] == 0 && !ChassisTest_IsMotorActive());
 }
 
+static void test_direct_speed_lease(void)
+{
+  init();
+  line("DKEEP\n"); expect("ERR,DKEEP,EXPIRED_OR_NOT_DIRECT\r\n");
+  line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
+  line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
+  line("DRV,-30,0,0\n"); expect("ACK,DRV\r\n");
+  tick+=150U; line("DKEEP\n"); expect("ACK,DKEEP\r\n");
+  tick+=150U; SpeedControl_Process(10U);
+  assert(SpeedControl_GetSnapshot().target_rpm[0]==30);
+  assert(!AttitudeControl_GetSnapshot().mode);
+  tick+=301U; line("DKEEP\n"); expect("ERR,DKEEP,EXPIRED_OR_NOT_DIRECT\r\n");
+  SpeedControl_Process(10U);
+  for(unsigned i=0;i<4;i++)assert(!SpeedControl_GetSnapshot().target_rpm[i]);
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("DKEEP\n"); expect("ERR,DKEEP,EXPIRED_OR_NOT_DIRECT\r\n");
+  line("YAW,10\n"); expect("ACK,YAW\r\n");
+  line("DKEEP\n"); expect("ERR,DKEEP,EXPIRED_OR_NOT_DIRECT\r\n");
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("SPEED,1\n"); expect("ACK,SPEED,1\r\n");
+  tof_mock.connected=tof_mock.valid=1U;tof_mock.distance_mm=100U;tof_mock.age_ms=0U;
+  line("DRV,30,0,0\n"); expect("ACK,DRV\r\n");
+  SpeedControl_Process(10U);
+  assert(SpeedControl_GetSnapshot().tof_limited);
+  assert(!SpeedControl_GetSnapshot().target_rpm[0]);
+  line("DRV,-30,0,0\n"); expect("ACK,DRV\r\n");
+  SpeedControl_Process(10U);
+  assert(SpeedControl_GetSnapshot().target_rpm[0]==30);
+  tick+=150U;line("DKEEP\n");expect("ACK,DKEEP\r\n");
+  assert(!AttitudeControl_GetSnapshot().mode);
+  line("DISARM\n");expect("ACK,DISARM\r\n");
+  line("DKEEP\n");expect("ERR,DKEEP,EXPIRED_OR_NOT_DIRECT\r\n");
+}
+
 int main(void)
 {
   test_every_split();
@@ -849,9 +890,11 @@ int main(void)
   test_uart_fault_drops_partial_targets();
   test_stack_guard_and_diagnostics();
   test_tunable_gains_and_target_ceiling();
+#if APP_ENABLE_TUNING_LOG
   test_attitude_cascade_and_stop();
   test_rate_and_heading_ram_logs();
   test_tof_query_and_independent_stream();
+#endif
   test_parallel_wheel_targets();
   test_periodic_uart_never_queues_ahead_of_replies();
   test_invalid_distance_reports_transitions_then_one_hz();
@@ -861,7 +904,17 @@ int main(void)
   test_mecanum_installed_numbering();
   test_mecanum_matrix_and_scaling();
   test_ps2_diagnostics_and_control_ownership();
+#if APP_ENABLE_TUNING_LOG
   test_front_guard_and_wheel_capture();
+#else
+  init();
+  line("HLOG,STATUS\n"); expect("HLOG,STATUS,0,0,0,0,0\r\n");
+  line("WLOG,STATUS\n"); expect("WLOG,STATUS,0,0,0,0,0\r\n");
+  line("HLOG,START\n"); expect("ERR,LOG,DISABLED\r\n");
+  line("WLOG,READ,0,8\n"); expect("ERR,LOG,DISABLED\r\n");
+  line("WLOGINFO\n"); expect("ERR,LOG,DISABLED\r\n");
+#endif
+  test_direct_speed_lease();
   printf("PASS: %u real-firmware protocol assertions\n", cases);
   return 0;
 }
