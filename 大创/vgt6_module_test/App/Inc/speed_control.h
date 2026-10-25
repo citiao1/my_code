@@ -9,7 +9,7 @@
 /* BM50 19:1 gearbox: rated shaft speed 4462/19 ~= 235 RPM.
  * Use 200 RPM as a conservative target ceiling, not a measured overspeed trip. */
 #define SPEED_CONTROL_MAX_TARGET_RPM 200U
-#define SPEED_CONTROL_DEFAULT_KP 1.2f
+#define SPEED_CONTROL_DEFAULT_KP 1.1f
 #define SPEED_CONTROL_DEFAULT_KI 0.0991f /* A; B/C=0.0998, D=0.1008 */
 #define SPEED_CONTROL_DEFAULT_KD 0.0f
 #define SPEED_CONTROL_MAX_KP 100.0f

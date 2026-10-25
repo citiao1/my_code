@@ -1,0 +1,30 @@
+[
+  {
+    "command": "STOP",
+    "type": "result",
+    "id": 0,
+    "ok": true,
+    "reply": "ACK,STOP"
+  },
+  {
+    "command": "DISARM",
+    "type": "result",
+    "id": 1,
+    "ok": true,
+    "reply": "ACK,DISARM"
+  },
+  {
+    "command": "ANGLESTATUS",
+    "type": "result",
+    "id": 2,
+    "ok": true,
+    "reply": "ATEL,931116,0,1,0,0,0,104030,103678,-89,0,0,0,12075"
+  },
+  {
+    "command": "PS2STATUS",
+    "type": "result",
+    "id": 3,
+    "ok": true,
+    "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,7"
+  }
+]

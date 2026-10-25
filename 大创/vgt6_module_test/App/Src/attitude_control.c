@@ -58,8 +58,8 @@ void AttitudeControl_Init(void)
    * Stop and the control loop preserve the latest accepted gains. */
   state.rate_kp = 0.1815f;
   state.rate_ki = 1.8062f;
-  state.heading_kp = 6.0f;
-  state.heading_kd = 1.25f;
+  state.heading_kp = 5.5f;
+  state.heading_kd = 2.5f;
   AttitudeControl_Stop();
 }
 void AttitudeControl_Stop(void)
