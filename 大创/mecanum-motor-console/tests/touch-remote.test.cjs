@@ -154,6 +154,14 @@ test('speed-only rotation is rejected and expired direct heartbeat stops without
   assert.ok(f.sent.includes('DKEEP'));assert.equal(f.sent.at(-1),'STOP');
   assert.equal(f.eval('ownsSpeedMotion'),false);assert.ok(!f.sent.some(x=>x.startsWith('DRV,')));
 });
+
+test('leaving speed-only mode stops and restores angular telemetry without starting an outer loop',async()=>{
+  const f=consoleFixture();f.eval('speedOnlyMode=true;firmware.directSpeedKeep=true');
+  f.elements.get('#speedOnlyButton').listeners.click();await f.flush();
+  assert.deepEqual(f.sent,['STOP','ANGLESTATUS','ATEL,1']);
+  assert.equal(f.eval('speedOnlyMode'),false);assert.equal(f.elements.get('#chartLoop').value,'rate');
+  assert.equal(f.eval('ownsAngleMotion'),false);assert.equal(f.eval('ownsSpeedMotion'),false);
+});
 test('R25 without RAM logs is compatible and never queries unsupported log status',async()=>{
   const f=consoleFixture();f.line('VER,VGT6_BM50_ATTITUDE_R25');
   f.line('CAPS,ATTITUDE_R25,20,10,160,60,60,80,SPEED_TUNABLE,DKEEP,LOG_DISABLED');

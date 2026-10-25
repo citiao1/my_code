@@ -25,6 +25,14 @@
       if(!labels[event])return;
       if(!this.session)this.start('unknown');
       const previous=this.incidents.at(-1), time=this.now();
+      // A damaged UART burst can contain hundreds of chunks. Save its first
+      // evidence immediately, then count repeats without synchronous disk I/O.
+      if(['rx_corruption','rx_unknown_line'].includes(event) && previous &&
+          previous.sessionId===this.session.id && previous.events[0]?.event===event &&
+          time-previous.startedAt<1000) {
+        previous.updatedAt=time;previous.repeats=(previous.repeats||1)+1;
+        previous.lastDetail=detail;return previous;
+      }
       const terminal=['manual_disconnect','pagehide','bridge_status_lost','bridge_error','bridge_timeout','motion_stopped','rx_corruption','rx_unknown_line'];
       const grouped=previous && previous.sessionId===this.session.id && !terminal.includes(event) &&
         time-previous.updatedAt<10000 && !['safe_recovery_verified','manual_disconnect','pagehide'].includes(previous.events.at(-1)?.event) &&

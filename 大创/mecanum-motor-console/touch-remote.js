@@ -114,14 +114,17 @@ const firmware = {
 const hlogRows = [];
 const wheelLogFrames = [];
 const linkJournal=new Bm50LinkJournal(localStorage);
+let lastHistoryRender=0;
 function incident(event,detail,evidence) {
-  linkJournal.event(event,detail,evidence);
+  const item=linkJournal.event(event,detail,evidence);
+  if(!item || (item.repeats>1 && performance.now()-lastHistoryRender<250))return;
   renderLinkHistory();
 }
 function renderLinkHistory() {
+  lastHistoryRender=performance.now();
   const history=linkJournal.snapshot();
-  const rows=history.incidents.slice(-12).reverse().map(item=>
-    `${new Date(item.startedAt).toLocaleTimeString()} · ${item.mode} · ${item.events.map(x=>x.reason).join(' → ')}\n`+
+  const rows=history.incidents.slice().reverse().map(item=>
+    `${new Date(item.startedAt).toLocaleTimeString()} · ${item.mode} · ${item.events.map(x=>x.reason).join(' → ')}${item.repeats>1?`（同类损坏重复${item.repeats}次）`:''}\n`+
     item.events.map(x=>typeof x.detail==='string'?x.detail:JSON.stringify(x.detail)).join(' | '));
   document.querySelector('#linkHistory').textContent=rows.join('\n\n')||'尚无故障记录';
   document.querySelector('#linkHistoryStatus').textContent=`保留 ${history.incidents.length} 条事件；最近3条附原始数据。${history.storageError}`;
@@ -1256,7 +1259,7 @@ document.querySelector('#speedOnlyButton').addEventListener('click',()=>{
       await send('STOP');
       const status=(await send('ANGLESTATUS')).split(',');
       if(status.length!==14||status[2]!=='0'||status[12]!=='0')throw new Error('未确认停车，拒绝切换');
-      await send('TEL,1');
+      await send(next?'TEL,1':'ATEL,1');
       speedOnlyMode=next;
       document.querySelector('#chartLoop').value=next?'wheel_all':'rate';
       chartSamples.length=0;drawChart();

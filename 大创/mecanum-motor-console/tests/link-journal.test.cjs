@@ -32,3 +32,14 @@ test('storage quota failure leaves incident export available',()=>{
  j.start('direct');j.event('open_failed',{name:'NetworkError'});
  assert.equal(j.snapshot().incidents.length,1);assert.match(j.snapshot().storageError,/未能保存/);
 });
+
+test('a corruption burst preserves first bytes and counts repeats without a storage-write storm',()=>{
+ const f=fixture();let writes=0;const save=f.storage.setItem;
+ f.storage.setItem=(k,v)=>{writes++;save(k,v);};
+ const j=new Journal(f.storage,f.now);j.start('direct');
+ for(let i=0;i<200;i++){j.event('rx_corruption',{badBytes:1},{trace:[{detail:i.toString(16)}]});f.advance(1);}
+ assert.equal(writes,1);assert.equal(j.incidents.length,1);assert.equal(j.incidents[0].repeats,200);
+ assert.equal(j.incidents[0].evidence.trace[0].detail,'0');
+ j.event('fault',{message:'timeout'});
+ assert.equal(writes,2);assert.equal(new Journal(f.storage,f.now).incidents[0].repeats,200);
+});
