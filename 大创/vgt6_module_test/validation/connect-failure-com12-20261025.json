@@ -1,0 +1,81 @@
+{
+  "port": "COM12",
+  "baud": 115200,
+  "chunks": [],
+  "commands": [
+    {
+      "command": "STOP",
+      "start": 4386.687,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "DISARM",
+      "start": 4388.718,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "PING",
+      "start": 4390.718,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "VER",
+      "start": 4392.734,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "UART",
+      "start": 4394.75,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "LINK",
+      "start": 4396.765,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "STACK",
+      "start": 4398.781,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "SPEEDSTATUS",
+      "start": 4400.796,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "ANGLESTATUS",
+      "start": 4402.812,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "PS2STATUS",
+      "start": 4404.828,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "STOP",
+      "start": 4406.843,
+      "lines": [],
+      "timeout": true
+    },
+    {
+      "command": "DISARM",
+      "start": 4408.859,
+      "lines": [],
+      "timeout": true
+    }
+  ],
+  "note": "Opening COM may reinitialize the PC UART; no module/MCU power cycle or reset.",
+  "passiveLines": []
+}
