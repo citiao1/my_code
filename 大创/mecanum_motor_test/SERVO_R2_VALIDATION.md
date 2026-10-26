@@ -12,4 +12,6 @@ HEX SHA256: `54525549f0a95e11f32b5199c6221c0bc5d75ca52be20cf4c52c453ec2903aac`.
 
 Headless connection was verified on COM7 at 76800 baud, 8E1: ROM bootloader 0x31, chip ID 0x0413, flash 512 KiB. FlyMCU --help did not emit help/exit; only the process spawned for that test was terminated. The reusable headless programmer uses stm32loader 0.7.1 with board-matching DTR/RTS polarity, and does not automate FlyMCU windows.
 
-Programming outcome will be recorded after the attempt. Improved physical button response still requires user observation; source and simulation tests do not establish physical behavior.
+Programming completed through `vehicle-console/flash-servo.ps1` on COM7 at 76800 baud, with no desktop/window control. Backed up 32768 bytes, erased explicit sectors [0, 1], merged and wrote those sectors, and read back/compared every byte successfully. Readback SHA256: `91d69f1d3e229047add7db5664865f9b5ed97dfd1c93d8d6999ffa9ad9a72eaa`. Reset to flash was issued and the serial connection closed. Other sectors and option bytes were not written. Local record/backup: `vehicle-console/flash-records/20261026-214002-728716/` (Git-ignored). Source/build backup commit: `0fe275f7`. CodeGraph sync completed.
+
+Improved physical button response still requires user observation; source and simulation tests do not establish physical behavior.
