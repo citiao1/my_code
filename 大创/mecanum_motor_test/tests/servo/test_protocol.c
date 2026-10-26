@@ -4,7 +4,7 @@
 #include "usart.h"
 #include "st3215.h"
 static USART_TypeDef uart;
-UART_HandleTypeDef huart2 = {&uart};
+UART_HandleTypeDef huart3 = {&uart};
 static uint8_t regs[256], reply[16], len, offset, corrupt, enables;
 static uint32_t tick;
 uint32_t HAL_GetTick(void) { return tick++ / 16U; }

@@ -6,7 +6,7 @@
 #define IO_TIMEOUT_MS 5U
 #define TEST_SPEED 500U
 
-/* USART2 belongs exclusively to this driver, through the TTL bus adapter.
+/* USART3 (PC10 TX / PC11 RX) belongs exclusively to this driver, through the TTL bus adapter.
  * Transactions run in the main loop. No DMA RX or Bluetooth parser is active. */
 static uint8_t Transfer(uint8_t instruction, const uint8_t *params,
                         uint8_t count, uint8_t *result, uint8_t size)
@@ -19,17 +19,17 @@ static uint8_t Transfer(uint8_t instruction, const uint8_t *params,
   sum = 0U;
   for (i = 2U; i < count + 5U; ++i) sum += tx[i];
   tx[count + 5U] = (uint8_t)~sum;
-  __HAL_UART_FLUSH_DRREGISTER(&huart2);
-  __HAL_UART_CLEAR_OREFLAG(&huart2);
+  __HAL_UART_FLUSH_DRREGISTER(&huart3);
+  __HAL_UART_CLEAR_OREFLAG(&huart3);
   /* Ignore local bus echo while transmitting. HAL waits for TC before return. */
-  CLEAR_BIT(huart2.Instance->CR1, USART_CR1_RE);
-  i = HAL_UART_Transmit(&huart2, tx, count + 6U, IO_TIMEOUT_MS) == HAL_OK;
-  SET_BIT(huart2.Instance->CR1, USART_CR1_RE);
+  CLEAR_BIT(huart3.Instance->CR1, USART_CR1_RE);
+  i = HAL_UART_Transmit(&huart3, tx, count + 6U, IO_TIMEOUT_MS) == HAL_OK;
+  SET_BIT(huart3.Instance->CR1, USART_CR1_RE);
   if (!i) return 0U;
   start = HAL_GetTick();
   while ((HAL_GetTick() - start) < IO_TIMEOUT_MS)
   {
-    if (HAL_UART_Receive(&huart2, &byte, 1U, 1U) != HAL_OK) continue;
+    if (HAL_UART_Receive(&huart3, &byte, 1U, 1U) != HAL_OK) continue;
     if (used == sizeof(rx)) { memmove(rx, rx + 1, sizeof(rx) - 1U); --used; }
     rx[used++] = byte;
     if (used < size + 6U) continue;

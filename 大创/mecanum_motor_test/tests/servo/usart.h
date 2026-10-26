@@ -3,7 +3,7 @@
 #include <stdint.h>
 typedef struct { uint32_t CR1; } USART_TypeDef;
 typedef struct { USART_TypeDef *Instance; } UART_HandleTypeDef;
-extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
 #define USART_CR1_RE 4U
 #define CLEAR_BIT(r,b) ((r) &= ~(b))
 #define SET_BIT(r,b) ((r) |= (b))
