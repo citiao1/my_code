@@ -20,6 +20,7 @@ typedef struct
   volatile uint16_t rx_head;
   volatile uint16_t rx_tail;
   volatile uint8_t rx_restart_needed;
+  volatile uint8_t rx_discard;
   char rx_line[SERIAL_LINE_SIZE];
   uint8_t rx_line_length;
   uint8_t tx_queue[SERIAL_TX_QUEUE_DEPTH][SERIAL_TX_MESSAGE_SIZE];
@@ -31,6 +32,7 @@ typedef struct
 
 static SerialPortState serial_ports[SERIAL_PORT_COUNT];
 static SerialLineCallback line_callback;
+static volatile uint32_t rx_errors;
 
 static SerialPortState *SerialDma_FindPort(UART_HandleTypeDef *uart)
 {
@@ -73,6 +75,8 @@ static void SerialDma_PushRx(SerialPortState *port, const uint8_t *data,
     next = (port->rx_head + 1U) & SERIAL_RX_RING_MASK;
     if (next == port->rx_tail)
     {
+      port->rx_discard = 1U;
+      ++rx_errors;
       break;
     }
     port->rx_ring[port->rx_head] = data[index];
@@ -103,6 +107,12 @@ static void SerialDma_ProcessByte(SerialPortState *port, uint8_t byte)
 
   if (byte == '\n')
   {
+    if (port->rx_discard)
+    {
+      port->rx_discard = 0U;
+      port->rx_line_length = 0U;
+      return;
+    }
     if (port->rx_line_length == 0U)
     {
       return;
@@ -120,10 +130,13 @@ static void SerialDma_ProcessByte(SerialPortState *port, uint8_t byte)
   {
     return;
   }
+  if (port->rx_discard) return;
 
   if (port->rx_line_length >= (SERIAL_LINE_SIZE - 1U))
   {
     port->rx_line_length = 0U;
+    port->rx_discard = 1U;
+    ++rx_errors;
     SerialDma_Write("ERR,LINE_TOO_LONG\r\n");
     return;
   }
@@ -169,6 +182,19 @@ uint8_t SerialDma_Init(SerialLineCallback callback)
   return ready;
 }
 
+uint8_t SerialDma_InitBluetooth(SerialLineCallback callback)
+{
+  memset(serial_ports, 0, sizeof(serial_ports));
+  line_callback = callback;
+  rx_errors = 0U;
+  /* USART3 is owned exclusively by the ST3215 binary protocol. */
+  serial_ports[0].uart = &huart2;
+  serial_ports[0].rx_restart_needed = 1U;
+  return SerialDma_StartRx(&serial_ports[0]);
+}
+
+uint32_t SerialDma_GetRxErrors(void) { return rx_errors; }
+
 void SerialDma_Process(void)
 {
   uint8_t index;
@@ -178,6 +204,7 @@ void SerialDma_Process(void)
   for (index = 0U; index < SERIAL_PORT_COUNT; ++index)
   {
     port = &serial_ports[index];
+    if (port->uart == NULL) continue;
     if (port->rx_restart_needed != 0U)
     {
       (void)HAL_UART_AbortReceive(port->uart);
@@ -214,6 +241,7 @@ uint8_t SerialDma_Write(const char *text)
 
   for (index = 0U; index < SERIAL_PORT_COUNT; ++index)
   {
+    if (serial_ports[index].uart == NULL) continue;
     if (SerialDma_QueueWrite(&serial_ports[index], text, length) != 0U)
     {
       queued = 1U;
@@ -257,6 +285,8 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 
   if (port != NULL)
   {
+    port->rx_discard = 1U;
+    ++rx_errors;
     port->rx_restart_needed = 1U;
   }
 }

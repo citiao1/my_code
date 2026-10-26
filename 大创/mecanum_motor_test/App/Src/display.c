@@ -34,7 +34,7 @@ void Display_Process(void)
                  (unsigned)servo.key_down, (unsigned long)(servo.presses % 100000U));
   Display_PrintLine(16U, line);
   (void)snprintf(line, sizeof(line), "%s CMD:%c OK:%04lu",
-                 servo.status == 'R' ? "AUTO" : (servo.status == 'S' ? "PAUSE" : "FAULT"),
+                 ServoTest_GetModeText(),
                  servo.last_command, (unsigned long)(servo.commands % 10000U));
   Display_PrintLine(32U, line);
   (void)snprintf(line, sizeof(line), "UP:%06lu ERR:%03lu",

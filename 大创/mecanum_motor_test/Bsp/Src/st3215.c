@@ -104,6 +104,29 @@ uint8_t St3215_Start(void)
   return Goal(0U, TEST_SPEED) && Write(0x28U, 1U);
 }
 
+uint8_t St3215_PrepareStep(void)
+{
+  return St3215_Stop() && Mode(3U) && Goal(0U, TEST_SPEED);
+}
+
+uint8_t St3215_MoveAngle(int16_t angle_d10, uint16_t speed)
+{
+  uint32_t magnitude;
+  uint16_t steps;
+  if (!angle_d10 || angle_d10 < -7200 || angle_d10 > 7200 || speed < 100U || speed > 1500U) return 0U;
+  magnitude = (uint32_t)(angle_d10 < 0 ? -(int32_t)angle_d10 : angle_d10);
+  steps = (uint16_t)((magnitude * 4096U + 1800U) / 3600U);
+  if (angle_d10 < 0) steps |= 0x8000U;
+  return Goal(steps, speed);
+}
+
+uint8_t St3215_RunSpeed(int8_t direction, uint16_t speed)
+{
+  if ((direction != 1 && direction != -1) || speed < 100U || speed > 1500U) return 0U;
+  if (direction < 0) speed |= 0x8000U;
+  return St3215_Stop() && Mode(1U) && Goal(0U, speed) && Write(0x28U, 1U);
+}
+
 uint8_t St3215_GetMoving(uint8_t *moving)
 {
   uint8_t feedback[2];

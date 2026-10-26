@@ -63,6 +63,13 @@ int main(void)
   regs[0x42]=1; assert(St3215_GetMoving(&moving) && moving==1);
   regs[0x42]=0; assert(St3215_GetMoving(&moving) && moving==0);
   regs[0x41]=4; assert(!St3215_GetMoving(&moving));
+  regs[0x41]=0;
+  assert(St3215_PrepareStep());assert(regs[0x21]==3&&regs[0x28]==0);
+  assert(St3215_Start());
+  assert(St3215_MoveAngle(-450,600));assert(regs[0x2A]==0&&regs[0x2B]==0x82);
+  assert(!St3215_MoveAngle(0,600)&&!St3215_MoveAngle(7201,600));
+  assert(St3215_RunSpeed(-1,800));assert(regs[0x21]==1&&regs[0x2E]==0x20&&regs[0x2F]==0x83);
+  assert(!St3215_RunSpeed(0,500));
   puts("PASS: checksum/USART3/single-frame legs/relative direction/clear old goal/motion feedback/fault rejection");
   return 0;
 }
