@@ -15,4 +15,4 @@ Native Keil ARMCC 5.06 update 5 build 528: 0 errors, 0 warnings. Code=17040, RO=
 HEX SHA256: `4932e3a1a2185bc8adb30f7413b8500d334163d2716552f4497a3dc07edc492e`.
 Version marker `SERVO AUTO R5` is present at `0x08000DA0`.
 
-Programming outcome will be recorded after the attempt. Physical motion has not been observed by the agent.
+Headless COM7 programming completed at 76800 baud. Confirmed chip 0x0413, ROM bootloader 0x31 and 512 KiB flash. Sectors [0, 1] were backed up/merged and explicitly erased, then all 32768 bytes written/read back successfully. Readback SHA256: `4b75521dc830b4cf4cb868bf9cb0eb42a9d8401f6f80dcc604922c00deddf4a4`. Reset to flash issued, which starts the user-requested automatic test. Source/build backup: `3813d8d2`. Local record: `vehicle-console/flash-records/20261026-222322-883038/result.json`. CodeGraph sync completed. Physical motion has not been observed by the agent.
