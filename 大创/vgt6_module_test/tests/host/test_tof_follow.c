@@ -51,7 +51,7 @@ static void test_control_and_filter(void)
   step(1600, 1); step(1600, 1);
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK);
   for (unsigned i = 0; i < 50; ++i) step(1600, 1);
-  assert(TofFollow_GetSnapshot().forward_rpm == 69);
+  assert(TofFollow_GetSnapshot().forward_rpm == 63);
   /* A distant-background spike brakes immediately, with no filtered chase. */
   step(2400, 1);
   assert(TofFollow_GetSnapshot().forward_rpm == 0);
@@ -67,13 +67,13 @@ static void test_control_and_filter(void)
   assert(TofFollow_GetSnapshot().forward_rpm == 80); /* P gain unchanged; capped. */
   setup(101, 0); acquire(101);
   for (unsigned i = 0; i < 40; ++i) step(101, 1);
-  assert(TofFollow_GetSnapshot().forward_rpm == -45);
+  assert(TofFollow_GetSnapshot().forward_rpm == -63);
 
   setup(200, 0); acquire(200);
   for (unsigned i = 0; i < 25; ++i) step(200, 1);
-  assert(TofFollow_GetSnapshot().forward_rpm == -27); /* Reverse P is 3x forward. */
-  setup(400, 0); acquire(400);
-  for (unsigned i = 0; i < 25; ++i) step(i % 2 ? 380 : 420, 1);
+  assert(TofFollow_GetSnapshot().forward_rpm == -45); /* Reverse P is 3x forward. */
+  setup(500, 0); acquire(500);
+  for (unsigned i = 0; i < 25; ++i) step(i % 2 ? 480 : 520, 1);
   assert(TofFollow_GetSnapshot().forward_rpm == 0);
   setup(1600, 0); acquire(1600);
   rate = 12.0f;
@@ -135,9 +135,10 @@ static void test_fail_safe(void)
   range.age_ms = TOF_MAX_AGE_MS + 1;
   TofFollow_Process(&range, yaw, rate, now + 1);
   assert(TofFollow_GetSnapshot().forward_rpm == 0);
-  step(100, 1); /* Raw stop is immediate, despite the old 1600 mm filter. */
-  assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_OFF);
-  assert(TofFollow_GetSnapshot().reason == TOF_FOLLOW_TOO_CLOSE);
+  /* A valid <=100 mm return must recover from stale data without locking. */
+  for (unsigned i = 0; i < 50; ++i) step(80, 1);
+  assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK);
+  assert(TofFollow_GetSnapshot().forward_rpm < 0);
   setup(1000, 0); range.ready = 0;
   step(1000, 1);
   assert(TofFollow_GetSnapshot().reason == TOF_FOLLOW_SENSOR_FAULT);
@@ -175,7 +176,7 @@ static void test_synthetic_distance_plant(void)
       assert(TofFollow_GetSnapshot().mode != TOF_FOLLOW_OFF);
       assert(distance > 150 && distance < 1700);
     }
-    assert(fabsf(distance - 400.0f) < 65.0f);
+    assert(fabsf(distance - 500.0f) < 65.0f);
     assert(abs(TofFollow_GetSnapshot().forward_rpm) <= 1);
   }
 }
@@ -221,11 +222,35 @@ static void test_directional_gain_lifetime(void)
   assert(TofFollow_Start(&range, yaw, now));
   acquire(200);
   for (unsigned i = 0; i < 50; ++i) step(200, 1);
-  assert(TofFollow_GetSnapshot().forward_rpm == -45);
+  assert(TofFollow_GetSnapshot().forward_rpm == -75);
   assert(fabsf(TofFollow_GetGains().forward - 0.1f) < 0.00001f);
   assert(fabsf(TofFollow_GetGains().reverse - 0.3f) < 0.00001f);
   TofFollow_Init(); /* Only init/reset restores compiled defaults. */
   assert(fabsf(TofFollow_GetGains().reverse - 0.18f) < 0.00001f);
+}
+
+static void test_distance_setting_and_close_feedback(void)
+{
+  setup(500, 0);
+  assert(TofFollow_GetTarget() == 500);
+  assert(!TofFollow_SetTarget(650)); /* Cannot change an active target. */
+  TofFollow_Stop(TOF_FOLLOW_CANCELLED);
+  assert(!TofFollow_SetTarget(99) && !TofFollow_SetTarget(2001));
+  assert(!TofFollow_SetTarget(UINT32_MAX));
+  assert(TofFollow_SetTarget(650));
+  TofFollow_Stop(TOF_FOLLOW_CANCELLED);
+  assert(TofFollow_Start(&range, yaw, now));
+  assert(TofFollow_GetTarget() == 650);
+  acquire(650);
+  for (unsigned i = 0; i < 25; ++i) step(650, 1);
+  assert(TofFollow_GetSnapshot().forward_rpm == 0);
+  for (unsigned i = 0; i < 60; ++i) step(50, 1); /* Large jump closer, not a loss. */
+  assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK);
+  assert(TofFollow_GetSnapshot().forward_rpm < 0);
+  step(0, 0); /* Removing lockout must not turn invalid zero into retreat. */
+  assert(TofFollow_GetSnapshot().forward_rpm == 0);
+  TofFollow_Init();
+  assert(TofFollow_GetTarget() == 500);
 }
 
 int main(void)
@@ -236,6 +261,7 @@ int main(void)
   test_synthetic_distance_plant();
   test_synthetic_search_sweep();
   test_directional_gain_lifetime();
-  puts("PASS: 400mm follow signs/80RPM limits/filter/deadband, fixed first-loss +/-45deg anchor/reacquire, 25dps/16s search, raw stop/fault/wrap, assumed distance/yaw plants (not measured)");
+  test_distance_setting_and_close_feedback();
+  puts("PASS: 500mm adjustable follow target/RAM lifetime, near100mm retreat without lock, invalid stop, directional P/80RPM limits/filter/deadband, fixed +/-45deg 25dps/16s search/fault/wrap, assumed plants (not measured)");
   return 0;
 }

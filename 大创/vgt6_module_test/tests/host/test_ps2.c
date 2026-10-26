@@ -522,7 +522,7 @@ static void test_follow_controls(void)
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_SEARCH);
   for (unsigned i = 0; i < 100; ++i) follow_buttons(PS2_BUTTON_L1);
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK && forward > 0);
-  assert(forward == 69 && left == 0);
+  assert(forward == 63 && left == 0);
   assert(Ps2Control_GetSnapshot().speed_rpm == 80);
   follow_buttons(PS2_BUTTON_R1 | PS2_BUTTON_L1);
   assert(enabled && !TofFollow_GetSnapshot().mode && forward == 0);
@@ -554,11 +554,20 @@ static void test_follow_controls(void)
   assert(!enabled && !TofFollow_GetSnapshot().mode);
   assert(Ps2_GetSnapshot().valid);
   follow_buttons(0); follow_buttons(PS2_BUTTON_START); follow_buttons(0);
+  tof.distance_mm = 500;
   follow_buttons(PS2_BUTTON_L1);
-  tof.distance_mm = 100;
-  follow_buttons(0);
-  assert(!enabled && !TofFollow_GetSnapshot().mode);
-  assert(TofFollow_GetSnapshot().reason == TOF_FOLLOW_TOO_CLOSE);
+  for (unsigned i = 0; i < 20; ++i) follow_buttons(0);
+  assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK && forward == 0);
+  tof.distance_mm = 80;
+  for (unsigned i = 0; i < 100; ++i) follow_buttons(0);
+  assert(enabled && Ps2Control_IsActive());
+  assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK && forward < 0);
+  for (unsigned i = 0; i < 4; ++i)
+  {
+    assert(SpeedControl_GetSnapshot().target_rpm[i] > 0);
+    assert(SpeedControl_GetSnapshot().output_percent[i] > 0);
+  }
+  follow_buttons(PS2_BUTTON_SELECT);
   /* Timeout locks rather than resuming any prior movement. */
   tof.distance_mm = 3500;
   follow_buttons(0); follow_buttons(PS2_BUTTON_START); follow_buttons(0);
@@ -569,7 +578,7 @@ static void test_follow_controls(void)
   memset(&tof, 0, sizeof(tof));
   follow_buttons(0); follow_buttons(PS2_BUTTON_START); follow_buttons(0);
   assert(enabled);
-  puts("PASS: real PS2/attitude/speed integration L1 edge/START isolation, R1/SELECT/manual override, packet loss, raw 100mm stop and 16s timeout");
+  puts("PASS: real PS2/attitude/speed integration L1 edge/START isolation, R1/SELECT/manual override, packet loss, 80mm retreat stays enabled and 16s timeout");
 }
 
 int main(int argc, char **argv)

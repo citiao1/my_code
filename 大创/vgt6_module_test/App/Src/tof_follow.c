@@ -35,6 +35,7 @@ static struct
   float filtered_mm, reference_rpm, search_anchor, lost_yaw;
 } follow;
 static TofFollowGains gains;
+static uint16_t target_mm;
 
 static float clamp(float x, float bound)
 {
@@ -58,7 +59,7 @@ static uint8_t usable(const TofSnapshot *range)
 {
   return range->connected && range->ready && range->valid &&
       range->samples && range->age_ms <= TOF_MAX_AGE_MS &&
-      range->distance_mm > FRONT_GUARD_STOP_MM &&
+      range->distance_mm > 0U &&
       range->distance_mm <= FOLLOW_MAX_RANGE_MM;
 }
 
@@ -72,10 +73,20 @@ void TofFollow_Init(void)
 {
   gains.forward = FOLLOW_DEFAULT_FORWARD_P;
   gains.reverse = FOLLOW_DEFAULT_REVERSE_P;
+  target_mm = TOF_FOLLOW_DEFAULT_TARGET_MM;
   TofFollow_Stop(TOF_FOLLOW_NORMAL);
 }
 
 TofFollowGains TofFollow_GetGains(void) { return gains; }
+uint16_t TofFollow_GetTarget(void) { return target_mm; }
+
+uint8_t TofFollow_SetTarget(uint32_t distance_mm)
+{
+  if (follow.output.mode || distance_mm < TOF_FOLLOW_MIN_TARGET_MM ||
+      distance_mm > TOF_FOLLOW_MAX_TARGET_MM) return 0U;
+  target_mm = (uint16_t)distance_mm;
+  return 1U;
+}
 
 uint8_t TofFollow_SetGains(float forward, float reverse)
 {
@@ -184,14 +195,8 @@ void TofFollow_Process(const TofSnapshot *range, float yaw_deg,
     TofFollow_Stop(TOF_FOLLOW_SENSOR_FAULT);
     return;
   }
-  /* Safety uses raw range, before either filter, and cannot be delayed by
-   * confirmation/deadband. Manual mode retains its existing reverse escape. */
-  if (range->valid && range->age_ms <= TOF_MAX_AGE_MS &&
-      range->distance_mm && range->distance_mm <= FRONT_GUARD_STOP_MM)
-  {
-    TofFollow_Stop(TOF_FOLLOW_TOO_CLOSE);
-    return;
-  }
+  /* In follow mode valid close returns remain distance feedback: no 100 mm
+   * lockout. The independent forward guard still prevents forward approach. */
   fresh = !follow.have_sample || range->samples != follow.last_sequence ||
       range->sample_tick != follow.last_sample_tick;
   follow.have_sample = 1U;
@@ -199,6 +204,7 @@ void TofFollow_Process(const TofSnapshot *range, float yaw_deg,
   follow.last_sample_tick = range->sample_tick;
   valid = usable(range);
   if (follow.output.mode == TOF_FOLLOW_TRACK && valid &&
+      range->distance_mm > FRONT_GUARD_STOP_MM &&
       fabsf((float)range->distance_mm - follow.filtered_mm) > FOLLOW_JUMP_MM)
     valid = 0U;
   if (!valid)
@@ -246,7 +252,7 @@ void TofFollow_Process(const TofSnapshot *range, float yaw_deg,
     follow.reference_rpm = 0.0f;
     return;
   }
-  error = follow.filtered_mm - (float)TOF_FOLLOW_TARGET_MM;
+  error = follow.filtered_mm - (float)target_mm;
   target = fabsf(error) <= FOLLOW_DEADBAND_MM ? 0.0f :
       clamp((error > 0.0f ? gains.forward : gains.reverse) *
             (error - copysignf(FOLLOW_DEADBAND_MM, error)), (float)TOF_FOLLOW_MAX_RPM);

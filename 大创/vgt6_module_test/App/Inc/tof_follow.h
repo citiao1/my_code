@@ -5,7 +5,9 @@
 #include "tof.h"
 
 #define TOF_FOLLOW_MAX_RPM 80U
-#define TOF_FOLLOW_TARGET_MM 400U
+#define TOF_FOLLOW_DEFAULT_TARGET_MM 500U
+#define TOF_FOLLOW_MIN_TARGET_MM 100U
+#define TOF_FOLLOW_MAX_TARGET_MM 2000U
 
 typedef struct { float forward, reverse; } TofFollowGains;
 
@@ -33,5 +35,7 @@ void TofFollow_Process(const TofSnapshot *range, float yaw_deg,
 TofFollowSnapshot TofFollow_GetSnapshot(void);
 TofFollowGains TofFollow_GetGains(void);
 uint8_t TofFollow_SetGains(float forward, float reverse);
+uint16_t TofFollow_GetTarget(void);
+uint8_t TofFollow_SetTarget(uint32_t distance_mm);
 
 #endif

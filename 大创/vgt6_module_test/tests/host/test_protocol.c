@@ -953,6 +953,23 @@ static void test_heartbeat_cannot_starve_speed_curves(void)
 static void test_follow_gains_and_direct_vofa(void)
 {
   init();
+  line("FD\n"); expect("FD,500\r\n");
+  const char *bad_distance[] = {"FD,\n", "FD,99\n", "FD,2001\n", "FD,-1\n",
+    "FD,0\n", "FD,NAN\n", "FD,500.0\n", "FD,500,JUNK\n", "FD,4294967796\n"};
+  for (unsigned i = 0; i < sizeof(bad_distance)/sizeof(bad_distance[0]); ++i)
+  {
+    line(bad_distance[i]); expect("ERR,FD,RANGE_100_2000_MM\r\n");
+  }
+  line("FD,100\n"); expect("FD,100\r\n");
+  line("FD,2000\n"); expect("FD,2000\r\n");
+  line("FD,650\n"); expect("FD,650\r\n");
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("FD\n"); expect("FD,650\r\n");
+  ps2_control_mock.enabled = 1U;
+  line("FD,700\n"); expect("ERR,FD,STOP_FIRST\r\n");
+  line("FD\n"); expect("FD,650\r\n");
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("FD,500\n"); expect("FD,500\r\n");
   line("FP\n"); expect("FP,0.0600,0.1800\r\n");
   line("FP,0.08,0.3\n"); expect("FP,0.0800,0.3000\r\n");
   line("STOP\n"); expect("ACK,STOP\r\n");
@@ -977,11 +994,15 @@ static void test_follow_gains_and_direct_vofa(void)
   assert(!ChassisTest_GetSnapshot().armed && !SpeedControl_GetSnapshot().enabled);
   clear_tx(); tick += 199U; Telemetry_Process(); drain(); expect("");
   tick += 1U; Telemetry_Process(); drain();
-  expect("follow:400,650,-1,0,0,1,0,300\r\n");
+  expect("follow:500,650,-1,0,0,1,0,300\r\n");
   clear_tx(); Telemetry_Process(); drain(); expect("");
   tof_mock.valid = 0U;
   tick += 200U; Telemetry_Process(); drain();
-  expect("follow:400,-1,-1,0,0,0,0,500\r\n");
+  expect("follow:500,-1,-1,0,0,0,0,500\r\n");
+  line("FD,600\n"); expect("FD,600\r\n");
+  clear_tx(); tick += 200U; Telemetry_Process(); drain();
+  expect("follow:600,-1,-1,0,0,0,0,700\r\n");
+  line("FD,500\n"); expect("FD,500\r\n");
   line("FDBG,0\n"); expect("ACK,FDBG,0\r\n");
   clear_tx(); tick += 1000U; Telemetry_Process(); drain(); expect("");
   line("FDBG,1\n"); expect("ACK,FDBG,1\r\n");
@@ -1002,12 +1023,13 @@ static void test_follow_gains_and_direct_vofa(void)
     ++tof_mock.samples;
     TofFollow_Process(&tof_mock, 0.0f, 0.0f, tick);
   }
-  assert(TofFollow_GetSnapshot().forward_rpm == -27);
+  assert(TofFollow_GetSnapshot().forward_rpm == -45);
+  line("FD,600\n"); expect("ERR,FD,STOP_FIRST\r\n");
   line("FP,0.06,0.30\n"); expect("ERR,FP,STOP_FIRST\r\n");
   line("FDBG,1\n"); expect("ACK,FDBG,1\r\n");
   clear_tx(); tick += 200U; Telemetry_Process(); drain();
   char expected[96];
-  snprintf(expected, sizeof(expected), "follow:400,200,200,-200,-27,1,1,%lu\r\n", (unsigned long)tick);
+  snprintf(expected, sizeof(expected), "follow:500,200,200,-300,-45,1,1,%lu\r\n", (unsigned long)tick);
   expect(expected);
   line("STOP\n"); expect("ACK,STOP\r\n");
   line("FP\n"); expect("FP,0.0600,0.1800\r\n");

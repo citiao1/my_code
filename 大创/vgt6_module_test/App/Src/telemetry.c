@@ -162,14 +162,15 @@ void Telemetry_SendFollow(void)
   char message[128];
   TofSnapshot tof = Tof_GetSnapshot();
   TofFollowSnapshot f = TofFollow_GetSnapshot();
+  uint16_t target = TofFollow_GetTarget();
   uint8_t valid = tof.connected && tof.ready && tof.valid &&
       tof.age_ms <= TOF_MAX_AGE_MS;
   int filtered = valid && f.mode == TOF_FOLLOW_TRACK ? (int)f.filtered_mm : -1;
   /* Channels: target/raw/filtered/error mm, forward RPM, raw valid, mode, tick.
    * Invalid raw/filtered are -1, never a fabricated zero-distance target. */
   (void)snprintf(message, sizeof(message), "follow:%u,%d,%d,%d,%d,%u,%u,%lu\r\n",
-      TOF_FOLLOW_TARGET_MM, valid ? (int)tof.distance_mm : -1, filtered,
-      filtered >= 0 ? filtered - (int)TOF_FOLLOW_TARGET_MM : 0,
+      (unsigned)target, valid ? (int)tof.distance_mm : -1, filtered,
+      filtered >= 0 ? filtered - (int)target : 0,
       (int)f.forward_rpm, valid, (unsigned)f.mode, (unsigned long)HAL_GetTick());
   (void)write_live(message);
 }
