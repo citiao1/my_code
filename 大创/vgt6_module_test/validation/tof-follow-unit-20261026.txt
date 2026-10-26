@@ -1,0 +1,1 @@
+PASS: ToF follow range signs/limits/filter/deadband, no duplicate evidence, loss/reacquire, bounded search/timeout, raw stop/fault/wrap, assumed distance plant (not measured)

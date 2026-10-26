@@ -24,10 +24,19 @@ try {
     & gcc -std=c11 -Wall -Wextra -Werror `
         -I tests/host/ps2 -I tests/host -I Bsp/Inc -I App/Inc -I Algorithm/Inc `
         tests/host/test_ps2.c Bsp/Src/ps2.c App/Src/ps2_control.c `
+        App/Src/tof_follow.c `
         App/Src/attitude_control.c App/Src/chassis_test.c `
         App/Src/speed_control.c App/Src/front_guard.c Algorithm/Src/pid.c Algorithm/Src/mecanum.c `
         -lm -o tests/host/test_ps2.exe
     if ($LASTEXITCODE -ne 0) { throw "PS2 host compilation failed." }
+    & "tests/host/test_ps2.exe" --follow-only
+    if ($LASTEXITCODE -ne 0) { throw "PS2 follow integration failed." }
+    & gcc -std=c11 -Wall -Wextra -Werror -I App/Inc `
+        tests/host/test_tof_follow.c App/Src/tof_follow.c -lm `
+        -o tests/host/test_tof_follow.exe
+    if ($LASTEXITCODE -ne 0) { throw "ToF follow compilation failed." }
+    & "tests/host/test_tof_follow.exe"
+    if ($LASTEXITCODE -ne 0) { throw "ToF follow regression failed." }
     & "tests/host/test_ps2.exe"
     if ($LASTEXITCODE -ne 0) { throw "PS2 regression failed." }
     & gcc -std=c11 -Wall -Wextra -Werror -I tests/host `
