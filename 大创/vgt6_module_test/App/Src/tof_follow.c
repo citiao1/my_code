@@ -91,7 +91,7 @@ uint8_t TofFollow_SetTarget(uint32_t distance_mm)
 uint8_t TofFollow_SetGains(float forward, float reverse)
 {
   if (follow.output.mode || !isfinite(forward) || !isfinite(reverse) ||
-      forward < 0.0f || forward > 1.0f || reverse < 0.0f || reverse > 1.0f)
+      forward < 0.0f || reverse < 0.0f)
     return 0U;
   gains.forward = forward;
   gains.reverse = reverse;

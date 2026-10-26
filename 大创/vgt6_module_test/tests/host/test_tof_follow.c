@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <math.h>
+#include <float.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -217,7 +218,7 @@ static void test_directional_gain_lifetime(void)
   assert(!TofFollow_SetGains(-0.1f, 0.2f));
   assert(!TofFollow_SetGains(0.2f, INFINITY));
   assert(!TofFollow_SetGains(NAN, 0.2f));
-  assert(!TofFollow_SetGains(0.2f, 1.01f));
+  assert(!TofFollow_SetGains(0.2f, -1.01f));
   TofFollow_Stop(TOF_FOLLOW_CANCELLED);
   assert(TofFollow_Start(&range, yaw, now));
   acquire(200);
@@ -253,6 +254,30 @@ static void test_distance_setting_and_close_feedback(void)
   assert(TofFollow_GetTarget() == 500);
 }
 
+static void test_unbounded_finite_gains_keep_speed_limit(void)
+{
+  setup(650, 0);
+  TofFollow_Stop(TOF_FOLLOW_CANCELLED);
+  assert(TofFollow_SetGains(4.0f, 10.0f));
+  assert(TofFollow_Start(&range, yaw, now));
+  acquire(650);
+  for (unsigned i = 0; i < 60; ++i) step(650, 1);
+  assert(TofFollow_GetSnapshot().forward_rpm == 80);
+  TofFollow_Stop(TOF_FOLLOW_CANCELLED);
+  assert(TofFollow_Start(&range, yaw, now));
+  acquire(400);
+  for (unsigned i = 0; i < 60; ++i) step(400, 1);
+  assert(TofFollow_GetSnapshot().forward_rpm == -80);
+  TofFollow_Stop(TOF_FOLLOW_CANCELLED);
+  assert(TofFollow_SetGains(FLT_MAX, FLT_MAX));
+  assert(TofFollow_Start(&range, yaw, now));
+  acquire(500);
+  for (unsigned i = 0; i < 20; ++i) step(500, 1);
+  assert(TofFollow_GetSnapshot().forward_rpm == 0);
+  for (unsigned i = 0; i < 60; ++i) step(700, 1);
+  assert(TofFollow_GetSnapshot().forward_rpm == 80);
+}
+
 int main(void)
 {
   test_control_and_filter();
@@ -262,6 +287,7 @@ int main(void)
   test_synthetic_search_sweep();
   test_directional_gain_lifetime();
   test_distance_setting_and_close_feedback();
+  test_unbounded_finite_gains_keep_speed_limit();
   puts("PASS: 500mm adjustable follow target/RAM lifetime, near100mm retreat without lock, invalid stop, directional P/80RPM limits/filter/deadband, fixed +/-45deg 25dps/16s search/fault/wrap, assumed plants (not measured)");
   return 0;
 }

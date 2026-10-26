@@ -54,7 +54,10 @@ with serial.Serial(a.port, 115200, timeout=.02, write_timeout=1) as port:
         assert command('FD', 'FD') == 'FD,500'
         assert command('FP', 'FP') == 'FP,0.0600,0.1800'
         assert command('FP,0.06,0.18', 'FP') == 'FP,0.0600,0.1800'
-        command('FP,0.06,1.1', 'ERR,FP,RANGE_0_1_USE_FP')
+        assert command('FP,4,10', 'FP') == 'FP,4.0000,10.0000'
+        assert command('FP', 'FP') == 'FP,4.0000,10.0000'
+        command('FP,-1,10', 'ERR,FP,USE_NONNEGATIVE_FINITE')
+        assert command('FP,0.06,0.18', 'FP') == 'FP,0.0600,0.1800'
         assert command('FP', 'FP') == 'FP,0.0600,0.1800'
         command('UART', 'UART')
         assert command('FD,600', 'FD') == 'FD,600'

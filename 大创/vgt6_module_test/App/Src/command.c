@@ -180,12 +180,15 @@ static uint8_t Command_Follow(const char *command)
     if (sscanf(command + 3, "%f,%f%n", &forward, &reverse, &end) != 2 ||
         command[3 + end] || !TofFollow_SetGains(forward, reverse))
     {
-      SerialDma_Write("ERR,FP,RANGE_0_1_USE_FP,FORWARD,REVERSE\r\n");
+      SerialDma_Write("ERR,FP,USE_NONNEGATIVE_FINITE,FORWARD,REVERSE\r\n");
       return 1U;
     }
   }
   gains = TofFollow_GetGains();
-  (void)snprintf(message, sizeof(message), "FP,%.4f,%.4f\r\n", gains.forward, gains.reverse);
+  if (snprintf(message, sizeof(message), "FP,%.4f,%.4f\r\n",
+               gains.forward, gains.reverse) >= (int)sizeof(message))
+    (void)snprintf(message, sizeof(message), "FP,%.7g,%.7g\r\n",
+                   gains.forward, gains.reverse);
   SerialDma_Write(message); /* Write and query both return the actual gains. */
   return 1U;
 }

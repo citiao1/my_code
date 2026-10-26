@@ -971,14 +971,17 @@ static void test_follow_gains_and_direct_vofa(void)
   line("STOP\n"); expect("ACK,STOP\r\n");
   line("FD,500\n"); expect("FD,500\r\n");
   line("FP\n"); expect("FP,0.0600,0.1800\r\n");
+  line("FP,4,10\n"); expect("FP,4.0000,10.0000\r\n");
+  line("FP\n"); expect("FP,4.0000,10.0000\r\n");
+  line("FP,3e38,3e38\n"); expect("FP,3e+38,3e+38\r\n");
   line("FP,0.08,0.3\n"); expect("FP,0.0800,0.3000\r\n");
   line("STOP\n"); expect("ACK,STOP\r\n");
   line("FP\n"); expect("FP,0.0800,0.3000\r\n");
   const char *invalid[] = {"FP,NAN,0.3\n", "FP,0.08,INF\n", "FP,-1,0.2\n",
-    "FP,0.1,1.01\n", "FP,0.1\n", "FP,0.1,0.2,JUNK\n"};
+    "FP,0.1,-1\n", "FP,1e99,1\n", "FP,0.1\n", "FP,0.1,0.2,JUNK\n"};
   for (unsigned i = 0; i < sizeof(invalid)/sizeof(invalid[0]); ++i)
   {
-    line(invalid[i]); expect("ERR,FP,RANGE_0_1_USE_FP,FORWARD,REVERSE\r\n");
+    line(invalid[i]); expect("ERR,FP,USE_NONNEGATIVE_FINITE,FORWARD,REVERSE\r\n");
   }
   ps2_control_mock.enabled = 1U;
   line("FP,0.1,0.2\n"); expect("ERR,FP,STOP_FIRST\r\n");
