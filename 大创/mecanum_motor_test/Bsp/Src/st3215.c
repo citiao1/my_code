@@ -94,17 +94,32 @@ uint8_t St3215_Init(void)
   return St3215_Stop() && Write(0x37U, 1U) &&
          Write(0x09U, 0U) && Write(0x0AU, 0U) &&
          Write(0x0BU, 0U) && Write(0x0CU, 0U) &&
-         Read(0x12U, &phase, 1U) && Write(0x12U, phase | 4U) && Mode(3U);
+         Read(0x12U, &phase, 1U) && Write(0x12U, phase | 4U) &&
+         Mode(3U) && Goal(0U, TEST_SPEED);
+}
+
+uint8_t St3215_Start(void)
+{
+  /* Discard an interrupted relative goal before enabling torque again. */
+  return Goal(0U, TEST_SPEED) && Write(0x28U, 1U);
+}
+
+uint8_t St3215_GetMoving(uint8_t *moving)
+{
+  uint8_t feedback[2];
+  if (!Read(0x41U, feedback, 2U) || feedback[0] != 0U) return 0U;
+  *moving = feedback[1] != 0U;
+  return 1U;
 }
 
 uint8_t St3215_Step(int8_t direction)
 {
   uint16_t steps = 341U;
-  if (!St3215_Stop() || !Mode(3U)) return 0U;
   /* Relative step mode avoids reversing 330 degrees at the encoder wrap.
    * 4096/12 rounds to 341 counts (29.9707 degrees); BIT15 is direction. */
   if (direction < 0) steps |= 0x8000U;
-  return Goal(steps, TEST_SPEED) && Write(0x28U, 1U);
+  /* Start/Stop own torque; one new relative goal per leg, no motion retries. */
+  return Goal(steps, TEST_SPEED);
 }
 
 uint8_t St3215_Run(void)

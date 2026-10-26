@@ -3,186 +3,136 @@
 #include "main.h"
 
 #define DEBOUNCE_MS 10U
-#define DOUBLE_MS 300U
-#define HOLD_MS 500U
-#define EVENT_COUNT 16U
+#define LEG_MINIMUM_MS 1200U
+#define LEG_TIMEOUT_MS 3000U
+#define ENDPOINT_DWELL_MS 250U
+#define FEEDBACK_PERIOD_MS 100U
+#define RECOVERY_PERIOD_MS 500U
 
-typedef enum { STEP_FORWARD = 1, STEP_REVERSE, RUN, STOP } KeyEvent;
+typedef enum { AUTO_IDLE, AUTO_MOVING, AUTO_DWELL } AutoPhase;
 
-/* Single producer (SysTick), single consumer (main). Publish each event before
- * advancing head; release its slot before starting a UART operation. */
-static volatile uint8_t events[EVENT_COUNT];
-static volatile uint8_t head, tail, overflow, input_enabled, sample_holding;
-static uint32_t edge_tick, press_tick, release_tick;
-static uint8_t raw_key, stable_key, pending, second_press, released;
-static uint32_t retry_tick, check_tick;
-static uint8_t ready, running;
+/* ISR owns only debounce and the monotonic press count. Main owns all motion,
+ * request toggling and UART I/O, so a press remains visible during link faults. */
+static volatile uint8_t input_initialized;
 static volatile uint32_t presses;
-static uint32_t commands, errors;
+static uint8_t raw_key, stable_key, released;
+static uint32_t edge_tick;
+static uint32_t handled_presses, commands, errors, leg_tick, poll_tick, retry_tick;
+static uint8_t ready, requested, torque_active;
+static int8_t direction;
+static AutoPhase phase;
 static char last_command;
-
-static void PushEvent(KeyEvent event)
-{
-  uint8_t next = (head + 1U) % EVENT_COUNT;
-  if (next == tail) { overflow = 1U; return; }
-  events[head] = (uint8_t)event;
-  head = next;
-}
-
-static void Press(uint32_t now)
-{
-  ++presses;
-  press_tick = now;
-  second_press = pending && ((now - release_tick) < DOUBLE_MS);
-  if (pending && !second_press)
-  {
-    PushEvent(STEP_FORWARD);
-    pending = 0U;
-  }
-}
-
-static void Release(uint32_t now)
-{
-  if (!released) { released = 1U; return; }
-  if (sample_holding)
-  {
-    sample_holding = 0U;
-    PushEvent(STOP);
-    return;
-  }
-  if (second_press)
-  {
-    pending = second_press = 0U;
-    PushEvent(STEP_REVERSE);
-    return;
-  }
-  pending = 1U;
-  release_tick = now;
-}
 
 void ServoTest_Sample1ms(void)
 {
-  uint32_t now = HAL_GetTick();
-  uint8_t key = HAL_GPIO_ReadPin(USER_KEY_GPIO_Port, USER_KEY_Pin) == GPIO_PIN_RESET;
-  if (!input_enabled)
-  {
-    raw_key = stable_key = key;
-    edge_tick = press_tick = now;
-    pending = second_press = sample_holding = 0U;
-    released = !key;
-    return;
-  }
+  uint32_t now;
+  uint8_t key;
+  if (!input_initialized) return;
+  now = HAL_GetTick();
+  key = HAL_GPIO_ReadPin(USER_KEY_GPIO_Port, USER_KEY_Pin) == GPIO_PIN_RESET;
   if (key != raw_key) { raw_key = key; edge_tick = now; }
-  if ((key != stable_key) && ((now - edge_tick) >= DEBOUNCE_MS))
-  {
-    stable_key = key;
-    if (key) Press(now);
-    else Release(now);
-  }
-  if (!released) return;
-  if (stable_key && key && !sample_holding && ((now - press_tick) >= HOLD_MS))
-  {
-    pending = second_press = 0U;
-    sample_holding = 1U;
-    PushEvent(RUN);
-  }
-  if (pending && !stable_key && !key && ((now - release_tick) >= DOUBLE_MS))
-  {
-    pending = 0U;
-    PushEvent(STEP_FORWARD);
-  }
+  if ((key == stable_key) || ((now - edge_tick) < DEBOUNCE_MS)) return;
+  stable_key = key;
+  if (!key) { released = 1U; return; }
+  if (released) { ++presses; released = 0U; }
 }
 
-static void DisableInput(void)
+static void Fault(void)
 {
-  input_enabled = 0U;
-  tail = head;
-  overflow = 0U;
-  running = 0U;
-}
-
-static void EnableInput(void)
-{
-  /* SysTick sees disabled input until its state is reset. */
-  ServoTest_Sample1ms();
-  input_enabled = 1U;
-}
-
-void ServoTest_Init(void)
-{
-  DisableInput();
-  presses = commands = errors = 0U;
-  last_command = '-';
-  ready = St3215_Init();
-  if (!ready) ++errors;
-  retry_tick = check_tick = HAL_GetTick();
-  if (ready) EnableInput();
-}
-
-static void CheckResult(uint8_t ok)
-{
-  if (ok) return;
   ++errors;
-  ready = 0U;
-  DisableInput();
+  ready = requested = torque_active = 0U;
+  phase = AUTO_IDLE;
+  last_command = 'E';
   (void)St3215_Stop();
   retry_tick = HAL_GetTick();
 }
 
-static void CommandResult(char command, uint8_t ok)
+static uint8_t Command(char name, uint8_t ok)
 {
-  last_command = command;
-  if (ok) ++commands;
-  CheckResult(ok);
+  last_command = name;
+  if (!ok) { Fault(); return 0U; }
+  ++commands;
+  return 1U;
+}
+
+void ServoTest_Init(void)
+{
+  input_initialized = 0U;
+  presses = handled_presses = commands = errors = 0U;
+  raw_key = stable_key = HAL_GPIO_ReadPin(USER_KEY_GPIO_Port, USER_KEY_Pin) == GPIO_PIN_RESET;
+  released = !raw_key;
+  edge_tick = HAL_GetTick();
+  input_initialized = 1U;
+  requested = 1U; /* Explicitly requested automatic reciprocation on power-up. */
+  torque_active = 0U;
+  direction = 1;
+  phase = AUTO_IDLE;
+  last_command = '-';
+  ready = St3215_Init();
+  retry_tick = HAL_GetTick();
+  if (!ready) Fault();
+}
+
+static void ProcessKey(void)
+{
+  uint32_t count = presses;
+  uint32_t changed = count - handled_presses;
+  handled_presses = count;
+  if (changed & 1U) requested = !requested;
 }
 
 void ServoTest_Process(void)
 {
   uint32_t now = HAL_GetTick();
-  KeyEvent event;
-  if (overflow) CheckResult(0U);
+  uint8_t moving;
+  ProcessKey();
   if (!ready)
   {
-    if ((now - retry_tick) < 100U) return;
+    /* Idempotent torque-off/init only. A failed move is never sent again. */
+    if ((now - retry_tick) < RECOVERY_PERIOD_MS) return;
     ready = St3215_Init();
     if (!ready) ++errors;
     retry_tick = HAL_GetTick();
-    if (ready) EnableInput();
     return;
   }
-  if (tail != head)
+  if (!requested)
   {
-    event = (KeyEvent)events[tail];
-    tail = (tail + 1U) % EVENT_COUNT;
-    switch (event)
-    {
-      case STEP_FORWARD: CommandResult('+', St3215_Step(1)); break;
-      case STEP_REVERSE: CommandResult('-', St3215_Step(-1)); break;
-      case RUN:
-        /* Never start a delayed hold after the user has already released. */
-        if (!sample_holding) break;
-        running = 1U;
-        check_tick = now;
-        CommandResult('R', St3215_Run());
-        break;
-      case STOP:
-        running = 0U;
-        CommandResult('S', St3215_Stop());
-        break;
-      default: CheckResult(0U); break;
-    }
+    if (torque_active) (void)Command('S', St3215_Stop());
+    torque_active = 0U;
+    phase = AUTO_IDLE;
+    direction = 1;
     return;
   }
-  if (running && ((now - check_tick) >= 100U))
+  if (!torque_active)
   {
-    check_tick = now;
-    CheckResult(St3215_Check());
+    if (!Command('R', St3215_Start())) return;
+    torque_active = 1U;
+    direction = 1;
+    phase = AUTO_IDLE;
+    return;
   }
+  if (phase == AUTO_MOVING)
+  {
+    if ((now - leg_tick) >= LEG_TIMEOUT_MS) { Fault(); return; }
+    if ((now - leg_tick) < LEG_MINIMUM_MS) return;
+    if ((now - poll_tick) < FEEDBACK_PERIOD_MS) return;
+    poll_tick = now;
+    if (!St3215_GetMoving(&moving)) { Fault(); return; }
+    if (moving) return;
+    direction = -direction;
+    phase = AUTO_DWELL;
+    leg_tick = HAL_GetTick();
+    return;
+  }
+  if ((phase == AUTO_DWELL) && ((now - leg_tick) < ENDPOINT_DWELL_MS)) return;
+  if (!Command(direction > 0 ? '+' : '-', St3215_Step(direction))) return;
+  leg_tick = poll_tick = HAL_GetTick();
+  phase = AUTO_MOVING;
 }
 
 char ServoTest_GetStatus(void)
 {
-  return ready ? (running ? 'R' : 'S') : 'E';
+  return !ready ? 'E' : (requested ? 'R' : 'S');
 }
 
 ServoTestSnapshot ServoTest_GetSnapshot(void)

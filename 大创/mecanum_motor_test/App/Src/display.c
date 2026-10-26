@@ -33,7 +33,8 @@ void Display_Process(void)
   (void)snprintf(line, sizeof(line), "KEY:%u PRESS:%05lu",
                  (unsigned)servo.key_down, (unsigned long)(servo.presses % 100000U));
   Display_PrintLine(16U, line);
-  (void)snprintf(line, sizeof(line), "S:%c CMD:%c OK:%04lu", servo.status,
+  (void)snprintf(line, sizeof(line), "%s CMD:%c OK:%04lu",
+                 servo.status == 'R' ? "AUTO" : (servo.status == 'S' ? "PAUSE" : "FAULT"),
                  servo.last_command, (unsigned long)(servo.commands % 10000U));
   Display_PrintLine(32U, line);
   (void)snprintf(line, sizeof(line), "UP:%06lu ERR:%03lu",

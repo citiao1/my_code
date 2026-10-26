@@ -3,15 +3,24 @@
 #include "servo_test.h"
 
 static uint32_t now;
-static int key, steps, runs, stops, fail, in_sample;
 static unsigned process_period = 1U;
+static int key, starts, stops, attempts, moving, fail, fail_step, in_sample;
+static int8_t directions[128];
 uint32_t HAL_GetTick(void) { return now; }
 int HAL_GPIO_ReadPin(int port, int pin) { (void)port; (void)pin; return !key; }
 uint8_t St3215_Init(void) { assert(!in_sample); return !fail; }
-uint8_t St3215_Check(void) { assert(!in_sample); return !fail; }
+uint8_t St3215_Start(void) { assert(!in_sample); ++starts; return !fail; }
 uint8_t St3215_Stop(void) { assert(!in_sample); ++stops; return !fail; }
-uint8_t St3215_Step(int8_t direction) { assert(!in_sample); steps += direction; return !fail; }
-uint8_t St3215_Run(void) { assert(!in_sample); ++runs; return !fail; }
+uint8_t St3215_GetMoving(uint8_t *value)
+{
+  assert(!in_sample); *value = (uint8_t)moving; return !fail;
+}
+uint8_t St3215_Step(int8_t direction)
+{
+  assert(!in_sample && attempts < 128);
+  directions[attempts++] = direction;
+  return !fail && !fail_step;
+}
 static void advance(unsigned ms)
 {
   while (ms--)
@@ -23,47 +32,52 @@ static void advance(unsigned ms)
 }
 static void reset(int held)
 {
-  key = held; steps = runs = stops = fail = 0;
+  key = held; starts = stops = attempts = moving = fail = fail_step = 0;
   process_period = 1U;
   ServoTest_Init();
 }
-static void click(void) { key = 1; advance(70); key = 0; advance(70); }
+static void click(void) { key = 1; advance(20); key = 0; advance(20); }
 int main(void)
 {
-  reset(0); click(); assert(steps == 0); advance(310); assert(steps == 1);
-  reset(0); click(); advance(50); click(); advance(400); assert(steps == -1);
-  reset(0); key = 1; advance(550); assert(runs == 1 && steps == 0);
-  advance(1500); assert(runs == 1); key = 0; advance(30);
-  assert(stops == 1); advance(500); assert(steps == 0);
-  reset(0); key = 1; advance(5); key = 0; advance(5);
-  key = 1; advance(5); key = 0; advance(600); assert(steps == 0 && runs == 0);
-  reset(1); advance(900); assert(runs == 0); key = 0; advance(50);
-  click(); advance(400); assert(steps == 1);
-  reset(0); click(); key = 1; advance(550); assert(runs == 1 && steps == 0);
-  key = 0; advance(30); assert(stops == 1);
-  reset(0); now = 0xFFFFFF00U; click(); advance(400); assert(steps == 1);
-  reset(0); fail = 1; click(); advance(400); assert(ServoTest_GetStatus() == 'E');
-  fail = 0; advance(250); assert(ServoTest_GetStatus() == 'S');
-  /* A complete short click can happen while the foreground is blocked. */
+  reset(0); advance(10); assert(starts == 1 && attempts == 1 && directions[0] == 1);
+  advance(1445); assert(attempts == 2 && directions[1] == -1);
+  advance(1455); assert(attempts == 3 && directions[2] == 1);
+  click(); assert(ServoTest_GetStatus() == 'S' && stops == 1);
+  advance(5000); assert(attempts == 3);
+  click(); assert(ServoTest_GetStatus() == 'R' && starts == 2 && attempts == 4);
+  assert(directions[3] == 1);
+  /* A held button toggles once, not once per foreground iteration. */
+  key = 1; advance(2000); assert(ServoTest_GetStatus() == 'S');
+  int stopped_attempts = attempts; advance(3000); assert(attempts == stopped_attempts);
+  key = 0; advance(20);
+  /* Contact bounce cannot toggle run/pause. */
+  reset(0); advance(20);
+  for (int i = 0; i < 4; ++i) { key=1; advance(5); key=0; advance(5); }
+  assert(ServoTest_GetSnapshot().presses == 0 && ServoTest_GetStatus() == 'R');
+  /* Short presses remain captured during a blocked foreground. */
   for (unsigned phase = 0; phase < 80; ++phase)
   {
-    reset(0); process_period = 80U; advance(phase);
-    key = 1; advance(15); key = 0; advance(420);
-    assert(steps == 1);
+    reset(0); advance(2); process_period=80U; advance(phase);
+    key=1; advance(15); key=0; advance(100);
+    assert(ServoTest_GetSnapshot().presses == 1 && ServoTest_GetStatus() == 'S');
   }
-  /* Second PRESS fits the window; second release is much later. */
-  reset(0); click(); advance(180); key = 1; advance(200);
-  key = 0; advance(400); assert(steps == -1);
-  /* Hold/release fully captured during a stalled foreground must not start. */
-  reset(0); process_period = 0U; key = 1; advance(650);
-  key = 0; advance(50); process_period = 1U; advance(50);
-  assert(runs == 0 && steps == 0 && stops == 1);
-  /* Bounded queue overflow enters stop/recovery rather than dropping STOP. */
-  reset(0); process_period = 0U;
-  for (unsigned i = 0; i < 20; ++i) { click(); advance(350); }
-  process_period = 1U; advance(1); assert(ServoTest_GetStatus() == 'E');
-  advance(200); assert(steps == 0 && runs == 0 && stops > 0);
-  puts("PASS: single/double/hold/release/bounce/boot-held/second-hold/tick-wrap/recovery");
-  puts("PASS: 80 foreground phases/15ms presses/late second release/no stale RUN/overflow/no ISR UART");
+  /* A failed move acknowledgement must not cause an automatic relative retry. */
+  reset(0); fail_step=1; advance(2); assert(attempts == 1 && ServoTest_GetStatus() == 'E');
+  fail_step=0; advance(2500); assert(attempts == 1 && ServoTest_GetStatus() == 'S');
+  click(); assert(attempts == 2 && ServoTest_GetStatus() == 'R');
+  /* Feedback loss stops; recovery stays paused until the user presses again. */
+  reset(0); advance(2); fail=1; advance(1300); assert(ServoTest_GetStatus() == 'E');
+  fail=0; advance(700); assert(ServoTest_GetStatus() == 'S' && attempts == 1);
+  click(); assert(attempts == 2);
+  /* Never reverse a servo that has not completed the previous leg. */
+  reset(0); moving=1; advance(3100);
+  assert(attempts == 1 && ServoTest_GetSnapshot().errors > 0 && stops > 0);
+  /* An already-held boot key does not repeatedly stop/start the automatic run. */
+  reset(1); advance(600); assert(attempts == 1 && ServoTest_GetSnapshot().presses == 0);
+  key=0; advance(20); click(); assert(ServoTest_GetStatus() == 'S');
+  now=0xFFFFFF00U; reset(0); advance(1500);
+  assert(attempts == 2 && directions[0] == 1 && directions[1] == -1);
+  puts("PASS: boot auto/+30,-30 alternation/pause,resume/held key/bounce/80 short-press phases");
+  puts("PASS: no relative retry after lost ACK/fault stays paused/motion timeout/boot-held/tick-wrap/no ISR UART");
   return 0;
 }
