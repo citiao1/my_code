@@ -1,6 +1,12 @@
 # Mecanum Motor Control
 
-## Current firmware: SERVO AUTO R5 (2026-10-26)
+## Current firmware: SERVO BLE R7 (2026-10-26)
+
+当前应用为独立 ST3215 蓝牙测试。OLED 显示 `SERVO BLE R7`，上电待机，USER 在停止/往复之间切换。蓝牙 USART2 使用 PD5 TX / PD6 RX、9600 8N1；舵机转接板使用 USART3 PC10 TX / PC11 RX、1 Mbps。独立上位机见 [servo-bluetooth-console](../servo-bluetooth-console/README.md)，支持自定义角度、双向连续旋转、往复及停止。
+
+R7 修复连续模式的速度下发顺序，并检查实际速度，防止只有 RUN 应答却不转动。构建、镜像哈希和实物验证边界见 [SERVO_R7_VALIDATION.md](SERVO_R7_VALIDATION.md)。下文 R5 及更早章节作为历史说明保留。
+
+## Historical firmware: SERVO AUTO R5 (2026-10-26)
 
 R5 retains the R4 servo bus mapping, moved from USART2 to **USART3 at 1000000 baud, 8N1: PC10 TX, PC11 RX, common GND**. PD5/PD6 are no longer used by the servo driver. Disconnect any other module from PC10/PC11 for this test.
 

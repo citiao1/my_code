@@ -24,7 +24,7 @@ const char *ServoTest_GetModeText(void){return "PAUSE";}
 static void send(const char *body){char line[80];unsigned char crc=0;for(const char *p=body;*p;++p)crc^=(unsigned char)*p;sprintf(line,"@%s*%02X",body,crc);callback(line);}
 int main(void)
 {
- ServoLink_Init();send("1,V");assert(strstr(output,"1,OK,SERVO BLE R6,PAUSE,0,0,0"));
+ ServoLink_Init();send("1,V");assert(strstr(output,"1,OK,SERVO BLE R7,PAUSE,0,0,0"));
  send("2,M,-450,600");assert(moves==1&&last_angle==-450&&last_speed==600);
  char saved[128];strcpy(saved,output);send("2,M,-450,600");assert(moves==1&&!strcmp(output,saved));
  send("2,M,300,600");assert(moves==1&&strstr(output,"ID_COLLISION"));

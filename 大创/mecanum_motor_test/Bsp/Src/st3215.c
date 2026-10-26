@@ -122,9 +122,32 @@ uint8_t St3215_MoveAngle(int16_t angle_d10, uint16_t speed)
 
 uint8_t St3215_RunSpeed(int8_t direction, uint16_t speed)
 {
+  uint8_t phase, torque, actual[2], params[3] = {0x2EU, 0U, 0U};
   if ((direction != 1 && direction != -1) || speed < 100U || speed > 1500U) return 0U;
   if (direction < 0) speed |= 0x8000U;
-  return St3215_Stop() && Mode(1U) && Goal(0U, speed) && Write(0x28U, 1U);
+  /* Wheel mode uses the dedicated speed register, as SMS_STS::WriteSpe does.
+   * Set zero=stop before enabling, then send the desired speed AFTER torque on.
+   * A position-goal packet/torque transition must not consume the speed command. */
+  if (!St3215_Stop() || !Mode(1U) || !Read(0x12U, &phase, 1U) ||
+      !Write(0x12U, (uint8_t)((phase | 4U) & ~8U)) || !Write(0x29U, 50U) ||
+      !Transfer(3U, params, sizeof(params), 0, 0U) || !Write(0x28U, 1U)) return 0U;
+  params[1] = (uint8_t)speed; params[2] = (uint8_t)(speed >> 8);
+  if (!Transfer(3U, params, sizeof(params), 0, 0U) ||
+      !Read(0x28U, &torque, 1U) || torque != 1U || !Read(0x2EU, actual, 2U)) return 0U;
+  return actual[0] == params[1] && actual[1] == params[2];
+}
+
+uint8_t St3215_GetSpeed(int16_t *speed)
+{
+  uint8_t data[8];
+  uint16_t raw;
+  /* Speed, load, voltage, temperature, write flag, status. Moving flag is a
+   * position-target flag and does not prove that wheel mode is rotating. */
+  if (!Read(0x3AU, data, sizeof(data)) || data[7] != 0U) return 0U;
+  raw = (uint16_t)data[0] | ((uint16_t)data[1] << 8);
+  *speed = (int16_t)(raw & 0x7FFFU);
+  if (raw & 0x8000U) *speed = -*speed;
+  return 1U;
 }
 
 uint8_t St3215_GetMoving(uint8_t *moving)
@@ -147,5 +170,5 @@ uint8_t St3215_Step(int8_t direction)
 
 uint8_t St3215_Run(void)
 {
-  return St3215_Stop() && Mode(1U) && Goal(0U, TEST_SPEED) && Write(0x28U, 1U);
+  return St3215_RunSpeed(1, TEST_SPEED);
 }

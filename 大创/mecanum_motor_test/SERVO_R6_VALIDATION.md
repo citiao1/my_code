@@ -8,4 +8,6 @@ Native Keil ARMCC 5.06u5 b528: 0 errors, 0 warnings. Code 20718, RO 1938, RW 104
 
 HEX SHA256: 8ff8bd0ead4dbd39884ed47f384e1a4f997838d1fa5015d914c63d851a981b71.
 
-Independent host UI is being built in servo-bluetooth-console. Programming outcome will be recorded separately.
+Programmed COM7 via the existing UART flashing tool; verified all 32768 bytes of sectors 0/1 and reset to flash. Readback SHA256: d08123dbcef89f4e8fb488b330724fb7c9b5d3889a9c4e5719f59bc05e397965. Machine record: ../vehicle-console/flash-records/20261026-224806-023629/result.json.
+
+Real WHEELTEC-IOS BLE version/status queries succeeded through both FFE1 and FFE2: !62003,OK,SERVO BLE R6,PAUSE,0,0,0*23. User verified angle and reciprocation operation; continuous restart can acknowledge RUN without actual motion. R7 addresses that separate observed failure. Independent UI: ../servo-bluetooth-console.

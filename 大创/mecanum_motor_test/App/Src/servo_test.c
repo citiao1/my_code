@@ -7,6 +7,7 @@
 #define FEEDBACK_PERIOD_MS 100U
 #define RECOVERY_PERIOD_MS 500U
 #define REMOTE_LEASE_MS 3000U
+#define CONTINUOUS_STALL_MS 1500U
 
 typedef enum { AUTO_IDLE, AUTO_MOVING, AUTO_DWELL } AutoPhase;
 typedef enum { MODE_AUTO, MODE_MOVE, MODE_CONTINUOUS } ControlMode;
@@ -15,6 +16,7 @@ static volatile uint32_t presses;
 static uint8_t raw_key, stable_key, released;
 static uint32_t edge_tick, handled_presses, commands, errors;
 static uint32_t leg_tick, poll_tick, retry_tick, remote_tick;
+static uint32_t rotation_tick;
 static uint32_t leg_minimum_ms, leg_timeout_ms;
 static uint8_t ready, requested, torque_active, remote_active;
 static int8_t direction;
@@ -112,6 +114,7 @@ uint8_t ServoTest_Continuous(int8_t rotation, uint16_t speed)
   requested = torque_active = remote_active = 1U;
   phase = AUTO_IDLE;
   remote_tick = poll_tick = HAL_GetTick();
+  rotation_tick = remote_tick;
   return 1U;
 }
 
@@ -137,6 +140,7 @@ void ServoTest_Process(void)
   uint32_t now = HAL_GetTick();
   uint32_t counts;
   uint8_t moving;
+  int16_t speed;
   ProcessKey();
   if (!ready)
   {
@@ -157,7 +161,9 @@ void ServoTest_Process(void)
   {
     if ((now - poll_tick) < FEEDBACK_PERIOD_MS) return;
     poll_tick = now;
-    if (!St3215_GetMoving(&moving)) Fault();
+    if (!St3215_GetSpeed(&speed)) { Fault(); return; }
+    if ((direction > 0 && speed >= 10) || (direction < 0 && speed <= -10)) rotation_tick = now;
+    else if ((now - rotation_tick) >= CONTINUOUS_STALL_MS) Fault();
     return;
   }
   if (!torque_active)

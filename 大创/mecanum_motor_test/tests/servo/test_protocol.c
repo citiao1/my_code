@@ -7,6 +7,7 @@ static USART_TypeDef uart;
 UART_HandleTypeDef huart3 = {&uart};
 static uint8_t regs[256], reply[16], len, offset, corrupt, enables;
 static unsigned tx_count;
+static uint8_t ignore_speed;
 static uint32_t tick;
 uint32_t HAL_GetTick(void) { return tick++ / 16U; }
 int HAL_UART_Transmit(UART_HandleTypeDef *h, uint8_t *tx, uint16_t size, uint32_t timeout)
@@ -23,8 +24,11 @@ int HAL_UART_Transmit(UART_HandleTypeDef *h, uint8_t *tx, uint16_t size, uint32_
   if (tx[4]==3)
   {
     if (tx[5]==0x37) assert(tx[6]==1); /* Never unlock EEPROM. */
-    memcpy(regs+tx[5],tx+6,size-7);
-    if (tx[5]==0x28 && tx[6]==1) ++enables;
+    if (!(ignore_speed && tx[5]==0x2E)) memcpy(regs+tx[5],tx+6,size-7);
+    /* Model a torque transition clearing the active velocity. The new speed
+     * must reach the servo after torque-on, including repeated same-speed runs. */
+    if (tx[5]==0x28 && tx[6]==1) { ++enables; regs[0x2E]=regs[0x2F]=0; }
+    if (regs[0x21]==1) assert(tx[5]!=0x29 || size==8); /* No position packet in wheel mode. */
   }
   else { assert(tx[4]==2); n=tx[6]; }
   reply[0]=reply[1]=255;reply[2]=1;reply[3]=n+2;reply[4]=0;
@@ -69,6 +73,14 @@ int main(void)
   assert(St3215_MoveAngle(-450,600));assert(regs[0x2A]==0&&regs[0x2B]==0x82);
   assert(!St3215_MoveAngle(0,600)&&!St3215_MoveAngle(7201,600));
   assert(St3215_RunSpeed(-1,800));assert(regs[0x21]==1&&regs[0x2E]==0x20&&regs[0x2F]==0x83);
+  assert(!(regs[0x12]&8) && (regs[0x12]&4));
+  assert(St3215_Stop());assert(St3215_RunSpeed(-1,800));assert(regs[0x2E]==0x20&&regs[0x2F]==0x83);
+  assert(St3215_RunSpeed(1,800));assert(regs[0x2F]==3);
+  int16_t speed;
+  regs[0x3A]=0x20;regs[0x3B]=0x83;assert(St3215_GetSpeed(&speed)&&speed==-800);
+  regs[0x3B]=3;assert(St3215_GetSpeed(&speed)&&speed==800);
+  regs[0x41]=8;assert(!St3215_GetSpeed(&speed));regs[0x41]=0;
+  ignore_speed=1;assert(!St3215_RunSpeed(1,800));ignore_speed=0;
   assert(!St3215_RunSpeed(0,500));
   puts("PASS: checksum/USART3/single-frame legs/relative direction/clear old goal/motion feedback/fault rejection");
   return 0;
