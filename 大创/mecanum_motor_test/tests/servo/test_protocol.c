@@ -56,4 +56,3 @@ int main(void)
   puts("PASS: framing/checksum/relative direction/speed/volatile config/stop/error rejection");
   return 0;
 }
-
