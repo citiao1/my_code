@@ -7,7 +7,7 @@ try {
         -I tests/host -I Bsp/Inc -I App/Inc -I Algorithm/Inc `
         tests/host/test_protocol.c Bsp/Src/serial_dma.c App/Src/command.c `
         App/Src/telemetry.c App/Src/speed_control.c App/Src/front_guard.c App/Src/chassis_test.c `
-        App/Src/attitude_control.c Algorithm/Src/attitude_filter.c `
+        App/Src/attitude_control.c App/Src/tof_follow.c Algorithm/Src/attitude_filter.c `
         Algorithm/Src/pid.c Algorithm/Src/mecanum.c `
         -lm -o tests/host/test_protocol.exe
     if ($LASTEXITCODE -ne 0) { throw "Host compilation failed." }

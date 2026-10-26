@@ -18,6 +18,7 @@
 #include "stack_usage.h"
 #include "telemetry.h"
 #include "tof.h"
+#include "tof_follow.h"
 #include "stm32f4xx_hal.h"
 
 #define COMMAND_SIZE 64U
@@ -106,6 +107,46 @@ static uint8_t Command_Hlog(const char *command)
   SerialDma_Write("ERR,LOG,USE_READ,OFFSET,COUNT_0_8\r\n");
   return 1U;
 #endif
+}
+
+static uint8_t Command_Follow(const char *command)
+{
+  char message[64];
+  float forward, reverse;
+  int end = 0;
+  TofFollowGains gains;
+  if (!strcmp(command, "FDBG,0") || !strcmp(command, "FDBG,1"))
+  {
+    if (command[5] == '1' && Telemetry_Hlog_IsActive())
+      SerialDma_Write("ERR,FDBG,STOP_RECORDING_FIRST\r\n");
+    else
+    {
+      Telemetry_SetFollow(command[5] == '1');
+      SerialDma_Write(command[5] == '1' ? "ACK,FDBG,1\r\n" : "ACK,FDBG,0\r\n");
+    }
+    return 1U;
+  }
+  if (strcmp(command, "FP") && strncmp(command, "FP,", 3U)) return 0U;
+  if (command[2] == ',')
+  {
+    if (TofFollow_GetSnapshot().mode || Ps2Control_IsActive() || SpeedControl_GetSnapshot().enabled ||
+        AttitudeControl_GetSnapshot().mode || ChassisTest_IsMotorActive() ||
+        Telemetry_Hlog_IsActive())
+    {
+      SerialDma_Write("ERR,FP,STOP_FIRST\r\n");
+      return 1U;
+    }
+    if (sscanf(command + 3, "%f,%f%n", &forward, &reverse, &end) != 2 ||
+        command[3 + end] || !TofFollow_SetGains(forward, reverse))
+    {
+      SerialDma_Write("ERR,FP,RANGE_0_1_USE_FP,FORWARD,REVERSE\r\n");
+      return 1U;
+    }
+  }
+  gains = TofFollow_GetGains();
+  (void)snprintf(message, sizeof(message), "FP,%.4f,%.4f\r\n", gains.forward, gains.reverse);
+  SerialDma_Write(message); /* Write and query both return the actual gains. */
+  return 1U;
 }
 
 static uint8_t Command_Attitude(const char *command)
@@ -480,7 +521,7 @@ void Command_HandleLine(const char *line)
     SerialDma_Write("ERR,STACK_GUARD,MOTORS_DISABLED\r\n");
     return;
   }
-  if (Command_Attitude(command)) return;
+  if (Command_Follow(command) || Command_Attitude(command)) return;
   if (strcmp(command, "STATUS") == 0)
   {
     Telemetry_SendNow();
@@ -821,6 +862,7 @@ void Command_HandleLine(const char *line)
     SerialDma_Write("CMD,BAT,RECOVER,A,STATUS,CAL,ZERO,WHO,PING,HELP\r\n");
     SerialDma_Write("CMD,SPEED,0/1,SPD,A,RPM,DRV,F,L,R,PID,A,KP,KI,KD,PIDGET,SPEEDSTATUS,SPEEDLIMIT,TEL,0/1\r\n");
     SerialDma_Write("CMD,CAPS,PS2STATUS,YAW,DPS,HEAD,DEG,HEADMOVE,DEG,F,L,TRACKMOVE,DEG,FX,FY,MOVE,F,L,DPS,KEEP,YAWPID,KP,KI,HEADPID,KP,KD,YAWGET,HEADGET,ANGLESTATUS,ATEL,0/1\r\n");
+    SerialDma_Write("CMD,FP,FP,FORWARD_P,REVERSE_P,FDBG,0/1\r\n");
     SerialDma_Write("CMD,HLOG,CLEAR,START,STOP,STATUS,READ,OFFSET,COUNT_0_8\r\n");
     SerialDma_Write("CMD,WLOG,CLEAR,START,STOP,STATUS,READ,OFFSET,COUNT_0_8,WLOGINFO,WSPD,A,RPM,WKEEP\r\n");
     SerialDma_Write("CMD,TOF,TOF,0/1\r\n");

@@ -14,6 +14,7 @@
 #include "speed_control.h"
 #include "stm32f4xx_hal.h"
 #include "tof.h"
+#include "tof_follow.h"
 
 /* Keep the conservative display rate at 115200 baud: radio buffering and
  * control reply latency still matter more than UART line capacity. */
@@ -46,6 +47,8 @@ static uint8_t periodic_written;
 static TofSnapshot last_tof_report;
 static uint32_t tof_report_tick;
 static uint8_t tof_report_seen;
+static uint8_t follow_stream;
+static uint32_t follow_tick;
 
 static uint8_t write_live(const char *message)
 {
@@ -67,6 +70,8 @@ void Telemetry_Init(void)
   Telemetry_Hlog_Clear();
   tof_stream = hlog_read_seen = 0U;
   tof_tick = HAL_GetTick();
+  follow_stream = 0U;
+  follow_tick = HAL_GetTick();
 }
 
 void Telemetry_Process(void)
@@ -81,6 +86,18 @@ void Telemetry_Process(void)
    * repeatedly collide with a 300ms status slot and suppress every curve point. */
   if (!SerialDma_CanWriteTelemetry()) return;
   periodic_send = 1U;
+
+  /* VOFA direct serial uses an exclusive 5 Hz FireWater stream. Latest state
+   * only, command quiet window/TX priority unchanged, no capture buffer. */
+  if (follow_stream)
+  {
+    periodic_written = 0U;
+    if (!Telemetry_Hlog_IsActive() && now - follow_tick >= 200U)
+      Telemetry_SendFollow();
+    if (periodic_written) follow_tick = now;
+    periodic_send = 0U;
+    return;
+  }
 
   /* Distance: 10 Hz alone, 5 Hz alongside 2 Hz TEL/ATEL. With conservative rates,
    * even 55-byte TOF + 255-byte TEL stays below 800 bytes/s. Captures and
@@ -113,6 +130,7 @@ void Telemetry_Process(void)
 
 void Telemetry_SetPeriodic(uint8_t enable)
 {
+  follow_stream = 0U;
   attitude_stream = 0U;
   telemetry_periodic = (enable != 0U) ? 1U : 0U;
   telemetry_tick = HAL_GetTick();
@@ -126,9 +144,34 @@ void Telemetry_SetAttitude(uint8_t enable)
 
 void Telemetry_SetTof(uint8_t enable)
 {
+  follow_stream = 0U;
   tof_stream = enable != 0U;
   tof_report_seen = 0U;
   tof_tick = HAL_GetTick();
+}
+
+void Telemetry_SetFollow(uint8_t enable)
+{
+  follow_stream = enable != 0U;
+  if (enable) telemetry_periodic = attitude_stream = tof_stream = 0U;
+  follow_tick = HAL_GetTick();
+}
+
+void Telemetry_SendFollow(void)
+{
+  char message[128];
+  TofSnapshot tof = Tof_GetSnapshot();
+  TofFollowSnapshot f = TofFollow_GetSnapshot();
+  uint8_t valid = tof.connected && tof.ready && tof.valid &&
+      tof.age_ms <= TOF_MAX_AGE_MS;
+  int filtered = valid && f.mode == TOF_FOLLOW_TRACK ? (int)f.filtered_mm : -1;
+  /* Channels: target/raw/filtered/error mm, forward RPM, raw valid, mode, tick.
+   * Invalid raw/filtered are -1, never a fabricated zero-distance target. */
+  (void)snprintf(message, sizeof(message), "follow:%u,%d,%d,%d,%d,%u,%u,%lu\r\n",
+      TOF_FOLLOW_TARGET_MM, valid ? (int)tof.distance_mm : -1, filtered,
+      filtered >= 0 ? filtered - (int)TOF_FOLLOW_TARGET_MM : 0,
+      (int)f.forward_rpm, valid, (unsigned)f.mode, (unsigned long)HAL_GetTick());
+  (void)write_live(message);
 }
 
 void Telemetry_SendTof(void)

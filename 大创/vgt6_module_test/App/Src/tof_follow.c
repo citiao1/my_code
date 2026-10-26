@@ -7,9 +7,9 @@
 /* Unmeasured conservative outer-loop defaults; the existing wheel and yaw
  * controllers are unchanged. Positive forward approaches the TOF end.
  * Single-beam range continuity is a heuristic, not target identification. */
-#define FOLLOW_TARGET_MM 400.0f
 #define FOLLOW_DEADBAND_MM 50.0f
-#define FOLLOW_KP_RPM_PER_MM 0.06f
+#define FOLLOW_DEFAULT_FORWARD_P 0.06f
+#define FOLLOW_DEFAULT_REVERSE_P 0.18f
 #define FOLLOW_ACCEL_RPM_S 60.0f
 #define FOLLOW_FILTER_MS 80.0f
 #define FOLLOW_MAX_RANGE_MM 2000U
@@ -34,6 +34,7 @@ static struct
   int8_t search_direction;
   float filtered_mm, reference_rpm, search_anchor, lost_yaw;
 } follow;
+static TofFollowGains gains;
 
 static float clamp(float x, float bound)
 {
@@ -67,7 +68,24 @@ void TofFollow_Stop(TofFollowReason reason)
   follow.output.reason = reason;
 }
 
-void TofFollow_Init(void) { TofFollow_Stop(TOF_FOLLOW_NORMAL); }
+void TofFollow_Init(void)
+{
+  gains.forward = FOLLOW_DEFAULT_FORWARD_P;
+  gains.reverse = FOLLOW_DEFAULT_REVERSE_P;
+  TofFollow_Stop(TOF_FOLLOW_NORMAL);
+}
+
+TofFollowGains TofFollow_GetGains(void) { return gains; }
+
+uint8_t TofFollow_SetGains(float forward, float reverse)
+{
+  if (follow.output.mode || !isfinite(forward) || !isfinite(reverse) ||
+      forward < 0.0f || forward > 1.0f || reverse < 0.0f || reverse > 1.0f)
+    return 0U;
+  gains.forward = forward;
+  gains.reverse = reverse;
+  return 1U;
+}
 
 static void search(float yaw, uint32_t now)
 {
@@ -83,7 +101,7 @@ static void search(float yaw, uint32_t now)
 
 uint8_t TofFollow_Start(const TofSnapshot *range, float yaw_deg, uint32_t now)
 {
-  TofFollow_Init();
+  TofFollow_Stop(TOF_FOLLOW_NORMAL); /* L1 must preserve accepted RAM gains. */
   if (!range->connected || !range->ready || !isfinite(yaw_deg))
   {
     follow.output.reason = TOF_FOLLOW_SENSOR_FAULT;
@@ -228,9 +246,9 @@ void TofFollow_Process(const TofSnapshot *range, float yaw_deg,
     follow.reference_rpm = 0.0f;
     return;
   }
-  error = follow.filtered_mm - FOLLOW_TARGET_MM;
+  error = follow.filtered_mm - (float)TOF_FOLLOW_TARGET_MM;
   target = fabsf(error) <= FOLLOW_DEADBAND_MM ? 0.0f :
-      clamp(FOLLOW_KP_RPM_PER_MM *
+      clamp((error > 0.0f ? gains.forward : gains.reverse) *
             (error - copysignf(FOLLOW_DEADBAND_MM, error)), (float)TOF_FOLLOW_MAX_RPM);
   /* Deadband and sign reversal brake immediately; acceleration is bounded. */
   if (target == 0.0f || target * follow.reference_rpm < 0.0f)

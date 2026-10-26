@@ -1,0 +1,1 @@
+PASS: 2782 real-firmware protocol assertions

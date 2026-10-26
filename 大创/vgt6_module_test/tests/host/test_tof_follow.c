@@ -31,6 +31,7 @@ static void setup(uint16_t mm, float heading)
   now = 100U;
   yaw = heading;
   rate = 0.0f;
+  TofFollow_Init();
   assert(TofFollow_Start(&range, yaw, now));
 }
 
@@ -66,11 +67,11 @@ static void test_control_and_filter(void)
   assert(TofFollow_GetSnapshot().forward_rpm == 80); /* P gain unchanged; capped. */
   setup(101, 0); acquire(101);
   for (unsigned i = 0; i < 40; ++i) step(101, 1);
-  assert(TofFollow_GetSnapshot().forward_rpm == -15);
+  assert(TofFollow_GetSnapshot().forward_rpm == -45);
 
   setup(200, 0); acquire(200);
   for (unsigned i = 0; i < 25; ++i) step(200, 1);
-  assert(TofFollow_GetSnapshot().forward_rpm < 0);
+  assert(TofFollow_GetSnapshot().forward_rpm == -27); /* Reverse P is 3x forward. */
   setup(400, 0); acquire(400);
   for (unsigned i = 0; i < 25; ++i) step(i % 2 ? 380 : 420, 1);
   assert(TofFollow_GetSnapshot().forward_rpm == 0);
@@ -204,6 +205,29 @@ static void test_synthetic_search_sweep(void)
   }
 }
 
+static void test_directional_gain_lifetime(void)
+{
+  setup(400, 0);
+  assert(fabsf(TofFollow_GetGains().forward - 0.06f) < 0.00001f);
+  assert(fabsf(TofFollow_GetGains().reverse - 0.18f) < 0.00001f);
+  assert(!TofFollow_SetGains(0.1f, 0.3f)); /* Active search rejects changes. */
+  TofFollow_Stop(TOF_FOLLOW_CANCELLED);
+  assert(TofFollow_SetGains(0.1f, 0.3f));
+  assert(!TofFollow_SetGains(-0.1f, 0.2f));
+  assert(!TofFollow_SetGains(0.2f, INFINITY));
+  assert(!TofFollow_SetGains(NAN, 0.2f));
+  assert(!TofFollow_SetGains(0.2f, 1.01f));
+  TofFollow_Stop(TOF_FOLLOW_CANCELLED);
+  assert(TofFollow_Start(&range, yaw, now));
+  acquire(200);
+  for (unsigned i = 0; i < 50; ++i) step(200, 1);
+  assert(TofFollow_GetSnapshot().forward_rpm == -45);
+  assert(fabsf(TofFollow_GetGains().forward - 0.1f) < 0.00001f);
+  assert(fabsf(TofFollow_GetGains().reverse - 0.3f) < 0.00001f);
+  TofFollow_Init(); /* Only init/reset restores compiled defaults. */
+  assert(fabsf(TofFollow_GetGains().reverse - 0.18f) < 0.00001f);
+}
+
 int main(void)
 {
   test_control_and_filter();
@@ -211,6 +235,7 @@ int main(void)
   test_fail_safe();
   test_synthetic_distance_plant();
   test_synthetic_search_sweep();
+  test_directional_gain_lifetime();
   puts("PASS: 400mm follow signs/80RPM limits/filter/deadband, fixed first-loss +/-45deg anchor/reacquire, 25dps/16s search, raw stop/fault/wrap, assumed distance/yaw plants (not measured)");
   return 0;
 }

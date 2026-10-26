@@ -5,6 +5,9 @@
 #include "tof.h"
 
 #define TOF_FOLLOW_MAX_RPM 80U
+#define TOF_FOLLOW_TARGET_MM 400U
+
+typedef struct { float forward, reverse; } TofFollowGains;
 
 typedef enum { TOF_FOLLOW_OFF, TOF_FOLLOW_TRACK, TOF_FOLLOW_SEARCH } TofFollowMode;
 typedef enum
@@ -28,5 +31,7 @@ void TofFollow_Stop(TofFollowReason reason);
 void TofFollow_Process(const TofSnapshot *range, float yaw_deg,
                        float rate_dps, uint32_t now);
 TofFollowSnapshot TofFollow_GetSnapshot(void);
+TofFollowGains TofFollow_GetGains(void);
+uint8_t TofFollow_SetGains(float forward, float reverse);
 
 #endif

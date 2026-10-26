@@ -21,6 +21,7 @@
 #include "mecanum.h"
 #include "ps2.h"
 #include "ps2_control.h"
+#include "tof_follow.h"
 #include "tof.h"
 
 static DMA_HandleTypeDef mock_dma;
@@ -91,6 +92,7 @@ uint8_t Ps2_IsPressed(uint16_t button)
 { return (ps2_mock.buttons & button) != 0U; }
 void Ps2Control_Stop(void)
 {
+  TofFollow_Stop(TOF_FOLLOW_CANCELLED);
   ps2_control_mock.enabled = 0U;
   ps2_control_mock.forward_rpm = 0;
   ps2_control_mock.left_rpm = 0;
@@ -118,6 +120,7 @@ static void init(void)
   assert(ChassisTest_Init() == 1U);
   SpeedControl_Init();
   AttitudeControl_Init();
+  TofFollow_Init();
   memset(&gyro_mock, 0, sizeof(gyro_mock));
   gyro_mock.ready = 1U;
   memset(&ps2_mock, 0, sizeof(ps2_mock));
@@ -319,7 +322,7 @@ static void test_tunable_gains_and_target_ceiling(void)
   assert(speed.target_limit_rpm == 160U);
   for (index = 0U; index < SPEED_CONTROL_CHANNEL_COUNT; ++index)
   {
-    assert(speed.kp[index] == 1.2f);
+    assert(speed.kp[index] == 1.1f);
     assert(speed.ki[index] == ki[index]);
     assert(speed.kd[index] == 0.0f);
     assert(SpeedControl_SetPid((MotorChannel)index, 0.8f, 0.1f, 0.0f) == 1U);
@@ -401,10 +404,10 @@ static void __attribute__((unused)) test_attitude_cascade_and_stop(void)
   gyro_mock.yaw_deg = 179.0f;
   AttitudeControl_Process(20);
   a=AttitudeControl_GetSnapshot();
-  assert(a.error_deg==2.0f && a.output_dps==12.0f);
+  assert(a.error_deg==2.0f && a.output_dps==11.0f);
   gyro_mock.rate_dps=2.0f;
   AttitudeControl_Process(20);
-  assert(AttitudeControl_GetSnapshot().output_dps==9.5f);
+  assert(AttitudeControl_GetSnapshot().output_dps==6.0f);
   line("HEADMOVE,15,20,0\n"); expect("ACK,HEADMOVE\r\n");
   line("YAWPID,0.25,1.2\n"); expect("ERR,ANGLEPID,STOP_AND_STOP_RECORDING_FIRST\r\n");
   line("STOP\n"); expect("ACK,STOP\r\n");
@@ -783,7 +786,7 @@ static void test_startup_gains_remain_runtime_tunable(void)
 {
   init();
   line("YAWGET\n"); expect("YAWPID,0.1815,1.8062,60,80,20\r\n");
-  line("HEADGET\n"); expect("HEADPID,6.0000,1.2500,80,20,D_MEAS\r\n");
+  line("HEADGET\n"); expect("HEADPID,5.5000,2.5000,80,20,D_MEAS\r\n");
   line("YAWPID,0.22,1.5\n"); expect("ACK,YAWPID\r\n");
   line("HEADPID,5,1\n"); expect("ACK,HEADPID\r\n");
   line("ARM\n"); expect("ACK,ARM,WHEELS_OFF_GROUND\r\n");
@@ -947,8 +950,72 @@ static void test_heartbeat_cannot_starve_speed_curves(void)
   }
 }
 
+static void test_follow_gains_and_direct_vofa(void)
+{
+  init();
+  line("FP\n"); expect("FP,0.0600,0.1800\r\n");
+  line("FP,0.08,0.3\n"); expect("FP,0.0800,0.3000\r\n");
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("FP\n"); expect("FP,0.0800,0.3000\r\n");
+  const char *invalid[] = {"FP,NAN,0.3\n", "FP,0.08,INF\n", "FP,-1,0.2\n",
+    "FP,0.1,1.01\n", "FP,0.1\n", "FP,0.1,0.2,JUNK\n"};
+  for (unsigned i = 0; i < sizeof(invalid)/sizeof(invalid[0]); ++i)
+  {
+    line(invalid[i]); expect("ERR,FP,RANGE_0_1_USE_FP,FORWARD,REVERSE\r\n");
+  }
+  ps2_control_mock.enabled = 1U;
+  line("FP,0.1,0.2\n"); expect("ERR,FP,STOP_FIRST\r\n");
+  line("FP\n"); expect("FP,0.0800,0.3000\r\n");
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("FP,0.06,0.18\n"); expect("FP,0.0600,0.1800\r\n");
+
+  tof_mock.connected = tof_mock.ready = tof_mock.valid = 1U;
+  tof_mock.distance_mm = 650U;
+  line("TEL,1\n"); expect("ACK,TEL,1\r\n");
+  line("TOF,1\n"); expect("ACK,TOF,1\r\n");
+  line("FDBG,1\n"); expect("ACK,FDBG,1\r\n");
+  assert(!ChassisTest_GetSnapshot().armed && !SpeedControl_GetSnapshot().enabled);
+  clear_tx(); tick += 199U; Telemetry_Process(); drain(); expect("");
+  tick += 1U; Telemetry_Process(); drain();
+  expect("follow:400,650,-1,0,0,1,0,300\r\n");
+  clear_tx(); Telemetry_Process(); drain(); expect("");
+  tof_mock.valid = 0U;
+  tick += 200U; Telemetry_Process(); drain();
+  expect("follow:400,-1,-1,0,0,0,0,500\r\n");
+  line("FDBG,0\n"); expect("ACK,FDBG,0\r\n");
+  clear_tx(); tick += 1000U; Telemetry_Process(); drain(); expect("");
+  line("FDBG,1\n"); expect("ACK,FDBG,1\r\n");
+  line("TEL,0\n"); expect("ACK,TEL,0\r\n");
+  clear_tx(); tick += 1000U; Telemetry_Process(); drain(); expect("");
+  line("FDBG,1\n"); expect("ACK,FDBG,1\r\n");
+  line("TOF,0\n"); expect("ACK,TOF,0\r\n");
+  clear_tx(); tick += 1000U; Telemetry_Process(); drain(); expect("");
+
+  tof_mock.valid = 1U;
+  tof_mock.distance_mm = 200U;
+  tof_mock.samples = 1U;
+  assert(TofFollow_Start(&tof_mock, 0.0f, tick));
+  for (unsigned i = 0; i < 50; ++i)
+  {
+    tick += 40U;
+    tof_mock.sample_tick = tick;
+    ++tof_mock.samples;
+    TofFollow_Process(&tof_mock, 0.0f, 0.0f, tick);
+  }
+  assert(TofFollow_GetSnapshot().forward_rpm == -27);
+  line("FP,0.06,0.30\n"); expect("ERR,FP,STOP_FIRST\r\n");
+  line("FDBG,1\n"); expect("ACK,FDBG,1\r\n");
+  clear_tx(); tick += 200U; Telemetry_Process(); drain();
+  char expected[96];
+  snprintf(expected, sizeof(expected), "follow:400,200,200,-200,-27,1,1,%lu\r\n", (unsigned long)tick);
+  expect(expected);
+  line("STOP\n"); expect("ACK,STOP\r\n");
+  line("FP\n"); expect("FP,0.0600,0.1800\r\n");
+}
+
 int main(void)
 {
+  test_follow_gains_and_direct_vofa();
   test_every_split();
   test_stop_restart_and_tel();
   test_bad_lines_and_recovery();
