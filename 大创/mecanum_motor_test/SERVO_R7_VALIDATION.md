@@ -6,10 +6,12 @@ R7 改为参考 Waveshare 官方 ST3215.zip / SCServo / SMS_STS.cpp 的 WriteSpe
 
 连续运行每 100 ms 读取 0x3A 实际速度及状态，1.5 秒持续无有效方向速度则停止并进入 FAULT。恢复后停留 PAUSE，需新命令。3 秒远程心跳租期保持不变。其他模式保留原有单次相对命令及无自动重试规则。
 
-验证：三个 GCC C99 主机测试套件通过（-Wall -Wextra -Werror）；包括同速度重复启停、正反切换、扭矩使能清掉速度的模拟、ACK 成功但速度未写入的拒绝、零转速故障、故障恢复不自启、按键、租期、校验与去重。Node 11 项测试通过，包括心跳不刷屏且状态继续更新。
+验证：三个 GCC C99 主机测试套件通过（-Wall -Wextra -Werror）；包括同速度重复启停、正反切换、扭矩使能清掉速度的模拟、ACK 成功但速度未写入的拒绝、零转速故障、故障恢复不自启、按键、租期、校验与去重。Node 14 项测试通过，包括心跳不刷屏、重复连续启停、优先使用带应答蓝牙写入、兼容无应答写入模块及重新连接已授权设备。
 
 原生 Keil ARMCC V5.06u5 build 528：0 errors，0 warnings。Code 20962，RO 1938，RW 108，ZI 12956。HEX SHA256：`865f5c6a14dcf02117a3494b27c93009eb2db538f40a9ac5659fdd3bc5e5ce09`。
 
-烧录和实物重复启停结果待本版本源代码备份完成后记录。编译/模拟测试不等于实物转动验证。
+源代码备份：74719e0d。COM7 编程完成，受影响扇区 0/1 全部 32768 字节读回验证；保留扇区尾部其他数据。读回 SHA256：`e86d3e69b593024c21c43a5469517121c1d4ce26b8709ce8d33a016482d75d98`。机器记录：`../vehicle-console/flash-records/20261026-232024-685159/result.json`。用户确认屏幕 R7、UP 在增加。
+
+真实 WHEELTEC-IOS 链路：无应答 ATT 写入曾出现版本查询无回复；改用带应答写入后，版本查询、四次连续启动（+341、+341、-341、-341 counts/s）、各两秒运行及停止均完成。每段运行超过 1.5 秒转速检查宽限期，状态仍为 RUN，累计错误为 0，最后 PAUSE。原始应答见 [servo_r7_ble_restart.json](validation/servo_r7_ble_restart.json)。这是实际速度反馈检查通过；用户没有注意观察这四次，不宣称已完成目视角度精度或负载验证。
 
 参考：[官方内存表](https://docs.waveshare.com/Memory_Map_Explanation/ST_Servo_Memory_Map_Explanation)，[官方代码包](https://www.waveshare.net/w/upload/4/47/ST3215.zip)。

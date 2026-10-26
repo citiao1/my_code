@@ -20,9 +20,12 @@ export class BleSession {
     let device;
     let remembered;
     try{remembered=localStorage.getItem('servo-ble-device');}catch{/* Storage can be unavailable. */}
-    if(remembered && navigator.bluetooth.getDevices){
+    if(navigator.bluetooth.getDevices){
       const permitted=await navigator.bluetooth.getDevices();
       device=permitted.find(item=>item.id===remembered);
+      // Older page versions did not remember the ID. Reuse a single known
+      // module already authorized for this origin, only after this button click.
+      if(!device && permitted.length===1 && /WHEELTEC|DX[- ]?BT(?:16|24)/i.test(permitted[0].name||''))device=permitted[0];
     }
     if(!device)device=await navigator.bluetooth.requestDevice({filters:[{services:[profile.service]}]});
     if(token!==this.token)throw new Error('连接已取消');
@@ -62,8 +65,11 @@ export class BleSession {
       for(let offset=0;offset<bytes.length;offset+=20){
         if(token!==this.token||!this.device?.gatt?.connected)throw new Error('连接已断开');
         const chunk=bytes.slice(offset,offset+20),characteristic=this.writeCharacteristic;
-        if(characteristic.properties.writeWithoutResponse)await characteristic.writeValueWithoutResponse(chunk);
-        else if(characteristic.writeValueWithResponse)await characteristic.writeValueWithResponse(chunk);
+        // The module offers both modes. Prefer acknowledged ATT writes: real
+        // Windows tests lost unacknowledged queries, while acknowledged writes
+        // delivered version, heartbeat and repeated motor commands reliably.
+        if(characteristic.properties.write && characteristic.writeValueWithResponse)await characteristic.writeValueWithResponse(chunk);
+        else if(characteristic.properties.writeWithoutResponse)await characteristic.writeValueWithoutResponse(chunk);
         else await characteristic.writeValue(chunk);
       }
     });
