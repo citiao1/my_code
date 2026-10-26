@@ -7,7 +7,7 @@
 /* Unmeasured conservative outer-loop defaults; the existing wheel and yaw
  * controllers are unchanged. Positive forward approaches the TOF end.
  * Single-beam range continuity is a heuristic, not target identification. */
-#define FOLLOW_TARGET_MM 1000.0f
+#define FOLLOW_TARGET_MM 400.0f
 #define FOLLOW_DEADBAND_MM 50.0f
 #define FOLLOW_KP_RPM_PER_MM 0.06f
 #define FOLLOW_ACCEL_RPM_S 60.0f
@@ -17,10 +17,10 @@
 #define FOLLOW_CONFIRM_JUMP_MM 120
 #define FOLLOW_CONFIRM_SAMPLES 3U
 #define FOLLOW_LOST_MS 120U
-#define FOLLOW_SEARCH_MS 8000U
-#define FOLLOW_SEARCH_ANGLE_DEG 22.0f
-#define FOLLOW_SEARCH_MAX_DPS 15.0f
-#define FOLLOW_SEARCH_GUARD_DEG 32.0f
+#define FOLLOW_SEARCH_MS 16000U
+#define FOLLOW_SEARCH_ANGLE_DEG 45.0f
+#define FOLLOW_SEARCH_MAX_DPS 25.0f
+#define FOLLOW_SEARCH_GUARD_DEG 55.0f
 #define FOLLOW_REACQUIRE_MS 250U
 #define FOLLOW_PERIOD_MS 20U
 
@@ -32,7 +32,7 @@ static struct
   uint16_t window[3], candidate_mm;
   uint8_t have_sample, window_index, candidate_count, losing;
   int8_t search_direction;
-  float filtered_mm, reference_rpm, search_anchor;
+  float filtered_mm, reference_rpm, search_anchor, lost_yaw;
 } follow;
 
 static float clamp(float x, float bound)
@@ -138,9 +138,9 @@ static void update_search(float yaw, uint32_t now)
     TofFollow_Stop(TOF_FOLLOW_CONTROL_FAULT);
     return;
   }
-  if (displacement >= FOLLOW_SEARCH_ANGLE_DEG - 3.0f)
+  if (displacement >= FOLLOW_SEARCH_ANGLE_DEG - 0.5f)
     follow.search_direction = -1;
-  else if (displacement <= -FOLLOW_SEARCH_ANGLE_DEG + 3.0f)
+  else if (displacement <= -FOLLOW_SEARCH_ANGLE_DEG + 0.5f)
     follow.search_direction = 1;
   error = follow.search_direction * FOLLOW_SEARCH_ANGLE_DEG - displacement;
   /* Pause immediately while confirming a possible target; never translate
@@ -188,10 +188,17 @@ void TofFollow_Process(const TofSnapshot *range, float yaw_deg,
     follow.output.forward_rpm = 0;
     follow.reference_rpm = 0.0f;
     follow.candidate_count = 0U;
-    if (!follow.losing) { follow.lost_tick = now; follow.losing = 1U; }
+    if (!follow.losing)
+    {
+      /* Freeze the first-loss heading before debounce; do not recenter the
+       * sweep on a later heading while the chassis is still turning. */
+      follow.lost_tick = now;
+      follow.lost_yaw = yaw_deg;
+      follow.losing = 1U;
+    }
     if (follow.output.mode == TOF_FOLLOW_TRACK &&
         now - follow.lost_tick >= FOLLOW_LOST_MS)
-      search(yaw_deg, now);
+      search(follow.lost_yaw, now);
   }
   else if (fresh)
   {

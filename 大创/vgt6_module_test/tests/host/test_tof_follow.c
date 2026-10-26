@@ -19,7 +19,7 @@ static void step(uint16_t mm, uint8_t valid)
   range.valid = valid;
   TofFollow_Process(&range, yaw, rate, now);
   assert(abs(TofFollow_GetSnapshot().forward_rpm) <= 80);
-  assert(fabsf(TofFollow_GetSnapshot().turn_dps) <= 15.0f);
+  assert(fabsf(TofFollow_GetSnapshot().turn_dps) <= 25.0f);
 }
 
 static void setup(uint16_t mm, float heading)
@@ -49,8 +49,8 @@ static void test_control_and_filter(void)
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_SEARCH);
   step(1600, 1); step(1600, 1);
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK);
-  for (unsigned i = 0; i < 25; ++i) step(1600, 1);
-  assert(TofFollow_GetSnapshot().forward_rpm == 33);
+  for (unsigned i = 0; i < 50; ++i) step(1600, 1);
+  assert(TofFollow_GetSnapshot().forward_rpm == 69);
   /* A distant-background spike brakes immediately, with no filtered chase. */
   step(2400, 1);
   assert(TofFollow_GetSnapshot().forward_rpm == 0);
@@ -63,16 +63,16 @@ static void test_control_and_filter(void)
 
   setup(2000, 0); acquire(2000);
   for (unsigned i = 0; i < 40; ++i) step(2000, 1);
-  assert(TofFollow_GetSnapshot().forward_rpm == 57); /* P gain unchanged. */
+  assert(TofFollow_GetSnapshot().forward_rpm == 80); /* P gain unchanged; capped. */
   setup(101, 0); acquire(101);
   for (unsigned i = 0; i < 40; ++i) step(101, 1);
-  assert(TofFollow_GetSnapshot().forward_rpm == -51);
+  assert(TofFollow_GetSnapshot().forward_rpm == -15);
 
-  setup(600, 0); acquire(600);
-  for (unsigned i = 0; i < 25; ++i) step(600, 1);
+  setup(200, 0); acquire(200);
+  for (unsigned i = 0; i < 25; ++i) step(200, 1);
   assert(TofFollow_GetSnapshot().forward_rpm < 0);
-  setup(1000, 0); acquire(1000);
-  for (unsigned i = 0; i < 25; ++i) step(i % 2 ? 980 : 1020, 1);
+  setup(400, 0); acquire(400);
+  for (unsigned i = 0; i < 25; ++i) step(i % 2 ? 380 : 420, 1);
   assert(TofFollow_GetSnapshot().forward_rpm == 0);
   setup(1600, 0); acquire(1600);
   rate = 12.0f;
@@ -84,14 +84,19 @@ static void test_loss_search_and_confirmation(void)
 {
   setup(1200, 179); acquire(1200);
   for (unsigned i = 0; i < 25; ++i) step(1200, 1);
-  for (unsigned i = 0; i < 4; ++i) step(0, 0);
+  step(0, 0); /* Loss is first observed at 179 degrees. */
+  yaw = -175; /* Drift +6 degrees during the 120 ms loss confirmation. */
+  for (unsigned i = 0; i < 3; ++i) step(0, 0);
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_SEARCH);
   assert(TofFollow_GetSnapshot().forward_rpm == 0);
   assert(TofFollow_GetSnapshot().turn_dps > 0);
-  yaw = -161; /* +20 degrees across wrap. */
+  yaw = -146; /* +35: keep turning (old +/-22 logic would stop/reverse). */
+  step(0, 0);
+  assert(TofFollow_GetSnapshot().turn_dps > 0);
+  yaw = -136; /* +45 relative to FIRST loss, across wrap; reverse now. */
   step(0, 0);
   assert(TofFollow_GetSnapshot().turn_dps < 0);
-  yaw = 159;
+  yaw = 134; /* -45 relative to the same fixed loss angle. */
   step(0, 0);
   assert(TofFollow_GetSnapshot().turn_dps > 0);
   step(1250, 1);
@@ -103,8 +108,18 @@ static void test_loss_search_and_confirmation(void)
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK);
   assert(TofFollow_GetSnapshot().forward_rpm == 0);
 
+  /* A new loss gets a new anchor; search never follows subsequent yaw. */
+  yaw = 60;
+  step(0, 0);
+  yaw = 70;
+  for (unsigned i = 0; i < 3; ++i) step(0, 0);
+  assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_SEARCH);
+  yaw = 105;
+  step(0, 0);
+  assert(TofFollow_GetSnapshot().turn_dps < 0);
+
   setup(3500, 0);
-  for (unsigned i = 0; i < 199; ++i)
+  for (unsigned i = 0; i < 399; ++i)
     step(i % 4 == 0 ? 1000 : 3500, 1); /* Flicker cannot extend the deadline. */
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_SEARCH);
   step(3500, 1);
@@ -125,7 +140,7 @@ static void test_fail_safe(void)
   setup(1000, 0); range.ready = 0;
   step(1000, 1);
   assert(TofFollow_GetSnapshot().reason == TOF_FOLLOW_SENSOR_FAULT);
-  setup(3500, 0); yaw = 33;
+  setup(3500, 0); yaw = 56;
   step(3500, 1);
   assert(TofFollow_GetSnapshot().reason == TOF_FOLLOW_CONTROL_FAULT);
   setup(1000, 0); yaw = NAN;
@@ -137,7 +152,7 @@ static void test_fail_safe(void)
   setup(3500, 0);
   now = UINT32_MAX - 200;
   assert(TofFollow_Start(&range, yaw, now));
-  for (unsigned i = 0; i < 200; ++i) step(3500, 1);
+  for (unsigned i = 0; i < 400; ++i) step(3500, 1);
   assert(TofFollow_GetSnapshot().reason == TOF_FOLLOW_TIMEOUT);
   TofFollow_Stop(TOF_FOLLOW_CANCELLED);
   step(1600, 1);
@@ -147,7 +162,7 @@ static void test_fail_safe(void)
 static void test_synthetic_distance_plant(void)
 {
   /* Assumed kinematic plant, not measured tuning/acceptance evidence. */
-  const float initial[] = {600.0f, 1600.0f};
+  const float initial[] = {200.0f, 1600.0f};
   for (unsigned j = 0; j < 2; ++j)
   {
     float distance = initial[j];
@@ -157,10 +172,35 @@ static void test_synthetic_distance_plant(void)
       step((uint16_t)lroundf(distance), 1);
       distance -= 3.4f * TofFollow_GetSnapshot().forward_rpm * 0.04f;
       assert(TofFollow_GetSnapshot().mode != TOF_FOLLOW_OFF);
-      assert(distance > 500 && distance < 1700);
+      assert(distance > 150 && distance < 1700);
     }
-    assert(fabsf(distance - 1000.0f) < 65.0f);
+    assert(fabsf(distance - 400.0f) < 65.0f);
     assert(abs(TofFollow_GetSnapshot().forward_rpm) <= 1);
+  }
+}
+
+static void test_synthetic_search_sweep(void)
+{
+  const float anchors[] = {0.0f, 179.0f};
+  for (unsigned j = 0; j < 2; ++j)
+  {
+    float unwrapped = anchors[j], minimum = 0, maximum = 0;
+    setup(3500, anchors[j]);
+    for (unsigned i = 0; i < 400; ++i)
+    {
+      float offset;
+      step(3500, 1);
+      /* Assumed 150 ms yaw lag, not an identified vehicle model. */
+      rate += (TofFollow_GetSnapshot().turn_dps - rate) * (0.04f / 0.15f);
+      unwrapped += rate * 0.04f;
+      yaw = unwrapped - 360.0f * floorf((unwrapped + 180.0f) / 360.0f);
+      offset = unwrapped - anchors[j];
+      if (offset < minimum) minimum = offset;
+      if (offset > maximum) maximum = offset;
+      assert(fabsf(offset) <= 45.0f);
+    }
+    assert(minimum < -44.0f && maximum > 44.0f);
+    assert(TofFollow_GetSnapshot().reason == TOF_FOLLOW_TIMEOUT);
   }
 }
 
@@ -170,6 +210,7 @@ int main(void)
   test_loss_search_and_confirmation();
   test_fail_safe();
   test_synthetic_distance_plant();
-  puts("PASS: ToF follow range signs/limits/filter/deadband, no duplicate evidence, loss/reacquire, bounded search/timeout, raw stop/fault/wrap, assumed distance plant (not measured)");
+  test_synthetic_search_sweep();
+  puts("PASS: 400mm follow signs/80RPM limits/filter/deadband, fixed first-loss +/-45deg anchor/reacquire, 25dps/16s search, raw stop/fault/wrap, assumed distance/yaw plants (not measured)");
   return 0;
 }
