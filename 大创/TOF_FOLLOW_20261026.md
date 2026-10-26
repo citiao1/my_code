@@ -63,3 +63,5 @@ Keil：0错误、0警告，Code=60538，RO=2534，RW=224，ZI=13312。80 RPM版H
 
 Keil ARMCC5.06u5：0错误、0警告；Code=60554，RO=2534，RW=224，ZI=13312。HEX SHA256：`50B4FC5B738B1F2FF15474CD989C53C9B549EF11D544DD00BBD9E6F5B67AE4ED`。原PID、滤波、防撞、串口频率及日志策略未改。
 烧录前PUSO检测正确，COM12 STOP/DISARM确认，四轮目标/输出为0、角/速度关闭、PS2锁定。先保存本地Git源码备份，再烧录和静止查询。
+
+源码备份：`5cc6272c`。已烧录同一SHA256镜像，Keil全片Verify OK及独立关键地址读回均通过，复位后RUNNING。COM12查询正常：角/速度关闭、四轮目标/输出0、PS2锁定、UART错误0，STACK=4096/1800/2296/guard1。最终STOP/DISARM均确认。没有ARM、开启跟踪或实车运动测试。
