@@ -14,4 +14,6 @@ R7 改为参考 Waveshare 官方 ST3215.zip / SCServo / SMS_STS.cpp 的 WriteSpe
 
 真实 WHEELTEC-IOS 链路：无应答 ATT 写入曾出现版本查询无回复；改用带应答写入后，版本查询、四次连续启动（+341、+341、-341、-341 counts/s）、各两秒运行及停止均完成。每段运行超过 1.5 秒转速检查宽限期，状态仍为 RUN，累计错误为 0，最后 PAUSE。原始应答见 [servo_r7_ble_restart.json](validation/servo_r7_ble_restart.json)。这是实际速度反馈检查通过；用户没有注意观察这四次，不宣称已完成目视角度精度或负载验证。
 
+后续验收：用户在最终网页连接 R7 后自行完成测试，明确反馈“我自己测试了一遍，没问题了”。记录为本次功能实物验收通过；未进行角度精度和负载定量测量。固件源备份 74719e0d，上位机最终通信修复及链路证据备份 ac4e9079。
+
 参考：[官方内存表](https://docs.waveshare.com/Memory_Map_Explanation/ST_Servo_Memory_Map_Explanation)，[官方代码包](https://www.waveshare.net/w/upload/4/47/ST3215.zip)。
