@@ -501,6 +501,11 @@
               <FilePath>../App/Src/app.c</FilePath>
             </File>
             <File>
+              <FileName>servo_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/servo_test.c</FilePath>
+            </File>
+            <File>
               <FileName>ps2_control.c</FileName>
               <FileType>1</FileType>
               <FilePath>../App/Src/ps2_control.c</FilePath>
@@ -579,6 +584,11 @@
               <FileName>font.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Bsp/Src/font.c</FilePath>
+            </File>
+            <File>
+              <FileName>st3215.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Bsp/Src/st3215.c</FilePath>
             </File>
             <File>
               <FileName>battery.c</FileName>

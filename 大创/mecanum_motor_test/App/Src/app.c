@@ -4,6 +4,7 @@
 #include "display.h"
 #include "ps2_control.h"
 #include "vehicle.h"
+#include "servo_test.h"
 
 void App_Init(void)
 {
@@ -11,6 +12,7 @@ void App_Init(void)
   (void)Battery_Init();
 
   Ps2Control_Init();
+  ServoTest_Init();
   Display_Init();
   if (vehicle_ready == 0U)
   {
@@ -20,6 +22,7 @@ void App_Init(void)
 
 void App_Process(void)
 {
+  ServoTest_Process();
   Ps2Control_Process();
   Vehicle_Process();
   Battery_Process();

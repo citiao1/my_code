@@ -39,3 +39,16 @@ Bluetooth and host-computer command reception are intentionally not initialized 
 ## Build status
 
 The active target is `MDK-ARM/mecanum_motor_test.uvprojx`. A successful source build does not constitute flashed or physical closed-loop validation.
+
+## ST3215 USER-key test (SERVO_R1, 2026-10-26)
+
+- Replace the Bluetooth module with the TTL bus-servo adapter on USART2: PD5/TX and PD6/RX, common ground. USART2 is now 1000000 baud, 8N1. The adapter handles the half-duplex servo bus. Servo ID is 1 (factory default); do not share that ID with another servo.
+- USER is PE0, active low. Single click: +30 degrees; double click within 300 ms: -30 degrees. Single click is dispatched after the double-click window. Hold for 500 ms: continuous positive rotation; release: torque off (coasts rather than holding position). The next click uses relative step mode.
+- Resolution is 4096 counts/revolution, so each click requests 341 counts (29.9707 degrees). Relative step mode avoids crossing-zero direction ambiguity. Speed is 500 counts/s (about 44 degrees/s), acceleration 50. Positive direction follows the servo's existing phase configuration.
+- Debounce is 20 ms. A key held at boot must be released before use. OLED `S:S` is ready/stopped (or executing a step), `S:R` continuous rotation, `S:E` no valid response/fault. Servo initialization leaves torque off; no boot movement is requested.
+- Mode, zero angle limits required by step mode, and speed-unit bit are changed only while EEPROM is locked. ID, baud rate, center calibration and persistent configuration are not rewritten. Failed communication inhibits new motion, retries torque-off/init every 100 ms and requires a fresh press after recovery. During continuous rotation, status is checked every 100 ms; loss of the physical signal prevents delivery of a stop until communication returns.
+- Chassis/PS2 behavior remains available. The Bluetooth command receiver remains inactive.
+
+Sources: [ST3215 overview](https://docs.waveshare.com/ST3215_Servo), [protocol](https://docs.waveshare.com/Servo_Communication_Protocol), [ST memory map](https://docs.waveshare.com/Memory_Map_Explanation/ST_Servo_Memory_Map_Explanation).
+
+Host checks (GCC): compile `App/Src/servo_test.c` with `tests/servo/test_button.c`, and `Bsp/Src/st3215.c` with `tests/servo/test_protocol.c`; include `tests/servo`, `App/Inc`, `Bsp/Inc`. The test headers replace HAL only in these host builds. Both passed. Keil ARMCC 5.06 update 5 build 528: 0 errors, 0 warnings. Physical angle/direction and key response still require board observation.

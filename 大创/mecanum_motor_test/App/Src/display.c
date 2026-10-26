@@ -10,6 +10,7 @@
 #include "speed_control.h"
 #include "stm32f4xx_hal.h"
 #include "vehicle.h"
+#include "servo_test.h"
 
 #define DISPLAY_PERIOD_MS 250U
 
@@ -45,7 +46,7 @@ void Display_Process(void)
   gyro_status = gyro.ready ? 'R' : (gyro.calibrating ? 'C' : 'E');
 
   OLED_NewFrame();
-  (void)snprintf(line, sizeof(line), "%-4s SET:%3u RPM", Vehicle_GetModeText(), Vehicle_GetSpeed());
+  (void)snprintf(line, sizeof(line), "%-4s SET:%3u S:%c", Vehicle_GetModeText(), Vehicle_GetSpeed(), ServoTest_GetStatus());
   Display_PrintLine(0U, line);
   (void)snprintf(line, sizeof(line), "A:%4d B:%4d", speed.rpm[MOTOR_A], speed.rpm[MOTOR_B]);
   Display_PrintLine(16U, line);
