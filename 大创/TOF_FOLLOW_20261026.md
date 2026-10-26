@@ -52,3 +52,5 @@ COM12静止查询全部成功：四轮PID为 `1.1/0.0991/0, 1.1/0.0998/0, 1.1/0.
 
 Keil：0错误、0警告，Code=60538，RO=2534，RW=224，ZI=13312。80 RPM版HEX SHA256：`3A1749C8D80CBD5606471A0422CFB250399CB4603E7B1C6E6083F5D056616473`。
 烧录前COM12的STOP/DISARM均确认，角/速度关闭、四轮目标/输出0、PS2锁定；检测PUSO后保存源码版本再烧录。
+
+80 RPM源码备份：`6991ca8d`。已烧录：Keil全片Verify OK，独立向量/标记/器件读回通过，复位后RUNNING。COM12上电静止查询成功，四轮目标与输出0、角/速度关闭、PS2锁定，STACK guard1；最终STOP/DISARM确认。未执行ARM或80 RPM实车运动测试。证据为 `validation/tof-follow-80-*-20261026.*`。
