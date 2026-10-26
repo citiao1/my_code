@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "tof.h"
 
+#define TOF_FOLLOW_MAX_RPM 80U
+
 typedef enum { TOF_FOLLOW_OFF, TOF_FOLLOW_TRACK, TOF_FOLLOW_SEARCH } TofFollowMode;
 typedef enum
 {

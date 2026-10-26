@@ -18,7 +18,7 @@ static void step(uint16_t mm, uint8_t valid)
   range.distance_mm = mm;
   range.valid = valid;
   TofFollow_Process(&range, yaw, rate, now);
-  assert(abs(TofFollow_GetSnapshot().forward_rpm) <= 30);
+  assert(abs(TofFollow_GetSnapshot().forward_rpm) <= 80);
   assert(fabsf(TofFollow_GetSnapshot().turn_dps) <= 15.0f);
 }
 
@@ -50,7 +50,7 @@ static void test_control_and_filter(void)
   step(1600, 1); step(1600, 1);
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK);
   for (unsigned i = 0; i < 25; ++i) step(1600, 1);
-  assert(TofFollow_GetSnapshot().forward_rpm == 30);
+  assert(TofFollow_GetSnapshot().forward_rpm == 33);
   /* A distant-background spike brakes immediately, with no filtered chase. */
   step(2400, 1);
   assert(TofFollow_GetSnapshot().forward_rpm == 0);
@@ -60,6 +60,13 @@ static void test_control_and_filter(void)
   /* Median rejects one plausible in-band impulse. */
   step(1850, 1); step(1600, 1);
   assert(TofFollow_GetSnapshot().filtered_mm == 1600);
+
+  setup(2000, 0); acquire(2000);
+  for (unsigned i = 0; i < 40; ++i) step(2000, 1);
+  assert(TofFollow_GetSnapshot().forward_rpm == 57); /* P gain unchanged. */
+  setup(101, 0); acquire(101);
+  for (unsigned i = 0; i < 40; ++i) step(101, 1);
+  assert(TofFollow_GetSnapshot().forward_rpm == -51);
 
   setup(600, 0); acquire(600);
   for (unsigned i = 0; i < 25; ++i) step(600, 1);

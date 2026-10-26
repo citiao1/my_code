@@ -522,7 +522,8 @@ static void test_follow_controls(void)
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_SEARCH);
   for (unsigned i = 0; i < 50; ++i) follow_buttons(PS2_BUTTON_L1);
   assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK && forward > 0);
-  assert(forward <= 30 && left == 0);
+  assert(forward == 33 && left == 0);
+  assert(Ps2Control_GetSnapshot().speed_rpm == 80);
   follow_buttons(PS2_BUTTON_R1 | PS2_BUTTON_L1);
   assert(enabled && !TofFollow_GetSnapshot().mode && forward == 0);
   for (unsigned i = 0; i < 5; ++i) follow_buttons(PS2_BUTTON_L1);

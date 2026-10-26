@@ -163,9 +163,9 @@ static uint8_t Ps2_ProcessFollow(const Ps2Snapshot *ps2,
     }
     control_state.forward_rpm = follow.forward_rpm;
     control_state.left_rpm = 0;
-    control_state.speed_rpm = 30U;
+    control_state.speed_rpm = TOF_FOLLOW_MAX_RPM;
     control_state.rotate_rpm = (int16_t)lroundf(
-        follow.turn_dps * 30.0f / ATTITUDE_RATE_LIMIT_DPS);
+        follow.turn_dps * (float)TOF_FOLLOW_MAX_RPM / ATTITUDE_RATE_LIMIT_DPS);
     if (!AttitudeControl_SetManualDrive(follow.turn_dps, follow.forward_rpm, 0))
       Ps2Control_Stop();
     return 1U;

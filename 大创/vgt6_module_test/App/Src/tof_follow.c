@@ -10,7 +10,6 @@
 #define FOLLOW_TARGET_MM 1000.0f
 #define FOLLOW_DEADBAND_MM 50.0f
 #define FOLLOW_KP_RPM_PER_MM 0.06f
-#define FOLLOW_MAX_RPM 30.0f
 #define FOLLOW_ACCEL_RPM_S 60.0f
 #define FOLLOW_FILTER_MS 80.0f
 #define FOLLOW_MAX_RANGE_MM 2000U
@@ -225,7 +224,7 @@ void TofFollow_Process(const TofSnapshot *range, float yaw_deg,
   error = follow.filtered_mm - FOLLOW_TARGET_MM;
   target = fabsf(error) <= FOLLOW_DEADBAND_MM ? 0.0f :
       clamp(FOLLOW_KP_RPM_PER_MM *
-            (error - copysignf(FOLLOW_DEADBAND_MM, error)), FOLLOW_MAX_RPM);
+            (error - copysignf(FOLLOW_DEADBAND_MM, error)), (float)TOF_FOLLOW_MAX_RPM);
   /* Deadband and sign reversal brake immediately; acceleration is bounded. */
   if (target == 0.0f || target * follow.reference_rpm < 0.0f)
     follow.reference_rpm = 0.0f;
