@@ -1,0 +1,9 @@
+{
+  "access": "read-only attach; no halt/reset/write",
+  "core": "RUNNING",
+  "followAddress": "0x20000b40",
+  "followMode": 0,
+  "chassisArmed": 0,
+  "cfsr": 0,
+  "hfsr": 0
+}

@@ -34,4 +34,12 @@
 
 烧录前确认：PUSO 1234:5678、COM8。兼容桥接已关闭，直接COM12收到STOP/DISARM确认，四轮目标/输出0、角/速度环关闭、PS2锁定。没有ARM或运动试验。编译及安全预检完成后先保存本地Git版本，再执行用户要求的烧录/读回。
 
-验证证据位于 `vgt6_module_test/validation/tof-follow-*-20261026.*`。烧录和静止上电检查结果在完成后追加。
+验证证据位于 `vgt6_module_test/validation/tof-follow-*-20261026.*`。
+
+## 已烧录及静止验证
+
+源码/测试/配置备份：`35ecc10e`。烧录同一SHA256镜像，Keil报告 `Erase Done.Programming Done.Verify OK.Application running`。独立读回确认器件 `0x101f6413`、Flash 1024 KiB、向量表和R26标记 `0x0800593c`匹配；复位后再次校验通过，主控RUNNING。没有整片擦除、解锁或选项字节操作。
+
+COM12静止查询全部成功：四轮PID为 `1.1/0.0991/0, 1.1/0.0998/0, 1.1/0.0998/0, 1.1/0.1008/0`；方向PD `5.5/2.5`；角速度PI `0.1815/1.8062`。ToF有有效新测距（本次读回140 mm、状态9、样本年龄13 ms、错误0）。STACK=4096/2280/1816/guard1，四轮目标/输出0、角/速度环关闭、PS2锁定。STOP/DISARM再次确认后关闭串口。
+
+只读SWD独立检查（没有halt/reset/写内存）：RUNNING，`follow`位于新map的 `0x20000b40`，mode=0，chassis armed=0，CFSR/HFSR=0。跟踪开机默认关闭，未触发L1、ARM或任何电机试验；实际落地跟踪精度/目标身份/运动稳定性尚未实测。
