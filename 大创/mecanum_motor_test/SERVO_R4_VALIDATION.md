@@ -9,4 +9,4 @@ GCC button and USART3 protocol host suites passed with -std=c99 -Wall -Wextra -W
 HEX SHA256: `473ee11235c8d7a9d29b7215799c36d386573bffbebdde605fe1083309c974ad`.
 The image contains `SERVO ONLY R4` at `0x08000DBC`.
 
-COM7 programming/readback outcome will be recorded after the attempt. Physical UART3 servo behavior is for the user to test after reconnecting the adapter.
+Headless COM7 programming completed at 76800 baud. Confirmed chip ID 0x0413, bootloader 0x31 and 512 KiB flash. Backed up/merged and explicitly erased sectors [0, 1], then wrote/read back all 32768 bytes successfully. Readback SHA256: `b93dfa6e6c32d1cb0bd1f5a22539ddeb137f16fd7375645e863c574c425d3df3`. Reset to flash issued. Source/build backup: `80e9bdcc`. Local record: `vehicle-console/flash-records/20261026-220957-122561/result.json`. CodeGraph sync completed. Physical UART3 servo behavior is for the user to test after reconnecting the adapter.
