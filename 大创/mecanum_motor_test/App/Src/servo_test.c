@@ -17,6 +17,9 @@ static uint32_t edge_tick, press_tick, release_tick;
 static uint8_t raw_key, stable_key, pending, second_press, released;
 static uint32_t retry_tick, check_tick;
 static uint8_t ready, running;
+static volatile uint32_t presses;
+static uint32_t commands, errors;
+static char last_command;
 
 static void PushEvent(KeyEvent event)
 {
@@ -28,6 +31,7 @@ static void PushEvent(KeyEvent event)
 
 static void Press(uint32_t now)
 {
+  ++presses;
   press_tick = now;
   second_press = pending && ((now - release_tick) < DOUBLE_MS);
   if (pending && !second_press)
@@ -107,7 +111,10 @@ static void EnableInput(void)
 void ServoTest_Init(void)
 {
   DisableInput();
+  presses = commands = errors = 0U;
+  last_command = '-';
   ready = St3215_Init();
+  if (!ready) ++errors;
   retry_tick = check_tick = HAL_GetTick();
   if (ready) EnableInput();
 }
@@ -115,10 +122,18 @@ void ServoTest_Init(void)
 static void CheckResult(uint8_t ok)
 {
   if (ok) return;
+  ++errors;
   ready = 0U;
   DisableInput();
   (void)St3215_Stop();
   retry_tick = HAL_GetTick();
+}
+
+static void CommandResult(char command, uint8_t ok)
+{
+  last_command = command;
+  if (ok) ++commands;
+  CheckResult(ok);
 }
 
 void ServoTest_Process(void)
@@ -130,6 +145,7 @@ void ServoTest_Process(void)
   {
     if ((now - retry_tick) < 100U) return;
     ready = St3215_Init();
+    if (!ready) ++errors;
     retry_tick = HAL_GetTick();
     if (ready) EnableInput();
     return;
@@ -140,18 +156,18 @@ void ServoTest_Process(void)
     tail = (tail + 1U) % EVENT_COUNT;
     switch (event)
     {
-      case STEP_FORWARD: CheckResult(St3215_Step(1)); break;
-      case STEP_REVERSE: CheckResult(St3215_Step(-1)); break;
+      case STEP_FORWARD: CommandResult('+', St3215_Step(1)); break;
+      case STEP_REVERSE: CommandResult('-', St3215_Step(-1)); break;
       case RUN:
         /* Never start a delayed hold after the user has already released. */
         if (!sample_holding) break;
         running = 1U;
         check_tick = now;
-        CheckResult(St3215_Run());
+        CommandResult('R', St3215_Run());
         break;
       case STOP:
         running = 0U;
-        CheckResult(St3215_Stop());
+        CommandResult('S', St3215_Stop());
         break;
       default: CheckResult(0U); break;
     }
@@ -167,4 +183,16 @@ void ServoTest_Process(void)
 char ServoTest_GetStatus(void)
 {
   return ready ? (running ? 'R' : 'S') : 'E';
+}
+
+ServoTestSnapshot ServoTest_GetSnapshot(void)
+{
+  ServoTestSnapshot snapshot;
+  snapshot.presses = presses;
+  snapshot.commands = commands;
+  snapshot.errors = errors;
+  snapshot.key_down = HAL_GPIO_ReadPin(USER_KEY_GPIO_Port, USER_KEY_Pin) == GPIO_PIN_RESET;
+  snapshot.last_command = last_command;
+  snapshot.status = ServoTest_GetStatus();
+  return snapshot;
 }
