@@ -104,6 +104,45 @@ def unused_local_port() -> int:
 
 
 class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_ordered_observers_do_not_delay_ack_or_reorder_log_end(self):
+        bridge = bridge_module.MotorVofaBridge(self.make_config())
+        slow_socket, fast_socket = AsyncMock(), AsyncMock()
+        blocked = asyncio.Event()
+        slow_socket.send.side_effect = lambda *_: None
+        async def hang(*_):
+            await blocked.wait()
+        slow_socket.send.side_effect = hang
+        slow = bridge_module.OrderedWebClient(slow_socket)
+        fast = bridge_module.OrderedWebClient(fast_socket)
+        bridge.ws_clients.update((slow, fast))
+        async def write(_):
+            bridge.consume_bytes(b'WLOG,DATA,0,example\r\nWLOG,END,0,1,1\r\n')
+            return True
+        bridge.send_hardware = write
+        try:
+            with patch.object(bridge_module, 'CLIENT_SEND_TIMEOUT_SECONDS', .5):
+                reply = await asyncio.wait_for(bridge.execute_command('WLOG,READ,0,1'), .15)
+                self.assertEqual(reply, 'WLOG,END,0,1,1')
+                await fast.send(json.dumps({'type': 'result', 'reply': reply}))
+                await asyncio.wait_for(fast.queue.join(), .15)
+                frames = [call.args[0] for call in fast_socket.send.await_args_list]
+                self.assertEqual(frames[:2], ['WLOG,DATA,0,example\n', 'WLOG,END,0,1,1\n'])
+                self.assertTrue(frames[2].startswith('{'))
+                self.assertFalse(slow.worker.done())
+        finally:
+            await slow.close()
+            await fast.close()
+
+    async def test_observer_queue_overflow_closes_connection(self):
+        socket = AsyncMock()
+        with patch.object(bridge_module, 'WEB_SEND_QUEUE_LIMIT', 1):
+            client = bridge_module.OrderedWebClient(socket)
+        await client.send('first')
+        with self.assertRaisesRegex(ConnectionError, 'overflow'):
+            await client.send('second')
+        await client.close()
+        socket.close.assert_awaited()
+
     async def test_slow_observer_cannot_hold_up_mcu_ack(self):
         bridge = bridge_module.MotorVofaBridge(self.make_config())
         fast,slow = AsyncMock(),AsyncMock()
@@ -229,7 +268,7 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(connected)
             self.assertIn("COM9 @ 115200", detail)
             self.assertEqual([x.args[0] for x in bridge.execute_command.await_args_list],
-                             ["STOP", "DISARM", "PING"])
+                             ["STOP", "DISARM", "TEL,0", "TOF,0", "PING"])
             online.set()
         bridge.set_hardware_status = status
         task = asyncio.create_task(bridge.monitor_serial("COM9"))
@@ -248,14 +287,14 @@ class MotorVofaBridgeTests(unittest.IsolatedAsyncioTestCase):
     async def test_stop_cancelling_serial_heartbeat_keeps_link_online(self):
         bridge = bridge_module.MotorVofaBridge(self.make_config())
         bridge.execute_command = AsyncMock(side_effect=[
-            "ACK,STOP", "ACK,DISARM", "PONG",
+            "ACK,STOP", "ACK,DISARM", "ACK,TEL,0", "ACK,TOF,0", "PONG",
             ConnectionError("cancelled by STOP/DISARM"), asyncio.CancelledError(),
         ])
         bridge.set_hardware_status = AsyncMock()
         with patch.object(bridge_module.asyncio, "sleep", AsyncMock()):
             with self.assertRaises(asyncio.CancelledError):
                 await bridge.monitor_serial("COM9")
-        self.assertEqual(bridge.execute_command.await_count, 5)
+        self.assertEqual(bridge.execute_command.await_count, 7)
         self.assertFalse(bridge.disconnected.is_set())
         bridge.set_hardware_status.assert_awaited_once()
         self.assertTrue(bridge.set_hardware_status.await_args.args[0])

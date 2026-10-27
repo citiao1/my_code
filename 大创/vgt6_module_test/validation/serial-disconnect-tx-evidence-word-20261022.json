@@ -1,0 +1,35 @@
+{
+  "before": {
+    "tick": 1186910,
+    "rx_bytes": 3815,
+    "rx_lines": 581,
+    "tx_head": 13,
+    "tx_tail": 13,
+    "busy": 0,
+    "ready": 1
+  },
+  "after": {
+    "tick": 1187164,
+    "rx_bytes": 3821,
+    "rx_lines": 582,
+    "tx_head": 14,
+    "tx_tail": 14,
+    "busy": 0,
+    "ready": 1
+  },
+  "buffers": [
+    {
+      "slot": 13,
+      "first_line": "PONG\r"
+    },
+    {
+      "slot": 12,
+      "first_line": "PONG\r"
+    },
+    {
+      "slot": 11,
+      "first_line": "ACK,TOF,0\r"
+    }
+  ],
+  "pc_received_hex": ""
+}

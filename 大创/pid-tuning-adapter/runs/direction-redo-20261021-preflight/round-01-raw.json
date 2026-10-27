@@ -1,0 +1,39 @@
+{
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R18",
+  "loop": "direction",
+  "gains": null,
+  "scoring_source": "downloaded_HLOG",
+  "status": null,
+  "records": [],
+  "wire": [],
+  "timeline": [
+    {
+      "command": "VER",
+      "host_monotonic_s": 26067.734,
+      "reply": "VER,VGT6_BM50_ATTITUDE_R18"
+    },
+    {
+      "command": "UART",
+      "host_monotonic_s": 26067.843,
+      "reply": "UART,9600,42000000,4375,0x04,0,0,1,0,0"
+    }
+  ],
+  "timestamp_unit": "us",
+  "batch_retries": [],
+  "safety_monitor": [
+    {
+      "host_monotonic_s": 26067.765,
+      "line": "ATEL,2700996,0,1,0,0,0,0,-8710,8124,0,0,0,11599"
+    },
+    {
+      "host_monotonic_s": 26067.937,
+      "line": "ATEL,2701196,0,1,0,0,0,0,-8710,8124,0,0,0,11600"
+    }
+  ],
+  "limits": {
+    "wheel_rpm": 160,
+    "rotation_rpm": 60,
+    "rate_dps": 80
+  },
+  "error": "UART fault counters nonzero before experiment"
+}

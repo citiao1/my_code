@@ -4,17 +4,25 @@ import argparse, asyncio, csv, json, math, time
 from dataclasses import asdict
 from pathlib import Path
 import websockets
+from session_transport import connect_endpoint
 from bounded_search import guarded_step
 from tuning_campaign import make_plan, run_campaign, validate_result
 from wheel_log import (VERSION, CAPS, INFO, FIRMWARE_PROFILES, HEADER,
                        parse, validate, score_four)
-from closed_loop_tuning import STEP_SCORE_WEIGHTS
+from closed_loop_tuning import ResponseScore, STEP_SCORE_WEIGHTS
 from pid_ws_logger import distance_from_encoder, encoder_row
 
-GROUND_RETURN_TOLERANCE_M = 0.25
-GROUND_DISTANCE_MARGIN = 1.10
+GROUND_RETURN_TOLERANCE_M = 0.05
+GROUND_DISTANCE_MARGIN = 0.97
 GROUND_MIN_DISTANCE_RATIO = 0.75
 GROUND_MAX_DISTANCE_RATIO = 1.25
+GROUND_FORWARD_PROBE_DISTANCE_M = 0.10
+GROUND_FORWARD_PROBE_MIN_RATIO = 0.50
+GROUND_FORWARD_PROBE_MAX_RATIO = 1.50
+GROUND_FORWARD_PROBE_TARGET_RPM = 25
+# On the current FRONT_REVERSED R23 vehicle, a physical forward DRV,+25
+# probe produces negative counts on all four wheel encoders.
+GROUND_FORWARD_ENCODER_SIGN = -1
 
 class DriveRefreshOverrun(RuntimeError):
     def __init__(self, elapsed_s, max_gap_s):
@@ -22,11 +30,82 @@ class DriveRefreshOverrun(RuntimeError):
         self.elapsed_s = elapsed_s
         self.max_gap_s = max_gap_s
 
+class WlogConflictError(RuntimeError):
+    pass
+
 def timed_leg_seconds(distance_m, target_rpm):
     if not math.isfinite(distance_m) or distance_m <= 0 or target_rpm == 0:
         raise ValueError('timed ground leg requires positive distance and nonzero target')
     nominal_speed = abs(target_rpm) * math.pi * .127 / 60.0
     return distance_m / nominal_speed * GROUND_DISTANCE_MARGIN
+
+def load_resume_state(path, plan, initial, args, session):
+    """Resume only the known safe case: complete baseline train, failed first holdout."""
+    path=Path(path)
+    if path.name!='session.json' or not path.is_file():
+        raise ValueError('--resume-from must name an existing session.json')
+    previous=json.loads(path.read_text(encoding='utf-8'))
+    expected_plan=json.loads(json.dumps(asdict(plan)))
+    if previous.get('status')!='failed' or previous.get('error')!='encoder feedback lost before return leg':
+        raise ValueError('resume source is not the interrupted encoder-feedback campaign')
+    if previous.get('baseline_validated') or previous.get('selection')!='pending_holdout':
+        raise ValueError('resume source is not pending its first baseline holdout')
+    previous_plan=previous.get('plan')
+    if previous_plan!=expected_plan:
+        # Holdouts are independent cases: changing their order is allowed so
+        # the operator-confirmed forward case can run before the reverse case.
+        # Their values and all other plan fields must remain identical.
+        if not isinstance(previous_plan,dict):
+            raise ValueError('resume plan does not match the prior campaign')
+        previous_normalized=dict(previous_plan)
+        expected_normalized=dict(expected_plan)
+        previous_targets=previous_normalized.get('validation_targets')
+        current_targets=expected_normalized.get('validation_targets')
+        if not isinstance(previous_targets,list) or not isinstance(current_targets,list):
+            raise ValueError('resume plan does not match the prior campaign')
+        previous_normalized['validation_targets']=sorted(previous_targets)
+        expected_normalized['validation_targets']=sorted(current_targets)
+        if previous_normalized!=expected_normalized:
+            raise ValueError('resume plan differs beyond validation-target order')
+    if (previous.get('wheel')!=args.wheel or previous.get('training_target')!=args.target or
+            previous.get('ground_distance_m')!=args.ground_distance or
+            previous.get('baseline_seconds')!=args.baseline_seconds or
+            previous.get('seconds')!=args.seconds):
+        raise ValueError('resume motion plan differs from the prior campaign')
+    if (previous.get('firmware')!=session.firmware or previous.get('caps')!=session.caps or
+            previous.get('controller')!=session.controller):
+        raise ValueError('firmware identity differs from the prior campaign')
+    initial=list(initial)
+    if previous.get('all_initial_gains')!=initial or previous.get('all_applied_gains')!=initial:
+        raise ValueError('prior campaign did not preserve the exact initial RAM gains')
+    history=previous.get('history')
+    if not isinstance(history,list) or len(history)!=plan.repeats:
+        raise ValueError('resume source lacks every initial training repeat')
+    scores=[]
+    for repeat,entry in enumerate(history,1):
+        if (entry.get('stage')!='train' or entry.get('target') is not None or
+                entry.get('repeat')!=repeat or entry.get('gains')!=list(plan.initial)):
+            raise ValueError('resume history is not a complete initial training group')
+        raw_path=path.parent/f'round-{repeat:03d}-raw.json'
+        if not raw_path.is_file():
+            raise ValueError(f'missing completed training evidence: {raw_path}')
+        raw=json.loads(raw_path.read_text(encoding='utf-8'))
+        if (raw.get('quality')!='passed' or raw.get('stage')!='train' or
+                raw.get('target')!=args.target or raw.get('repeat')!=repeat or
+                raw.get('gains')!=list(plan.initial) or raw.get('all_applied_gains')!=initial or
+                raw.get('source')!='MCU_WLOG' or not raw.get('records')):
+            raise ValueError(f'training evidence {repeat} is not a complete passed WLOG trial')
+        scores.append(ResponseScore(**entry['metrics']))
+    failed_path=path.parent/f'round-{len(history)+1:03d}-raw.json'
+    if not failed_path.is_file():
+        raise ValueError(f'missing failed-round diagnostics: {failed_path}')
+    failed=json.loads(failed_path.read_text(encoding='utf-8'))
+    if (failed.get('quality')!='failed' or
+            failed.get('error')!='encoder feedback lost before return leg' or
+            not any(line.startswith('ENC,') and len(line.split(','))!=16
+                    for line in failed.get('wire',[]))):
+        raise ValueError('failed round does not contain the expected malformed ENC packet')
+    return history,scores
 
 class WheelSession:
     def __init__(self, ws, wheel, output):
@@ -39,6 +118,7 @@ class WheelSession:
         self.locked_angles=None
         self.firmware=self.caps=self.controller=None
         self.last_ground_metrics=None
+        self.encoder_diagnostics=[]
 
     async def command(self, command, *, drive_lease_ms=None):
         self.ident += 1
@@ -46,23 +126,52 @@ class WheelSession:
         entry={'host_monotonic':time.monotonic(),'command':command}
         if drive_lease_ms is not None: entry['drive_lease_ms']=drive_lease_ms
         self.timeline.append(entry)
+        wire_start=len(self.wire)
         request={'type':'command','id':ident,'command':command}
         if drive_lease_ms is not None:
             request.update(type='drive_lease',duration_ms=drive_lease_ms)
-        await self.ws.send(json.dumps(request))
-        async with asyncio.timeout(25 if command.startswith('WLOG,READ,') else 5):
-            while True:
-                raw=await self.ws.recv()
-                if isinstance(raw,bytes): raw=raw.decode('utf-8','replace')
-                for line in raw.splitlines():
-                    self.wire.append(line)
-                    if line.startswith('WLOG,DATA,'): self.batch.append(line)
-                if not raw.startswith('{'): continue
-                result=json.loads(raw)
-                if result.get('type') != 'result' or result.get('id') != ident: continue
-                entry['result']=result
-                if not result.get('ok'): raise RuntimeError(f'{command}: {result}')
-                return result['reply']
+        try:
+            await self.ws.send(json.dumps(request))
+            async with asyncio.timeout(25 if command.startswith('WLOG,READ,') else 5):
+                while True:
+                    raw=await self.ws.recv()
+                    if isinstance(raw,bytes): raw=raw.decode('utf-8','replace')
+                    for line in raw.splitlines():
+                        self.wire.append(line)
+                        if line.startswith('WLOG,DATA,'): self.batch.append(line)
+                    if not raw.startswith('{'): continue
+                    result=json.loads(raw)
+                    if result.get('type') != 'result' or result.get('id') != ident: continue
+                    entry['result']=result
+                    if not result.get('ok'): raise RuntimeError(f'{command}: {result}')
+                    return result['reply']
+        except BaseException as exc:
+            # Preserve only frames received while this command was in flight;
+            # a missing/malformed status reply then remains diagnosable in the
+            # preflight session without duplicating the entire WLOG wire log.
+            entry['wire']=self.wire[wire_start:]
+            entry.setdefault('error',f'{type(exc).__name__}: {exc}')
+            raise
+
+    async def read_encoder(self):
+        """Drop malformed diagnostic packets and retry a bounded number of reads."""
+        for attempt in range(1,4):
+            reply=await self.command('ENC')
+            packet=encoder_row(reply)
+            if packet is None:
+                self.encoder_diagnostics.append({
+                    'attempt':attempt, 'kind':'discarded_malformed_packet',
+                    'wire':reply,
+                })
+                continue
+            if packet[1]!=1 or packet[2]!=380:
+                self.encoder_diagnostics.append({
+                    'attempt':attempt, 'kind':'discarded_unready_or_wrong_cpr',
+                    'ready':packet[1], 'cpr':packet[2], 'wire':reply,
+                })
+                continue
+            return packet
+        raise RuntimeError('no valid ready 380-CPR encoder packet after three reads')
 
     async def stopped(self):
         a=(await self.command('ANGLESTATUS')).split(',')
@@ -110,26 +219,117 @@ class WheelSession:
         if active or capacity!=1024 or not 0<total<=capacity or overflow or sequence!=total: raise RuntimeError('incomplete/overflowed WLOG')
         records={}
         self.download_diagnostics=[]
-        for offset in range(0,total,8):
-            count=min(8,total-offset)
-            complete=False
+        def accept(line, expected_sequence):
+            try:
+                row=parse(line)
+            except ValueError as exc:
+                self.download_diagnostics.append({
+                    'sequence':expected_sequence, 'kind':'discarded_malformed_row',
+                    'error':str(exc),
+                })
+                return False
+            n=row['sequence']
+            if n!=expected_sequence:
+                self.download_diagnostics.append({
+                    'sequence':expected_sequence, 'kind':'discarded_wrong_sequence',
+                    'observed_sequence':n,
+                })
+                return False
+            if n in records and records[n]!=row:
+                raise WlogConflictError(f'conflicting valid WLOG retransmission {n}')
+            records[n]=row
+            return True
+
+        # Keep every individually valid row. A damaged or missing row does not
+        # invalidate its neighbors; only unresolved sequence numbers are read
+        # again, one at a time, after a bounded small-batch pass.
+        batch_size=4
+        for offset in range(0,total,batch_size):
+            count=min(batch_size,total-offset)
+            end=f'WLOG,END,{offset},{count},{total}'
+            last_error='missing samples'
+            ended=False
             for attempt in range(3):
                 self.batch=[]
-                reply=None
-                try: reply=await self.command(f'WLOG,READ,{offset},{count}')
+                try:
+                    reply=await self.command(f'WLOG,READ,{offset},{count}')
                 except (TimeoutError,RuntimeError) as exc:
-                    self.download_diagnostics.append({'offset':offset,'attempt':attempt+1,'error':str(exc)})
-                previous=-1
+                    last_error=str(exc)
+                    self.download_diagnostics.append({
+                        'offset':offset, 'count':count, 'attempt':attempt+1,
+                        'kind':'batch_read_failed', 'error':last_error,
+                    })
+                    continue
+                if reply!=end:
+                    last_error=f'WLOG END mismatch: {reply!r}'
+                    self.download_diagnostics.append({
+                        'offset':offset, 'count':count, 'attempt':attempt+1,
+                        'kind':'batch_end_mismatch', 'reply':reply,
+                    })
+                    continue
+                ended=True
                 for line in self.batch:
-                    r=parse(line); n=r['sequence']
-                    if not offset<=n<offset+count or n<=previous: raise RuntimeError('out-of-batch/reordered WLOG')
-                    previous=n
-                    if n in records and records[n]!=r: raise RuntimeError('conflicting WLOG retransmission')
-                    records[n]=r
-                if reply and reply!=f'WLOG,END,{offset},{count},{total}': raise RuntimeError('WLOG END mismatch')
-                complete=bool(reply) and all(i in records for i in range(offset,offset+count))
-                if complete: break
-            if not complete: raise RuntimeError('WLOG missing samples after three bounded reads')
+                    try:
+                        row=parse(line)
+                    except ValueError as exc:
+                        self.download_diagnostics.append({
+                            'offset':offset, 'count':count,
+                            'attempt':attempt+1, 'kind':'discarded_malformed_row',
+                            'error':str(exc), 'wire':line,
+                        })
+                        continue
+                    n=row['sequence']
+                    if not offset<=n<offset+count:
+                        self.download_diagnostics.append({
+                            'offset':offset, 'count':count, 'attempt':attempt+1,
+                            'kind':'discarded_out_of_batch_row', 'sequence':n,
+                        })
+                        continue
+                    if n in records and records[n]!=row:
+                        raise WlogConflictError(f'conflicting valid WLOG retransmission {n}')
+                    records[n]=row
+                break
+
+            if not ended:
+                raise RuntimeError(
+                    f'WLOG batch {offset} did not return a matching END after three reads: {last_error}'
+                )
+
+            for n in range(offset,offset+count):
+                if n in records:
+                    continue
+                recovered=False
+                for attempt in range(3):
+                    self.batch=[]
+                    try:
+                        reply=await self.command(f'WLOG,READ,{n},1')
+                    except (TimeoutError,RuntimeError) as exc:
+                        self.download_diagnostics.append({
+                            'sequence':n, 'attempt':attempt+1,
+                            'kind':'single_read_failed', 'error':str(exc),
+                        })
+                        continue
+                    if reply!=f'WLOG,END,{n},1,{total}':
+                        self.download_diagnostics.append({
+                            'sequence':n, 'attempt':attempt+1,
+                            'kind':'single_end_mismatch', 'reply':reply,
+                        })
+                        continue
+                    for line in self.batch:
+                        if accept(line,n):
+                            recovered=True
+                        else:
+                            # Keep scanning the returned lines; a malformed
+                            # fragment is diagnostic, not a batch-wide failure.
+                            continue
+                    if recovered:
+                        self.download_diagnostics.append({
+                            'sequence':n, 'attempt':attempt+1,
+                            'kind':'recovered_single_row',
+                        })
+                        break
+                if not recovered:
+                    raise RuntimeError(f'WLOG sequence {n} remained unavailable after three single-row reads')
         if await self.command('WLOG,STATUS')!=status: raise RuntimeError('WLOG changed during download')
         return validate([records[i] for i in range(total)])
 
@@ -140,9 +340,12 @@ class WheelSession:
         if not 1<=duration_ms<=12000:
             raise ValueError('timed ground leg exceeds the bridge drive-lease limit')
         command=f'DRV,{int(target)},0,0'
-        start=time.monotonic()
         if await self.command(command,drive_lease_ms=duration_ms)!='ACK,DRV':
             raise RuntimeError('four-wheel timed DRV lease not acknowledged')
+        # The bridge starts the lease before returning the command ACK. Anchor
+        # the completion wait after that ACK so BLE command latency does not
+        # consume the watchdog/event grace interval.
+        start=time.monotonic()
         lease_id=self.ident
         deadline=start+duration+1.0
         while time.monotonic()<deadline:
@@ -166,36 +369,101 @@ class WheelSession:
         raise TimeoutError('bridge drive lease did not complete before deadline')
 
     async def collect(self, target, baseline_seconds, seconds, ground_distance_m=None):
-        await self.command('STOP'); await self.stopped()
+        self.encoder_diagnostics=[]
+        self.download_diagnostics=[]
+        self.last_ground_metrics=None
+        self.direction_probe=None
+        async def expect(command, expected):
+            reply=await self.command(command)
+            if reply!=expected:
+                raise RuntimeError(f'{command} returned unexpected reply: {reply!r}')
+            return reply
+
+        await expect('STOP','ACK,STOP')
+        await self.stopped()
         origin=None
-        if ground_distance_m is not None:
-            await self.command('ENCZERO')
-            packet=encoder_row(await self.command('ENC'))
-            if packet is None or packet[1]!=1 or packet[2]!=380:
-                raise RuntimeError('ground round trip requires ready 380-CPR encoders')
-            origin=packet[3]
-        for cmd in ('WLOG,CLEAR','WLOG,START','ARM','SPEED,1'):
-            await self.command(cmd)
+        log_started=False
+        log_stopped=False
         async def hold(target_rpm,duration):
             command=f'DRV,{int(target_rpm)},0,0'
             if target_rpm == 0:
-                if await self.command(command) != 'ACK,DRV':
-                    raise RuntimeError('zero-target DRV command not acknowledged')
+                await expect(command,'ACK,DRV')
                 await asyncio.sleep(duration)
                 return
             deadline=time.monotonic()+duration
             while time.monotonic()<deadline:
-                if await self.command(command) != 'ACK,DRV':
-                    raise RuntimeError('four-wheel DRV command not acknowledged')
+                await expect(command,'ACK,DRV')
                 await asyncio.sleep(min(.08,max(0,deadline-time.monotonic())))
 
-        log_stopped=False
         try:
-            await hold(0,baseline_seconds)
+            if ground_distance_m is not None:
+                await expect('ENCZERO','ACK,ENCZERO')
+                origin_packet=await self.read_encoder()
+                origin=origin_packet[3]
+
+                # The last live probe showed that -25 RPM moved backward.
+                # Use +25 as the forward candidate and require all four live
+                # encoder deltas to confirm it before scoring or going farther.
+                await expect('ARM','ACK,ARM,WHEELS_OFF_GROUND')
+                await expect('SPEED,1','ACK,SPEED,1')
+                probe_duration=timed_leg_seconds(
+                    GROUND_FORWARD_PROBE_DISTANCE_M,
+                    GROUND_FORWARD_PROBE_TARGET_RPM,
+                )
+                self.direction_probe={
+                    'command_rpm':GROUND_FORWARD_PROBE_TARGET_RPM,
+                    'expected_direction':'forward',
+                    'expected_encoder_sign':GROUND_FORWARD_ENCODER_SIGN,
+                    'requested_distance_m':GROUND_FORWARD_PROBE_DISTANCE_M,
+                    'elapsed_s':None,
+                    'max_drv_gap_s':None,
+                    'passed':False,
+                }
+                probe_elapsed,probe_gap=await self.drive_for_duration(
+                    GROUND_FORWARD_PROBE_TARGET_RPM,probe_duration)
+                await asyncio.sleep(.12)
+                await expect('STOP','ACK,STOP')
+                probe_packet=await self.read_encoder()
+                probe_deltas=tuple(probe_packet[3][i]-origin[i] for i in range(4))
+                probe_distance=distance_from_encoder(probe_packet[3],origin)
+                self.direction_probe.update({
+                    'encoder_wheel_deltas':list(probe_deltas),
+                    'encoder_distance_m':probe_distance,
+                    'elapsed_s':probe_elapsed,
+                    'max_drv_gap_s':probe_gap,
+                })
+                if any(delta*GROUND_FORWARD_ENCODER_SIGN<=0 for delta in probe_deltas):
+                    raise RuntimeError(
+                        'forward direction probe found a wheel encoder delta with the wrong sign; '
+                        'stopped without issuing reverse motion')
+                if not (GROUND_FORWARD_PROBE_DISTANCE_M*GROUND_FORWARD_PROBE_MIN_RATIO <=
+                        probe_distance <=
+                        GROUND_FORWARD_PROBE_DISTANCE_M*GROUND_FORWARD_PROBE_MAX_RATIO):
+                    raise RuntimeError(
+                        f'forward direction probe displacement {probe_distance:.3f} m '
+                        'is outside its safe verification range; stopped without reverse motion')
+                self.direction_probe['passed']=True
+
+            # ARM alone does not enable wheel motion. Move its BLE round trip
+            # outside the 1024-record WLOG window; firmware still rejects
+            # CLEAR/START whenever attitude or speed control is active.
+            await expect('ARM','ACK,ARM,WHEELS_OFF_GROUND')
+            await expect('WLOG,CLEAR','WLOG,CLEAR,OK')
+            await expect('WLOG,START','WLOG,START,OK')
+            log_started=True
+            await expect('SPEED,1','ACK,SPEED,1')
+            # WLOG setup and BLE ACK latency already provide part of the
+            # baseline. Keep at least 1.5 s after the zero DRV ACK so the
+            # enabled, settled baseline remains >=2 s in the MCU timeline.
+            await hold(0,max(1.5,baseline_seconds-.5))
             if ground_distance_m is None:
                 await hold(target,seconds)
             else:
-                outbound_duration=timed_leg_seconds(ground_distance_m,target)
+                probe_distance=self.direction_probe['encoder_distance_m']
+                remaining_distance=ground_distance_m-probe_distance
+                if remaining_distance<=0:
+                    raise RuntimeError('forward probe already reached the full outbound distance')
+                outbound_duration=timed_leg_seconds(remaining_distance,target)
                 if outbound_duration>seconds:
                     raise RuntimeError('timed outbound leg exceeds its declared timeout')
                 outbound_reached=True
@@ -207,18 +475,21 @@ class WheelSession:
                     outbound_refresh_gap=exc.max_gap_s
                     outbound_reached=False
                 await asyncio.sleep(.12)
-                await self.command('STOP')
-                await self.command('WLOG,STOP')
+                await expect('STOP','ACK,STOP')
+                await expect('WLOG,STOP','WLOG,STOP,OK')
                 log_stopped=True
-                departure=encoder_row(await self.command('ENC'))
-                if departure is None or departure[1]!=1:
-                    raise RuntimeError('encoder feedback lost before return leg')
+                departure=await self.read_encoder()
+                outbound_deltas=tuple(departure[3][i]-origin[i] for i in range(4))
+                if any(delta*GROUND_FORWARD_ENCODER_SIGN<=0 for delta in outbound_deltas):
+                    raise RuntimeError(
+                        'scored outbound encoder sign disagrees with forward probe; '
+                        'stopped without issuing reverse motion')
                 outbound=distance_from_encoder(departure[3],origin)
                 outbound_reached = outbound_reached and (
                     ground_distance_m*GROUND_MIN_DISTANCE_RATIO <= outbound <=
                     ground_distance_m*GROUND_MAX_DISTANCE_RATIO)
-                await self.command('ARM')
-                await self.command('SPEED,1')
+                await expect('ARM','ACK,ARM,WHEELS_OFF_GROUND')
+                await expect('SPEED,1','ACK,SPEED,1')
                 nominal_speed=abs(target)*math.pi*.127/60.0
                 return_duration=outbound/max(nominal_speed,.02)*GROUND_DISTANCE_MARGIN
                 return_refresh_gap=0.0
@@ -227,25 +498,27 @@ class WheelSession:
                 except DriveRefreshOverrun as exc:
                     return_refresh_gap=exc.max_gap_s
                     await self.command('DRV,0,0,0')
-                await self.command('STOP')
-                returned=encoder_row(await self.command('ENC'))
-                if returned is None or returned[1]!=1:
-                    raise RuntimeError('encoder feedback lost after return leg')
+                await expect('STOP','ACK,STOP')
+                returned=await self.read_encoder()
                 residual=distance_from_encoder(returned[3],origin)
                 if residual>GROUND_RETURN_TOLERANCE_M:
                     raise RuntimeError(f'ground return residual {residual:.3f} m exceeds tolerance')
                 self.last_ground_metrics={'requested_distance_m':ground_distance_m,
                     'outbound_distance_m':outbound,'return_residual_m':residual,
-                    'encoder_cpr':packet[2],'outbound_duration_s':outbound_elapsed,
+                    'distance_margin':GROUND_DISTANCE_MARGIN,
+                    'return_tolerance_m':GROUND_RETURN_TOLERANCE_M,
+                    'direction_probe':self.direction_probe,
+                    'encoder_cpr':origin_packet[2],
+                    'outbound_duration_s':outbound_elapsed,
                     'return_duration_s':return_duration,
                     'outbound_max_drv_gap_s':outbound_refresh_gap,
                     'return_max_drv_gap_s':return_refresh_gap,
                     'outbound_reached':outbound_reached,
                     'return_within_tolerance':True}
         finally:
-            await self.command('STOP')
-            if not log_stopped:
-                await self.command('WLOG,STOP')
+            await expect('STOP','ACK,STOP')
+            if log_started and not log_stopped:
+                await expect('WLOG,STOP','WLOG,STOP,OK')
         await self.command('TEL,0')
         try:
             return await self.download()
@@ -263,8 +536,11 @@ async def run(args):
         raise ValueError('1 m encoder-limited trials require target/holdout magnitudes >=25 RPM')
     if any(not math.isfinite(x) or x != int(x) or not 10 <= abs(x) <= 60 for x in args.validation_targets):
         raise ValueError('wheel holdouts must be signed integer 10..60 RPM targets')
+    if (args.live and args.ground_distance is not None and
+            args.validation_targets[0]*GROUND_FORWARD_PROBE_TARGET_RPM<=0):
+        raise ValueError('the first ground holdout must use the verified forward-command sign')
     args.output.mkdir(parents=True)
-    async with websockets.connect(args.url,open_timeout=5) as ws:
+    async with connect_endpoint(args) as ws:
         if (await ws.recv()).strip()!='BRIDGE,BM50_ACK_R3': raise RuntimeError('R3 bridge required')
         session=WheelSession(ws,args.wheel,args.output)
         report={'status':'preflight','motion_started':False,'selection':'pending','history':[]}
@@ -283,6 +559,10 @@ async def run(args):
                 p=(await session.command(f'{name},STATUS')).split(',')
                 if len(p)!=7 or p[2]!='0': raise RuntimeError('another recorder is active')
             plan=make_plan(args,initial[index:index+2])
+            resume_history=resume_results=None
+            if args.resume_from is not None:
+                resume_history,resume_results=load_resume_state(
+                    args.resume_from,plan,initial,args,session)
             report.update(plan=asdict(plan),firmware=session.firmware,caps=session.caps,controller=session.controller,
                           wheel=args.wheel,all_initial_gains=initial,ram_only=True,
                           measurement_wheels=list('ABCD'),simultaneous_measurement=True,
@@ -292,15 +572,21 @@ async def run(args):
                           objective_weights=STEP_SCORE_WEIGHTS,
                           profile='four wheels on ground under normal load; WLOG scores outbound encoder-distance leg; every test returns to origin',
                           ground_distance_m=args.ground_distance,
+                          ground_distance_margin=GROUND_DISTANCE_MARGIN,
+                          ground_return_tolerance_m=GROUND_RETURN_TOLERANCE_M,
+                          forward_encoder_sign=GROUND_FORWARD_ENCODER_SIGN,
                           required_test_setup='four_wheels_on_ground_not_lifted',
                           wheel_aggregation='worst wheel for score and each metric')
+            if args.resume_from is not None:
+                report.update(resumed_from=str(Path(args.resume_from).resolve()),
+                              reused_training_repeats=len(resume_history))
             if not args.live:
                 save(); print(json.dumps(report,indent=2)); return report
             if not args.confirm_hardware:
                 answer=input(f'确认整车不架空、前进{args.ground_distance:.2f}m后按编码器倒车回原点、前后场地清空且急停有效：四轮训练{args.target} RPM，留出{plan.validation_targets} RPM，每项{plan.repeats}次，{plan.rounds}组训练，PWM≤60%，本轮只改{args.wheel}轮Kp/Ki_step且每次≤20%。输入YES：')
                 if answer!='YES': raise RuntimeError('physical plan not confirmed')
             report['motion_started']=True
-            counter=0
+            counter=len(resume_history or [])
             async def apply(expected,target):
                 nonlocal applied
                 await session.command('STOP'); await session.stopped()
@@ -329,6 +615,8 @@ async def run(args):
                      'required_test_setup':'four_wheels_on_ground_not_lifted',
                      'baseline_seconds':args.baseline_seconds,'seconds':args.seconds,
                      'ground_distance_m':args.ground_distance,
+                     'ground_distance_margin':GROUND_DISTANCE_MARGIN,
+                     'ground_return_tolerance_m':GROUND_RETURN_TOLERANCE_M,
                      'all_applied_gains':applied,'angular_gains':session.locked_angles,
                      'source':'MCU_WLOG','ram_only':True}
                 try:
@@ -359,10 +647,15 @@ async def run(args):
                 finally:
                     raw['wire']=session.wire[wire_start:]
                     raw['download_diagnostics']=getattr(session,'download_diagnostics',[])
+                    raw['encoder_diagnostics']=getattr(session,'encoder_diagnostics',[])
+                    raw['direction_probe']=getattr(session,'direction_probe',None)
                     active_raw.write_text(json.dumps(raw,indent=2,allow_nan=False),encoding='utf-8')
             def checkpoint(update):
                 report.update(update);report['all_applied_gains']=applied;save()
-            result=await run_campaign(plan,evaluate,apply,checkpoint)
+            result=await run_campaign(
+                plan,evaluate,apply,checkpoint,
+                initial_results=resume_results,initial_history=resume_history,
+            )
             report.update(result);save();return report
         except BaseException as exc:
             report.update(status='failed',error=str(exc) or type(exc).__name__,restored_readback=None)
@@ -384,6 +677,7 @@ async def run(args):
 def parser():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--url',default='ws://127.0.0.1:8766')
+    p.add_argument('--serial-port',help='exclusive direct COM port, 115200/8N1; no bridge service')
     p.add_argument('--wheel',choices=list('ABCD'),required=True,
                    help='gain channel to optimize; A/B/C/D always run and are measured together')
     p.add_argument('--target',type=int,default=40)
@@ -402,6 +696,8 @@ def parser():
     p.add_argument('--kp-bounds',type=float,nargs=2)
     p.add_argument('--second-bounds',type=float,nargs=2)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--resume-from',type=Path,
+                   help='resume the initial holdout after an encoder-read failure, reusing verified training WLOGs')
     p.add_argument('--live',action='store_true')
     p.add_argument('--confirm-hardware',action='store_true')
     p.set_defaults(loop='wheel_speed',experiment='step')

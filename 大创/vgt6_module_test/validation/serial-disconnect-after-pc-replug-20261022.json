@@ -1,0 +1,62 @@
+{
+  "port": "COM9",
+  "baud": 115200,
+  "transport": "raw_serial",
+  "query_cooldown_s": 0.12,
+  "stop_every": 0,
+  "commands": [
+    {
+      "command": "STOP",
+      "start_s": 29565.171,
+      "lines": [],
+      "write_done_s": 29565.171
+    },
+    {
+      "command": "STOP",
+      "start_s": 29569.187,
+      "lines": [],
+      "write_done_s": 29569.187
+    },
+    {
+      "command": "DISARM",
+      "start_s": 29573.203,
+      "lines": [],
+      "write_done_s": 29573.203
+    },
+    {
+      "command": "TEL,0",
+      "start_s": 29577.218,
+      "lines": [],
+      "write_done_s": 29577.218
+    },
+    {
+      "command": "TOF,0",
+      "start_s": 29581.234,
+      "lines": [],
+      "write_done_s": 29581.234
+    },
+    {
+      "command": "SPEEDSTATUS",
+      "start_s": 29585.25,
+      "lines": [],
+      "write_done_s": 29585.25
+    },
+    {
+      "command": "ANGLESTATUS",
+      "start_s": 29589.25,
+      "lines": [],
+      "write_done_s": 29589.25
+    }
+  ],
+  "chunks": [],
+  "phases": [],
+  "error": "TimeoutError('STOP')",
+  "cleanup_errors": [
+    "TimeoutError('STOP')",
+    "TimeoutError('DISARM')",
+    "TimeoutError('TEL,0')",
+    "TimeoutError('TOF,0')",
+    "TimeoutError('SPEEDSTATUS')",
+    "TimeoutError('ANGLESTATUS')"
+  ]
+}

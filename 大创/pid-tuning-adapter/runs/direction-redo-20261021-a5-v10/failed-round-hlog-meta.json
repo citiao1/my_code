@@ -1,0 +1,17 @@
+{
+  "status": [
+    "HLOG",
+    "STATUS",
+    "0",
+    "743",
+    "1024",
+    "0",
+    "743"
+  ],
+  "records_received": 743,
+  "validation": "complete and structurally validated; experiment itself timed out and is not tuning data",
+  "uart": "UART,9600,42000000,4375,0x00,0,0,0,0,0",
+  "stop_state": "ATEL,361721,0,1,0,0,0,-641,2504,-3521,0,0,0,11556",
+  "batch_retries": [],
+  "invalid_timestamp_frames": []
+}

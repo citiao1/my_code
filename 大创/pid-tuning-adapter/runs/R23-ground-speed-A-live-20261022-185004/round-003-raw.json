@@ -1,0 +1,1350 @@
+{
+  "stage": "baseline_holdout",
+  "target": -30.0,
+  "repeat": 1,
+  "gains": [
+    1.2,
+    0.0991
+  ],
+  "quality": "failed",
+  "wheel": "A",
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R23",
+  "caps": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS",
+  "controller": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+  "measurement_wheels": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "simultaneous_measurement": true,
+  "required_test_setup": "four_wheels_on_ground_not_lifted",
+  "baseline_seconds": 2.0,
+  "seconds": 7.0,
+  "ground_distance_m": 1.0,
+  "all_applied_gains": [
+    1.2,
+    0.0991,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.1008,
+    0.0
+  ],
+  "angular_gains": [
+    "YAWPID,0.1815,1.8062,60,80,20",
+    "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+  ],
+  "source": "MCU_WLOG",
+  "ram_only": true,
+  "error": "encoder feedback lost before return leg",
+  "wire": [
+    "VER,VGT6_BM50_ATTITUDE_R23",
+    "{\"type\": \"result\", \"id\": 636, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R23\"}",
+    "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS",
+    "{\"type\": \"result\", \"id\": 637, \"ok\": true, \"reply\": \"CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS\"}",
+    "TOF,3063004,1,0,-1,4,15,0",
+    "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+    "{\"type\": \"result\", \"id\": 638, \"ok\": true, \"reply\": \"WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED\"}",
+    "UART,9600,42000000,4375,0x00,0,0,0,0,0",
+    "{\"type\": \"result\", \"id\": 639, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x00,0,0,0,0,0\"}",
+    "TEL,3063373,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11498,0,-2,1,-2,92348,0",
+    "LINK,30390,2485,0,0,0,1",
+    "{\"type\": \"result\", \"id\": 640, \"ok\": true, \"reply\": \"LINK,30390,2485,0,0,0,1\"}",
+    "STACK,4096,2632,1464,1",
+    "{\"type\": \"result\", \"id\": 641, \"ok\": true, \"reply\": \"STACK,4096,2632,1464,1\"}",
+    "SPEEDLIMIT,160",
+    "{\"type\": \"result\", \"id\": 642, \"ok\": true, \"reply\": \"SPEEDLIMIT,160\"}",
+    "TEL,3063873,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11501,0,0,1,0,92349,0",
+    "YAWPID,0.1815,1.8062,60,80,20",
+    "{\"type\": \"result\", \"id\": 643, \"ok\": true, \"reply\": \"YAWPID,0.1815,1.8062,60,80,20\"}",
+    "HEADPID,6.0000,1.2500,80,20,D_MEAS",
+    "{\"type\": \"result\", \"id\": 644, \"ok\": true, \"reply\": \"HEADPID,6.0000,1.2500,80,20,D_MEAS\"}",
+    "TOF,3064204,1,0,-1,4,38,0",
+    "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000",
+    "{\"type\": \"result\", \"id\": 645, \"ok\": true, \"reply\": \"PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000\"}",
+    "TEL,3064373,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11503,0,-1,1,-1,92350,0",
+    "ACK,STOP",
+    "{\"type\": \"result\", \"id\": 646, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "TOF,3064604,1,1,3631,9,21,0",
+    "ATEL,3064619,0,1,0,0,0,0,92350,-91086,0,0,0,11505",
+    "{\"type\": \"result\", \"id\": 647, \"ok\": true, \"reply\": \"ATEL,3064619,0,1,0,0,0,0,92350,-91086,0,0,0,11505\"}",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,8",
+    "{\"type\": \"result\", \"id\": 648, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,8\"}",
+    "ACK,ENCZERO",
+    "{\"type\": \"result\", \"id\": 649, \"ok\": true, \"reply\": \"ACK,ENCZERO\"}",
+    "TOF,3065004,1,1,3608,9,15,0",
+    "ENC,3065062,1,380,0,0,0,0,0,0,0,0,0,0,0,0",
+    "{\"type\": \"result\", \"id\": 650, \"ok\": true, \"reply\": \"ENC,3065062,1,380,0,0,0,0,0,0,0,0,0,0,0,0\"}",
+    "TOF,3065204,1,1,3595,9,13,0",
+    "WLOG,CLEAR,OK",
+    "{\"type\": \"result\", \"id\": 651, \"ok\": true, \"reply\": \"WLOG,CLEAR,OK\"}",
+    "WLOG,START,OK",
+    "{\"type\": \"result\", \"id\": 652, \"ok\": true, \"reply\": \"WLOG,START,OK\"}",
+    "ACK,ARM,WHEELS_OFF_GROUND",
+    "{\"type\": \"result\", \"id\": 653, \"ok\": true, \"reply\": \"ACK,ARM,WHEELS_OFF_GROUND\"}",
+    "TEL,3065639,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11503,0,7,1,7,92351,0",
+    "ACK,SPEED,1",
+    "{\"type\": \"result\", \"id\": 654, \"ok\": true, \"reply\": \"ACK,SPEED,1\"}",
+    "ACK,DRV",
+    "{\"type\": \"result\", \"id\": 655, \"ok\": true, \"reply\": \"ACK,DRV\"}",
+    "TEL,3066063,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11505,0,7,1,7,92352,1",
+    "TEL,3066363,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11506,0,0,1,0,92352,1",
+    "TEL,3066663,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11509,0,0,1,0,92353,1",
+    "TEL,3066963,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11506,0,3,1,3,92354,1",
+    "TEL,3067263,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11507,0,0,1,0,92354,1",
+    "TEL,3067563,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11508,0,-1,1,-1,92355,1",
+    "TEL,3067863,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11502,0,0,1,0,92355,1",
+    "ACK,DRV",
+    "{\"type\": \"result\", \"id\": 656, \"ok\": true, \"reply\": \"ACK,DRV\"}",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "TEL,3072063,0,1,30,30,30,30,17,13,13,12,299,297,297,308,30,30,30,30,11449,1418,-83,1,-83,92486,1",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "TEL,3072363,0,1,30,30,30,30,17,11,13,16,293,307,304,277,30,30,30,30,11455,-524,-791,1,-791,92560,1",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,DRV",
+    "{\"type\": \"drive_lease\", \"event\": \"complete\", \"id\": 656, \"error\": null, \"max_gap_s\": 0.125}",
+    "ACK,DRV",
+    "ACK,STOP",
+    "{\"type\": \"result\", \"id\": 657, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "TEL,3073863,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,11455,53,0,1,0,93052,0",
+    "WLOG,STOP,OK",
+    "{\"type\": \"result\", \"id\": 658, \"ok\": true, \"reply\": \"WLOG,STOP,OK\"}",
+    "TOF,3074313,1,0,-1,4,12,0",
+    "TEL,3074363,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11465,17,-2,1,-2,93055,0",
+    "TEL,3074863,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11483,7,0,1,0,93055,0",
+    "ENC,3075142,1,380,100,0,0,0,11489,0,0,1,0,93058,0",
+    "{\"type\": \"result\", \"id\": 659, \"ok\": true, \"reply\": \"ENC,3075142,1,380,100,0,0,0,11489,0,0,1,0,93058,0\"}",
+    "TOF,3075313,1,0,-1,4,38,0",
+    "TEL,3075363,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11483,0,1,1,1,93057,0",
+    "TEL,3075863,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11489,0,0,1,0,93058,0",
+    "ACK,STOP",
+    "{\"type\": \"result\", \"id\": 660, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+  ],
+  "download_diagnostics": [
+    {
+      "sequence": 158,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 178,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 184,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 19",
+      "wire": "WLOG,DATA,185,2786564,2786564663,1,1,0,0,0,0,0,0,0,0,11525,-1,0,1"
+    },
+    {
+      "sequence": 185,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 187
+    },
+    {
+      "sequence": 185,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 186,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 187,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 240,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,242,27000,-30,-307,-315,-7000,-30,-345,-473,-2000,0,0,11416,3559,1,1"
+    },
+    {
+      "sequence": 242,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 243
+    },
+    {
+      "sequence": 242,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 243,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 248,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 48",
+      "wire": "WLOG,DATA,248,2787206,2787206878,1,1,0,-30,-233,-315,-20000,-30,-260,-315,-14000,-30,-272,-315,-13000,-30,-204,-157,-21000,0,0,11416,3538,1,000,-30,-280,-287,-12000,-30,-252,-287,-16000,-30,-252,-287,-16000,0,0,11419,-1,0,1"
+    },
+    {
+      "sequence": 248,
+      "attempt": 1,
+      "kind": "single_end_mismatch",
+      "reply": "WLOG,END,248,4,811"
+    },
+    {
+      "sequence": 248,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 249,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 248
+    },
+    {
+      "sequence": 249,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 250,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 252,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 31",
+      "wire": "WLOG,DATA,254,2787267,2787267842,1,1,0,-30,-256,-157,-190011000,0,0,11419,-1,000,-30,-300,-315,-11000,-30,-300,-315,-11000,0,0,11419,-1,0,1"
+    },
+    {
+      "sequence": 254,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 256,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 20",
+      "wire": "WLOG,DATA,258,2787308,2787308487,1,1,0,-30,-270,-157,-17000,-30,-305,-315,-10000,-30,-274,-315,-151"
+    },
+    {
+      "sequence": 258,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 268,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 48",
+      "wire": "WLOG,DATA,268,2787412,2787412405,1,1,0,-30,-278,-315,-16000,-30,-305,-315,-10000,-30,-253,-157,-18000,-30,-259,-157,-18000,0,0,11424,-1,0,1000,-30,-277,-315,-14000,-30,-285,-315,-15000,-30,-288,-315,-14000,0,0,11428,3511,1,1"
+    },
+    {
+      "sequence": 268,
+      "attempt": 1,
+      "kind": "single_end_mismatch",
+      "reply": "WLOG,END,268,4,811"
+    },
+    {
+      "sequence": 268,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 269,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 268
+    },
+    {
+      "sequence": 269,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 270,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 272,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 56",
+      "wire": "WLOG,DATA,273,2787463,2787463219,1,1,0,-30,-300,-287,-13000,-30,-294,-287,-12000,-30,-296,-287,-15,2787483,278748353613000,0,0,11428,3436,-17000,-30,-290,-152787473,2787473378,1,1,0,-30,-257,-157,-19000,-30,-347,-473,-5000,-30,-302,-315,-13000,-30,-303,-315,-13000,0,0,11428,3436,1,1"
+    },
+    {
+      "sequence": 273,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 274,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 276,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,278,2787514,2787514016,1,1,05000,-30,-281,-287,-16000,0,0,11435,-1,0,1"
+    },
+    {
+      "sequence": 278,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 279
+    },
+    {
+      "sequence": 278,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 279,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 320,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 58",
+      "wire": "WLOG,DATA,321,2787953,2787953030,1,1,0,-30,-314,-315,-12000,-30,-295,-315,-12000,-30,-329,-315,-10000,-30,-290,-315,-16000,0,0,11444,33995,-13000,-30,-299,-32787963,2787963198,1,1,0,-30,-306,-287,-13000,-30,-293,-287,-12000,-30,-273,-143,-17000,-30,-332,-430,-10000,0,0,11444,3399,1,1"
+    },
+    {
+      "sequence": 321,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 322,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 336,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 34",
+      "wire": "WLOG,DATA,336,2788105,2788105447,1,1,0,-30,-305,-315,-14000,-30,-300,-315,-11000,-30,-298,-315,-1500125,2788125765,1,1,03000,-30,-284,-315,-16000,0,0,11447,-1,0,1"
+    },
+    {
+      "sequence": 336,
+      "attempt": 1,
+      "kind": "single_end_mismatch",
+      "reply": "WLOG,END,336,4,811"
+    },
+    {
+      "sequence": 336,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 337,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 336
+    },
+    {
+      "sequence": 337,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 26"
+    },
+    {
+      "sequence": 337,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 338,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 337
+    },
+    {
+      "sequence": 338,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 339,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 364,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 38",
+      "wire": "WLOG,DATA,364,2788392,2788392075,1,1,0,-30,-274,-157,-17000,-30,-312,-315,-9000,-30,-286,-315,-16000788412,2788412396,1,1,0,-30,-289,-315,-15000,-30,-260,-157,-16000,-30,-295,-315,64,4,811"
+    },
+    {
+      "sequence": 364,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 34"
+    },
+    {
+      "sequence": 364,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 365,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 364
+    },
+    {
+      "sequence": 365,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 366,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 372,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 49",
+      "wire": "WLOG,DATA,373,2788483,2788483528,1,1,0,-30,-256,-157,-19000,-30,-297,-315,-11000,-30,-309,-315,-13000,-30,-277,-315,-3,1,1,0,-30,-286,-315,-16000,-30,-306,-315,-10000,-30,-279,-315,-17000,-30,-296,-315,-15000,0,0,11461,-1,0,1"
+    },
+    {
+      "sequence": 373,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 375
+    },
+    {
+      "sequence": 373,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 374,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 375,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 376,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 47",
+      "wire": "WLOG,DATA,377,2788500,-30,-344,-473,-90-30,-292,-287,-15000000,0,0,11463,-1,0,10,-30,-289,-287,-160544,2788544500,1,1,0,-30,-304,-315,-14000,-30,-309,-315,-9000,-30,-335,-315,-10000,-30,-306,-315,-14000,0,0,11463,-1,0,1"
+    },
+    {
+      "sequence": 377,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 379
+    },
+    {
+      "sequence": 377,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 378,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 379,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 384,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,386,2788615,2788615635,1,1,0,-30,-264,-157,-190015000,0,0,11460,-1,0,1"
+    },
+    {
+      "sequence": 386,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 387
+    },
+    {
+      "sequence": 386,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 387,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 388,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,389,2788646,2788646117,1,1,-13000,-30,-290,-143,-16000,0,0,11460,3253,1,1"
+    },
+    {
+      "sequence": 389,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 391
+    },
+    {
+      "sequence": 389,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 390,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 392,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,393,2788686,2788686763,1,1,0,-30,-301,-315,-14000,-30,-311,-315,-909,1,1"
+    },
+    {
+      "sequence": 393,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 28"
+    },
+    {
+      "sequence": 393,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 394,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 396,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 37",
+      "wire": "WLOG,DATA,396,2788717,2788717246,1,1,0,-30,-302,-287,-14000,-30,-305,-287,-10000,-30,-297,-287,-15002788737,2788737566,1,1,0,-30,-309,-315,-13000,-30,-277,-315,-14000,-30,-306,-31596,4,811"
+    },
+    {
+      "sequence": 396,
+      "attempt": 1,
+      "kind": "single_end_mismatch",
+      "reply": "WLOG,END,396,4,811"
+    },
+    {
+      "sequence": 396,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 397,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 396
+    },
+    {
+      "sequence": 397,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 398,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 400,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,401,2788700,-30,-261,-143,-19000,-30,-288,-287,-16000,0,0,11461,-1,0,1"
+    },
+    {
+      "sequence": 401,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 24"
+    },
+    {
+      "sequence": 401,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 402,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 401
+    },
+    {
+      "sequence": 402,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 404,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,405,2788808,2788808689,1,1,-12000,-30,-300,-287,-14000,0,0,11461,3241,1,1"
+    },
+    {
+      "sequence": 405,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 407
+    },
+    {
+      "sequence": 405,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 406,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 412,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 19",
+      "wire": "WLOG,DATA,414,2788902,2788902241,1,1,0,-30,-306,-287,--315,-13000,0,0,11464,3239,1,1"
+    },
+    {
+      "sequence": 414,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 415
+    },
+    {
+      "sequence": 414,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 415,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 416,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 49",
+      "wire": "WLOG,DATA,417,2788932,2788932720,1,1,0,-30,-289,-315,-15000,-30,-287,-315,-13000,-30,-301,-315,-14000,-30,-264,-157,-,1,1,0,-30,-302,-315,-14000,-30,-287,-157,-13000,-30,-308,-315,-13000,-30,-290,-315,-16000,0,0,11456,3207,1,1"
+    },
+    {
+      "sequence": 417,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 419
+    },
+    {
+      "sequence": 417,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 418,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 419,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 420,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 16",
+      "wire": "WLOG,DATA,421,2788973,2788973365,1,1,0,-30,-303,-315,-14000,-30,-295,-315,-12001"
+    },
+    {
+      "sequence": 421,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 422,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 421
+    },
+    {
+      "sequence": 422,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 424,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 48",
+      "wire": "WLOG,DATA,424,2789003,2789003849,1,1,0,-30,-263,-157,-18000,-30,-308,-315,-10000,-30,-279,-315,-17000,-30,-272,-157,-170,1,0,-30,-281,-287,-17000,-30,-303,-287,-11000,-30,-332,-430,-11000,-30,-285,-287,-16000,0,0,11456,3174,1,1"
+    },
+    {
+      "sequence": 424,
+      "attempt": 1,
+      "kind": "single_end_mismatch",
+      "reply": "WLOG,END,424,4,811"
+    },
+    {
+      "sequence": 424,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 425,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 424
+    },
+    {
+      "sequence": 425,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 426,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 428,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,429,2789054,2789054652,1,1,0,-30,-303,-315,-140-13000,0,0,11456,3199,1,1"
+    },
+    {
+      "sequence": 429,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 431
+    },
+    {
+      "sequence": 429,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 430,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 432,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 48",
+      "wire": "WLOG,DATA,432,2789085,2789085137,1,1,0,-30,-278,-315,-18000,-30,-266,-157,-15000,-30,-306,-315,-14000,-30,-312,-315,-130,1,0,-30,-291,-315,-16000,-30,-285,-315,-13000,-30,-305,-315,-14000,-30,-260,-157,-19000,0,0,11456,3186,1,1"
+    },
+    {
+      "sequence": 432,
+      "attempt": 1,
+      "kind": "single_end_mismatch",
+      "reply": "WLOG,END,432,4,811"
+    },
+    {
+      "sequence": 432,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 433,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 432
+    },
+    {
+      "sequence": 433,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 434,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 436,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 49",
+      "wire": "WLOG,DATA,437,2789135,2789135942,1,1,0,-30,-307,-315,-14000,-30,-305,-315,-11000,-30,-311,-315,-13000,-30,-282,-157,-7,1,1,0,-30,-303,-287,-15000,-30,-302,-287,-11000,-30,-272,-287,-18000,-30,-333,-430,-10000,0,0,11454,3161,1,1"
+    },
+    {
+      "sequence": 437,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 23"
+    },
+    {
+      "sequence": 437,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 438,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 437
+    },
+    {
+      "sequence": 438,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 439,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 440,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "WLOG sequence/tick outside uint32",
+      "wire": "WLOG,DATA,441,2780000,-30,-286,-157,-0,-30,-309,-315,-14000,-30,-308,-315,-10000,-30,-341,-473,-9000,-30,-277,-157,-17000,0,0,11454,3161,1,1"
+    },
+    {
+      "offset": 440,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,442,2-9000,-30,-295,-315,-15000,-30,-296,-315,-15000,0,0,11454,3161,1,1"
+    },
+    {
+      "sequence": 441,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 443
+    },
+    {
+      "sequence": 441,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 442,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 443,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 456,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 31",
+      "wire": "WLOG,DATA,457,2789341,2789341263,1,1,0,-30,-311,-430,-13000,-30,-272,-143,-14000,-30,-299,-287,-14000,-30,-260,-143,-1,1,1,0,-30,-313,-3151,1"
+    },
+    {
+      "sequence": 457,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 468,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 22",
+      "wire": "WLOG,DATA,470,2789473,2789473366,1,1,0,-30,-278,-315,-16000,-30,-323,-315,-8000,-30,-305,-315,-18,4,811"
+    },
+    {
+      "sequence": 470,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 472,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 51",
+      "wire": "WLOG,DATA,473,2789503,2789503851,1,1,0,-30,-336,-315,-8000,-30,-295,-315,-12000,-30,-312,-315,-13000,-30,-343,-473,-9000,0,0,11464,3093,1,5000,-30,-297,-287,-11000,-30,-262,-143,-19000,-30,-320,-28700,-30,-301,-315,-11000,-30,-313,-315,-1,4,811"
+    },
+    {
+      "sequence": 473,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 474,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 480,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 47",
+      "wire": "WLOG,DATA,481,2789585,2789585132,1,1,0,-30,-311,-315,-11000,-30,-309,-315,-9000,-30,-287,-315,-163,2789605,2789605450,1,1,0,-30,-307,-315,-12000,-30,-276,-315,-14000,-30,-295,-315,-15000,-30,-306,-315,-13000,0,0,11468,3081,1,1"
+    },
+    {
+      "sequence": 481,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 483
+    },
+    {
+      "sequence": 481,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 482,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 483,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 484,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 19",
+      "wire": "WLOG,DATA,486,73,-4000,-30,-310,-315,-13000,-30,-289,-315,-16000,0,0,11471,3113,1,1"
+    },
+    {
+      "sequence": 486,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 23"
+    },
+    {
+      "sequence": 486,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 487,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 486
+    },
+    {
+      "sequence": 487,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 496,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 21",
+      "wire": "WLOG,DATA,498,73,-5000,-30,-307,-3,1,0,-30,-299,-315,-157,-17000,0,0,11467,3072,1,1"
+    },
+    {
+      "sequence": 498,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 500,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 61",
+      "wire": "WLOG,DATA,501,2789788,2789788346,1,1,0,-30,-321,-473,-13000,-30,-293,-315,-12000,-30,-305,-315,-14000,-30,-293,-315,-,1,1,0,-30,-318,-315,-13000,-30,-304,-315,-10000,-30,-263,-157,-19000,-30,-337,-315,-9000,0,0,11467,-11000,-30,-308,-315,-13000,-30,-347,-473,-9000,0,0,11467,3072,1,1"
+    },
+    {
+      "sequence": 501,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 502,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 504,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 19",
+      "wire": "WLOG,DATA,506,2789841,2789841265,1,1,0,-30,-300,-287,-315,-16000,0,0,11470,3053,1,1"
+    },
+    {
+      "sequence": 506,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 508,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,510,2789881,2789881908,1,1,0,-30,-359,-473,-7000,-30,-293,-315,-1051,1,1"
+    },
+    {
+      "sequence": 510,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 28"
+    },
+    {
+      "sequence": 510,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 511,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 512,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 31",
+      "wire": "WLOG,DATA,513,2789912,2789912391,1,1,0,-30,-294,-315,-1505,-13000,0,0,11470,3000,-30,-320,-315,-12000,-30,-306,-315,-14000,0,0,11470,3051,1,1"
+    },
+    {
+      "sequence": 513,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 532,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 47",
+      "wire": "WLOG,DATA,533,2790115,2790115622,1,1,0,-30,-299,-315,-15000,-30,-300,-315,-11000,-30,-292,-315,-15,2790135,2790135942,1,1,0,-30,-355,-473,-8000,-30,-308,-315,-10000,-30,-304,-315,-14000,-30,-282,-157,-16000,0,0,11479,2990,1,1"
+    },
+    {
+      "sequence": 533,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 535
+    },
+    {
+      "sequence": 533,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 534,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 535,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 536,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,538,2790166,2790166423,1,15,-14000,-30,-303,-315,-14000,0,0,11479,2962,1,1"
+    },
+    {
+      "sequence": 538,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 539
+    },
+    {
+      "sequence": 538,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 539,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 540,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 48",
+      "wire": "WLOG,DATA,541,2790196,2790196904,1,1,0,-30,-307,-315,-13000,-30,-312,-315,-9000,-30,-312,-315,-13000,-30,-309,-315,-13,1,0,-30,-303,-287,-14000,-30,-305,-287,-10000,-30,-262,-143,-19000,-30,-260,-143,-19000,0,0,11479,2967,1,1"
+    },
+    {
+      "sequence": 541,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 543
+    },
+    {
+      "sequence": 541,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 542,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 543,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 544,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 19",
+      "wire": "WLOG,DATA,545,2790237,2790237549,1,1,0,-30,-309,-315,-1300,-10000,0,0,11475,2967,1,1"
+    },
+    {
+      "sequence": 545,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 27"
+    },
+    {
+      "sequence": 545,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 546,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 548,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 47",
+      "wire": "WLOG,DATA,549,2790278,2790278187,1,1,0,-30,-305,-287,-13000,-30,-294,-287,-12000,-30,-279,-287,-151,2790298,2790298511,1,1,0,-30,-310,-315,-12000,-30,-305,-315,-10000,-30,-297,-315,-15000,-30,-297,-315,-15000,0,0,11475,2953,1,1"
+    },
+    {
+      "sequence": 549,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 27"
+    },
+    {
+      "sequence": 549,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 550,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 551,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 552,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 19",
+      "wire": "WLOG,DATA,554,2790331,2790331105,1,1,0,-30,-299,-287,-,-17000,0,0,11475,-1,0,1"
+    },
+    {
+      "sequence": 554,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 555
+    },
+    {
+      "sequence": 554,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 555,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 556,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 46",
+      "wire": "WLOG,DATA,557,2790361,2790361589,1,1,0,-30,-332,-473,-10000,-30,-298,-315,-11000,-30,-297,-315,-15000,-30,-297,-315,-150,-30,-323,-315,-10000,-30,-307,-315,-10000,-30,-306,-315,-14000,-30,-306,-315,-13000,0,0,11475,2956,1,1"
+    },
+    {
+      "sequence": 557,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 24"
+    },
+    {
+      "sequence": 557,
+      "attempt": 2,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 558,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 557
+    },
+    {
+      "sequence": 558,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 559,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 560,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 18",
+      "wire": "WLOG,DATA,561,2790402,2790402232,1,1,0,-30,-311,-287,-12000,-30,-303,-287,-10056,1,1"
+    },
+    {
+      "sequence": 561,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 563
+    },
+    {
+      "sequence": 561,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 562,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "offset": 564,
+      "count": 4,
+      "attempt": 1,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 6",
+      "wire": "WLOG,DATA,565,2790933,1,1"
+    },
+    {
+      "sequence": 565,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 33"
+    },
+    {
+      "sequence": 565,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 24"
+    },
+    {
+      "sequence": 565,
+      "attempt": 3,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 566,
+      "kind": "discarded_malformed_row",
+      "error": "invalid WLOG field count: expected 30, got 31"
+    },
+    {
+      "sequence": 566,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    },
+    {
+      "sequence": 567,
+      "kind": "discarded_wrong_sequence",
+      "observed_sequence": 566
+    },
+    {
+      "sequence": 567,
+      "attempt": 1,
+      "kind": "recovered_single_row"
+    }
+  ]
+}

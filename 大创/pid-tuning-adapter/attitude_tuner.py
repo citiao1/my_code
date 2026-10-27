@@ -10,6 +10,7 @@ import time
 from dataclasses import asdict
 from pathlib import Path
 import websockets
+from session_transport import connect_endpoint
 from closed_loop_tuning import score_tracking, wrap_deg
 from campaign_runner import execute_campaign
 from tuning_campaign import make_plan
@@ -581,7 +582,7 @@ async def run(args):
     if (any(args.output.glob("round-*-raw.json")) or
             (args.output / "session.json").exists()):
         raise ValueError("output already contains trial data; choose a new session directory")
-    async with websockets.connect(args.url, open_timeout=5) as ws:
+    async with connect_endpoint(args) as ws:
         if (await asyncio.wait_for(ws.recv(),5)).strip()!=BRIDGE_GREETING:
             raise RuntimeError("R3 bridge required")
         s = Session(ws)
@@ -803,6 +804,7 @@ def main():
     p.add_argument("--loop",required=True,
                    choices=("angular_velocity","direction","wheel_speed"))
     p.add_argument("--url",default="ws://127.0.0.1:8766")
+    p.add_argument("--serial-port", help="exclusive direct COM port, 115200/8N1; no bridge service")
     p.add_argument("--live",action="store_true")
     p.add_argument("--confirm-hardware",action="store_true")
     p.add_argument("--baseline",type=float,default=0)

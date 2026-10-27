@@ -1,0 +1,96 @@
+{
+  "method": "Proteus native MCP LED state sampling; simulation time quantized to display updates; first and last partial phases excluded from duration judgement.",
+  "samples": 307,
+  "unclassified_transition_samples": 0,
+  "transitions": [
+    {
+      "time_s": 31.9,
+      "phase": 4,
+      "led_on": [
+        "D3",
+        "D5"
+      ],
+      "observed_duration_s": 0.1
+    },
+    {
+      "time_s": 32.0,
+      "phase": 1,
+      "led_on": [
+        "D1",
+        "D6"
+      ],
+      "observed_duration_s": 1.5
+    },
+    {
+      "time_s": 33.5,
+      "phase": 2,
+      "led_on": [
+        "D2",
+        "D6"
+      ],
+      "observed_duration_s": 0.5
+    },
+    {
+      "time_s": 34.0,
+      "phase": 3,
+      "led_on": [
+        "D3",
+        "D4"
+      ],
+      "observed_duration_s": 1.5
+    },
+    {
+      "time_s": 35.5,
+      "phase": 4,
+      "led_on": [
+        "D3",
+        "D5"
+      ],
+      "observed_duration_s": 0.5
+    },
+    {
+      "time_s": 36.0,
+      "phase": 1,
+      "led_on": [
+        "D1",
+        "D6"
+      ],
+      "observed_duration_s": 1.5
+    },
+    {
+      "time_s": 37.5,
+      "phase": 2,
+      "led_on": [
+        "D2",
+        "D6"
+      ],
+      "observed_duration_s": 0.5
+    },
+    {
+      "time_s": 38.0,
+      "phase": 3,
+      "led_on": [
+        "D3",
+        "D4"
+      ],
+      "observed_duration_s": 1.5
+    },
+    {
+      "time_s": 39.5,
+      "phase": 4,
+      "led_on": [
+        "D3",
+        "D5"
+      ],
+      "observed_duration_s": 0.5
+    },
+    {
+      "time_s": 40.0,
+      "phase": 1,
+      "led_on": [
+        "D1",
+        "D6"
+      ]
+    }
+  ]
+}

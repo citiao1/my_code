@@ -1,0 +1,45 @@
+{
+  "loop": "direction",
+  "experiment": "direction_identify",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "measurement",
+  "telemetry_period_s": 0.2,
+  "scoring_source": "downloaded_HLOG",
+  "log_period_s": 0.02,
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 160
+  },
+  "baseline": 0,
+  "target": 10.0,
+  "forward_rpm": 20,
+  "distance_m": 0.3,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        6.0,
+        1.5
+      ],
+      "metrics": {
+        "normalized_iae": 3.569207584189381,
+        "overshoot": 0.0,
+        "steady_error": 2.7027079646017707,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": false,
+        "score": 6.271915548791151
+      },
+      "csv": "runs\\direction-redo-20261021-candidate-kd1p5-a10-v20\\round-01.csv",
+      "hlog_csv": "runs\\direction-redo-20261021-candidate-kd1p5-a10-v20\\round-01-hlog.csv",
+      "writeback": false
+    }
+  ],
+  "gains": [
+    6.0,
+    1.5
+  ],
+  "writeback": false
+}

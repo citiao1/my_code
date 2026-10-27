@@ -1,0 +1,96 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              10/20/2026 21:57:07 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          /* 交通灯：P1.0～P1.5 依次控制南北、东西的绿黄红灯，低电平点亮。 */
+   2          #include <reg51.h>
+   3          #include <intrins.h>
+   4          
+   5          typedef unsigned char u8;
+   6          typedef unsigned int u16;
+   7          
+   8          #define NS_GREEN  0x01
+   9          #define NS_YELLOW 0x02
+  10          #define NS_RED    0x04
+  11          #define EW_GREEN  0x08
+  12          #define EW_YELLOW 0x10
+  13          #define EW_RED    0x20
+  14          #define PHASE_COUNT 4
+  15          
+  16          /* 按表循环切换四种灯光状态。 */
+  17          static const u8 code phase_output[PHASE_COUNT] =
+  18          {
+  19              (u8)~(NS_GREEN  | EW_RED),
+  20              (u8)~(NS_YELLOW | EW_RED),
+  21              (u8)~(NS_RED    | EW_GREEN),
+  22              (u8)~(NS_RED    | EW_YELLOW)
+  23          };
+  24          
+  25          static const u16 code phase_time_ms[PHASE_COUNT] =
+  26          {
+  27              1500, 500, 1500, 500  /* 绿灯约 1.5 秒，黄灯约 0.5 秒。 */
+  28          };
+  29          
+  30          /* 12 MHz、12T 下的软件延时。 */
+  31          static void delay_ms(u16 milliseconds)
+  32          {
+  33   1          u8 count;
+  34   1      
+  35   1          while (milliseconds != 0)
+  36   1          {
+  37   2              count = 165;
+  38   2              do
+  39   2              {
+  40   3                  _nop_();
+  41   3                  _nop_();
+  42   3              } while (--count != 0);
+  43   2              --milliseconds;
+  44   2          }
+  45   1      }
+  46          
+  47          static void traffic_init(void)
+  48          {
+  49   1          P1 = (u8)~(NS_RED | EW_RED);  /* 初始时两个方向均亮红灯。 */
+  50   1      }
+  51          
+  52          static void traffic_cycle(void)
+  53          {
+  54   1          u8 phase;
+C51 COMPILER V9.60.0.0   MAIN                                                              10/20/2026 21:57:07 PAGE 2   
+
+  55   1      
+  56   1          for (phase = 0; phase < PHASE_COUNT; ++phase)
+  57   1          {
+  58   2              P1 = phase_output[phase];
+  59   2              delay_ms(phase_time_ms[phase]);
+  60   2          }
+  61   1      }
+  62          
+  63          void main(void)
+  64          {
+  65   1          traffic_init();
+  66   1          while (1)
+  67   1          {
+  68   2              traffic_cycle();
+  69   2          }
+  70   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     77    ----
+   CONSTANT SIZE    =     12    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

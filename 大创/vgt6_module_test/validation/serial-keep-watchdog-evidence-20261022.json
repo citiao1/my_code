@@ -1,0 +1,435 @@
+{
+  "note": "Five stopped-state reports without prior host STOP after a missing KEEP ACK. First stopped telemetry is sampled; exact MCU stop time and reason are not present. New timeout eligibility inferred from original host reception only; original exports do not record write completion.",
+  "events": [
+    {
+      "capture": "bm50-link-1792681196370.json",
+      "last_keep_ms": 846124.299999997,
+      "stopped_report_ms": 847878.5999999978,
+      "elapsed_from_keep_ms": 1754.3,
+      "keep_ack_before_stop": false,
+      "rx_age_at_600ms": 50.9,
+      "atel_age_at_600ms": 330.8,
+      "atel_at_600ms": "ATEL,2908553,1,1,0,-5531,-7077,0,-21026,20989,0,0,1,12161",
+      "timeline": [
+        {
+          "hostMs": 845728,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        },
+        {
+          "hostMs": 845728.299999997,
+          "kind": "tx",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 845750.5999999978,
+          "kind": "line",
+          "text": "ACK,KEEP"
+        },
+        {
+          "hostMs": 845858.0999999978,
+          "kind": "tx",
+          "text": "MOVE,-30,0,0"
+        },
+        {
+          "hostMs": 845875.299999997,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        },
+        {
+          "hostMs": 846124.299999997,
+          "kind": "tx",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 846144.3999999985,
+          "kind": "line",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 846393.5,
+          "kind": "line",
+          "text": "ATEL,2908553,1,1,0,-5531,-7077,0,-21026,20989,0,0,1,12161"
+        },
+        {
+          "hostMs": 846899.799999997,
+          "kind": "line",
+          "text": "ATEL,2909053,1,1,0,-2426,-4358,0,-22780,22780,0,0,1,12158"
+        },
+        {
+          "hostMs": 847406.1999999993,
+          "kind": "line",
+          "text": "ATEL,2909553,1,1,0,-2404,-2388,0,-23885,23867,0,0,1,12172"
+        },
+        {
+          "hostMs": 847878.5999999978,
+          "kind": "line",
+          "text": "ATEL,2910053,0,1,0,435,0,0,-24268,24195,0,0,0,12179"
+        },
+        {
+          "hostMs": 848183.1999999993,
+          "kind": "tx",
+          "text": "STOP"
+        },
+        {
+          "hostMs": 848214.6999999993,
+          "kind": "line",
+          "text": "ACK,STOP"
+        },
+        {
+          "hostMs": 848385.0999999978,
+          "kind": "line",
+          "text": "ATEL,2910553,0,1,0,19,0,0,-24310,24195,0,0,0,12179"
+        },
+        {
+          "hostMs": 848402.5999999978,
+          "kind": "tx",
+          "text": "MOVE,-30,0,0"
+        },
+        {
+          "hostMs": 848428.5,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        },
+        {
+          "hostMs": 848524.5,
+          "kind": "tx",
+          "text": "KEEP"
+        }
+      ]
+    },
+    {
+      "capture": "bm50-link-1792681196370.json",
+      "last_keep_ms": 856933.5999999978,
+      "stopped_report_ms": 858612.1999999993,
+      "elapsed_from_keep_ms": 1678.6,
+      "keep_ack_before_stop": false,
+      "rx_age_at_600ms": 59.1,
+      "atel_age_at_600ms": 1914.3,
+      "atel_at_600ms": "ATEL,2917772,0,1,0,-10,0,0,-9789,9890,0,0,0,12185",
+      "timeline": [
+        {
+          "hostMs": 856533,
+          "kind": "tx",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 856563,
+          "kind": "line",
+          "text": "ACK,KEEP"
+        },
+        {
+          "hostMs": 856563.1999999993,
+          "kind": "tx",
+          "text": "MOVE,-30,0,0"
+        },
+        {
+          "hostMs": 856596.5999999978,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        },
+        {
+          "hostMs": 856933.5999999978,
+          "kind": "tx",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 857622.0999999978,
+          "kind": "line",
+          "text": "ATEL,2919776,1,1,0,3823,3525,0,-12033,12033,0,0,1,12155"
+        },
+        {
+          "hostMs": 858106,
+          "kind": "line",
+          "text": "ATEL,2920276,1,1,0,1961,1957,0,-11000,11025,0,0,1,12148"
+        },
+        {
+          "hostMs": 858612.1999999993,
+          "kind": "line",
+          "text": "ATEL,2920776,0,1,0,46,0,0,-10417,10596,0,0,0,12155"
+        },
+        {
+          "hostMs": 858929.5999999978,
+          "kind": "tx",
+          "text": "STOP"
+        },
+        {
+          "hostMs": 858960,
+          "kind": "line",
+          "text": "ACK,STOP"
+        },
+        {
+          "hostMs": 859082.0999999978,
+          "kind": "tx",
+          "text": "MOVE,-30,0,0"
+        },
+        {
+          "hostMs": 859118.0999999978,
+          "kind": "line",
+          "text": "ATEL,2921276,0,1,0,11,0,0,-10376,10596,0,0,0,12155"
+        },
+        {
+          "hostMs": 859118.0999999978,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        }
+      ]
+    },
+    {
+      "capture": "bm50-link-1792681196370.json",
+      "last_keep_ms": 861329.299999997,
+      "stopped_report_ms": 863135.1999999993,
+      "elapsed_from_keep_ms": 1805.9,
+      "keep_ack_before_stop": false,
+      "rx_age_at_600ms": 257.7,
+      "atel_age_at_600ms": 279.2,
+      "atel_at_600ms": "ATEL,2923811,1,1,0,101,-507,0,-10847,10836,0,0,1,12156",
+      "timeline": [
+        {
+          "hostMs": 860926,
+          "kind": "tx",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 860973.5,
+          "kind": "line",
+          "text": "ACK,KEEP"
+        },
+        {
+          "hostMs": 861031.3999999985,
+          "kind": "tx",
+          "text": "STOP"
+        },
+        {
+          "hostMs": 861052.1999999993,
+          "kind": "line",
+          "text": "ACK,STOP"
+        },
+        {
+          "hostMs": 861091.1999999993,
+          "kind": "tx",
+          "text": "MOVE,-30,0,0"
+        },
+        {
+          "hostMs": 861131.0999999978,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        },
+        {
+          "hostMs": 861329.299999997,
+          "kind": "tx",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 861650.0999999978,
+          "kind": "line",
+          "text": "ATEL,2923811,1,1,0,101,-507,0,-10847,10836,0,0,1,12156"
+        },
+        {
+          "hostMs": 862145.0999999978,
+          "kind": "line",
+          "text": "ATEL,2924311,1,1,0,463,-531,0,-10811,10811,0,0,1,12165"
+        },
+        {
+          "hostMs": 862651.3999999985,
+          "kind": "line",
+          "text": "ATEL,2924811,1,1,0,546,-458,0,-10822,10836,0,0,1,12174"
+        },
+        {
+          "hostMs": 863135.1999999993,
+          "kind": "line",
+          "text": "ATEL,2925311,0,1,0,15,0,0,-10952,10836,0,0,0,12181"
+        },
+        {
+          "hostMs": 863641.5,
+          "kind": "line",
+          "text": "ATEL,2925811,0,1,0,-5,0,0,-10956,10836,0,0,0,12174"
+        }
+      ]
+    },
+    {
+      "capture": "bm50-link-1792681196370.json",
+      "last_keep_ms": 873339,
+      "stopped_report_ms": 875173.299999997,
+      "elapsed_from_keep_ms": 1834.3,
+      "keep_ack_before_stop": false,
+      "rx_age_at_600ms": 72.1,
+      "atel_age_at_600ms": 239.3,
+      "atel_at_600ms": "ATEL,2935838,1,1,0,1963,275,0,-10582,10600,0,0,1,12162",
+      "timeline": [
+        {
+          "hostMs": 872935.6999999993,
+          "kind": "tx",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 873000.299999997,
+          "kind": "line",
+          "text": "ACK,KEEP"
+        },
+        {
+          "hostMs": 873136.5,
+          "kind": "tx",
+          "text": "MOVE,-30,0,0"
+        },
+        {
+          "hostMs": 873180.299999997,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        },
+        {
+          "hostMs": 873339,
+          "kind": "tx",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 873699.6999999993,
+          "kind": "line",
+          "text": "ATEL,2935838,1,1,0,1963,275,0,-10582,10600,0,0,1,12162"
+        },
+        {
+          "hostMs": 874183.1999999993,
+          "kind": "line",
+          "text": "ATEL,2936338,1,1,0,1132,-84,0,-10329,10329,0,0,1,12155"
+        },
+        {
+          "hostMs": 874667,
+          "kind": "line",
+          "text": "ATEL,2936838,1,1,0,1602,-362,0,-10185,10205,0,0,1,12159"
+        },
+        {
+          "hostMs": 875173.299999997,
+          "kind": "line",
+          "text": "ATEL,2937338,0,1,0,-227,0,0,-10515,10163,0,0,0,12170"
+        },
+        {
+          "hostMs": 875420.5,
+          "kind": "tx",
+          "text": "STOP"
+        },
+        {
+          "hostMs": 875453.1999999993,
+          "kind": "line",
+          "text": "ACK,STOP"
+        },
+        {
+          "hostMs": 875551.799999997,
+          "kind": "tx",
+          "text": "MOVE,-30,0,0"
+        },
+        {
+          "hostMs": 875576.799999997,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        },
+        {
+          "hostMs": 875736.299999997,
+          "kind": "tx",
+          "text": "KEEP"
+        }
+      ]
+    },
+    {
+      "capture": "bm50-link-1792681250376.json",
+      "last_keep_ms": 1006123.8999999985,
+      "stopped_report_ms": 1007867.799999997,
+      "elapsed_from_keep_ms": 1743.9,
+      "keep_ack_before_stop": false,
+      "rx_age_at_600ms": 174.1,
+      "atel_age_at_600ms": 352.8,
+      "atel_at_600ms": "ATEL,3068547,1,1,0,299,490,0,-104576,104576,0,0,1,12162",
+      "timeline": [
+        {
+          "hostMs": 1005712.799999997,
+          "kind": "tx",
+          "text": "MOVE,30,30,0"
+        },
+        {
+          "hostMs": 1005739.5,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        },
+        {
+          "hostMs": 1005739.8999999985,
+          "kind": "tx",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 1005762,
+          "kind": "line",
+          "text": "ACK,KEEP"
+        },
+        {
+          "hostMs": 1005840.5,
+          "kind": "tx",
+          "text": "MOVE,30,0,0"
+        },
+        {
+          "hostMs": 1005863.299999997,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        },
+        {
+          "hostMs": 1006123.8999999985,
+          "kind": "tx",
+          "text": "KEEP"
+        },
+        {
+          "hostMs": 1006371.0999999978,
+          "kind": "line",
+          "text": "ATEL,3068547,1,1,0,299,490,0,-104576,104576,0,0,1,12162"
+        },
+        {
+          "hostMs": 1006866.5,
+          "kind": "line",
+          "text": "ATEL,3069047,1,1,0,160,316,0,-104461,104464,0,0,1,12162"
+        },
+        {
+          "hostMs": 1007372.6999999993,
+          "kind": "line",
+          "text": "ATEL,3069547,1,1,0,569,346,0,-104512,104512,0,0,1,12170"
+        },
+        {
+          "hostMs": 1007867.799999997,
+          "kind": "line",
+          "text": "ATEL,3070047,0,1,0,-3,0,0,-104543,104533,0,0,0,12176"
+        },
+        {
+          "hostMs": 1008299.3999999985,
+          "kind": "tx",
+          "text": "STOP"
+        },
+        {
+          "hostMs": 1008327.5999999978,
+          "kind": "line",
+          "text": "ACK,STOP"
+        },
+        {
+          "hostMs": 1008337.299999997,
+          "kind": "tx",
+          "text": "MOVE,30,0,0"
+        },
+        {
+          "hostMs": 1008384,
+          "kind": "line",
+          "text": "ACK,MOVE"
+        },
+        {
+          "hostMs": 1008420,
+          "kind": "tx",
+          "text": "STOP"
+        },
+        {
+          "hostMs": 1008440.1999999993,
+          "kind": "line",
+          "text": "ACK,STOP"
+        },
+        {
+          "hostMs": 1008516.5,
+          "kind": "tx",
+          "text": "MOVE,30,0,0"
+        }
+      ]
+    }
+  ]
+}

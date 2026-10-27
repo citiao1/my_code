@@ -1,0 +1,234 @@
+{
+  "status": "failed",
+  "purpose": "forward_30rpm_four_wheel_diagnostic_with_encoder_return",
+  "target_command_rpm": 30,
+  "baseline_seconds": 2.0,
+  "phase_limit_seconds": 7.0,
+  "encoder_distance_m": 1.0,
+  "ram_only": true,
+  "pid_writes": false,
+  "required_setup": "four wheels on ground; forward all-wheel drive then reverse to encoder origin",
+  "records": [],
+  "wire": [
+    "STATUS,1,ble connected",
+    "TEL,1098225,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12331,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12333,0,0,1,0,-112,0",
+    "TEL,1099425,0,0,0,0,0,0,0,0,0,0,0,0,0,0,TEL,1100325,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12335,0,0,1,0,-113,0",
+    "TEL,1100625,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12331,0,0,1,0,-113,0",
+    "ACK,TEL,0",
+    "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,TEL,0\"}",
+    "0,-113,0",
+    "TEL,1100325,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12335,0,0,1,0,-113,0",
+    "TEL,1100625,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12331,0,0,1,0,-113,0",
+    "{\"type\": \"result\", \"id\": 2, \"ok\": false, \"error\": \"MCU reply timeout: ANGLESTATUS\"}",
+    "ACK,TEL,0",
+    "ATEL,1102753,0,1,0,0,0,0,-113,0,0,0,0,12325",
+    "0,0,0,0,12335,0,0,1,0,-113,0",
+    "TEL,1100625,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12331,0,0,1,0,-113,0",
+    "ACK,TEL,0",
+    "ATEL,1102753,0,1,0,0,0,0,-113,0,0,0,0,12325",
+    "ACK,STOP",
+    "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "0,-113,0",
+    "TEL,1100625,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12331,0,0,1,0,-113,0",
+    "ACK,TEL,0",
+    "ATEL,1102753,0,1,0,0,0,0,-113,0,0,0,0,12325",
+    "{\"type\": \"result\", \"id\": 4, \"ok\": false, \"error\": \"MCU reply timeout: WLOG,STOP\"}",
+    "ACK,STOP",
+    "WLOG,STOP,OK",
+    "TEL,1100625,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12331,0,0,1,0,-113,0",
+    "ACK,TEL,0",
+    "ATEL,1102753,0,1,0,0,0,0,-113,0,0,0,0,12325",
+    "ACK,STOP",
+    "WLOG,STOP,OK",
+    "ACK,DISARM",
+    "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"ACK,DISARM\"}",
+    "0,0,0,0,0,0,0,0,0,0,0,0,0,0,12331,0,0,1,0,-113,0",
+    "ACK,TEL,0",
+    "ATEL,1102753,0,1,0,0,0,0,-113,0,0,0,0,12325",
+    "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"ATEL,1102753,0,1,0,0,0,0,-113,0,0,0,0,12325\"}",
+    "ACK,STOP",
+    "WLOG,STOP,OK",
+    "ACK,DISARM",
+    "ATEL,1114408,0,1,0,0,0,0,-111,0,0,0,0,12333",
+    "ACK,TEL,0",
+    "ATEL,1102753,0,1,0,0,6",
+    "325",
+    "ACK,STOP",
+    "WLOG,STOP,OK",
+    "ACK,DISARM",
+    "ATEL,1114408,0,1,0,0,0,0,-111,0,0,0,0,12333",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,6",
+    "{\"type\": \"result\", \"id\": 7, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,6\"}",
+    "325",
+    "ACK,STOP",
+    "WLOG,STOP,OK",
+    "ACK,DISARM",
+    "ATEL,1114408,0,1,0,0,0,0,-111,0,0,0,0,12333",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,6",
+    "VER,VGT6_BM50_ATTITUDE_R22",
+    "{\"type\": \"result\", \"id\": 8, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R22\"}",
+    "WLOG,STOP,OK",
+    "ACK,DISARM",
+    "ATEL,1114408,0,1,0,0,0,0,-111,0,0,0,0,12333",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0OF_GUARD_200_100_40",
+    "DE_R22",
+    "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40",
+    "{\"type\": \"result\", \"id\": 9, \"ok\": true, \"reply\": \"CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40\"}",
+    "DE_R22",
+    "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40",
+    "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+    "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED\"}",
+    "HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40",
+    "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+    "UART,9600,42000000,4375,0x04,0,0,1,0,0",
+    "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x04,0,0,1,0,0\"}",
+    "_REVERSED,TOF_FAST,TOF_GUARD_200_100_40",
+    "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+    "UART,9600,42000000,4375,0x04,0,0,1,0,0",
+    "LINK,2366,210,0,2,1,0",
+    "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"LINK,2366,210,0,2,1,0\"}",
+    "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+    "UART,9600,42000000,4375,0x04,0,0,1,0,0",
+    "LINK,2366,210,0,2,1,0",
+    "STACK,4096,2608,1488,1",
+    "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"STACK,4096,2608,1488,1\"}"
+  ],
+  "commands": [
+    {
+      "host_monotonic": 9999.5,
+      "command": "TEL,0",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      }
+    },
+    {
+      "host_monotonic": 10001.437,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": false,
+        "error": "MCU reply timeout: ANGLESTATUS"
+      }
+    },
+    {
+      "host_monotonic": 10004.453,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 10006.437,
+      "command": "WLOG,STOP",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": false,
+        "error": "MCU reply timeout: WLOG,STOP"
+      }
+    },
+    {
+      "host_monotonic": 10009.453,
+      "command": "DISARM",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    },
+    {
+      "host_monotonic": 10012.328,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "ATEL,1102753,0,1,0,0,0,0,-113,0,0,0,0,12325"
+      }
+    },
+    {
+      "host_monotonic": 10014.453,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,6"
+      }
+    },
+    {
+      "host_monotonic": 10016.796,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R22"
+      }
+    },
+    {
+      "host_monotonic": 10018.062,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40"
+      }
+    },
+    {
+      "host_monotonic": 10019.578,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 10020.578,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x04,0,0,1,0,0"
+      }
+    },
+    {
+      "host_monotonic": 10022.265,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "LINK,2366,210,0,2,1,0"
+      }
+    },
+    {
+      "host_monotonic": 10023.14,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "STACK,4096,2608,1488,1"
+      }
+    }
+  ],
+  "bridge": "BRIDGE,BM50_ACK_R3",
+  "started_local_time": "2026-10-22T17:04:02+0800",
+  "tel_pause_ack": "ACK,TEL,0",
+  "error": "ANGLESTATUS: {'type': 'result', 'id': 2, 'ok': False, 'error': 'MCU reply timeout: ANGLESTATUS'}",
+  "cleanup_wlog_error": "WLOG,STOP: {'type': 'result', 'id': 4, 'ok': False, 'error': 'MCU reply timeout: WLOG,STOP'}",
+  "postcheck_error": "UART unhealthy"
+}

@@ -1,0 +1,3 @@
+Direct Web Serial: http://127.0.0.1:8088/?transport=serial
+No serial bridge is running. The HTTP process only serves page files.
+Click Connect and choose the LQ208 CH340 port. Do not choose the DAP probe.

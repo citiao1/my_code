@@ -1,0 +1,50 @@
+{
+  "status": "failed",
+  "motion_started": false,
+  "selection": "pending",
+  "history": [],
+  "error": "CAPS: {'type': 'result', 'id': 4, 'ok': False, 'error': 'MCU reply timeout: CAPS'}",
+  "restored_readback": null,
+  "commands": [
+    {
+      "host_monotonic": 17718.296,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ATEL,3984400,0,1,0,12,0,0,94407,-91086,0,0,0,11448"
+      }
+    },
+    {
+      "host_monotonic": 17719.343,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,6"
+      }
+    },
+    {
+      "host_monotonic": 17720.703,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R23"
+      }
+    },
+    {
+      "host_monotonic": 17722.484,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": false,
+        "error": "MCU reply timeout: CAPS"
+      }
+    }
+  ]
+}

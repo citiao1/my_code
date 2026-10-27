@@ -1,0 +1,26 @@
+{
+  "method": "Actual Bm50SerialTransport; original post-STOP RX chunks; virtual 3000ms deadline; fake writer/port, no serial hardware access",
+  "passed": 2,
+  "results": [
+    {
+      "capture": "bm50-link-1792681196370.json",
+      "replayedRxBytes": 627,
+      "lastRxAgeMs": 39.1,
+      "onDisconnectCalls": 1,
+      "portCloseCalls": 1,
+      "outcome": {
+        "error": "车端应答超时：STOP；USB串口打开不代表无线回传正常"
+      }
+    },
+    {
+      "capture": "bm50-link-1792681250376.json",
+      "replayedRxBytes": 238,
+      "lastRxAgeMs": 116,
+      "onDisconnectCalls": 1,
+      "portCloseCalls": 1,
+      "outcome": {
+        "error": "车端应答超时：STOP；USB串口打开不代表无线回传正常"
+      }
+    }
+  ]
+}

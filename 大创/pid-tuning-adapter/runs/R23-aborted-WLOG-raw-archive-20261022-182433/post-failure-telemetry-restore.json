@@ -1,0 +1,7 @@
+{
+  "timestamp_local": "2026-10-22 18:26:11 +0800",
+  "command": "TEL,1",
+  "bridge_reply": "ACK,TEL,1",
+  "verified": true,
+  "note": "Restored in a fresh WebSocket session after the partial archival attempt closed its socket before its finally block."
+}

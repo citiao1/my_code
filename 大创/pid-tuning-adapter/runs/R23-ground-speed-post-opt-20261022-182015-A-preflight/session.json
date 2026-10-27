@@ -1,0 +1,212 @@
+{
+  "status": "passed",
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R23",
+  "wheel": "A",
+  "read_only": true,
+  "motion_started": false,
+  "commands": [
+    {
+      "host_monotonic": 14572.296,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ATEL,838296,0,1,0,0,0,0,90490,-91086,0,0,0,11700"
+      }
+    },
+    {
+      "host_monotonic": 14572.453,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,2"
+      }
+    },
+    {
+      "host_monotonic": 14572.593,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R23"
+      }
+    },
+    {
+      "host_monotonic": 14572.687,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS"
+      }
+    },
+    {
+      "host_monotonic": 14572.937,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 14573.078,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 14573.171,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "LINK,6562,853,0,0,0,1"
+      }
+    },
+    {
+      "host_monotonic": 14573.343,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "STACK,4096,2592,1504,1"
+      }
+    },
+    {
+      "host_monotonic": 14573.468,
+      "command": "SPEEDLIMIT",
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "SPEEDLIMIT,160"
+      }
+    },
+    {
+      "host_monotonic": 14573.562,
+      "command": "YAWGET",
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "host_monotonic": 14573.656,
+      "command": "HEADGET",
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "host_monotonic": 14573.765,
+      "command": "PIDGET",
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "host_monotonic": 14573.921,
+      "command": "WLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "WLOG,STATUS,0,60,1024,0,60"
+      }
+    }
+  ],
+  "wire": [
+    "BRIDGE,BM50_ACK_R3",
+    "STATUS,1,ble connected",
+    "ATEL,838296,0,1,0,0,0,0,90490,-91086,0,0,0,11700",
+    "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ATEL,838296,0,1,0,0,0,0,90490,-91086,0,0,0,11700\"}",
+    "TOF,838393,1,1,3275,9,26,0",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,2",
+    "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,2\"}",
+    "VER,VGT6_BM50_ATTITUDE_R23",
+    "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R23\"}",
+    "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS",
+    "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS\"}",
+    "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+    "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED\"}",
+    "UART,9600,42000000,4375,0x00,0,0,0,0,0",
+    "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x00,0,0,0,0,0\"}",
+    "LINK,6562,853,0,0,0,1",
+    "{\"type\": \"result\", \"id\": 7, \"ok\": true, \"reply\": \"LINK,6562,853,0,0,0,1\"}",
+    "TEL,839304,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11705,0,0,1,0,90488,0",
+    "STACK,4096,2592,1504,1",
+    "{\"type\": \"result\", \"id\": 8, \"ok\": true, \"reply\": \"STACK,4096,2592,1504,1\"}",
+    "SPEEDLIMIT,160",
+    "{\"type\": \"result\", \"id\": 9, \"ok\": true, \"reply\": \"SPEEDLIMIT,160\"}",
+    "YAWPID,0.1815,1.8062,60,80,20",
+    "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"YAWPID,0.1815,1.8062,60,80,20\"}",
+    "HEADPID,6.0000,1.2500,80,20,D_MEAS",
+    "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"HEADPID,6.0000,1.2500,80,20,D_MEAS\"}",
+    "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000",
+    "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000\"}",
+    "WLOG,STATUS,0,60,1024,0,60",
+    "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"WLOG,STATUS,0,60,1024,0,60\"}"
+  ],
+  "caps": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS",
+  "controller": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+  "gains": {
+    "A": [
+      1.2,
+      0.0991,
+      0.0
+    ],
+    "B": [
+      1.2,
+      0.0998,
+      0.0
+    ],
+    "C": [
+      1.2,
+      0.0998,
+      0.0
+    ],
+    "D": [
+      1.2,
+      0.1008,
+      0.0
+    ]
+  },
+  "wlog_status": "WLOG,STATUS,0,60,1024,0,60",
+  "uart_errors": [
+    "0",
+    "0",
+    "0",
+    "0",
+    "0"
+  ],
+  "link_errors": [
+    "0",
+    "0",
+    "0"
+  ],
+  "locked_angular_gains": [
+    "YAWPID,0.1815,1.8062,60,80,20",
+    "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+  ]
+}

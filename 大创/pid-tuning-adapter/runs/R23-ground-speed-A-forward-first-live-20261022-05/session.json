@@ -1,0 +1,613 @@
+{
+  "status": "failed",
+  "motion_started": true,
+  "selection": "pending_holdout",
+  "history": [
+    {
+      "gains": [
+        1.2,
+        0.0991
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "metrics": {
+        "normalized_iae": 0.06377328925787004,
+        "overshoot": 0.19999999999999996,
+        "steady_error": 0.07532220352216433,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 1.03076115187024
+      }
+    },
+    {
+      "gains": [
+        1.2,
+        0.0991
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "metrics": {
+        "normalized_iae": 0.05878949308691389,
+        "overshoot": 0.19666666666666655,
+        "steady_error": 0.07389112930453147,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 1.023413241149881
+      }
+    }
+  ],
+  "plan": {
+    "loop": "wheel_speed",
+    "initial": [
+      1.2,
+      0.0991
+    ],
+    "bounds": [
+      [
+        0.72,
+        1.68
+      ],
+      [
+        0.0595,
+        0.1387
+      ]
+    ],
+    "validation_targets": [
+      25.0,
+      -30.0
+    ],
+    "method": "bo",
+    "rounds": 5,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R23",
+  "caps": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS",
+  "controller": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+  "wheel": "A",
+  "all_initial_gains": [
+    1.2,
+    0.0991,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.1008,
+    0.0
+  ],
+  "ram_only": true,
+  "measurement_wheels": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "simultaneous_measurement": true,
+  "form": "incremental",
+  "period_s": 0.01,
+  "ki_unit": "PWM_percent/RPM/update",
+  "kd_step": 0,
+  "scoring_source": "validated_downloaded_WLOG",
+  "training_target": 30,
+  "baseline_seconds": 2.0,
+  "seconds": 7.0,
+  "objective_weights": {
+    "normalized_iae": 1.0,
+    "overshoot": 2.0,
+    "steady_error_rms": 1.0,
+    "normalized_settling": 0.5,
+    "saturation_fraction": 0.1
+  },
+  "profile": "four wheels on ground under normal load; WLOG scores outbound encoder-distance leg; every test returns to origin",
+  "ground_distance_m": 1.0,
+  "ground_distance_margin": 0.97,
+  "ground_return_tolerance_m": 0.05,
+  "forward_encoder_sign": -1,
+  "required_test_setup": "four_wheels_on_ground_not_lifted",
+  "wheel_aggregation": "worst wheel for score and each metric",
+  "resumed_from": "D:\\my_code\\my_code\\\u5927\u521b\\pid-tuning-adapter\\runs\\R23-ground-speed-A-live-20261022-185004\\session.json",
+  "reused_training_repeats": 2,
+  "best_gains": null,
+  "best_score": null,
+  "evidence": "validated_downloaded_WLOG",
+  "all_applied_gains": [
+    1.2,
+    0.0991,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.1008,
+    0.0
+  ],
+  "commands": [
+    {
+      "host_monotonic": 18923.375,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ATEL,5189532,0,1,0,1,0,0,89040,-93136,0,0,0,11354"
+      }
+    },
+    {
+      "host_monotonic": 18924.125,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,3"
+      }
+    },
+    {
+      "host_monotonic": 18925.14,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R23"
+      }
+    },
+    {
+      "host_monotonic": 18926.125,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS"
+      }
+    },
+    {
+      "host_monotonic": 18927.015,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 18927.625,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 18928.625,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "LINK,36305,3083,0,0,0,1"
+      }
+    },
+    {
+      "host_monotonic": 18929.625,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "STACK,4096,2632,1464,1"
+      }
+    },
+    {
+      "host_monotonic": 18930.609,
+      "command": "SPEEDLIMIT",
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "SPEEDLIMIT,160"
+      }
+    },
+    {
+      "host_monotonic": 18931.421,
+      "command": "YAWGET",
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "host_monotonic": 18931.843,
+      "command": "HEADGET",
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "host_monotonic": 18932.64,
+      "command": "PIDGET",
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "host_monotonic": 18933.64,
+      "command": "HLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "HLOG,STATUS,0,0,1024,0,0"
+      }
+    },
+    {
+      "host_monotonic": 18934.609,
+      "command": "WLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "WLOG,STATUS,0,1024,1024,1,1125"
+      }
+    },
+    {
+      "host_monotonic": 18935.296,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R23"
+      }
+    },
+    {
+      "host_monotonic": 18936.015,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS"
+      }
+    },
+    {
+      "host_monotonic": 18937.109,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 18938.312,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 18939.343,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "LINK,36408,3095,0,0,0,1"
+      }
+    },
+    {
+      "host_monotonic": 18940.531,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 20,
+        "ok": true,
+        "reply": "STACK,4096,2632,1464,1"
+      }
+    },
+    {
+      "host_monotonic": 18941.187,
+      "command": "SPEEDLIMIT",
+      "result": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "SPEEDLIMIT,160"
+      }
+    },
+    {
+      "host_monotonic": 18941.812,
+      "command": "YAWGET",
+      "result": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "host_monotonic": 18942.64,
+      "command": "HEADGET",
+      "result": {
+        "type": "result",
+        "id": 23,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "host_monotonic": 18943.234,
+      "command": "PIDGET",
+      "result": {
+        "type": "result",
+        "id": 24,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "host_monotonic": 18944.093,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 25,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 18944.687,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 26,
+        "ok": true,
+        "reply": "ATEL,5210841,0,1,0,4,0,0,88987,-93136,0,0,0,11353"
+      }
+    },
+    {
+      "host_monotonic": 18945.421,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 27,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,9"
+      }
+    },
+    {
+      "host_monotonic": 18946.14,
+      "command": "ENCZERO",
+      "result": {
+        "type": "result",
+        "id": 28,
+        "ok": true,
+        "reply": "ACK,ENCZERO"
+      }
+    },
+    {
+      "host_monotonic": 18946.734,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 29,
+        "ok": true,
+        "reply": "ENC,5212880,1,380,0,0,0,0,0,0,0,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 18947.421,
+      "command": "ARM",
+      "result": {
+        "type": "result",
+        "id": 30,
+        "ok": true,
+        "reply": "ACK,ARM,WHEELS_OFF_GROUND"
+      }
+    },
+    {
+      "host_monotonic": 18948.14,
+      "command": "SPEED,1",
+      "result": {
+        "type": "result",
+        "id": 31,
+        "ok": true,
+        "reply": "ACK,SPEED,1"
+      }
+    },
+    {
+      "host_monotonic": 18948.796,
+      "command": "DRV,25,0,0",
+      "drive_lease_ms": 583,
+      "result": {
+        "type": "result",
+        "id": 32,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 18950.109,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 33,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 18950.718,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 34,
+        "ok": true,
+        "reply": "ENC,5216862,1,380,-127,-132,-127,-125,0,0,0,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 18951.671,
+      "command": "ARM",
+      "result": {
+        "type": "result",
+        "id": 35,
+        "ok": true,
+        "reply": "ACK,ARM,WHEELS_OFF_GROUND"
+      }
+    },
+    {
+      "host_monotonic": 18952.625,
+      "command": "WLOG,CLEAR",
+      "result": {
+        "type": "result",
+        "id": 36,
+        "ok": true,
+        "reply": "WLOG,CLEAR,OK"
+      }
+    },
+    {
+      "host_monotonic": 18953.609,
+      "command": "WLOG,START",
+      "result": {
+        "type": "result",
+        "id": 37,
+        "ok": true,
+        "reply": "WLOG,START,OK"
+      }
+    },
+    {
+      "host_monotonic": 18954.328,
+      "command": "SPEED,1",
+      "result": {
+        "type": "result",
+        "id": 38,
+        "ok": true,
+        "reply": "ACK,SPEED,1"
+      }
+    },
+    {
+      "host_monotonic": 18955.015,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 39,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 18957.125,
+      "command": "DRV,25,0,0",
+      "drive_lease_ms": 5052,
+      "result": {
+        "type": "result",
+        "id": 40,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 18962.703,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 41,
+        "ok": false,
+        "error": "MCU reply timeout: STOP"
+      },
+      "wire": [
+        "ACK,DRV",
+        "ACK,DRV",
+        "ACK,DRV",
+        "ACK,DRV",
+        "ACK,DRV",
+        "{\"type\": \"result\", \"id\": 41, \"ok\": false, \"error\": \"MCU reply timeout: STOP\"}"
+      ],
+      "error": "RuntimeError: STOP: {'type': 'result', 'id': 41, 'ok': False, 'error': 'MCU reply timeout: STOP'}"
+    },
+    {
+      "host_monotonic": 18965.718,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 42,
+        "ok": false,
+        "error": "MCU reply timeout: STOP"
+      },
+      "wire": [
+        "TEL,5228566,0,1,-25,344,925,1,925,89605,TEL,5229766,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11337,25,3,1,3,89627,0",
+        "TEL,5230066,0,0,0,0,,-1,89624,0",
+        "TEL,5230966,0,0,0,0,0,89622,0",
+        "TEL,5231866,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11357,-10,0,1,0,89622,0",
+        "{\"type\": \"result\", \"id\": 42, \"ok\": false, \"error\": \"MCU reply timeout: STOP\"}"
+      ],
+      "error": "RuntimeError: STOP: {'type': 'result', 'id': 42, 'ok': False, 'error': 'MCU reply timeout: STOP'}"
+    },
+    {
+      "host_monotonic": 18968.718,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 43,
+        "ok": false,
+        "error": "MCU reply timeout: STOP"
+      },
+      "wire": [
+        "ACK,STO0,0,0,0,0,0,0,0,0,0,0,0,0,0,11355,0,-1,1,-1,89620,0",
+        "0,0,0,0,11350,0,-1,10,0,0,0,0,0,0,0,0,0,0,0,0,0,11364,0,0,1,0,89617,0",
+        "{\"type\": \"result\", \"id\": 43, \"ok\": false, \"error\": \"MCU reply timeout: STOP\"}"
+      ],
+      "error": "RuntimeError: STOP: {'type': 'result', 'id': 43, 'ok': False, 'error': 'MCU reply timeout: STOP'}"
+    },
+    {
+      "host_monotonic": 18971.718,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 44,
+        "ok": false,
+        "error": "MCU reply timeout: STOP"
+      },
+      "wire": [
+        "TEL,5234866,0,0,0,0,0,0,0,0,11352,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11361,0,0,1,0,89614,0",
+        "{\"type\": \"result\", \"id\": 44, \"ok\": false, \"error\": \"MCU reply timeout: STOP\"}"
+      ],
+      "error": "RuntimeError: STOP: {'type': 'result', 'id': 44, 'ok': False, 'error': 'MCU reply timeout: STOP'}"
+    }
+  ],
+  "error": "STOP: {'type': 'result', 'id': 42, 'ok': False, 'error': 'MCU reply timeout: STOP'}",
+  "restored_readback": null,
+  "restoration_error": "STOP: {'type': 'result', 'id': 43, 'ok': False, 'error': 'MCU reply timeout: STOP'}",
+  "cleanup_error": "STOP: {'type': 'result', 'id': 44, 'ok': False, 'error': 'MCU reply timeout: STOP'}"
+}

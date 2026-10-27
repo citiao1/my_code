@@ -1,0 +1,125 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              10/23/2026 00:15:54 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          /* 共阴极数码管接 P0，K1 接 P3.3，按下接地。 */
+   2          #include <reg51.h>
+   3          #include <intrins.h>
+   4          
+   5          typedef unsigned char u8;
+   6          typedef unsigned int u16;
+   7          
+   8          sbit K1 = P3^3;
+   9          
+  10          /* P0.0～P0.7 依次接 a、b、c、d、e、f、g、dp。 */
+  11          static const u8 code segment_code[10] =
+  12          {
+  13              0x3f, 0x06, 0x5b, 0x4f, 0x66,
+  14              0x6d, 0x7d, 0x07, 0x7f, 0x6f
+  15          };
+  16          
+  17          static volatile bit key_pending;
+  18          static bit counter_done;
+  19          static u8 number;
+  20          static u8 release_ms;
+  21          
+  22          static void delay_ms(u16 milliseconds)
+  23          {
+  24   1          u8 count;
+  25   1      
+  26   1          while (milliseconds != 0)
+  27   1          {
+  28   2              count = 165;
+  29   2              do
+  30   2              {
+  31   3                  _nop_();
+  32   3                  _nop_();
+  33   3              } while (--count != 0);
+  34   2              --milliseconds;
+  35   2          }
+  36   1      }
+  37          
+  38          void int1_isr(void) interrupt 2
+  39          {
+  40   1          EX1 = 0;
+  41   1          key_pending = 1;  /* 暂停 INT1，避免按键抖动产生重复计数。 */
+  42   1      }
+  43          
+  44          static void counter_init(void)
+  45          {
+  46   1          EA = 0;
+  47   1          number = 0;
+  48   1          release_ms = 0;
+  49   1          key_pending = 0;
+  50   1          counter_done = 0;
+  51   1          P0 = segment_code[0];
+  52   1          K1 = 1;
+  53   1          IT1 = 1;  /* INT1 下降沿触发。 */
+  54   1          IE1 = 0;
+C51 COMPILER V9.60.0.0   MAIN                                                              10/23/2026 00:15:54 PAGE 2   
+
+  55   1          EX1 = 1;
+  56   1          EA = 1;
+  57   1      }
+  58          
+  59          static void counter_process(void)
+  60          {
+  61   1          delay_ms(1);
+  62   1          if (key_pending)
+  63   1          {
+  64   2              key_pending = 0;
+  65   2              delay_ms(20);
+  66   2              if (K1 == 0)
+  67   2              {
+  68   3                  if (++number == 10)
+  69   3                  {
+  70   4                      number = 0;
+  71   4                      counter_done = 1;  /* 第 10 次显示 0，保持 INT1 关闭。 */
+  72   4                  }
+  73   3                  P0 = segment_code[number];
+  74   3              }
+  75   2          }
+  76   1      
+  77   1          if (counter_done || EX1)
+  78   1              return;
+  79   1      
+  80   1          if (K1 == 0)
+  81   1          {
+  82   2              release_ms = 0;
+  83   2              return;
+  84   2          }
+  85   1      
+  86   1          if (++release_ms >= 20)
+  87   1          {
+  88   2              release_ms = 0;
+  89   2              IE1 = 0;
+  90   2              EX1 = 1;  /* 按键松开稳定后，才接受下一次按下。 */
+  91   2          }
+  92   1      }
+  93          
+  94          void main(void)
+  95          {
+  96   1          counter_init();
+  97   1          while (1)
+  98   1              counter_process();
+  99   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    137    ----
+   CONSTANT SIZE    =     10    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

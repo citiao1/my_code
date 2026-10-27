@@ -10,7 +10,7 @@
 |---|---|---|---|
 | 角速度 | parallel PI / 20 ms | mode=1 HLOG，deg/s → rotation RPM，±60 | 验证通过后保留 RAM 参数 |
 | 航向 | measurement-PD / 20 ms | mode=2 HLOG，deg → deg/s，±80 | 内环已验证且锁定时可用 |
-| 轮速 | incremental / 10 ms | R20 WLOG，RPM → PWM%，±60 | 单轮Kp/Ki_step，Kd固定0，独立验证后保留RAM参数 |
+| 轮速 | incremental / 10 ms | R20 WLOG，RPM → PWM%，±60 | 四轮同步测量、逐路评分；选定通道Kp/Ki_step，Kd固定0 |
 
 `loop_profiles.py` 定义单位、参数和周期；`attitude_tuner.FIRMWARE_CAPS` 是精确固件
 白名单，目前含 R17/R18/R19/R20。运行时读取 VER/CAPS、控制器形式、限幅、周期、
@@ -18,8 +18,25 @@
 
 R17 有 mode 标签；R18/R19/R20 还必须有微秒时间戳。HLOG 样本间隔分别要求
 20..25 ms / 19.9..25 ms，校验独立 uint32 计数器回绕和 ms/us 相位。
-TEL/ATEL 只用于安全监控，绝不作为角环增益评分数据。桥接是唯一串口/BLE 所有者，
-本工具只经 `ws://127.0.0.1:8766` 通信，不直接占用 COM 口。
+TEL/ATEL 只用于安全监控，绝不作为角环增益评分数据。默认经
+`ws://127.0.0.1:8766` 共享桥接；R24/LQ208 也支持 `--serial-port COM9`
+独占串口直连，不需要启动桥接进程、网页或 VOFA 服务。两种方式不可同时占用同一串口。
+
+串口直连入口（当前模块固定 115200/8N1、无流控；先重新枚举实际 COM）：
+
+```powershell
+.\pid-tuning-adapter\.venv\Scripts\python.exe -m pip install -r pid-tuning-adapter/requirements.txt
+.\pid-tuning-adapter\.venv\Scripts\python.exe pid-tuning-adapter/attitude_tuner.py --loop angular_velocity --serial-port COM9 --output pid-tuning-adapter/runs/NEW-SERIAL-ANGLE
+.\pid-tuning-adapter\.venv\Scripts\python.exe pid-tuning-adapter/wheel_tuner.py --wheel A --serial-port COM9 --output pid-tuning-adapter/runs/NEW-SERIAL-WHEEL
+```
+
+以上为停机预检。串口入口在连接和退出时确认 STOP/DISARM 并关闭 TEL/TOF
+显示回传，保留 RAM 日志；不自动重连、不重放旧运动命令，不增加诊断 PING 定时器。
+内部复用 `motor_vofa_bridge.py` 的命令确认、STOP 优先与 drive lease 实现，
+没有另外启动桥接服务；源码目录须保持当前相对位置。协议能力、日志完整性、
+MCU 时间轴和授权要求不变；HLOG 50Hz/WLOG 100Hz 先在 MCU RAM 记录、停车后下载。
+本机直连仍通过 LQ208 无线模块，不等于 USB 数据线直连 MCU；不能据此消除无线延迟。
+普通浏览器网页仍使用现有 WebSocket 桥接；若以后改成浏览器直读 COM，需单独实现并验证串口前端。
 
 ## 运行
 
@@ -29,13 +46,17 @@ R20轮速用独立入口（默认只读，不会ARM或写参）：
 .\mecanum-motor-console\bridge\.venv\Scripts\python.exe pid-tuning-adapter/wheel_tuner.py --wheel A --target 40 --validation-targets -40 20 --rounds 5 --repeats 2 --output pid-tuning-adapter/runs/NEW-WHEEL-SESSION
 ```
 
-只有完整计划明确授权后才加 `--live`。单轮实验要求可靠悬空、四轮自由、急停可用。
+只有完整计划明确授权后才加 `--live`。**速度环必须四轮同时运行和测量，不再要求先单轮测试。**
+本入口要求整车不架空、四轮下地正常承载、前后场地清空、急停可用；`--wheel A` 只选本轮改参通道，其余三轮同样参与测量。
 轮速 Ki 是每次更新的离散系数，不能直接复制连续 PI 的 Ki。默认基线2s、阶跃3s，
 总记录≤9s；100Hz×1024条约10.24s，WLOG与HLOG共用RAM，CLEAR会替换旧数据。
-`WSPD,A,RPM`与`WKEEP`使用300ms看门狗；写参需停车并停止记录，保持其他轮与角环增益。
+`DRV,-RPM,0,0` 按 FRONT_REVERSED 一次设置四轮相同物理目标，重复同一 DRV 刷新300ms看门狗。
+写参需停车并停止记录，保持其他轮与角环增益。
 `wheel_log.py`校验完整批次、uint32微秒/毫秒相位、9900..15000us间隔、模式/电池/
-编码器/通道隔离/TOF限速、完整阶段与基线/最终窗口、10个瞬态独立样本，失败不写参。
-单轮悬空调参不代替底盘落地验收；本次没有运行实车搜索。
+编码器/四轮同步参考边沿/TOF限速、完整阶段与基线/最终窗口、10个瞬态独立样本。
+四路反馈/PWM必须分别评分，任一路失败则整次试验不接受；综合分和分项指标取最差轮。
+不能以四次单轮测试、只看选定轮或只看四轮平均值代替同步采集。
+速度环调参与验证均须在四轮落地工况进行，架空数据不能替代；本次没有运行实车搜索。
 
 WLOG成功或失败的原始wire、批次重试、增益与命令时间线保存在新会话目录。
 离线复查：`python pid-tuning-adapter/replay_wlog.py <round-001-raw.json>`，不连接硬件。
@@ -138,7 +159,7 @@ phases 的轨迹日志不能强行套用阶跃评分器。日志质量通过也�
   `heading_round_trip` 调参仍禁用，不能用旧例子绕过缺失的轨迹质量门。
 - `ground_speed`：按 ENC 距离对当前轮速参数做低频观察，不调轮速 PID；轮径 127 mm，
   每输出转 380 counts。它不能代替 10 ms 轮速高频记录。
-- R20已实现WLOG与单轮评分/搜索入口；底盘联合验证仍需另行实测。旧 live_tune_session / R6 低频
+- WLOG入口已改为四轮同步测量与逐路评分/选定通道搜索；底盘联合验证仍需另行实测。旧 live_tune_session / R6 低频
   整定流程不能重新启用为自动写参路径；外部 GUI 也需协议和 PID 形式适配。
 
 ## 检查

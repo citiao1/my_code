@@ -119,7 +119,8 @@ def summarize_scores(cases):
     return summarize([ResponseScore(**row) for case in cases for row in case["metrics"]])
 
 
-async def run_campaign(plan, evaluate, apply, checkpoint):
+async def run_campaign(plan, evaluate, apply, checkpoint, *,
+                       initial_results=None, initial_history=None):
     """evaluate(gains, stage, target, repeat) -> a validated ResponseScore.
 
     apply() must STOP, guard every step, ACK and read back, including rollback.
@@ -144,8 +145,20 @@ async def run_campaign(plan, evaluate, apply, checkpoint):
             checkpoint(report)
         return results, summarize(results)
 
-    initial_results, initial_train = await measure(current, "train")
-    search.observe(current, initial_train["objective"], variance=initial_train["variance_of_mean"])
+    if initial_results is None:
+        if initial_history is not None:
+            raise ValueError("initial history requires completed initial results")
+        initial_results, initial_train = await measure(current, "train")
+        search.observe(current, initial_train["objective"],
+                       variance=initial_train["variance_of_mean"])
+    else:
+        if initial_history is None or len(initial_results) != plan.repeats:
+            raise ValueError("resume requires every initial training repeat")
+        report["history"].extend(initial_history)
+        initial_train = summarize(initial_results)
+        search.observe(current, initial_train["objective"],
+                       variance=initial_train["variance_of_mean"])
+        checkpoint(report)
     initial_validation = []
     for target in plan.validation_targets:
         _, summary = await measure(current, "baseline_holdout", target)

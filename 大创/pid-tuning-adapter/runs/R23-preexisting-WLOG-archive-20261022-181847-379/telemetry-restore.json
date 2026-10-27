@@ -1,0 +1,7 @@
+{
+  "timestamp_local": "2026-10-22 18:19:52 +0800",
+  "command": "TEL,1",
+  "bridge_reply": "ACK,TEL,1",
+  "verified": true,
+  "note": "Telemetry restoration retried inside an open WebSocket after the archival script closed its socket too early."
+}

@@ -1,0 +1,1505 @@
+{
+  "transport": "websocket_to_serial",
+  "port": "COM9",
+  "baud": 115200,
+  "commands": [
+    {
+      "command": "STOP",
+      "t_s": 28678.64,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "command": "DISARM",
+      "t_s": 28678.671,
+      "ms": 32.00000000288128,
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    },
+    {
+      "command": "VER",
+      "t_s": 28678.703,
+      "ms": 14.999999999417923,
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R24"
+      }
+    },
+    {
+      "command": "UART",
+      "t_s": 28678.718,
+      "ms": 31.9999999992433,
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "command": "LINK",
+      "t_s": 28678.75,
+      "ms": 14.999999999417923,
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "LINK,2513,401,0,0,0,0"
+      }
+    },
+    {
+      "command": "LINKQ",
+      "t_s": 28678.765,
+      "ms": 63.00000000192085,
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "LINKQ,0,0,75,0"
+      }
+    },
+    {
+      "command": "TEL,1",
+      "t_s": 28678.828,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "ACK,TEL,1"
+      }
+    },
+    {
+      "command": "TOF,1",
+      "t_s": 28678.859,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "ACK,TOF,1"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28678.89,
+      "ms": 110.00000000058208,
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28679.515,
+      "ms": 15.99999999962165,
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28680.031,
+      "ms": 62.000000001717126,
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28680.593,
+      "ms": 94.00000000096043,
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28681.203,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "STOP",
+      "t_s": 28681.234,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28681.765,
+      "ms": 47.0000000022992,
+      "result": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28682.312,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28682.843,
+      "ms": 31.9999999992433,
+      "result": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28683.39,
+      "ms": 15.99999999962165,
+      "result": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28683.921,
+      "ms": 47.0000000022992,
+      "result": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "STOP",
+      "t_s": 28683.968,
+      "ms": 15.99999999962165,
+      "result": {
+        "type": "result",
+        "id": 20,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28684.5,
+      "ms": 93.0000000007567,
+      "result": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28685.093,
+      "ms": 15.99999999962165,
+      "result": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28685.609,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 23,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28686.156,
+      "ms": 47.0000000022992,
+      "result": {
+        "type": "result",
+        "id": 24,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28686.703,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 25,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "STOP",
+      "t_s": 28686.734,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 26,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28687.281,
+      "ms": 31.000000002677552,
+      "result": {
+        "type": "result",
+        "id": 27,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28687.828,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 28,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28688.375,
+      "ms": 14.999999999417923,
+      "result": {
+        "type": "result",
+        "id": 29,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28688.906,
+      "ms": 78.00000000133878,
+      "result": {
+        "type": "result",
+        "id": 30,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28689.484,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 31,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "STOP",
+      "t_s": 28689.515,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 32,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28690.062,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 33,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28690.593,
+      "ms": 46.999999998661224,
+      "result": {
+        "type": "result",
+        "id": 34,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28691.156,
+      "ms": 31.000000002677552,
+      "result": {
+        "type": "result",
+        "id": 35,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28691.687,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 36,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28692.218,
+      "ms": 46.999999998661224,
+      "result": {
+        "type": "result",
+        "id": 37,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "STOP",
+      "t_s": 28692.265,
+      "ms": 47.0000000022992,
+      "result": {
+        "type": "result",
+        "id": 38,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28692.828,
+      "ms": 14.999999999417923,
+      "result": {
+        "type": "result",
+        "id": 39,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28693.343,
+      "ms": 46.999999998661224,
+      "result": {
+        "type": "result",
+        "id": 40,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28693.875,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 41,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28694.421,
+      "ms": 32.00000000288128,
+      "result": {
+        "type": "result",
+        "id": 42,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28694.968,
+      "ms": 15.99999999962165,
+      "result": {
+        "type": "result",
+        "id": 43,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "STOP",
+      "t_s": 28694.984,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 44,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28695.515,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 45,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28696.062,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 46,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28696.593,
+      "ms": 31.9999999992433,
+      "result": {
+        "type": "result",
+        "id": 47,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28697.14,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 48,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28697.687,
+      "ms": 15.99999999962165,
+      "result": {
+        "type": "result",
+        "id": 49,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "STOP",
+      "t_s": 28697.703,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 50,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28698.234,
+      "ms": 46.999999998661224,
+      "result": {
+        "type": "result",
+        "id": 51,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28698.796,
+      "ms": 32.00000000288128,
+      "result": {
+        "type": "result",
+        "id": 52,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28699.343,
+      "ms": 31.9999999992433,
+      "result": {
+        "type": "result",
+        "id": 53,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28699.875,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 54,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "PING",
+      "t_s": 28700.421,
+      "ms": 16.00000000325963,
+      "result": {
+        "type": "result",
+        "id": 55,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "command": "STOP",
+      "t_s": 28700.437,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 56,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "command": "UART",
+      "t_s": 28700.968,
+      "ms": 46.999999998661224,
+      "result": {
+        "type": "result",
+        "id": 57,
+        "ok": true,
+        "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "command": "LINK",
+      "t_s": 28701.015,
+      "ms": 15.99999999962165,
+      "result": {
+        "type": "result",
+        "id": 58,
+        "ok": true,
+        "reply": "LINK,2834,454,0,0,0,1"
+      }
+    },
+    {
+      "command": "LINKQ",
+      "t_s": 28701.031,
+      "ms": 31.000000002677552,
+      "result": {
+        "type": "result",
+        "id": 59,
+        "ok": true,
+        "reply": "LINKQ,0,0,88,0"
+      }
+    },
+    {
+      "command": "STOP",
+      "t_s": 28701.062,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 60,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "command": "DISARM",
+      "t_s": 28701.093,
+      "ms": 31.9999999992433,
+      "result": {
+        "type": "result",
+        "id": 61,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    },
+    {
+      "command": "TEL,0",
+      "t_s": 28701.125,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 62,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      }
+    },
+    {
+      "command": "TOF,0",
+      "t_s": 28701.156,
+      "ms": 14.999999999417923,
+      "result": {
+        "type": "result",
+        "id": 63,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      }
+    },
+    {
+      "command": "SPEEDSTATUS",
+      "t_s": 28701.171,
+      "ms": 32.00000000288128,
+      "result": {
+        "type": "result",
+        "id": 64,
+        "ok": true,
+        "reply": "TEL,370096,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12271,0,0,1,0,1056,0"
+      }
+    },
+    {
+      "command": "ANGLESTATUS",
+      "t_s": 28701.203,
+      "ms": 30.999999999039574,
+      "result": {
+        "type": "result",
+        "id": 65,
+        "ok": true,
+        "reply": "ATEL,370130,0,1,0,0,0,0,1056,0,0,0,0,12271"
+      }
+    }
+  ],
+  "wire": [
+    {
+      "t_s": 28678.593,
+      "message": "BRIDGE,BM50_ACK_R3\n"
+    },
+    {
+      "t_s": 28678.593,
+      "message": "STATUS,0,hardware disconnected\n"
+    },
+    {
+      "t_s": 28678.625,
+      "message": "ACK,TOF,0\n"
+    },
+    {
+      "t_s": 28678.64,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28678.64,
+      "message": "STATUS,1,serial COM9 @ 115200 verified\n"
+    },
+    {
+      "t_s": 28678.671,
+      "message": "ACK,STOP\n"
+    },
+    {
+      "t_s": 28678.671,
+      "message": "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+    },
+    {
+      "t_s": 28678.703,
+      "message": "ACK,DISARM\n"
+    },
+    {
+      "t_s": 28678.703,
+      "message": "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    },
+    {
+      "t_s": 28678.718,
+      "message": "VER,VGT6_BM50_ATTITUDE_R24\n"
+    },
+    {
+      "t_s": 28678.718,
+      "message": "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R24\"}"
+    },
+    {
+      "t_s": 28678.75,
+      "message": "UART,115200,42000000,364,0x00,0,0,0,0,0\n"
+    },
+    {
+      "t_s": 28678.75,
+      "message": "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"UART,115200,42000000,364,0x00,0,0,0,0,0\"}"
+    },
+    {
+      "t_s": 28678.765,
+      "message": "LINK,2513,401,0,0,0,0\n"
+    },
+    {
+      "t_s": 28678.765,
+      "message": "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"LINK,2513,401,0,0,0,0\"}"
+    },
+    {
+      "t_s": 28678.828,
+      "message": "LINKQ,0,0,75,0\n"
+    },
+    {
+      "t_s": 28678.828,
+      "message": "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"LINKQ,0,0,75,0\"}"
+    },
+    {
+      "t_s": 28678.859,
+      "message": "ACK,TEL,1\n"
+    },
+    {
+      "t_s": 28678.859,
+      "message": "{\"type\": \"result\", \"id\": 7, \"ok\": true, \"reply\": \"ACK,TEL,1\"}"
+    },
+    {
+      "t_s": 28678.89,
+      "message": "ACK,TOF,1\n"
+    },
+    {
+      "t_s": 28678.89,
+      "message": "{\"type\": \"result\", \"id\": 8, \"ok\": true, \"reply\": \"ACK,TOF,1\"}"
+    },
+    {
+      "t_s": 28679.0,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28679.0,
+      "message": "{\"type\": \"result\", \"id\": 9, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28679.515,
+      "message": "TOF,347992,1,0,-1,4,27,0\n"
+    },
+    {
+      "t_s": 28679.515,
+      "message": "TEL,348259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12250,0,0,1,0,1055,0\n"
+    },
+    {
+      "t_s": 28679.531,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28679.531,
+      "message": "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28680.031,
+      "message": "TEL,348759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12268,14,2,1,2,1056,0\n"
+    },
+    {
+      "t_s": 28680.093,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28680.093,
+      "message": "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28680.593,
+      "message": "TOF,349192,1,0,-1,4,11,0\n"
+    },
+    {
+      "t_s": 28680.593,
+      "message": "TEL,349259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12271,0,0,1,0,1057,0\n"
+    },
+    {
+      "t_s": 28680.687,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28680.687,
+      "message": "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28681.203,
+      "message": "TEL,349759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12270,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28681.234,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28681.234,
+      "message": "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28681.265,
+      "message": "ACK,STOP\n"
+    },
+    {
+      "t_s": 28681.265,
+      "message": "{\"type\": \"result\", \"id\": 14, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+    },
+    {
+      "t_s": 28681.765,
+      "message": "TEL,350259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12270,0,1,1,1,1057,0\n"
+    },
+    {
+      "t_s": 28681.765,
+      "message": "TOF,350392,1,0,-1,4,35,0\n"
+    },
+    {
+      "t_s": 28681.812,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28681.812,
+      "message": "{\"type\": \"result\", \"id\": 15, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28682.343,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28682.343,
+      "message": "{\"type\": \"result\", \"id\": 16, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28682.843,
+      "message": "TOF,351392,1,0,-1,4,23,0\n"
+    },
+    {
+      "t_s": 28682.875,
+      "message": "TEL,351759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12272,0,4,1,4,1056,0\n"
+    },
+    {
+      "t_s": 28682.875,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28682.875,
+      "message": "{\"type\": \"result\", \"id\": 17, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28683.39,
+      "message": "TEL,352259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12275,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28683.406,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28683.406,
+      "message": "{\"type\": \"result\", \"id\": 18, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28683.921,
+      "message": "TOF,352392,1,0,-1,4,9,0\n"
+    },
+    {
+      "t_s": 28683.921,
+      "message": "TEL,352759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12278,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28683.968,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28683.968,
+      "message": "{\"type\": \"result\", \"id\": 19, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28683.984,
+      "message": "ACK,STOP\n"
+    },
+    {
+      "t_s": 28683.984,
+      "message": "{\"type\": \"result\", \"id\": 20, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+    },
+    {
+      "t_s": 28684.5,
+      "message": "TEL,353259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12273,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28684.531,
+      "message": "TOF,353392,1,0,-1,4,37,0\n"
+    },
+    {
+      "t_s": 28684.593,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28684.593,
+      "message": "{\"type\": \"result\", \"id\": 21, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28685.093,
+      "message": "TEL,353759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12273,0,0,1,0,1057,0\n"
+    },
+    {
+      "t_s": 28685.109,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28685.109,
+      "message": "{\"type\": \"result\", \"id\": 22, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28685.609,
+      "message": "TEL,354259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12280,0,0,1,0,1057,0\n"
+    },
+    {
+      "t_s": 28685.609,
+      "message": "TOF,354392,1,0,-1,4,23,0\n"
+    },
+    {
+      "t_s": 28685.64,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28685.64,
+      "message": "{\"type\": \"result\", \"id\": 23, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28686.156,
+      "message": "TEL,354759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12272,0,-1,1,-1,1057,0\n"
+    },
+    {
+      "t_s": 28686.203,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28686.203,
+      "message": "{\"type\": \"result\", \"id\": 24, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28686.703,
+      "message": "TEL,355259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12270,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28686.703,
+      "message": "TOF,355392,1,0,-1,4,9,0\n"
+    },
+    {
+      "t_s": 28686.734,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28686.734,
+      "message": "{\"type\": \"result\", \"id\": 25, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28686.765,
+      "message": "ACK,STOP\n"
+    },
+    {
+      "t_s": 28686.765,
+      "message": "{\"type\": \"result\", \"id\": 26, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+    },
+    {
+      "t_s": 28687.281,
+      "message": "TEL,355759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12273,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28687.312,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28687.312,
+      "message": "{\"type\": \"result\", \"id\": 27, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28687.828,
+      "message": "TOF,356392,1,0,-1,4,37,0\n"
+    },
+    {
+      "t_s": 28687.859,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28687.859,
+      "message": "{\"type\": \"result\", \"id\": 28, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28688.39,
+      "message": "TEL,357259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12270,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28688.39,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28688.39,
+      "message": "{\"type\": \"result\", \"id\": 29, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28688.906,
+      "message": "TOF,357392,1,0,-1,4,23,0\n"
+    },
+    {
+      "t_s": 28688.906,
+      "message": "TEL,357759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12267,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28688.984,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28688.984,
+      "message": "{\"type\": \"result\", \"id\": 30, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28689.484,
+      "message": "TEL,358259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12275,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28689.5,
+      "message": "TOF,358392,1,0,-1,4,11,0\n"
+    },
+    {
+      "t_s": 28689.515,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28689.515,
+      "message": "{\"type\": \"result\", \"id\": 31, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28689.546,
+      "message": "ACK,STOP\n"
+    },
+    {
+      "t_s": 28689.546,
+      "message": "{\"type\": \"result\", \"id\": 32, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+    },
+    {
+      "t_s": 28690.062,
+      "message": "TEL,358759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12269,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28690.093,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28690.093,
+      "message": "{\"type\": \"result\", \"id\": 33, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28690.593,
+      "message": "TEL,359259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12275,0,-2,1,-2,1056,0\n"
+    },
+    {
+      "t_s": 28690.593,
+      "message": "TOF,359392,1,0,-1,4,37,0\n"
+    },
+    {
+      "t_s": 28690.64,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28690.64,
+      "message": "{\"type\": \"result\", \"id\": 34, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28691.156,
+      "message": "TEL,359759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12268,0,-1,1,-1,1056,0\n"
+    },
+    {
+      "t_s": 28691.187,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28691.187,
+      "message": "{\"type\": \"result\", \"id\": 35, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28691.687,
+      "message": "TEL,360259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12273,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28691.687,
+      "message": "TOF,360392,1,0,-1,4,25,0\n"
+    },
+    {
+      "t_s": 28691.718,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28691.718,
+      "message": "{\"type\": \"result\", \"id\": 36, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28692.218,
+      "message": "TEL,360759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12272,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28692.265,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28692.265,
+      "message": "{\"type\": \"result\", \"id\": 37, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28692.312,
+      "message": "ACK,STOP\n"
+    },
+    {
+      "t_s": 28692.312,
+      "message": "{\"type\": \"result\", \"id\": 38, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+    },
+    {
+      "t_s": 28692.828,
+      "message": "TOF,361392,1,0,-1,4,11,0\n"
+    },
+    {
+      "t_s": 28692.843,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28692.843,
+      "message": "{\"type\": \"result\", \"id\": 39, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28693.375,
+      "message": "TEL,362259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12262,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28693.39,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28693.39,
+      "message": "{\"type\": \"result\", \"id\": 40, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28693.875,
+      "message": "TOF,362392,1,0,-1,4,39,0\n"
+    },
+    {
+      "t_s": 28693.875,
+      "message": "TEL,362759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12270,55,14,1,14,1056,0\n"
+    },
+    {
+      "t_s": 28693.906,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28693.906,
+      "message": "{\"type\": \"result\", \"id\": 41, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28694.421,
+      "message": "TEL,363259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12272,0,-1,1,-1,1056,0\n"
+    },
+    {
+      "t_s": 28694.453,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28694.453,
+      "message": "{\"type\": \"result\", \"id\": 42, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28694.968,
+      "message": "TOF,363592,1,0,-1,4,21,0\n"
+    },
+    {
+      "t_s": 28694.968,
+      "message": "TEL,363759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12272,0,-1,1,-1,1055,0\n"
+    },
+    {
+      "t_s": 28694.984,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28694.984,
+      "message": "{\"type\": \"result\", \"id\": 43, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28695.015,
+      "message": "ACK,STOP\n"
+    },
+    {
+      "t_s": 28695.015,
+      "message": "{\"type\": \"result\", \"id\": 44, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+    },
+    {
+      "t_s": 28695.515,
+      "message": "TEL,364259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12272,0,0,1,0,1055,0\n"
+    },
+    {
+      "t_s": 28695.546,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28695.546,
+      "message": "{\"type\": \"result\", \"id\": 45, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28696.062,
+      "message": "TOF,364592,1,0,-1,4,9,0\n"
+    },
+    {
+      "t_s": 28696.062,
+      "message": "TEL,364759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12268,0,1,1,1,1056,0\n"
+    },
+    {
+      "t_s": 28696.093,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28696.093,
+      "message": "{\"type\": \"result\", \"id\": 46, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28696.593,
+      "message": "TEL,365259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12277,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28696.625,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28696.625,
+      "message": "{\"type\": \"result\", \"id\": 47, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28697.14,
+      "message": "TEL,365759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12278,-10,-2,1,-2,1056,0\n"
+    },
+    {
+      "t_s": 28697.14,
+      "message": "TOF,365792,1,0,-1,4,34,0\n"
+    },
+    {
+      "t_s": 28697.171,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28697.171,
+      "message": "{\"type\": \"result\", \"id\": 48, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28697.687,
+      "message": "TEL,366259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12277,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28697.703,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28697.703,
+      "message": "{\"type\": \"result\", \"id\": 49, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28697.734,
+      "message": "ACK,STOP\n"
+    },
+    {
+      "t_s": 28697.734,
+      "message": "{\"type\": \"result\", \"id\": 50, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+    },
+    {
+      "t_s": 28698.234,
+      "message": "TEL,366759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12272,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28698.234,
+      "message": "TOF,366792,1,0,-1,4,21,0\n"
+    },
+    {
+      "t_s": 28698.281,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28698.281,
+      "message": "{\"type\": \"result\", \"id\": 51, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28698.828,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28698.828,
+      "message": "{\"type\": \"result\", \"id\": 52, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28699.343,
+      "message": "TOF,367992,1,0,-1,4,5,0\n"
+    },
+    {
+      "t_s": 28699.375,
+      "message": "TEL,368259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12272,-10,-5,1,-5,1056,0\n"
+    },
+    {
+      "t_s": 28699.375,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28699.375,
+      "message": "{\"type\": \"result\", \"id\": 53, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28699.875,
+      "message": "TEL,368759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12269,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28699.906,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28699.906,
+      "message": "{\"type\": \"result\", \"id\": 54, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28700.421,
+      "message": "TOF,368992,1,0,-1,4,33,0\n"
+    },
+    {
+      "t_s": 28700.421,
+      "message": "TEL,369259,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12271,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28700.437,
+      "message": "PONG\n"
+    },
+    {
+      "t_s": 28700.437,
+      "message": "{\"type\": \"result\", \"id\": 55, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "t_s": 28700.468,
+      "message": "ACK,STOP\n"
+    },
+    {
+      "t_s": 28700.468,
+      "message": "{\"type\": \"result\", \"id\": 56, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+    },
+    {
+      "t_s": 28700.968,
+      "message": "TEL,369759,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12271,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28701.015,
+      "message": "UART,115200,42000000,364,0x00,0,0,0,0,0\n"
+    },
+    {
+      "t_s": 28701.015,
+      "message": "{\"type\": \"result\", \"id\": 57, \"ok\": true, \"reply\": \"UART,115200,42000000,364,0x00,0,0,0,0,0\"}"
+    },
+    {
+      "t_s": 28701.031,
+      "message": "LINK,2834,454,0,0,0,1\n"
+    },
+    {
+      "t_s": 28701.031,
+      "message": "{\"type\": \"result\", \"id\": 58, \"ok\": true, \"reply\": \"LINK,2834,454,0,0,0,1\"}"
+    },
+    {
+      "t_s": 28701.062,
+      "message": "LINKQ,0,0,88,0\n"
+    },
+    {
+      "t_s": 28701.062,
+      "message": "{\"type\": \"result\", \"id\": 59, \"ok\": true, \"reply\": \"LINKQ,0,0,88,0\"}"
+    },
+    {
+      "t_s": 28701.093,
+      "message": "ACK,STOP\n"
+    },
+    {
+      "t_s": 28701.093,
+      "message": "{\"type\": \"result\", \"id\": 60, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+    },
+    {
+      "t_s": 28701.125,
+      "message": "ACK,DISARM\n"
+    },
+    {
+      "t_s": 28701.125,
+      "message": "{\"type\": \"result\", \"id\": 61, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    },
+    {
+      "t_s": 28701.156,
+      "message": "ACK,TEL,0\n"
+    },
+    {
+      "t_s": 28701.156,
+      "message": "{\"type\": \"result\", \"id\": 62, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "t_s": 28701.171,
+      "message": "ACK,TOF,0\n"
+    },
+    {
+      "t_s": 28701.171,
+      "message": "{\"type\": \"result\", \"id\": 63, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "t_s": 28701.203,
+      "message": "TEL,370096,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12271,0,0,1,0,1056,0\n"
+    },
+    {
+      "t_s": 28701.203,
+      "message": "{\"type\": \"result\", \"id\": 64, \"ok\": true, \"reply\": \"TEL,370096,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12271,0,0,1,0,1056,0\"}"
+    },
+    {
+      "t_s": 28701.234,
+      "message": "ATEL,370130,0,1,0,0,0,0,1056,0,0,0,0,12271\n"
+    },
+    {
+      "t_s": 28701.234,
+      "message": "{\"type\": \"result\", \"id\": 65, \"ok\": true, \"reply\": \"ATEL,370130,0,1,0,0,0,0,1056,0,0,0,0,12271\"}"
+    }
+  ],
+  "elapsed_s": 22.07800000000134,
+  "PING": {
+    "n": 40,
+    "median_ms": 30.999999999039574,
+    "p95_ms": 93.0000000007567,
+    "max_ms": 110.00000000058208
+  },
+  "STOP": {
+    "n": 10,
+    "median_ms": 30.999999999039574,
+    "p95_ms": 47.0000000022992,
+    "max_ms": 47.0000000022992
+  }
+}

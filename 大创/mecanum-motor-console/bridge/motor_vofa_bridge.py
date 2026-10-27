@@ -35,6 +35,49 @@ MOTION_QUEUE_MAX_AGE_SECONDS = 0.25
 DRIVE_REFRESH_INTERVAL_SECONDS = 0.1
 DRIVE_REFRESH_GAP_LIMIT_SECONDS = 0.25
 DRIVE_LEASE_MAX_MS = 12000
+WEB_SEND_QUEUE_LIMIT = 256
+
+
+class OrderedWebClient:
+    """One bounded FIFO per observer, including raw frames and JSON results."""
+
+    def __init__(self, websocket):
+        self.websocket = websocket
+        self.queue = asyncio.Queue(maxsize=WEB_SEND_QUEUE_LIMIT)
+        self.closed = False
+        self.worker = asyncio.create_task(self._send_loop())
+
+    async def send(self, message):
+        if self.closed:
+            raise ConnectionError("web observer closed")
+        try:
+            self.queue.put_nowait(message)
+        except asyncio.QueueFull:
+            self.closed = True
+            self.worker.cancel()
+            raise ConnectionError("web observer queue overflow") from None
+
+    async def _send_loop(self):
+        try:
+            while True:
+                message = await self.queue.get()
+                try:
+                    await asyncio.wait_for(self.websocket.send(message), CLIENT_SEND_TIMEOUT_SECONDS)
+                finally:
+                    self.queue.task_done()
+        except (Exception, asyncio.CancelledError):
+            pass
+        finally:
+            self.closed = True
+            with contextlib.suppress(Exception):
+                await asyncio.wait_for(self.websocket.close(), CLIENT_SEND_TIMEOUT_SECONDS)
+
+    async def close(self):
+        self.closed = True
+        self.worker.cancel()
+        await asyncio.gather(self.worker, return_exceptions=True)
+        with contextlib.suppress(Exception):
+            await asyncio.wait_for(self.websocket.close(), CLIENT_SEND_TIMEOUT_SECONDS)
 
 
 def normalize_uuid(value: str) -> str:
@@ -76,6 +119,7 @@ class MotorVofaBridge:
         self.write_lock = asyncio.Lock()
         self.command_lock = asyncio.Lock()
         self.pending_reply = None
+        self.last_reply_at = 0.0
         self.command_epoch = 0
         self.motion_revision = 0
         self.disconnected = asyncio.Event()
@@ -173,16 +217,14 @@ class MotorVofaBridge:
         await asyncio.gather(*(deliver(ws) for ws in tuple(self.ws_clients)))
 
     async def broadcast_tcp(self, payload: bytes) -> None:
-        failed = []
-        for writer in tuple(self.tcp_clients):
+        async def deliver(writer):
             try:
                 writer.write(payload)
                 await asyncio.wait_for(writer.drain(), CLIENT_SEND_TIMEOUT_SECONDS)
             except (ConnectionError, RuntimeError, asyncio.TimeoutError):
-                failed.append(writer)
-        for writer in failed:
-            self.tcp_clients.discard(writer)
-            writer.close()
+                self.tcp_clients.discard(writer)
+                writer.close()
+        await asyncio.gather(*(deliver(writer) for writer in tuple(self.tcp_clients)))
 
     @staticmethod
     def to_firewater(line: str) -> Optional[bytes]:
@@ -322,6 +364,7 @@ class MotorVofaBridge:
         if line.startswith("ERR,"):
             future.set_exception(RuntimeError(line))
         elif line == expected or line.startswith(expected + ","):
+            self.last_reply_at = self.loop.time()
             future.set_result(line)
 
     async def execute_command(self, command: str) -> str:
@@ -444,6 +487,8 @@ class MotorVofaBridge:
             print(f"[VOFA] disconnected: {peer}")
 
     async def handle_websocket(self, websocket) -> None:
+        incoming = websocket
+        websocket = OrderedWebClient(incoming)
         self.ws_clients.add(websocket)
         detail = f"{self.config.transport} connected" if self.hardware_connected else "hardware disconnected"
         await websocket.send("BRIDGE,BM50_ACK_R3\n")
@@ -471,7 +516,7 @@ class MotorVofaBridge:
                 pass
 
         try:
-            async for message in websocket:
+            async for message in incoming:
                 if isinstance(message, bytes):
                     message = message.decode("utf-8", errors="ignore")
                 request_id = None
@@ -507,6 +552,7 @@ class MotorVofaBridge:
                     await self.send_hardware("STOP")
             if requests:
                 await asyncio.gather(*requests, return_exceptions=True)
+            await websocket.close()
             print("[WEB] console disconnected")
 
     async def choose_serial_port(self) -> str:
@@ -544,12 +590,13 @@ class MotorVofaBridge:
             while True:
                 try:
                     if not verified:
-                        for command in ("STOP", "DISARM", "PING"):
+                        for command in ("STOP", "DISARM", "TEL,0", "TOF,0", "PING"):
                             await self.execute_command(command)
                         await self.set_hardware_status(True, f"serial {port} @ {self.config.baud} verified")
                         verified = True
                     await asyncio.sleep(1)
-                    if not self.command_lock.locked():
+                    if (not self.command_lock.locked() and
+                            self.loop.time() - self.last_reply_at >= 1.0):
                         await self.execute_command("PING")
                 except (ConnectionError, RuntimeError) as error:
                     # STOP/DISARM intentionally cancels an in-flight heartbeat.

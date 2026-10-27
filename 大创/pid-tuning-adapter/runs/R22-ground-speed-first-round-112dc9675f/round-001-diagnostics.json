@@ -1,0 +1,32 @@
+{
+  "samples": 710,
+  "active_samples": 409,
+  "active_targets": {
+    "A": [
+      -40,
+      0
+    ],
+    "B": [
+      -40,
+      0
+    ],
+    "C": [
+      -40,
+      0
+    ],
+    "D": [
+      -40,
+      0
+    ]
+  },
+  "forward_direction_target": -40,
+  "tof_limited_samples": 0,
+  "armed_active_samples": 409,
+  "enabled_active_samples": 409,
+  "tick_span_s": 7.233534,
+  "target_duration_s": 0.286867,
+  "score": {
+    "passed": false,
+    "error": "baseline/target duration must be >=2 s"
+  }
+}

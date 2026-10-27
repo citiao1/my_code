@@ -1,0 +1,20 @@
+{
+  "status": "failed",
+  "motion_started": false,
+  "selection": "pending",
+  "history": [],
+  "error": "ANGLESTATUS: {'type': 'result', 'id': 1, 'ok': False, 'error': 'MCU reply timeout: ANGLESTATUS'}",
+  "restored_readback": null,
+  "commands": [
+    {
+      "host_monotonic": 10274.531,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": false,
+        "error": "MCU reply timeout: ANGLESTATUS"
+      }
+    }
+  ]
+}

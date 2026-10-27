@@ -1,0 +1,64 @@
+{
+  "loop": "direction",
+  "experiment": "direction_identify",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "measurement",
+  "telemetry_period_s": 0.2,
+  "scoring_source": "downloaded_HLOG",
+  "log_period_s": 0.02,
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 160
+  },
+  "baseline": 0,
+  "target": 5.0,
+  "forward_rpm": 25,
+  "distance_m": 0.5,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        6.0,
+        1.25
+      ],
+      "metrics": {
+        "normalized_iae": 0.20986259298910917,
+        "overshoot": 0.0,
+        "steady_error": 0.18191879639558636,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": false,
+        "score": 0.39178138938469553
+      },
+      "csv": "runs\\R20-live-20261021-01\\heading-5deg-25rpm\\round-01.csv",
+      "hlog_csv": "runs\\R20-live-20261021-01\\heading-5deg-25rpm\\round-01-hlog.csv",
+      "writeback": false
+    },
+    {
+      "round": 2,
+      "gains": [
+        6.0,
+        1.25
+      ],
+      "metrics": {
+        "normalized_iae": 0.21188659265408122,
+        "overshoot": 0.0,
+        "steady_error": 0.18960840125277567,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": false,
+        "score": 0.4014949939068569
+      },
+      "csv": "runs\\R20-live-20261021-01\\heading-5deg-25rpm\\round-02.csv",
+      "hlog_csv": "runs\\R20-live-20261021-01\\heading-5deg-25rpm\\round-02-hlog.csv",
+      "writeback": false
+    }
+  ],
+  "gains": [
+    6.0,
+    1.25
+  ],
+  "writeback": false
+}

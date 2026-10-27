@@ -1,0 +1,1275 @@
+{
+  "direct": {
+    "commands": [
+      {
+        "command": "STOP",
+        "ms": 233.99999999674037,
+        "result": {
+          "type": "result",
+          "id": 1,
+          "ok": true,
+          "reply": "ACK,STOP"
+        }
+      },
+      {
+        "command": "DISARM",
+        "ms": 219.00000000096043,
+        "result": {
+          "type": "result",
+          "id": 2,
+          "ok": true,
+          "reply": "ACK,DISARM"
+        }
+      },
+      {
+        "command": "TEL,0",
+        "ms": 219.00000000096043,
+        "result": {
+          "type": "result",
+          "id": 3,
+          "ok": true,
+          "reply": "ACK,TEL,0"
+        }
+      },
+      {
+        "command": "TOF,0",
+        "ms": 375.0,
+        "result": {
+          "type": "result",
+          "id": 4,
+          "ok": true,
+          "reply": "ACK,TOF,0"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 234.00000000037835,
+        "result": {
+          "type": "result",
+          "id": 10,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 109.00000000037835,
+        "result": {
+          "type": "result",
+          "id": 11,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 250.0,
+        "result": {
+          "type": "result",
+          "id": 12,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 327.9999999977008,
+        "result": {
+          "type": "result",
+          "id": 13,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 328.0000000013388,
+        "result": {
+          "type": "result",
+          "id": 14,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 561.9999999980791,
+        "result": {
+          "type": "result",
+          "id": 15,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 172.0000000022992,
+        "result": {
+          "type": "result",
+          "id": 16,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 250.0,
+        "result": {
+          "type": "result",
+          "id": 17,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 110.00000000058208,
+        "result": {
+          "type": "result",
+          "id": 18,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 125.0,
+        "result": {
+          "type": "result",
+          "id": 19,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 562.0000000017171,
+        "result": {
+          "type": "result",
+          "id": 20,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 250.0,
+        "result": {
+          "type": "result",
+          "id": 21,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 171.99999999866122,
+        "result": {
+          "type": "result",
+          "id": 22,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 171.99999999866122,
+        "result": {
+          "type": "result",
+          "id": 23,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 203.00000000133878,
+        "result": {
+          "type": "result",
+          "id": 24,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 327.9999999977008,
+        "result": {
+          "type": "result",
+          "id": 25,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 172.0000000022992,
+        "result": {
+          "type": "result",
+          "id": 26,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 109.00000000037835,
+        "result": {
+          "type": "result",
+          "id": 27,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 171.99999999866122,
+        "result": {
+          "type": "result",
+          "id": 28,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 250.0,
+        "result": {
+          "type": "result",
+          "id": 29,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 328.0000000013388,
+        "result": {
+          "type": "result",
+          "id": 30,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 171.99999999866122,
+        "result": {
+          "type": "result",
+          "id": 31,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 265.99999999962165,
+        "result": {
+          "type": "result",
+          "id": 32,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 250.0,
+        "result": {
+          "type": "result",
+          "id": 33,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "VER",
+        "ms": 186.99999999807915,
+        "result": {
+          "type": "result",
+          "id": 100,
+          "ok": true,
+          "reply": "VER,VGT6_BM50_ATTITUDE_R24"
+        }
+      },
+      {
+        "command": "UART",
+        "ms": 594.0000000009604,
+        "result": {
+          "type": "result",
+          "id": 101,
+          "ok": true,
+          "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0"
+        }
+      },
+      {
+        "command": "LINK",
+        "ms": 219.00000000096043,
+        "result": {
+          "type": "result",
+          "id": 102,
+          "ok": true,
+          "reply": "LINK,4836,706,0,0,0,0"
+        }
+      },
+      {
+        "command": "LINKQ",
+        "ms": 296.9999999986612,
+        "result": {
+          "type": "result",
+          "id": 103,
+          "ok": true,
+          "reply": "LINKQ,0,0,127,0"
+        }
+      },
+      {
+        "command": "SPEEDSTATUS",
+        "ms": 609.0000000003783,
+        "result": {
+          "type": "result",
+          "id": 104,
+          "ok": true,
+          "reply": "TEL,1344098,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12309,0,0,1,0,178341,0"
+        }
+      },
+      {
+        "command": "ANGLESTATUS",
+        "ms": 530.9999999990396,
+        "result": {
+          "type": "result",
+          "id": 105,
+          "ok": true,
+          "reply": "ATEL,1344847,0,1,0,-12,0,179274,178340,300,0,0,0,12304"
+        }
+      }
+    ],
+    "raw": [
+      {
+        "t": 27625.187,
+        "message": "ACK,STOP\n"
+      },
+      {
+        "t": 27625.187,
+        "message": "ACK,DISARM\n"
+      },
+      {
+        "t": 27625.187,
+        "message": "ACK,TEL,0\n"
+      },
+      {
+        "t": 27625.187,
+        "message": "ACK,TOF,0\n"
+      },
+      {
+        "t": 27625.187,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27625.187,
+        "message": "STATUS,1,direct serial COM9 @ 115200 verified\n"
+      },
+      {
+        "t": 27625.421,
+        "message": "ACK,STOP\n"
+      },
+      {
+        "t": 27625.421,
+        "message": "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+      },
+      {
+        "t": 27625.64,
+        "message": "ACK,DISARM\n"
+      },
+      {
+        "t": 27625.64,
+        "message": "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+      },
+      {
+        "t": 27625.859,
+        "message": "ACK,TEL,0\n"
+      },
+      {
+        "t": 27625.859,
+        "message": "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+      },
+      {
+        "t": 27626.234,
+        "message": "ACK,TOF,0\n"
+      },
+      {
+        "t": 27626.234,
+        "message": "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+      },
+      {
+        "t": 27626.468,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27626.468,
+        "message": "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27626.687,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27626.687,
+        "message": "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27627.062,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27627.062,
+        "message": "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27627.515,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27627.515,
+        "message": "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27627.968,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27627.968,
+        "message": "{\"type\": \"result\", \"id\": 14, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27628.64,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27628.64,
+        "message": "{\"type\": \"result\", \"id\": 15, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27628.937,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27628.937,
+        "message": "{\"type\": \"result\", \"id\": 16, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27629.312,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27629.312,
+        "message": "{\"type\": \"result\", \"id\": 17, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27629.531,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27629.531,
+        "message": "{\"type\": \"result\", \"id\": 18, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27629.765,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27629.765,
+        "message": "{\"type\": \"result\", \"id\": 19, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27630.437,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27630.437,
+        "message": "{\"type\": \"result\", \"id\": 20, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27630.812,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27630.812,
+        "message": "{\"type\": \"result\", \"id\": 21, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27631.109,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27631.109,
+        "message": "{\"type\": \"result\", \"id\": 22, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27631.406,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27631.406,
+        "message": "{\"type\": \"result\", \"id\": 23, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27631.718,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27631.718,
+        "message": "{\"type\": \"result\", \"id\": 24, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27632.171,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27632.171,
+        "message": "{\"type\": \"result\", \"id\": 25, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27632.468,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27632.468,
+        "message": "{\"type\": \"result\", \"id\": 26, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27632.687,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27632.687,
+        "message": "{\"type\": \"result\", \"id\": 27, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27632.984,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27632.984,
+        "message": "{\"type\": \"result\", \"id\": 28, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27633.359,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27633.359,
+        "message": "{\"type\": \"result\", \"id\": 29, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27633.812,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27633.812,
+        "message": "{\"type\": \"result\", \"id\": 30, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27634.109,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27634.109,
+        "message": "{\"type\": \"result\", \"id\": 31, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27634.484,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27634.484,
+        "message": "{\"type\": \"result\", \"id\": 32, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27634.859,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27634.859,
+        "message": "{\"type\": \"result\", \"id\": 33, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27635.171,
+        "message": "VER,VGT6_BM50_ATTITUDE_R24\n"
+      },
+      {
+        "t": 27635.171,
+        "message": "{\"type\": \"result\", \"id\": 100, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R24\"}"
+      },
+      {
+        "t": 27635.765,
+        "message": "UART,115200,42000000,364,0x00,0,0,0,0,0\n"
+      },
+      {
+        "t": 27635.765,
+        "message": "{\"type\": \"result\", \"id\": 101, \"ok\": true, \"reply\": \"UART,115200,42000000,364,0x00,0,0,0,0,0\"}"
+      },
+      {
+        "t": 27635.984,
+        "message": "LINK,4836,706,0,0,0,0\n"
+      },
+      {
+        "t": 27635.984,
+        "message": "{\"type\": \"result\", \"id\": 102, \"ok\": true, \"reply\": \"LINK,4836,706,0,0,0,0\"}"
+      },
+      {
+        "t": 27636.281,
+        "message": "LINKQ,0,0,127,0\n"
+      },
+      {
+        "t": 27636.281,
+        "message": "{\"type\": \"result\", \"id\": 103, \"ok\": true, \"reply\": \"LINKQ,0,0,127,0\"}"
+      },
+      {
+        "t": 27636.89,
+        "message": "TEL,1344098,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12309,0,0,1,0,178341,0\n"
+      },
+      {
+        "t": 27636.89,
+        "message": "{\"type\": \"result\", \"id\": 104, \"ok\": true, \"reply\": \"TEL,1344098,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12309,0,0,1,0,178341,0\"}"
+      },
+      {
+        "t": 27637.421,
+        "message": "ATEL,1344847,0,1,0,-12,0,179274,178340,300,0,0,0,12304\n"
+      },
+      {
+        "t": 27637.421,
+        "message": "{\"type\": \"result\", \"id\": 105, \"ok\": true, \"reply\": \"ATEL,1344847,0,1,0,-12,0,179274,178340,300,0,0,0,12304\"}"
+      }
+    ],
+    "summary": {
+      "n": 24,
+      "median_ms": 242.00000000018917,
+      "p95_ms": 561.9999999980791,
+      "max_ms": 562.0000000017171
+    },
+    "cleanup_errors": []
+  },
+  "websocket": {
+    "commands": [
+      {
+        "command": "STOP",
+        "ms": 155.99999999903957,
+        "result": {
+          "type": "result",
+          "id": 1,
+          "ok": true,
+          "reply": "ACK,STOP"
+        }
+      },
+      {
+        "command": "DISARM",
+        "ms": 141.00000000325963,
+        "result": {
+          "type": "result",
+          "id": 2,
+          "ok": true,
+          "reply": "ACK,DISARM"
+        }
+      },
+      {
+        "command": "TEL,0",
+        "ms": 155.99999999903957,
+        "result": {
+          "type": "result",
+          "id": 3,
+          "ok": true,
+          "reply": "ACK,TEL,0"
+        }
+      },
+      {
+        "command": "TOF,0",
+        "ms": 296.9999999986612,
+        "result": {
+          "type": "result",
+          "id": 4,
+          "ok": true,
+          "reply": "ACK,TOF,0"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 140.99999999962165,
+        "result": {
+          "type": "result",
+          "id": 10,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 172.0000000022992,
+        "result": {
+          "type": "result",
+          "id": 11,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 171.99999999866122,
+        "result": {
+          "type": "result",
+          "id": 12,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 172.0000000022992,
+        "result": {
+          "type": "result",
+          "id": 13,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 155.99999999903957,
+        "result": {
+          "type": "result",
+          "id": 14,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 155.99999999903957,
+        "result": {
+          "type": "result",
+          "id": 15,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 235.00000000058208,
+        "result": {
+          "type": "result",
+          "id": 16,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 109.00000000037835,
+        "result": {
+          "type": "result",
+          "id": 17,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 172.0000000022992,
+        "result": {
+          "type": "result",
+          "id": 18,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 171.99999999866122,
+        "result": {
+          "type": "result",
+          "id": 19,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 171.99999999866122,
+        "result": {
+          "type": "result",
+          "id": 20,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 172.0000000022992,
+        "result": {
+          "type": "result",
+          "id": 21,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 171.99999999866122,
+        "result": {
+          "type": "result",
+          "id": 22,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 172.0000000022992,
+        "result": {
+          "type": "result",
+          "id": 23,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 250.0,
+        "result": {
+          "type": "result",
+          "id": 24,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 171.99999999866122,
+        "result": {
+          "type": "result",
+          "id": 25,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 171.99999999866122,
+        "result": {
+          "type": "result",
+          "id": 26,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 94.00000000096043,
+        "result": {
+          "type": "result",
+          "id": 27,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 250.0,
+        "result": {
+          "type": "result",
+          "id": 28,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 94.00000000096043,
+        "result": {
+          "type": "result",
+          "id": 29,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 312.0000000017171,
+        "result": {
+          "type": "result",
+          "id": 30,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 250.0,
+        "result": {
+          "type": "result",
+          "id": 31,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 93.99999999732245,
+        "result": {
+          "type": "result",
+          "id": 32,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "PING",
+        "ms": 109.00000000037835,
+        "result": {
+          "type": "result",
+          "id": 33,
+          "ok": true,
+          "reply": "PONG"
+        }
+      },
+      {
+        "command": "VER",
+        "ms": 172.0000000022992,
+        "result": {
+          "type": "result",
+          "id": 100,
+          "ok": true,
+          "reply": "VER,VGT6_BM50_ATTITUDE_R24"
+        }
+      },
+      {
+        "command": "UART",
+        "ms": 452.9999999977008,
+        "result": {
+          "type": "result",
+          "id": 101,
+          "ok": true,
+          "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0"
+        }
+      },
+      {
+        "command": "LINK",
+        "ms": 219.00000000096043,
+        "result": {
+          "type": "result",
+          "id": 102,
+          "ok": true,
+          "reply": "LINK,5120,749,0,0,0,0"
+        }
+      },
+      {
+        "command": "LINKQ",
+        "ms": 155.99999999903957,
+        "result": {
+          "type": "result",
+          "id": 103,
+          "ok": true,
+          "reply": "LINKQ,0,0,127,0"
+        }
+      },
+      {
+        "command": "SPEEDSTATUS",
+        "ms": 155.99999999903957,
+        "result": {
+          "type": "result",
+          "id": 104,
+          "ok": true,
+          "reply": "TEL,1358422,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12295,0,0,1,0,178328,0"
+        }
+      },
+      {
+        "command": "ANGLESTATUS",
+        "ms": 141.00000000325963,
+        "result": {
+          "type": "result",
+          "id": 105,
+          "ok": true,
+          "reply": "ATEL,1358572,0,1,0,0,0,179274,178328,300,0,0,0,12298"
+        }
+      }
+    ],
+    "raw": [
+      {
+        "t": 27641.921,
+        "message": "ACK,STOP\n"
+      },
+      {
+        "t": 27641.921,
+        "message": "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,STOP\"}"
+      },
+      {
+        "t": 27642.062,
+        "message": "ACK,DISARM\n"
+      },
+      {
+        "t": 27642.062,
+        "message": "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+      },
+      {
+        "t": 27642.218,
+        "message": "ACK,TEL,0\n"
+      },
+      {
+        "t": 27642.218,
+        "message": "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+      },
+      {
+        "t": 27642.515,
+        "message": "ACK,TOF,0\n"
+      },
+      {
+        "t": 27642.515,
+        "message": "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+      },
+      {
+        "t": 27642.656,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27642.656,
+        "message": "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27642.968,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27642.968,
+        "message": "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27643.265,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27643.265,
+        "message": "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27643.562,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27643.562,
+        "message": "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27643.859,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27643.859,
+        "message": "{\"type\": \"result\", \"id\": 14, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27644.156,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27644.156,
+        "message": "{\"type\": \"result\", \"id\": 15, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27644.531,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27644.531,
+        "message": "{\"type\": \"result\", \"id\": 16, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27644.765,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27644.765,
+        "message": "{\"type\": \"result\", \"id\": 17, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27645.062,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27645.062,
+        "message": "{\"type\": \"result\", \"id\": 18, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27645.359,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27645.359,
+        "message": "{\"type\": \"result\", \"id\": 19, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27645.656,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27645.656,
+        "message": "{\"type\": \"result\", \"id\": 20, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27645.968,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27645.968,
+        "message": "{\"type\": \"result\", \"id\": 21, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27646.265,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27646.265,
+        "message": "{\"type\": \"result\", \"id\": 22, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27646.562,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27646.562,
+        "message": "{\"type\": \"result\", \"id\": 23, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27646.937,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27646.937,
+        "message": "{\"type\": \"result\", \"id\": 24, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27647.234,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27647.234,
+        "message": "{\"type\": \"result\", \"id\": 25, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27647.531,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27647.531,
+        "message": "{\"type\": \"result\", \"id\": 26, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27647.765,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27647.765,
+        "message": "{\"type\": \"result\", \"id\": 27, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27648.14,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27648.14,
+        "message": "{\"type\": \"result\", \"id\": 28, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27648.359,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27648.359,
+        "message": "{\"type\": \"result\", \"id\": 29, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27648.812,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27648.812,
+        "message": "{\"type\": \"result\", \"id\": 30, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27649.187,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27649.187,
+        "message": "{\"type\": \"result\", \"id\": 31, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27649.406,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27649.406,
+        "message": "{\"type\": \"result\", \"id\": 32, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27649.64,
+        "message": "PONG\n"
+      },
+      {
+        "t": 27649.64,
+        "message": "{\"type\": \"result\", \"id\": 33, \"ok\": true, \"reply\": \"PONG\"}"
+      },
+      {
+        "t": 27649.937,
+        "message": "VER,VGT6_BM50_ATTITUDE_R24\n"
+      },
+      {
+        "t": 27649.937,
+        "message": "{\"type\": \"result\", \"id\": 100, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R24\"}"
+      },
+      {
+        "t": 27650.39,
+        "message": "UART,115200,42000000,364,0x00,0,0,0,0,0\n"
+      },
+      {
+        "t": 27650.39,
+        "message": "{\"type\": \"result\", \"id\": 101, \"ok\": true, \"reply\": \"UART,115200,42000000,364,0x00,0,0,0,0,0\"}"
+      },
+      {
+        "t": 27650.609,
+        "message": "LINK,5120,749,0,0,0,0\n"
+      },
+      {
+        "t": 27650.609,
+        "message": "{\"type\": \"result\", \"id\": 102, \"ok\": true, \"reply\": \"LINK,5120,749,0,0,0,0\"}"
+      },
+      {
+        "t": 27650.765,
+        "message": "LINKQ,0,0,127,0\n"
+      },
+      {
+        "t": 27650.765,
+        "message": "{\"type\": \"result\", \"id\": 103, \"ok\": true, \"reply\": \"LINKQ,0,0,127,0\"}"
+      },
+      {
+        "t": 27650.921,
+        "message": "TEL,1358422,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12295,0,0,1,0,178328,0\n"
+      },
+      {
+        "t": 27650.921,
+        "message": "{\"type\": \"result\", \"id\": 104, \"ok\": true, \"reply\": \"TEL,1358422,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12295,0,0,1,0,178328,0\"}"
+      },
+      {
+        "t": 27651.062,
+        "message": "ATEL,1358572,0,1,0,0,0,179274,178328,300,0,0,0,12298\n"
+      },
+      {
+        "t": 27651.062,
+        "message": "{\"type\": \"result\", \"id\": 105, \"ok\": true, \"reply\": \"ATEL,1358572,0,1,0,0,0,179274,178328,300,0,0,0,12298\"}"
+      }
+    ],
+    "summary": {
+      "n": 24,
+      "median_ms": 171.99999999866122,
+      "p95_ms": 250.0,
+      "max_ms": 312.0000000017171
+    }
+  }
+}

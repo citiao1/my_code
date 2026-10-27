@@ -1,0 +1,224 @@
+{
+  "mode": "read-only attach; no halt/reset/write",
+  "snapshots": [
+    {
+      "t": 29375.796,
+      "target_state": "State.RUNNING",
+      "id": 270492691,
+      "dhcsr": 16842753,
+      "icsr": 4194304,
+      "cfsr": 0,
+      "hfsr": 0,
+      "uwTick": 1044852,
+      "imu_tick": 1044861,
+      "control_end_us": 1044871692,
+      "usart_sr": 192,
+      "usart_brr": 364,
+      "usart_cr1": 8220,
+      "usart_cr3": 65,
+      "dma_rx_cr": 134218775,
+      "dma_rx_ndtr": 64,
+      "dma_tx_cr": 134218822,
+      "dma_tx_ndtr": 0,
+      "serial_stats": [
+        3769,
+        574,
+        0,
+        0,
+        0
+      ],
+      "uart_stats": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rx_state": [
+        185,
+        0,
+        185,
+        0,
+        0,
+        0,
+        0,
+        80
+      ],
+      "tx_state": [
+        7,
+        7,
+        0,
+        1
+      ],
+      "chassis_state": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "vectors": [
+        536972096,
+        134218349,
+        134218357
+      ]
+    },
+    {
+      "t": 29376.703,
+      "target_state": "State.RUNNING",
+      "id": 270492691,
+      "dhcsr": 16842753,
+      "icsr": 4194304,
+      "cfsr": 0,
+      "hfsr": 0,
+      "uwTick": 1045752,
+      "imu_tick": 1045757,
+      "control_end_us": 1045767429,
+      "usart_sr": 192,
+      "usart_brr": 364,
+      "usart_cr1": 8220,
+      "usart_cr3": 65,
+      "dma_rx_cr": 134218775,
+      "dma_rx_ndtr": 64,
+      "dma_tx_cr": 134218822,
+      "dma_tx_ndtr": 0,
+      "serial_stats": [
+        3769,
+        574,
+        0,
+        0,
+        0
+      ],
+      "uart_stats": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rx_state": [
+        185,
+        0,
+        185,
+        0,
+        0,
+        0,
+        0,
+        80
+      ],
+      "tx_state": [
+        12,
+        12,
+        0,
+        1
+      ],
+      "chassis_state": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "vectors": [
+        536972096,
+        134218349,
+        134218357
+      ]
+    },
+    {
+      "t": 29377.609,
+      "target_state": "State.RUNNING",
+      "id": 270492691,
+      "dhcsr": 16842753,
+      "icsr": 4194304,
+      "cfsr": 0,
+      "hfsr": 0,
+      "uwTick": 1046642,
+      "imu_tick": 1046655,
+      "control_end_us": 1046665923,
+      "usart_sr": 192,
+      "usart_brr": 364,
+      "usart_cr1": 8220,
+      "usart_cr3": 65,
+      "dma_rx_cr": 134218775,
+      "dma_rx_ndtr": 64,
+      "dma_tx_cr": 134218822,
+      "dma_tx_ndtr": 0,
+      "serial_stats": [
+        3769,
+        574,
+        0,
+        0,
+        0
+      ],
+      "uart_stats": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "rx_state": [
+        185,
+        0,
+        185,
+        0,
+        0,
+        0,
+        0,
+        80
+      ],
+      "tx_state": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "chassis_state": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "vectors": [
+        536972096,
+        134218349,
+        134218357
+      ]
+    }
+  ]
+}

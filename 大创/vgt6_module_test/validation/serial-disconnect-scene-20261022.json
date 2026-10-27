@@ -1,0 +1,24 @@
+{
+  "commands": [
+    {
+      "command": "STOP",
+      "start": 29231.156,
+      "lines": [],
+      "elapsed_ms": 3000.0
+    },
+    {
+      "command": "DISARM",
+      "start": 29234.156,
+      "lines": [],
+      "elapsed_ms": 3000.0
+    },
+    {
+      "command": "PING",
+      "start": 29237.156,
+      "lines": [],
+      "elapsed_ms": 3000.0
+    }
+  ],
+  "raw_chunks": [],
+  "tail_hex": ""
+}

@@ -1,0 +1,46 @@
+{
+  "loop": "angular_velocity",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "none",
+  "telemetry_period_s": 0.2,
+  "scoring_source": "downloaded_HLOG",
+  "log_period_s": 0.02,
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R18",
+  "experiment": "spin",
+  "limits": {
+    "rpm": 60,
+    "dps": 80,
+    "wheel_rpm": 160
+  },
+  "baseline": 0.0,
+  "target": 5.0,
+  "history": [
+    {
+      "round": 1,
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "metrics": {
+        "normalized_iae": 0.17981779857892996,
+        "overshoot": 0.3146,
+        "steady_error": 0.07610877525604329,
+        "settling_s": 3.3399989999999997,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 1.0218901373052713
+      },
+      "next_gains": [
+        0.1997,
+        1.5353
+      ],
+      "csv": "runs\\rate-retune-r18-20261020-validate-a5-best\\round-01.csv"
+    }
+  ],
+  "best_gains": [
+    0.1815,
+    1.8062
+  ],
+  "best_score": 1.0218901373052713
+}

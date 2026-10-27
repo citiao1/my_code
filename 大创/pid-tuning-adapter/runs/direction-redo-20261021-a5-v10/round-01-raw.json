@@ -1,0 +1,950 @@
+{
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R18",
+  "loop": "direction",
+  "gains": [
+    6.0,
+    1.25
+  ],
+  "scoring_source": "downloaded_HLOG",
+  "status": null,
+  "records": [],
+  "wire": [
+    "HLOG,STATUS,0,727,1024,0,727",
+    "HLOG,CLEAR,OK",
+    "HLOG,START,OK"
+  ],
+  "timeline": [
+    {
+      "command": "VER",
+      "host_monotonic_s": 26396.281,
+      "reply": "VER,VGT6_BM50_ATTITUDE_R18"
+    },
+    {
+      "command": "UART",
+      "host_monotonic_s": 26396.421,
+      "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+    },
+    {
+      "command": "LINK",
+      "host_monotonic_s": 26396.531,
+      "reply": "LINK,2865,250,0,0,0,1"
+    },
+    {
+      "command": "CAPS",
+      "host_monotonic_s": 26396.656,
+      "reply": "CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US"
+    },
+    {
+      "command": "SPEEDLIMIT",
+      "host_monotonic_s": 26396.828,
+      "reply": "SPEEDLIMIT,160"
+    },
+    {
+      "command": "STACK",
+      "host_monotonic_s": 26396.921,
+      "reply": "STACK,4096,1992,2104,1"
+    },
+    {
+      "command": "UART",
+      "host_monotonic_s": 26397.031,
+      "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+    },
+    {
+      "command": "LINK",
+      "host_monotonic_s": 26397.187,
+      "reply": "LINK,2902,255,0,0,0,1"
+    },
+    {
+      "command": "PIDGET",
+      "host_monotonic_s": 26397.296,
+      "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+    },
+    {
+      "command": "HEADGET",
+      "host_monotonic_s": 26397.5,
+      "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+    },
+    {
+      "command": "YAWGET",
+      "host_monotonic_s": 26397.656,
+      "reply": "YAWPID,0.1815,1.8062,60,80,20"
+    },
+    {
+      "command": "PIDGET",
+      "host_monotonic_s": 26397.796,
+      "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+    },
+    {
+      "command": "HLOG,STATUS",
+      "host_monotonic_s": 26397.953,
+      "reply": "HLOG,STATUS,0,727,1024,0,727"
+    },
+    {
+      "command": "ARM",
+      "host_monotonic_s": 26398.062,
+      "reply": "ACK,ARM,WHEELS_OFF_GROUND"
+    },
+    {
+      "command": "ATEL,1",
+      "host_monotonic_s": 26398.156,
+      "reply": "ACK,ATEL,1"
+    },
+    {
+      "command": "ANGLESTATUS",
+      "host_monotonic_s": 26398.25,
+      "reply": "ATEL,214945,0,1,0,0,0,-9,-641,545,0,0,0,11598"
+    },
+    {
+      "command": "CAPS",
+      "host_monotonic_s": 26398.359,
+      "reply": "CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US"
+    },
+    {
+      "command": "SPEEDLIMIT",
+      "host_monotonic_s": 26398.515,
+      "reply": "SPEEDLIMIT,160"
+    },
+    {
+      "command": "STACK",
+      "host_monotonic_s": 26398.656,
+      "reply": "STACK,4096,1992,2104,1"
+    },
+    {
+      "command": "UART",
+      "host_monotonic_s": 26398.765,
+      "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+    },
+    {
+      "command": "LINK",
+      "host_monotonic_s": 26398.906,
+      "reply": "LINK,3011,268,0,0,0,1"
+    },
+    {
+      "command": "PIDGET",
+      "host_monotonic_s": 26398.984,
+      "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+    },
+    {
+      "command": "HEADGET",
+      "host_monotonic_s": 26399.187,
+      "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+    },
+    {
+      "command": "YAWGET",
+      "host_monotonic_s": 26399.328,
+      "reply": "YAWPID,0.1815,1.8062,60,80,20"
+    },
+    {
+      "command": "STOP",
+      "host_monotonic_s": 26399.437,
+      "reply": "ACK,STOP"
+    },
+    {
+      "command": "ANGLESTATUS",
+      "host_monotonic_s": 26399.515,
+      "reply": "ATEL,216205,0,1,0,0,0,-9,-642,545,0,0,0,11596"
+    },
+    {
+      "command": "HLOG,CLEAR",
+      "host_monotonic_s": 26399.625,
+      "reply": "HLOG,CLEAR,OK"
+    },
+    {
+      "command": "HLOG,START",
+      "host_monotonic_s": 26399.75,
+      "reply": "HLOG,START,OK"
+    },
+    {
+      "command": "ENCZERO",
+      "host_monotonic_s": 26399.875,
+      "reply": "ACK,ENCZERO"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26399.968,
+      "reply": "ENC,216647,1,380,0,0,0,0,0,0,0,0,0,0,0,0"
+    },
+    {
+      "command": "HEADMOVE,-0.6410,10,0",
+      "host_monotonic_s": 26400.062,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26400.296,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26400.609,
+      "reply": "ENC,217299,1,380,28,32,31,29,0,1,0,0,0,157,0,0"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26400.843,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26401.015,
+      "reply": "ENC,217705,1,380,54,58,57,56,1,1,0,1,157,157,0,157"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26401.328,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26401.421,
+      "reply": "ENC,218155,1,380,83,87,87,84,1,1,1,0,157,157,157,0"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26401.609,
+      "reply": "ENC,218289,1,380,91,95,94,92,1,1,0,0,157,157,0,0"
+    },
+    {
+      "command": "HEADMOVE,4.3590,10,0",
+      "host_monotonic_s": 26401.718,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26401.843,
+      "reply": "ENC,218537,1,380,112,107,106,113,1,1,0,2,157,157,0,315"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26401.875,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26402.328,
+      "reply": "ENC,219010,1,380,170,108,108,170,2,0,0,1,315,0,0,157"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26402.546,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26402.671,
+      "reply": "ENC,219370,1,380,208,115,115,209,1,0,0,1,157,0,0,157"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26402.796,
+      "reply": "ENC,219482,1,380,218,120,120,219,1,0,1,0,157,0,157,0"
+    },
+    {
+      "command": "HEADMOVE,-0.6410,10,0",
+      "host_monotonic_s": 26402.953,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26403.078,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26403.078,
+      "reply": "ENC,219842,1,380,237,149,148,237,0,2,1,0,0,315,157,0"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26403.531,
+      "reply": "ENC,220225,1,380,237,198,198,236,0,1,1,0,0,157,157,0"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26403.562,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26403.89,
+      "reply": "ENC,220584,1,380,240,240,239,240,0,2,0,1,0,315,0,157"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26404.015,
+      "reply": "ENC,220697,1,380,243,250,250,243,0,0,1,0,0,0,157,0"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26404.14,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "HEADMOVE,-5.6410,10,0",
+      "host_monotonic_s": 26404.156,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26404.453,
+      "reply": "ENC,221147,1,380,258,293,292,258,0,1,1,0,0,157,157,0"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26404.64,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26404.89,
+      "reply": "ENC,221575,1,380,261,345,344,260,1,2,2,0,157,315,315,0"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26405.203,
+      "reply": "ENC,221889,1,380,270,375,374,269,1,1,1,1,157,157,157,157"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26405.296,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26405.312,
+      "reply": "ENC,222137,1,380,281,395,394,281,1,0,1,1,157,0,157,157"
+    },
+    {
+      "command": "HEADMOVE,-0.6410,10,0",
+      "host_monotonic_s": 26405.578,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26405.703,
+      "reply": "ENC,222384,1,380,300,408,407,299,1,0,0,1,157,0,0,157"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26405.859,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26406.14,
+      "reply": "ENC,222835,1,380,357,409,406,357,2,0,-1,2,315,0,-157,315"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26406.343,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26406.531,
+      "reply": "ENC,223217,1,380,399,415,412,400,0,0,0,1,0,0,0,157"
+    },
+    {
+      "command": "HEADMOVE,-0.6410,0,0",
+      "host_monotonic_s": 26406.64,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26406.828,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26407.312,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26407.828,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26408.296,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26408.359,
+      "reply": "ENC,225062,1,380,412,425,423,410,0,0,0,0,0,0,0,0"
+    },
+    {
+      "command": "HEADMOVE,-0.6410,-10,0",
+      "host_monotonic_s": 26408.5,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26408.64,
+      "reply": "ENC,225332,1,380,407,419,418,405,-1,-1,0,-1,-157,-157,0,-157"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26408.781,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26409.046,
+      "reply": "ENC,225737,1,380,382,394,393,381,-1,0,-1,0,-157,0,-157,0"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26409.25,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26409.453,
+      "reply": "ENC,226142,1,380,357,367,367,355,-1,-1,0,-1,-157,-157,0,-157"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26409.718,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26409.859,
+      "reply": "ENC,226570,1,380,330,340,340,329,-1,-1,0,-1,-157,-157,0,-157"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26410.031,
+      "reply": "ENC,226727,1,380,320,329,330,319,0,-1,0,0,0,-157,0,0"
+    },
+    {
+      "command": "HEADMOVE,-5.6410,-10,0",
+      "host_monotonic_s": 26410.156,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26410.218,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26410.265,
+      "reply": "ENC,227065,1,380,290,317,316,289,-1,0,0,-1,-157,0,0,-157"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26410.75,
+      "reply": "ENC,227447,1,380,244,317,316,241,-1,0,0,-1,-157,0,0,-157"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26410.781,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26411.14,
+      "reply": "ENC,227830,1,380,204,308,307,202,-1,0,0,-1,-157,0,0,-157"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26411.25,
+      "reply": "ENC,227942,1,380,193,303,303,191,-1,0,0,-1,-157,0,0,-157"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26411.39,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "HEADMOVE,-0.6410,-10,0",
+      "host_monotonic_s": 26411.39,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26411.671,
+      "reply": "ENC,228370,1,380,168,275,275,166,0,-1,-1,0,0,-157,-157,0"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26411.953,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26412.125,
+      "reply": "ENC,228820,1,380,169,216,217,168,0,-2,-1,0,0,-315,-157,0"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26412.531,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26412.562,
+      "reply": "ENC,229315,1,380,160,162,163,160,0,-1,-1,0,0,-157,-157,0"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26412.765,
+      "reply": "ENC,229450,1,380,154,152,153,154,0,-1,0,0,0,-157,0,0"
+    },
+    {
+      "command": "HEADMOVE,4.3590,-10,0",
+      "host_monotonic_s": 26412.875,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26413.031,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26413.234,
+      "reply": "ENC,229922,1,380,141,103,104,141,-1,-2,-2,0,-157,-315,-315,0"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26413.531,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26413.64,
+      "reply": "ENC,230327,1,380,137,59,59,137,0,0,-1,0,0,0,-157,0"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26414.015,
+      "reply": "ENC,230732,1,380,120,23,23,120,0,0,-1,-1,0,0,-157,-157"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26414.062,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26414.203,
+      "reply": "ENC,230980,1,380,107,5,6,107,0,-1,-1,0,0,-157,-157,0"
+    },
+    {
+      "command": "HEADMOVE,-0.6410,-10,0",
+      "host_monotonic_s": 26414.609,
+      "reply": "ACK,HEADMOVE"
+    },
+    {
+      "command": "KEEP",
+      "host_monotonic_s": 26414.687,
+      "reply": "ACK,KEEP"
+    },
+    {
+      "command": "ENC",
+      "host_monotonic_s": 26414.75,
+      "reply": "ENC,231520,1,380,62,-19,-17,62,-1,-1,0,-1,-157,-157,0,-157"
+    },
+    {
+      "command": "STOP",
+      "host_monotonic_s": 26414.968,
+      "reply": "ACK,STOP"
+    },
+    {
+      "command": "ANGLESTATUS",
+      "host_monotonic_s": 26415.046,
+      "reply": "ATEL,231721,0,1,0,-3489,0,-641,2592,-3521,0,0,0,11550"
+    },
+    {
+      "command": "HLOG,STOP",
+      "host_monotonic_s": 26415.171,
+      "reply": "HLOG,STOP,OK"
+    }
+  ],
+  "timestamp_unit": "us",
+  "batch_retries": [],
+  "safety_monitor": [
+    {
+      "host_monotonic_s": 26396.359,
+      "line": "ATEL,212771,0,1,0,0,0,-9,-639,545,0,0,0,11591"
+    },
+    {
+      "host_monotonic_s": 26396.421,
+      "line": "ATEL,212971,0,1,0,0,0,-9,-640,545,0,0,0,11597"
+    },
+    {
+      "host_monotonic_s": 26396.609,
+      "line": "ATEL,213171,0,1,0,0,0,-9,-640,545,0,0,0,11593"
+    },
+    {
+      "host_monotonic_s": 26396.89,
+      "line": "ATEL,213371,0,1,0,0,0,-9,-640,545,0,0,0,11591"
+    },
+    {
+      "host_monotonic_s": 26397.015,
+      "line": "ATEL,213571,0,1,0,0,0,-9,-640,545,0,0,0,11590"
+    },
+    {
+      "host_monotonic_s": 26397.25,
+      "line": "ATEL,213771,0,1,0,0,0,-9,-640,545,0,0,0,11592"
+    },
+    {
+      "host_monotonic_s": 26397.406,
+      "line": "ATEL,213971,0,1,0,0,0,-9,-640,545,0,0,0,11591"
+    },
+    {
+      "host_monotonic_s": 26397.593,
+      "line": "ATEL,214171,0,1,0,0,0,-9,-640,545,0,0,0,11591"
+    },
+    {
+      "host_monotonic_s": 26397.828,
+      "line": "ATEL,214371,0,1,0,1,0,-9,-640,545,0,0,0,11589"
+    },
+    {
+      "host_monotonic_s": 26398.015,
+      "line": "ATEL,214571,0,1,0,0,0,-9,-641,545,0,0,0,11598"
+    },
+    {
+      "host_monotonic_s": 26398.218,
+      "line": "ATEL,214771,0,1,0,0,0,-9,-641,545,0,0,0,11597"
+    },
+    {
+      "host_monotonic_s": 26398.359,
+      "line": "ATEL,214945,0,1,0,0,0,-9,-641,545,0,0,0,11598"
+    },
+    {
+      "host_monotonic_s": 26398.562,
+      "line": "ATEL,215072,0,1,0,0,0,-9,-641,545,0,0,0,11597"
+    },
+    {
+      "host_monotonic_s": 26398.703,
+      "line": "ATEL,215272,0,1,0,0,0,-9,-642,545,0,0,0,11591"
+    },
+    {
+      "host_monotonic_s": 26398.921,
+      "line": "ATEL,215472,0,1,0,1,0,-9,-642,545,0,0,0,11600"
+    },
+    {
+      "host_monotonic_s": 26399.078,
+      "line": "ATEL,215672,0,1,0,1,0,-9,-642,545,0,0,0,11608"
+    },
+    {
+      "host_monotonic_s": 26399.281,
+      "line": "ATEL,215872,0,1,0,0,0,-9,-642,545,0,0,0,11598"
+    },
+    {
+      "host_monotonic_s": 26399.484,
+      "line": "ATEL,216072,0,1,0,0,0,-9,-642,545,0,0,0,11596"
+    },
+    {
+      "host_monotonic_s": 26399.625,
+      "line": "ATEL,216205,0,1,0,0,0,-9,-642,545,0,0,0,11596"
+    },
+    {
+      "host_monotonic_s": 26399.734,
+      "line": "ATEL,216272,0,1,0,0,0,-9,-642,545,0,0,0,11594"
+    },
+    {
+      "host_monotonic_s": 26399.89,
+      "line": "ATEL,216472,0,1,0,0,0,-9,-642,545,0,0,0,11594"
+    },
+    {
+      "host_monotonic_s": 26400.109,
+      "line": "ATEL,216672,0,1,0,0,0,-9,-642,545,0,0,0,11590"
+    },
+    {
+      "host_monotonic_s": 26400.421,
+      "line": "ATEL,216984,2,1,408,-510,-188,-641,-602,-38,408,0,1,11590"
+    },
+    {
+      "host_monotonic_s": 26400.609,
+      "line": "ATEL,217184,2,1,930,-834,-85,-641,-622,-18,930,0,1,11580"
+    },
+    {
+      "host_monotonic_s": 26400.812,
+      "line": "ATEL,217384,2,1,-734,581,-369,-641,-639,-1,-734,0,1,11570"
+    },
+    {
+      "host_monotonic_s": 26401.015,
+      "line": "ATEL,217584,2,1,-352,322,-207,-641,-649,8,-352,0,1,11561"
+    },
+    {
+      "host_monotonic_s": 26401.234,
+      "line": "ATEL,217784,2,1,504,-266,76,-641,-669,28,504,0,1,11567"
+    },
+    {
+      "host_monotonic_s": 26401.421,
+      "line": "ATEL,217984,2,1,462,-140,221,-641,-688,47,462,0,1,11562"
+    },
+    {
+      "host_monotonic_s": 26401.671,
+      "line": "ATEL,218184,2,1,-1079,731,-354,-641,-613,-27,-1079,0,1,11561"
+    },
+    {
+      "host_monotonic_s": 26401.796,
+      "line": "ATEL,218384,2,1,254,-248,-28,-641,-631,-9,254,0,1,11559"
+    },
+    {
+      "host_monotonic_s": 26402.14,
+      "line": "ATEL,218625,2,1,19196,4698,9745,4359,180,4178,19196,0,1,11549"
+    },
+    {
+      "host_monotonic_s": 26402.328,
+      "line": "ATEL,218825,2,1,10565,5710,10695,4359,1408,2950,10565,0,1,11543"
+    },
+    {
+      "host_monotonic_s": 26402.562,
+      "line": "ATEL,219025,2,1,2578,5921,8851,4359,2695,1663,2578,0,1,11544"
+    },
+    {
+      "host_monotonic_s": 26402.671,
+      "line": "ATEL,219225,2,1,-2139,4839,6345,4359,3707,651,-2139,0,1,11544"
+    },
+    {
+      "host_monotonic_s": 26402.859,
+      "line": "ATEL,219425,2,1,-4839,3061,2984,4359,4527,-168,-4839,0,1,11537"
+    },
+    {
+      "host_monotonic_s": 26403.078,
+      "line": "ATEL,219625,2,1,-3970,912,1337,4359,4830,-471,-3970,0,1,11540"
+    },
+    {
+      "host_monotonic_s": 26403.375,
+      "line": "ATEL,219864,2,1,-22701,-4498,-9989,-641,4079,-4720,-22701,0,1,11541"
+    },
+    {
+      "host_monotonic_s": 26403.531,
+      "line": "ATEL,220064,2,1,-11005,-7477,-11024,-641,2751,-3392,-11005,0,1,11544"
+    },
+    {
+      "host_monotonic_s": 26403.718,
+      "line": "ATEL,220264,2,1,-3569,-6863,-9895,-641,1383,-2024,-3569,0,1,11555"
+    },
+    {
+      "host_monotonic_s": 26403.89,
+      "line": "ATEL,220464,2,1,1711,-5553,-7313,-641,230,-871,1711,0,1,11561"
+    },
+    {
+      "host_monotonic_s": 26404.093,
+      "line": "ATEL,220664,2,1,3280,-2847,-4665,-641,-594,-46,3280,0,1,11546"
+    },
+    {
+      "host_monotonic_s": 26404.343,
+      "line": "ATEL,220864,2,1,6233,-2539,-1301,-641,-1150,509,6233,0,1,11545"
+    },
+    {
+      "host_monotonic_s": 26404.593,
+      "line": "ATEL,221147,2,1,-14183,-5667,-9226,-5641,-2096,-3544,-14183,0,1,11546"
+    },
+    {
+      "host_monotonic_s": 26404.89,
+      "line": "ATEL,221347,2,1,-6518,-6255,-9432,-5641,-3251,-2389,-6518,0,1,11547"
+    },
+    {
+      "host_monotonic_s": 26405.0,
+      "line": "ATEL,221547,2,1,-2430,-4209,-8104,-5641,-4359,-1281,-2430,0,1,11553"
+    },
+    {
+      "host_monotonic_s": 26405.203,
+      "line": "ATEL,221747,2,1,2935,-4102,-4998,-5641,-5275,-365,2935,0,1,11549"
+    },
+    {
+      "host_monotonic_s": 26405.453,
+      "line": "ATEL,221947,2,1,5345,-3296,-2427,-5641,-5845,204,5345,0,1,11546"
+    },
+    {
+      "host_monotonic_s": 26405.64,
+      "line": "ATEL,222147,2,1,4476,-1345,-899,-5641,-6106,465,4476,0,1,11546"
+    },
+    {
+      "host_monotonic_s": 26405.937,
+      "line": "ATEL,222498,2,1,20322,5510,9780,-641,-5198,4603,20322,0,1,11553"
+    },
+    {
+      "host_monotonic_s": 26406.14,
+      "line": "ATEL,222698,2,1,9259,7623,10309,-641,-3762,3189,9259,0,1,11553"
+    },
+    {
+      "host_monotonic_s": 26406.343,
+      "line": "ATEL,222898,2,1,1911,7068,8964,-641,-2430,1850,1911,0,1,11552"
+    },
+    {
+      "host_monotonic_s": 26406.531,
+      "line": "ATEL,223098,2,1,-2107,5043,6577,-641,-1349,750,-2107,0,1,11556"
+    },
+    {
+      "host_monotonic_s": 26406.765,
+      "line": "ATEL,223298,2,1,-3035,2396,4183,-641,-618,0,-3035,0,1,11556"
+    },
+    {
+      "host_monotonic_s": 26407.015,
+      "line": "ATEL,223575,2,1,-4740,918,989,-641,-147,-499,-4740,0,1,11559"
+    },
+    {
+      "host_monotonic_s": 26407.203,
+      "line": "ATEL,223775,2,1,-3464,67,-90,-641,-82,-558,-3464,0,1,11565"
+    },
+    {
+      "host_monotonic_s": 26407.421,
+      "line": "ATEL,223975,2,1,-3162,-125,-1203,-641,-90,-551,-3162,0,1,11567"
+    },
+    {
+      "host_monotonic_s": 26407.609,
+      "line": "ATEL,224175,2,1,-1803,-932,-1618,-641,-203,-452,-1803,0,1,11567"
+    },
+    {
+      "host_monotonic_s": 26407.828,
+      "line": "ATEL,224375,2,1,-22,-1027,-1124,-641,-406,-241,-22,0,1,11565"
+    },
+    {
+      "host_monotonic_s": 26407.984,
+      "line": "ATEL,224575,2,1,665,-998,-869,-641,-539,-110,665,0,1,11556"
+    },
+    {
+      "host_monotonic_s": 26408.234,
+      "line": "ATEL,224775,2,1,164,-165,-738,-641,-630,-11,164,0,1,11561"
+    },
+    {
+      "host_monotonic_s": 26408.421,
+      "line": "ATEL,224975,2,1,519,-56,-404,-641,-676,40,519,0,1,11553"
+    },
+    {
+      "host_monotonic_s": 26408.64,
+      "line": "ATEL,225175,2,1,200,6,-432,-641,-674,33,200,0,1,11551"
+    },
+    {
+      "host_monotonic_s": 26408.859,
+      "line": "ATEL,225423,2,1,-37,166,-390,-641,-669,28,-37,0,1,11562"
+    },
+    {
+      "host_monotonic_s": 26409.046,
+      "line": "ATEL,225623,2,1,529,-150,22,-641,-697,56,529,0,1,11558"
+    },
+    {
+      "host_monotonic_s": 26409.25,
+      "line": "ATEL,225823,2,1,548,-3,332,-641,-731,90,548,0,1,11549"
+    },
+    {
+      "host_monotonic_s": 26409.453,
+      "line": "ATEL,226023,2,1,-765,858,49,-641,-692,51,-765,0,1,11552"
+    },
+    {
+      "host_monotonic_s": 26409.671,
+      "line": "ATEL,226223,2,1,913,-486,481,-641,-691,50,913,0,1,11555"
+    },
+    {
+      "host_monotonic_s": 26409.859,
+      "line": "ATEL,226423,2,1,250,1,400,-641,-683,42,250,0,1,11555"
+    },
+    {
+      "host_monotonic_s": 26410.109,
+      "line": "ATEL,226623,2,1,30,-17,256,-641,-642,1,30,0,1,11553"
+    },
+    {
+      "host_monotonic_s": 26410.25,
+      "line": "ATEL,226823,2,1,921,-520,660,-641,-686,45,921,0,1,11556"
+    },
+    {
+      "host_monotonic_s": 26410.578,
+      "line": "ATEL,227066,2,1,-17656,-5824,-9090,-5641,-1484,-4156,-17656,0,1,11556"
+    },
+    {
+      "host_monotonic_s": 26410.75,
+      "line": "ATEL,227266,2,1,-8405,-6924,-9493,-5641,-2797,-2843,-8405,0,1,11555"
+    },
+    {
+      "host_monotonic_s": 26410.984,
+      "line": "ATEL,227466,2,1,-2064,-6093,-8104,-5641,-4027,-1613,-2064,0,1,11563"
+    },
+    {
+      "host_monotonic_s": 26411.14,
+      "line": "ATEL,227666,2,1,2449,-5088,-5835,-5641,-4989,-651,2449,0,1,11546"
+    },
+    {
+      "host_monotonic_s": 26411.343,
+      "line": "ATEL,227866,2,1,2531,-2274,-4199,-5641,-5589,-51,2531,0,1,11539"
+    },
+    {
+      "host_monotonic_s": 26411.546,
+      "line": "ATEL,228066,2,1,4786,-1810,-1374,-5641,-6061,420,4786,0,1,11533"
+    },
+    {
+      "host_monotonic_s": 26411.906,
+      "line": "ATEL,228460,2,1,20986,6049,10214,-641,-5276,4704,20986,0,1,11544"
+    },
+    {
+      "host_monotonic_s": 26412.125,
+      "line": "ATEL,228660,2,1,9898,7661,10982,-641,-3879,3306,9898,0,1,11536"
+    },
+    {
+      "host_monotonic_s": 26412.312,
+      "line": "ATEL,228860,2,1,3092,6654,9830,-641,-2527,1947,3092,0,1,11542"
+    },
+    {
+      "host_monotonic_s": 26412.562,
+      "line": "ATEL,229060,2,1,-3127,5237,6540,-641,-1331,719,-3127,0,1,11542"
+    },
+    {
+      "host_monotonic_s": 26412.703,
+      "line": "ATEL,229260,2,1,-4775,3968,4034,-641,-563,-28,-4775,0,1,11544"
+    },
+    {
+      "host_monotonic_s": 26412.953,
+      "line": "ATEL,229460,2,1,-3798,838,2018,-641,-185,-448,-3798,0,1,11548"
+    },
+    {
+      "host_monotonic_s": 26413.234,
+      "line": "ATEL,229787,2,1,14896,4990,8705,4359,836,3522,14896,0,1,11546"
+    },
+    {
+      "host_monotonic_s": 26413.468,
+      "line": "ATEL,229987,2,1,6389,6357,8798,4359,1969,2389,6389,0,1,11545"
+    },
+    {
+      "host_monotonic_s": 26413.64,
+      "line": "ATEL,230187,2,1,1465,4921,7260,4359,3089,1269,1465,0,1,11539"
+    },
+    {
+      "host_monotonic_s": 26413.812,
+      "line": "ATEL,230387,2,1,-2412,3910,4802,4359,3946,412,-2412,0,1,11547"
+    },
+    {
+      "host_monotonic_s": 26414.015,
+      "line": "ATEL,230587,2,1,-4704,3168,2509,4359,4483,-124,-4704,0,1,11549"
+    },
+    {
+      "host_monotonic_s": 26414.203,
+      "line": "ATEL,230787,2,1,-3248,1003,1544,4359,4691,-332,-3248,0,1,11550"
+    },
+    {
+      "host_monotonic_s": 26414.718,
+      "line": "ATEL,230987,2,1,-3904,547,-380,4359,4895,-536,-3904,0,1,11551"
+    },
+    {
+      "host_monotonic_s": 26414.75,
+      "line": "ATEL,231187,2,1,-1022,-1248,-409,4359,4789,-430,-1022,0,1,11551"
+    },
+    {
+      "host_monotonic_s": 26415.046,
+      "line": "ATEL,231521,2,1,-19532,-6365,-9820,-641,3762,-4482,-19532,0,1,11551"
+    },
+    {
+      "host_monotonic_s": 26415.171,
+      "line": "ATEL,231721,0,1,0,-3489,0,-641,2592,-3521,0,0,0,11550"
+    },
+    {
+      "host_monotonic_s": 26415.218,
+      "line": "ATEL,231753,0,1,0,-589,0,-641,2631,-3521,0,0,0,11553"
+    }
+  ],
+  "limits": {
+    "wheel_rpm": 160,
+    "rotation_rpm": 60,
+    "rate_dps": 80
+  },
+  "error": "heading trajectory exceeded test duration"
+}
