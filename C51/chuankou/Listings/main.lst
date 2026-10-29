@@ -1,0 +1,185 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              10/29/2026 20:23:30 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\keil_c51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\mai
+                    -n.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          /* AT89C51, 11.0592 MHz, 12T; UART mode 1, 9600 bps, 8N1. */
+   2          #include <reg51.h>
+   3          
+   4          typedef unsigned char u8;
+   5          typedef unsigned long u32;
+   6          
+   7          #define RX_BUFFER_SIZE 32
+   8          #define RX_BUFFER_MASK (RX_BUFFER_SIZE - 1)
+   9          
+  10          static volatile u8 rx_buffer[RX_BUFFER_SIZE];
+  11          static volatile u8 rx_head;
+  12          static volatile u8 rx_tail;
+  13          static volatile bit rx_overflow;
+  14          static volatile bit tx_done;
+  15          static volatile u32 elapsed_seconds;
+  16          static u8 timer_ticks;
+  17          static u32 last_reported;
+  18          
+  19          /* 接收和发送完成分别处理，支持发送计数时继续接收数据。 */
+  20          void serial_isr(void) interrupt 4
+  21          {
+  22   1          u8 value;
+  23   1          u8 next;
+  24   1      
+  25   1          if (RI)
+  26   1          {
+  27   2              value = SBUF;
+  28   2              RI = 0;
+  29   2              next = (rx_head + 1) & RX_BUFFER_MASK;
+  30   2              if (next != rx_tail)
+  31   2              {
+  32   3                  rx_buffer[rx_head] = value;
+  33   3                  rx_head = next;
+  34   3              }
+  35   2              else
+  36   2                  rx_overflow = 1;  /* 缓冲区满时丢弃新字节，主循环报告。 */
+  37   2          }
+  38   1      
+  39   1          if (TI)
+  40   1          {
+  41   2              TI = 0;
+  42   2              tx_done = 1;
+  43   2          }
+  44   1      }
+  45          
+  46          void timer0_isr(void) interrupt 1
+  47          {
+  48   1          /* 11059200 / 12 * 0.05 = 46080; 65536 - 46080 = 0x4C00. */
+  49   1          TR0 = 0;
+  50   1          TH0 = 0x4c;
+  51   1          TL0 = 0x00;
+  52   1          TR0 = 1;
+  53   1      
+  54   1          if (++timer_ticks == 20)
+C51 COMPILER V9.60.0.0   MAIN                                                              10/29/2026 20:23:30 PAGE 2   
+
+  55   1          {
+  56   2              timer_ticks = 0;
+  57   2              ++elapsed_seconds;
+  58   2          }
+  59   1      }
+  60          
+  61          static void uart_send_byte(u8 value)
+  62          {
+  63   1          tx_done = 0;
+  64   1          SBUF = value;
+  65   1          while (!tx_done)
+  66   1              ;  /* 等待期间中断保持开启，接收和定时继续工作。 */
+  67   1      }
+  68          
+  69          static void uart_send_text(const char code *text)
+  70          {
+  71   1          while (*text != '\0')
+  72   1              uart_send_byte(*text++);
+  73   1      }
+  74          
+  75          static void uart_send_number(u32 value)
+  76          {
+  77   1          u8 digits[10];
+  78   1          u8 length;
+  79   1      
+  80   1          length = 0;
+  81   1          do
+  82   1          {
+  83   2              digits[length++] = '0' + (u8)(value % 10);
+  84   2              value /= 10;
+  85   2          } while (value != 0);
+  86   1      
+  87   1          while (length != 0)
+  88   1              uart_send_byte(digits[--length]);
+  89   1      }
+  90          
+  91          static void app_init(void)
+  92          {
+  93   1          EA = 0;
+  94   1          TR0 = 0;
+  95   1          TR1 = 0;
+  96   1          rx_head = 0;
+  97   1          rx_tail = 0;
+  98   1          rx_overflow = 0;
+  99   1          tx_done = 0;
+ 100   1          timer_ticks = 0;
+ 101   1          elapsed_seconds = 0;
+ 102   1          last_reported = 0;
+ 103   1          P3 |= 0x03;  /* 释放 P3.0/RXD、P3.1/TXD。 */
+ 104   1      
+ 105   1          TMOD = 0x21;  /* T1 方式 2 产生波特率；T0 方式 1 定时。 */
+ 106   1          PCON &= 0x7f; /* SMOD = 0。 */
+ 107   1          SCON = 0x50;  /* 串口方式 1，REN = 1，允许接收。 */
+ 108   1          TH1 = 0xfd;   /* 11059200 / (12 * 32 * (256 - 253)) = 9600. */
+ 109   1          TL1 = 0xfd;
+ 110   1          TH0 = 0x4c;
+ 111   1          TL0 = 0x00;
+ 112   1          TF0 = 0;
+ 113   1          TF1 = 0;
+ 114   1          ET1 = 0;      /* T1 只提供波特率，不开启 T1 中断。 */
+ 115   1          ET0 = 1;
+ 116   1          ES = 1;
+C51 COMPILER V9.60.0.0   MAIN                                                              10/29/2026 20:23:30 PAGE 3   
+
+ 117   1          TR1 = 1;
+ 118   1          TR0 = 1;
+ 119   1          EA = 1;
+ 120   1      }
+ 121          
+ 122          static void app_process(void)
+ 123          {
+ 124   1          u8 value;
+ 125   1          u32 seconds;
+ 126   1      
+ 127   1          if (rx_head != rx_tail)
+ 128   1          {
+ 129   2              value = rx_buffer[rx_tail];
+ 130   2              rx_tail = (rx_tail + 1) & RX_BUFFER_MASK;
+ 131   2              uart_send_byte(value);  /* 原样回显，不改变大小写或换行。 */
+ 132   2          }
+ 133   1      
+ 134   1          if (rx_overflow)
+ 135   1          {
+ 136   2              rx_overflow = 0;
+ 137   2              uart_send_text("\r\n[RX overflow]\r\n");
+ 138   2          }
+ 139   1      
+ 140   1          EA = 0;  /* 8051 读取 32 位计数需要防止被定时中断打断。 */
+ 141   1          seconds = elapsed_seconds;
+ 142   1          EA = 1;
+ 143   1          if (seconds == last_reported)
+ 144   1              return;
+ 145   1      
+ 146   1          last_reported = seconds;
+ 147   1          uart_send_text("\r\nCount = ");
+ 148   1          uart_send_number(seconds);
+ 149   1          uart_send_text("\r\n");
+ 150   1      }
+ 151          
+ 152          void main(void)
+ 153          {
+ 154   1          app_init();
+ 155   1          while (1)
+ 156   1              app_process();
+ 157   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    478    ----
+   CONSTANT SIZE    =     32    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     43      19
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
