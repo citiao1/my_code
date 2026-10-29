@@ -1,0 +1,1564 @@
+{
+  "status": "failed",
+  "motion_started": true,
+  "selection": "pending",
+  "history": [],
+  "plan": {
+    "loop": "wheel_speed",
+    "initial": [
+      1.2,
+      0.0991
+    ],
+    "bounds": [
+      [
+        0.72,
+        1.68
+      ],
+      [
+        0.0595,
+        0.1387
+      ]
+    ],
+    "validation_targets": [
+      -40.0,
+      30.0
+    ],
+    "method": "bo",
+    "rounds": 1,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R22",
+  "caps": "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40",
+  "controller": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+  "wheel": "A",
+  "all_initial_gains": [
+    1.2,
+    0.0991,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.1008,
+    0.0
+  ],
+  "ram_only": true,
+  "measurement_wheels": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "simultaneous_measurement": true,
+  "form": "incremental",
+  "period_s": 0.01,
+  "ki_unit": "PWM_percent/RPM/update",
+  "kd_step": 0,
+  "scoring_source": "validated_downloaded_WLOG",
+  "training_target": 40,
+  "baseline_seconds": 2.0,
+  "seconds": 7.0,
+  "objective_weights": {
+    "normalized_iae": 1.0,
+    "overshoot": 2.0,
+    "steady_error_rms": 1.0,
+    "normalized_settling": 0.5,
+    "saturation_fraction": 0.1
+  },
+  "profile": "four wheels on ground under normal load; WLOG scores outbound encoder-distance leg; every test returns to origin",
+  "ground_distance_m": 1.0,
+  "required_test_setup": "four_wheels_on_ground_not_lifted",
+  "wheel_aggregation": "worst wheel for score and each metric",
+  "error": "WLOG phase duration/coverage failed",
+  "restored_readback": null,
+  "commands": [
+    {
+      "host_monotonic": 3897.453,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ATEL,74952,0,1,0,0,0,0,-5,0,0,0,0,11633"
+      }
+    },
+    {
+      "host_monotonic": 3897.625,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,12"
+      }
+    },
+    {
+      "host_monotonic": 3897.734,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R22"
+      }
+    },
+    {
+      "host_monotonic": 3897.828,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40"
+      }
+    },
+    {
+      "host_monotonic": 3898.046,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 3898.203,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 3898.296,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "LINK,246,29,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 3898.39,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "STACK,4096,2568,1528,1"
+      }
+    },
+    {
+      "host_monotonic": 3898.484,
+      "command": "SPEEDLIMIT",
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "SPEEDLIMIT,160"
+      }
+    },
+    {
+      "host_monotonic": 3898.562,
+      "command": "YAWGET",
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "host_monotonic": 3898.687,
+      "command": "HEADGET",
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "host_monotonic": 3898.796,
+      "command": "PIDGET",
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "host_monotonic": 3898.953,
+      "command": "HLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "HLOG,STATUS,0,0,1024,0,0"
+      }
+    },
+    {
+      "host_monotonic": 3899.046,
+      "command": "WLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "WLOG,STATUS,0,0,1024,0,0"
+      }
+    },
+    {
+      "host_monotonic": 3899.14,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R22"
+      }
+    },
+    {
+      "host_monotonic": 3899.218,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40"
+      }
+    },
+    {
+      "host_monotonic": 3899.453,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 3899.609,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 3899.703,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "LINK,349,41,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 3899.781,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 20,
+        "ok": true,
+        "reply": "STACK,4096,2568,1528,1"
+      }
+    },
+    {
+      "host_monotonic": 3899.875,
+      "command": "SPEEDLIMIT",
+      "result": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "SPEEDLIMIT,160"
+      }
+    },
+    {
+      "host_monotonic": 3899.968,
+      "command": "YAWGET",
+      "result": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "host_monotonic": 3900.062,
+      "command": "HEADGET",
+      "result": {
+        "type": "result",
+        "id": 23,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "host_monotonic": 3900.171,
+      "command": "PIDGET",
+      "result": {
+        "type": "result",
+        "id": 24,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "host_monotonic": 3900.328,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 25,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 3900.39,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 26,
+        "ok": true,
+        "reply": "ATEL,77832,0,1,0,0,0,0,-6,0,0,0,0,11633"
+      }
+    },
+    {
+      "host_monotonic": 3900.531,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 27,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,15"
+      }
+    },
+    {
+      "host_monotonic": 3900.64,
+      "command": "ENCZERO",
+      "result": {
+        "type": "result",
+        "id": 28,
+        "ok": true,
+        "reply": "ACK,ENCZERO"
+      }
+    },
+    {
+      "host_monotonic": 3900.734,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 29,
+        "ok": true,
+        "reply": "ENC,78161,1,380,0,0,0,0,0,0,0,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 3900.843,
+      "command": "WLOG,CLEAR",
+      "result": {
+        "type": "result",
+        "id": 30,
+        "ok": true,
+        "reply": "WLOG,CLEAR,OK"
+      }
+    },
+    {
+      "host_monotonic": 3900.937,
+      "command": "WLOG,START",
+      "result": {
+        "type": "result",
+        "id": 31,
+        "ok": true,
+        "reply": "WLOG,START,OK"
+      }
+    },
+    {
+      "host_monotonic": 3901.015,
+      "command": "ARM",
+      "result": {
+        "type": "result",
+        "id": 32,
+        "ok": true,
+        "reply": "ACK,ARM,WHEELS_OFF_GROUND"
+      }
+    },
+    {
+      "host_monotonic": 3901.109,
+      "command": "SPEED,1",
+      "result": {
+        "type": "result",
+        "id": 33,
+        "ok": true,
+        "reply": "ACK,SPEED,1"
+      }
+    },
+    {
+      "host_monotonic": 3901.203,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 34,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3901.359,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 35,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3901.515,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 36,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3901.656,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 37,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3901.828,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 38,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3901.953,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 39,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3902.093,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 40,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3902.25,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 41,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3902.39,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 42,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3902.546,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 43,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3902.687,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 44,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3902.843,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 45,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3903.0,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 46,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3903.14,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 47,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3903.203,
+      "command": "DRV,40,0,0",
+      "drive_lease_ms": 4136,
+      "result": {
+        "type": "result",
+        "id": 48,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3907.406,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 49,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3907.531,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 50,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 3907.609,
+      "command": "WLOG,STOP",
+      "result": {
+        "type": "result",
+        "id": 51,
+        "ok": true,
+        "reply": "WLOG,STOP,OK"
+      }
+    },
+    {
+      "host_monotonic": 3907.703,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 52,
+        "ok": true,
+        "reply": "ENC,85136,1,380,-1065,-1068,-1065,-1065,0,0,0,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 3907.812,
+      "command": "ARM",
+      "result": {
+        "type": "result",
+        "id": 53,
+        "ok": true,
+        "reply": "ACK,ARM,WHEELS_OFF_GROUND"
+      }
+    },
+    {
+      "host_monotonic": 3907.937,
+      "command": "SPEED,1",
+      "result": {
+        "type": "result",
+        "id": 54,
+        "ok": true,
+        "reply": "ACK,SPEED,1"
+      }
+    },
+    {
+      "host_monotonic": 3908.015,
+      "command": "DRV,-40,0,0",
+      "drive_lease_ms": 4628,
+      "result": {
+        "type": "result",
+        "id": 55,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 3912.75,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 56,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 3912.906,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 57,
+        "ok": true,
+        "reply": "ENC,90334,1,380,134,135,136,135,0,1,0,0,0,143,0,0"
+      }
+    },
+    {
+      "host_monotonic": 3913.015,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 58,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 3913.078,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 59,
+        "ok": true,
+        "reply": "ATEL,90522,0,1,0,-46,0,0,527,0,0,0,0,11574"
+      }
+    },
+    {
+      "host_monotonic": 3913.218,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 60,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,5"
+      }
+    },
+    {
+      "host_monotonic": 3913.328,
+      "command": "WLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 61,
+        "ok": true,
+        "reply": "WLOG,STATUS,0,655,1024,0,655"
+      }
+    },
+    {
+      "host_monotonic": 3913.484,
+      "command": "WLOG,READ,0,8",
+      "result": {
+        "type": "result",
+        "id": 62,
+        "ok": true,
+        "reply": "WLOG,END,0,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3914.281,
+      "command": "WLOG,READ,8,8",
+      "result": {
+        "type": "result",
+        "id": 63,
+        "ok": true,
+        "reply": "WLOG,END,8,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3915.218,
+      "command": "WLOG,READ,16,8",
+      "result": {
+        "type": "result",
+        "id": 64,
+        "ok": true,
+        "reply": "WLOG,END,16,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3916.171,
+      "command": "WLOG,READ,24,8",
+      "result": {
+        "type": "result",
+        "id": 65,
+        "ok": true,
+        "reply": "WLOG,END,24,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3917.109,
+      "command": "WLOG,READ,32,8",
+      "result": {
+        "type": "result",
+        "id": 66,
+        "ok": true,
+        "reply": "WLOG,END,32,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3918.062,
+      "command": "WLOG,READ,40,8",
+      "result": {
+        "type": "result",
+        "id": 67,
+        "ok": true,
+        "reply": "WLOG,END,40,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3918.984,
+      "command": "WLOG,READ,48,8",
+      "result": {
+        "type": "result",
+        "id": 68,
+        "ok": true,
+        "reply": "WLOG,END,48,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3919.921,
+      "command": "WLOG,READ,56,8",
+      "result": {
+        "type": "result",
+        "id": 69,
+        "ok": true,
+        "reply": "WLOG,END,56,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3920.937,
+      "command": "WLOG,READ,64,8",
+      "result": {
+        "type": "result",
+        "id": 70,
+        "ok": true,
+        "reply": "WLOG,END,64,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3921.859,
+      "command": "WLOG,READ,72,8",
+      "result": {
+        "type": "result",
+        "id": 71,
+        "ok": true,
+        "reply": "WLOG,END,72,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3922.796,
+      "command": "WLOG,READ,80,8",
+      "result": {
+        "type": "result",
+        "id": 72,
+        "ok": true,
+        "reply": "WLOG,END,80,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3923.75,
+      "command": "WLOG,READ,88,8",
+      "result": {
+        "type": "result",
+        "id": 73,
+        "ok": true,
+        "reply": "WLOG,END,88,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3924.687,
+      "command": "WLOG,READ,96,8",
+      "result": {
+        "type": "result",
+        "id": 74,
+        "ok": true,
+        "reply": "WLOG,END,96,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3925.609,
+      "command": "WLOG,READ,104,8",
+      "result": {
+        "type": "result",
+        "id": 75,
+        "ok": true,
+        "reply": "WLOG,END,104,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3926.656,
+      "command": "WLOG,READ,112,8",
+      "result": {
+        "type": "result",
+        "id": 76,
+        "ok": true,
+        "reply": "WLOG,END,112,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3927.593,
+      "command": "WLOG,READ,120,8",
+      "result": {
+        "type": "result",
+        "id": 77,
+        "ok": true,
+        "reply": "WLOG,END,120,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3928.562,
+      "command": "WLOG,READ,128,8",
+      "result": {
+        "type": "result",
+        "id": 78,
+        "ok": true,
+        "reply": "WLOG,END,128,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3929.484,
+      "command": "WLOG,READ,136,8",
+      "result": {
+        "type": "result",
+        "id": 79,
+        "ok": true,
+        "reply": "WLOG,END,136,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3930.453,
+      "command": "WLOG,READ,144,8",
+      "result": {
+        "type": "result",
+        "id": 80,
+        "ok": true,
+        "reply": "WLOG,END,144,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3931.468,
+      "command": "WLOG,READ,152,8",
+      "result": {
+        "type": "result",
+        "id": 81,
+        "ok": true,
+        "reply": "WLOG,END,152,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3932.406,
+      "command": "WLOG,READ,160,8",
+      "result": {
+        "type": "result",
+        "id": 82,
+        "ok": true,
+        "reply": "WLOG,END,160,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3933.359,
+      "command": "WLOG,READ,168,8",
+      "result": {
+        "type": "result",
+        "id": 83,
+        "ok": true,
+        "reply": "WLOG,END,168,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3934.328,
+      "command": "WLOG,READ,176,8",
+      "result": {
+        "type": "result",
+        "id": 84,
+        "ok": true,
+        "reply": "WLOG,END,176,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3935.359,
+      "command": "WLOG,READ,184,8",
+      "result": {
+        "type": "result",
+        "id": 85,
+        "ok": true,
+        "reply": "WLOG,END,184,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3936.296,
+      "command": "WLOG,READ,192,8",
+      "result": {
+        "type": "result",
+        "id": 86,
+        "ok": true,
+        "reply": "WLOG,END,192,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3937.25,
+      "command": "WLOG,READ,200,8",
+      "result": {
+        "type": "result",
+        "id": 87,
+        "ok": true,
+        "reply": "WLOG,END,200,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3938.187,
+      "command": "WLOG,READ,208,8",
+      "result": {
+        "type": "result",
+        "id": 88,
+        "ok": true,
+        "reply": "WLOG,END,208,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3939.14,
+      "command": "WLOG,READ,216,8",
+      "result": {
+        "type": "result",
+        "id": 89,
+        "ok": true,
+        "reply": "WLOG,END,216,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3940.187,
+      "command": "WLOG,READ,224,8",
+      "result": {
+        "type": "result",
+        "id": 90,
+        "ok": true,
+        "reply": "WLOG,END,224,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3941.546,
+      "command": "WLOG,READ,232,8",
+      "result": {
+        "type": "result",
+        "id": 91,
+        "ok": true,
+        "reply": "WLOG,END,232,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3943.078,
+      "command": "WLOG,READ,240,8",
+      "result": {
+        "type": "result",
+        "id": 92,
+        "ok": true,
+        "reply": "WLOG,END,240,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3944.625,
+      "command": "WLOG,READ,248,8",
+      "result": {
+        "type": "result",
+        "id": 93,
+        "ok": true,
+        "reply": "WLOG,END,248,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3946.156,
+      "command": "WLOG,READ,256,8",
+      "result": {
+        "type": "result",
+        "id": 94,
+        "ok": true,
+        "reply": "WLOG,END,256,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3947.671,
+      "command": "WLOG,READ,264,8",
+      "result": {
+        "type": "result",
+        "id": 95,
+        "ok": true,
+        "reply": "WLOG,END,264,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3949.187,
+      "command": "WLOG,READ,272,8",
+      "result": {
+        "type": "result",
+        "id": 96,
+        "ok": true,
+        "reply": "WLOG,END,272,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3950.718,
+      "command": "WLOG,READ,280,8",
+      "result": {
+        "type": "result",
+        "id": 97,
+        "ok": true,
+        "reply": "WLOG,END,280,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3952.25,
+      "command": "WLOG,READ,288,8",
+      "result": {
+        "type": "result",
+        "id": 98,
+        "ok": true,
+        "reply": "WLOG,END,288,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3953.781,
+      "command": "WLOG,READ,296,8",
+      "result": {
+        "type": "result",
+        "id": 99,
+        "ok": true,
+        "reply": "WLOG,END,296,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3955.296,
+      "command": "WLOG,READ,304,8",
+      "result": {
+        "type": "result",
+        "id": 100,
+        "ok": true,
+        "reply": "WLOG,END,304,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3956.828,
+      "command": "WLOG,READ,312,8",
+      "result": {
+        "type": "result",
+        "id": 101,
+        "ok": true,
+        "reply": "WLOG,END,312,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3958.421,
+      "command": "WLOG,READ,320,8",
+      "result": {
+        "type": "result",
+        "id": 102,
+        "ok": true,
+        "reply": "WLOG,END,320,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3960.0,
+      "command": "WLOG,READ,328,8",
+      "result": {
+        "type": "result",
+        "id": 103,
+        "ok": true,
+        "reply": "WLOG,END,328,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3961.5,
+      "command": "WLOG,READ,336,8",
+      "result": {
+        "type": "result",
+        "id": 104,
+        "ok": true,
+        "reply": "WLOG,END,336,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3963.015,
+      "command": "WLOG,READ,344,8",
+      "result": {
+        "type": "result",
+        "id": 105,
+        "ok": true,
+        "reply": "WLOG,END,344,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3964.562,
+      "command": "WLOG,READ,352,8",
+      "result": {
+        "type": "result",
+        "id": 106,
+        "ok": true,
+        "reply": "WLOG,END,352,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3966.109,
+      "command": "WLOG,READ,360,8",
+      "result": {
+        "type": "result",
+        "id": 107,
+        "ok": true,
+        "reply": "WLOG,END,360,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3967.718,
+      "command": "WLOG,READ,368,8",
+      "result": {
+        "type": "result",
+        "id": 108,
+        "ok": true,
+        "reply": "WLOG,END,368,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3969.265,
+      "command": "WLOG,READ,376,8",
+      "result": {
+        "type": "result",
+        "id": 109,
+        "ok": true,
+        "reply": "WLOG,END,376,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3970.812,
+      "command": "WLOG,READ,384,8",
+      "result": {
+        "type": "result",
+        "id": 110,
+        "ok": true,
+        "reply": "WLOG,END,384,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3972.296,
+      "command": "WLOG,READ,392,8",
+      "result": {
+        "type": "result",
+        "id": 111,
+        "ok": true,
+        "reply": "WLOG,END,392,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3973.859,
+      "command": "WLOG,READ,400,8",
+      "result": {
+        "type": "result",
+        "id": 112,
+        "ok": true,
+        "reply": "WLOG,END,400,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3975.39,
+      "command": "WLOG,READ,408,8",
+      "result": {
+        "type": "result",
+        "id": 113,
+        "ok": true,
+        "reply": "WLOG,END,408,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3976.89,
+      "command": "WLOG,READ,416,8",
+      "result": {
+        "type": "result",
+        "id": 114,
+        "ok": true,
+        "reply": "WLOG,END,416,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3978.437,
+      "command": "WLOG,READ,424,8",
+      "result": {
+        "type": "result",
+        "id": 115,
+        "ok": true,
+        "reply": "WLOG,END,424,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3980.046,
+      "command": "WLOG,READ,432,8",
+      "result": {
+        "type": "result",
+        "id": 116,
+        "ok": true,
+        "reply": "WLOG,END,432,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3981.593,
+      "command": "WLOG,READ,440,8",
+      "result": {
+        "type": "result",
+        "id": 117,
+        "ok": true,
+        "reply": "WLOG,END,440,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3983.109,
+      "command": "WLOG,READ,448,8",
+      "result": {
+        "type": "result",
+        "id": 118,
+        "ok": true,
+        "reply": "WLOG,END,448,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3984.625,
+      "command": "WLOG,READ,456,8",
+      "result": {
+        "type": "result",
+        "id": 119,
+        "ok": true,
+        "reply": "WLOG,END,456,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3986.187,
+      "command": "WLOG,READ,464,8",
+      "result": {
+        "type": "result",
+        "id": 120,
+        "ok": true,
+        "reply": "WLOG,END,464,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3987.687,
+      "command": "WLOG,READ,472,8",
+      "result": {
+        "type": "result",
+        "id": 121,
+        "ok": true,
+        "reply": "WLOG,END,472,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3989.25,
+      "command": "WLOG,READ,480,8",
+      "result": {
+        "type": "result",
+        "id": 122,
+        "ok": true,
+        "reply": "WLOG,END,480,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3990.843,
+      "command": "WLOG,READ,488,8",
+      "result": {
+        "type": "result",
+        "id": 123,
+        "ok": true,
+        "reply": "WLOG,END,488,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3992.39,
+      "command": "WLOG,READ,496,8",
+      "result": {
+        "type": "result",
+        "id": 124,
+        "ok": true,
+        "reply": "WLOG,END,496,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3993.921,
+      "command": "WLOG,READ,504,8",
+      "result": {
+        "type": "result",
+        "id": 125,
+        "ok": true,
+        "reply": "WLOG,END,504,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3995.453,
+      "command": "WLOG,READ,512,8",
+      "result": {
+        "type": "result",
+        "id": 126,
+        "ok": true,
+        "reply": "WLOG,END,512,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3997.0,
+      "command": "WLOG,READ,520,8",
+      "result": {
+        "type": "result",
+        "id": 127,
+        "ok": true,
+        "reply": "WLOG,END,520,8,655"
+      }
+    },
+    {
+      "host_monotonic": 3998.531,
+      "command": "WLOG,READ,528,8",
+      "result": {
+        "type": "result",
+        "id": 128,
+        "ok": true,
+        "reply": "WLOG,END,528,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4000.156,
+      "command": "WLOG,READ,536,8",
+      "result": {
+        "type": "result",
+        "id": 129,
+        "ok": true,
+        "reply": "WLOG,END,536,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4001.703,
+      "command": "WLOG,READ,544,8",
+      "result": {
+        "type": "result",
+        "id": 130,
+        "ok": true,
+        "reply": "WLOG,END,544,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4003.218,
+      "command": "WLOG,READ,552,8",
+      "result": {
+        "type": "result",
+        "id": 131,
+        "ok": true,
+        "reply": "WLOG,END,552,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4004.765,
+      "command": "WLOG,READ,560,8",
+      "result": {
+        "type": "result",
+        "id": 132,
+        "ok": true,
+        "reply": "WLOG,END,560,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4006.296,
+      "command": "WLOG,READ,568,8",
+      "result": {
+        "type": "result",
+        "id": 133,
+        "ok": true,
+        "reply": "WLOG,END,568,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4007.828,
+      "command": "WLOG,READ,576,8",
+      "result": {
+        "type": "result",
+        "id": 134,
+        "ok": true,
+        "reply": "WLOG,END,576,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4009.421,
+      "command": "WLOG,READ,584,8",
+      "result": {
+        "type": "result",
+        "id": 135,
+        "ok": true,
+        "reply": "WLOG,END,584,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4010.984,
+      "command": "WLOG,READ,592,8",
+      "result": {
+        "type": "result",
+        "id": 136,
+        "ok": true,
+        "reply": "WLOG,END,592,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4012.515,
+      "command": "WLOG,READ,600,8",
+      "result": {
+        "type": "result",
+        "id": 137,
+        "ok": true,
+        "reply": "WLOG,END,600,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4014.062,
+      "command": "WLOG,READ,608,8",
+      "result": {
+        "type": "result",
+        "id": 138,
+        "ok": true,
+        "reply": "WLOG,END,608,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4015.593,
+      "command": "WLOG,READ,616,8",
+      "result": {
+        "type": "result",
+        "id": 139,
+        "ok": true,
+        "reply": "WLOG,END,616,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4017.125,
+      "command": "WLOG,READ,624,8",
+      "result": {
+        "type": "result",
+        "id": 140,
+        "ok": true,
+        "reply": "WLOG,END,624,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4018.734,
+      "command": "WLOG,READ,632,8",
+      "result": {
+        "type": "result",
+        "id": 141,
+        "ok": true,
+        "reply": "WLOG,END,632,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4020.062,
+      "command": "WLOG,READ,640,8",
+      "result": {
+        "type": "result",
+        "id": 142,
+        "ok": true,
+        "reply": "WLOG,END,640,8,655"
+      }
+    },
+    {
+      "host_monotonic": 4021.187,
+      "command": "WLOG,READ,648,7",
+      "result": {
+        "type": "result",
+        "id": 143,
+        "ok": true,
+        "reply": "WLOG,END,648,7,655"
+      }
+    },
+    {
+      "host_monotonic": 4022.109,
+      "command": "WLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 144,
+        "ok": true,
+        "reply": "WLOG,STATUS,0,655,1024,0,655"
+      }
+    },
+    {
+      "host_monotonic": 4022.39,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 145,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 4022.453,
+      "command": "WLOG,STOP",
+      "result": {
+        "type": "result",
+        "id": 146,
+        "ok": true,
+        "reply": "WLOG,STOP,OK"
+      }
+    },
+    {
+      "host_monotonic": 4022.546,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 147,
+        "ok": true,
+        "reply": "ATEL,199988,0,1,0,0,0,0,611,0,0,0,0,11617"
+      }
+    },
+    {
+      "host_monotonic": 4022.703,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 148,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,13"
+      }
+    }
+  ]
+}

@@ -30,6 +30,7 @@ typedef struct
   volatile uint8_t tx_head;
   volatile uint8_t tx_tail;
   volatile uint8_t tx_busy;
+  volatile uint8_t tx_fault;
   volatile uint8_t ready;
 } SerialPortState;
 
@@ -37,6 +38,8 @@ static SerialPortState serial_port;
 static SerialLineCallback line_callback;
 static volatile SerialDmaSnapshot serial_stats;
 static volatile SerialUartSnapshot uart_stats;
+static uint32_t last_command_tick, telemetry_skipped;
+static uint8_t command_seen;
 
 static uint8_t SerialDma_StartRx(void)
 {
@@ -59,6 +62,10 @@ static void SerialDma_PushRx(const uint8_t *data, uint16_t length)
 {
   uint16_t index;
   uint16_t next;
+
+  /* Once bytes are lost, quarantine the entire buffered stream. The main
+   * loop will discard it atomically and resync at a NEW delimiter. */
+  if (serial_port.rx_overflow || serial_port.rx_fault) return;
 
   for (index = 0U; index < length; ++index)
   {
@@ -110,6 +117,8 @@ static void SerialDma_ProcessByte(uint8_t byte)
     if (line_callback != NULL)
     {
       ++serial_stats.rx_lines;
+      last_command_tick = HAL_GetTick();
+      command_seen = 1U;
       line_callback(serial_port.rx_line);
     }
     serial_port.rx_line_length = 0U;
@@ -166,6 +175,8 @@ uint8_t SerialDma_Init(SerialLineCallback callback)
   uart_stats.framing_errors = 0U;
   uart_stats.overrun_errors = 0U;
   uart_stats.dma_errors = 0U;
+  last_command_tick = telemetry_skipped = 0U;
+  command_seen = 0U;
   line_callback = callback;
   return SerialDma_StartRx();
 }
@@ -174,6 +185,20 @@ void SerialDma_Process(void)
 {
   uint8_t byte;
 
+  if (serial_port.tx_fault)
+  {
+    /* HAL's UART_DMAError ends TX without TxCpltCallback. Release software
+     * ownership only after aborting DMA, and never replay a partial/stale ACK. */
+    if (HAL_UART_AbortTransmit(&huart2) != HAL_OK) return;
+    while (serial_port.tx_tail != serial_port.tx_head)
+    {
+      serial_port.tx_tail = (uint8_t)((serial_port.tx_tail + 1U) % SERIAL_TX_QUEUE_DEPTH);
+      ++serial_stats.tx_dropped;
+    }
+    serial_port.tx_busy = 0U;
+    serial_port.tx_fault = 0U;
+    /* Recovery below restarts RX and restores ready before queuing replies. */
+  }
   if (serial_port.rx_restart_needed != 0U)
   {
     (void)HAL_UART_AbortReceive(&huart2);
@@ -189,17 +214,24 @@ void SerialDma_Process(void)
     if ((serial_port.ready != 0U) && (serial_port.rx_fault != 0U))
     {
       serial_port.rx_fault = 0U;
-      (void)SerialDma_Write("ERR,UART_RX,QUERY_UART\r\n");
+      /* Leading LF terminates any partial response left on the peer. */
+      (void)SerialDma_Write((uart_stats.last_error & HAL_UART_ERROR_DMA) ?
+          "\nERR,UART_TX_RX,QUERY_UART\r\n" : "ERR,UART_RX,QUERY_UART\r\n");
     }
   }
   if (serial_port.rx_overflow != 0U)
   {
+    uint32_t primask = __get_PRIMASK();
+    __disable_irq();
+    serial_port.rx_tail = serial_port.rx_head;
     serial_port.rx_line_length = 0U;
     serial_port.rx_discard_line = 1U;
     serial_port.rx_overflow = 0U;
+    __set_PRIMASK(primask);
     (void)SerialDma_Write("ERR,RX_OVERFLOW\r\n");
   }
-  while (serial_port.rx_tail != serial_port.rx_head)
+  while (serial_port.rx_tail != serial_port.rx_head &&
+         !serial_port.rx_overflow && !serial_port.rx_fault)
   {
     byte = serial_port.rx_ring[serial_port.rx_tail];
     serial_port.rx_tail = (uint16_t)((serial_port.rx_tail + 1U) &
@@ -224,6 +256,40 @@ uint8_t SerialDma_Write(const char *text)
     return 0U;
   }
   return SerialDma_QueueWrite(text, length);
+}
+
+uint8_t SerialDma_CanWriteTelemetry(void)
+{
+  return serial_port.ready &&
+      (!command_seen || HAL_GetTick() - last_command_tick >= 80U) &&
+      serial_port.tx_head == serial_port.tx_tail;
+}
+
+uint8_t SerialDma_WriteTelemetry(const char *text)
+{
+  /* A query/target/heartbeat owns the UART first. Keep at most one periodic
+   * frame in flight; obsolete live readings are skipped, never replayed. */
+  if (!SerialDma_CanWriteTelemetry())
+  {
+    ++telemetry_skipped;
+    return 0U;
+  }
+  return SerialDma_Write(text);
+}
+
+SerialTxSnapshot SerialDma_GetTxSnapshot(void)
+{
+  SerialTxSnapshot snapshot = {0U, 0U, telemetry_skipped,
+      command_seen ? HAL_GetTick() - last_command_tick : 0xFFFFFFFFU};
+  uint8_t index = serial_port.tx_tail;
+  uint8_t head = serial_port.tx_head;
+  while (index != head)
+  {
+    ++snapshot.pending_frames;
+    snapshot.pending_bytes = (uint16_t)(snapshot.pending_bytes + serial_port.tx_length[index]);
+    index = (uint8_t)((index + 1U) % SERIAL_TX_QUEUE_DEPTH);
+  }
+  return snapshot;
 }
 
 uint8_t SerialDma_IsReady(void)
@@ -287,7 +353,11 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     if ((huart->ErrorCode & HAL_UART_ERROR_NE) != 0U) ++uart_stats.noise_errors;
     if ((huart->ErrorCode & HAL_UART_ERROR_FE) != 0U) ++uart_stats.framing_errors;
     if ((huart->ErrorCode & HAL_UART_ERROR_ORE) != 0U) ++uart_stats.overrun_errors;
-    if ((huart->ErrorCode & HAL_UART_ERROR_DMA) != 0U) ++uart_stats.dma_errors;
+    if ((huart->ErrorCode & HAL_UART_ERROR_DMA) != 0U)
+    {
+      ++uart_stats.dma_errors;
+      serial_port.tx_fault = 1U;
+    }
     serial_port.rx_fault = 1U;
     serial_port.rx_restart_needed = 1U;
     serial_port.ready = 0U;

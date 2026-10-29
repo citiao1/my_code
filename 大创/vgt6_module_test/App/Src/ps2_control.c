@@ -9,6 +9,8 @@
 #include "ps2.h"
 #include "speed_control.h"
 #include "stm32f4xx_hal.h"
+#include "gyro.h"
+#include "tof_follow.h"
 
 #define PS2_CONTROL_DEADZONE 18
 #define PS2_CONTROL_TIMEOUT_MS 180U
@@ -17,6 +19,7 @@
 
 static Ps2ControlSnapshot control_state;
 static uint8_t last_start;
+static uint8_t last_l1;
 static uint8_t turn_active;
 
 static int16_t Ps2_MapAxis(uint8_t raw)
@@ -97,10 +100,13 @@ void Ps2Control_Init(void)
   control_state.speed_rpm = 30U;
   last_start = 0U;
   turn_active = 0U;
+  last_l1 = 0U;
+  TofFollow_Init();
 }
 
 void Ps2Control_Stop(void)
 {
+  TofFollow_Stop(TOF_FOLLOW_CANCELLED);
   ChassisTest_Stop();
   control_state.enabled = 0U;
   control_state.forward_rpm = 0;
@@ -115,12 +121,66 @@ uint8_t Ps2Control_IsActive(void)
   return control_state.enabled;
 }
 
+static uint8_t Ps2_ProcessFollow(const Ps2Snapshot *ps2,
+                                  uint8_t l1_edge, uint8_t r1_pressed)
+{
+  uint8_t centered = Ps2_IsCentered(ps2) &&
+      abs((int)ps2->right_y - 128) <= PS2_CONTROL_DEADZONE;
+  TofSnapshot range;
+  TofFollowSnapshot follow;
+  GyroSnapshot gyro;
+  follow = TofFollow_GetSnapshot();
+  if (follow.mode && (r1_pressed || !centered))
+  {
+    TofFollow_Stop(TOF_FOLLOW_CANCELLED);
+    AttitudeControl_Stop();
+    (void)SpeedControl_SetDrive(0, 0, 0);
+  }
+  /* L1 cannot arm the vehicle. R1 and manual input always win, including
+   * simultaneous buttons. A held L1 cannot restart after any stop. */
+  if (l1_edge && !r1_pressed && centered)
+  {
+    range = Tof_GetSnapshot();
+    gyro = Gyro_GetSnapshot();
+    if (TofFollow_Start(&range, gyro.yaw_deg, HAL_GetTick()))
+    {
+      AttitudeControl_Stop();
+      (void)SpeedControl_SetDrive(0, 0, 0);
+    }
+  }
+  if (TofFollow_GetSnapshot().mode)
+  {
+    range = Tof_GetSnapshot();
+    gyro = Gyro_GetSnapshot();
+    TofFollow_Process(&range, gyro.yaw_deg, gyro.rate_dps, HAL_GetTick());
+    follow = TofFollow_GetSnapshot();
+    if (!follow.mode)
+    {
+      TofFollowReason reason = follow.reason;
+      Ps2Control_Stop();
+      TofFollow_Stop(reason); /* Keep the diagnostic reason after locking. */
+      return 1U;
+    }
+    control_state.forward_rpm = follow.forward_rpm;
+    control_state.left_rpm = 0;
+    control_state.speed_rpm = TOF_FOLLOW_MAX_RPM;
+    control_state.rotate_rpm = (int16_t)lroundf(
+        follow.turn_dps * (float)TOF_FOLLOW_MAX_RPM / ATTITUDE_RATE_LIMIT_DPS);
+    if (!AttitudeControl_SetManualDrive(follow.turn_dps, follow.forward_rpm, 0))
+      Ps2Control_Stop();
+    return 1U;
+  }
+
+  return 0U;
+}
+
 void Ps2Control_Process(void)
 {
   Ps2Snapshot ps2 = Ps2_GetSnapshot();
   uint8_t start_pressed;
   uint8_t select_pressed;
   uint8_t start_edge;
+  uint8_t l1_pressed, l1_edge, r1_pressed;
   int16_t forward;
   int16_t left;
   int16_t rotate;
@@ -130,6 +190,7 @@ void Ps2Control_Process(void)
       ((HAL_GetTick() - ps2.last_tick) > PS2_CONTROL_TIMEOUT_MS))
   {
     last_start = 1U; /* Require a fresh release/press after reconnect. */
+    last_l1 = 1U;
     if (control_state.enabled != 0U)
     {
       Ps2Control_Stop();
@@ -141,6 +202,10 @@ void Ps2Control_Process(void)
   select_pressed = (ps2.buttons & PS2_BUTTON_SELECT) != 0U;
   start_edge = start_pressed && !last_start;
   last_start = start_pressed;
+  l1_pressed = (ps2.buttons & PS2_BUTTON_L1) != 0U;
+  r1_pressed = (ps2.buttons & PS2_BUTTON_R1) != 0U;
+  l1_edge = l1_pressed && !last_l1;
+  last_l1 = l1_pressed;
   /* SELECT always wins, including when both buttons are held. */
   if (select_pressed != 0U)
   {
@@ -170,6 +235,8 @@ void Ps2Control_Process(void)
     Ps2Control_Stop();
     return;
   }
+
+  if (Ps2_ProcessFollow(&ps2, l1_edge && !start_edge, r1_pressed)) return;
 
   control_state.speed_rpm = Ps2_SelectedSpeed(&ps2);
   Ps2_MapTranslation(&ps2, &forward, &left);

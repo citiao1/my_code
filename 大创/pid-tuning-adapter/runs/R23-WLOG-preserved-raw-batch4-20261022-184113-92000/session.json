@@ -1,0 +1,3689 @@
+{
+  "bridge_status": "STATUS,1,ble connected",
+  "wlog_status_before": "WLOG,STATUS,0,836,1024,0,836",
+  "wlog_status_after": "WLOG,STATUS,0,836,1024,0,836",
+  "expected_records": 836,
+  "unique_sequences": 836,
+  "missing_sequences": [],
+  "field_count_distribution": {
+    "30": 836
+  },
+  "attempts": [
+    {
+      "offset": 0,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,0,4,836",
+      "sequences": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "field_counts": {
+        "0": [
+          30
+        ],
+        "1": [
+          30
+        ],
+        "2": [
+          30
+        ],
+        "3": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 4,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,4,4,836",
+      "sequences": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "field_counts": {
+        "4": [
+          30
+        ],
+        "5": [
+          30
+        ],
+        "6": [
+          30
+        ],
+        "7": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 8,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,8,4,836",
+      "sequences": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "field_counts": {
+        "8": [
+          30
+        ],
+        "9": [
+          30
+        ],
+        "10": [
+          30
+        ],
+        "11": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 12,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,12,4,836",
+      "sequences": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "field_counts": {
+        "12": [
+          30
+        ],
+        "13": [
+          30
+        ],
+        "14": [
+          30
+        ],
+        "15": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 16,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,16,4,836",
+      "sequences": [
+        16,
+        17,
+        18,
+        19
+      ],
+      "field_counts": {
+        "16": [
+          30
+        ],
+        "17": [
+          30
+        ],
+        "18": [
+          30
+        ],
+        "19": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 20,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,20,4,836",
+      "sequences": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "field_counts": {
+        "20": [
+          30
+        ],
+        "21": [
+          30
+        ],
+        "22": [
+          30
+        ],
+        "23": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 24,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,24,4,836",
+      "sequences": [
+        24,
+        25,
+        26,
+        27
+      ],
+      "field_counts": {
+        "24": [
+          30
+        ],
+        "25": [
+          30
+        ],
+        "26": [
+          30
+        ],
+        "27": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 28,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,28,4,836",
+      "sequences": [
+        28,
+        29,
+        30,
+        31
+      ],
+      "field_counts": {
+        "28": [
+          30
+        ],
+        "29": [
+          30
+        ],
+        "30": [
+          30
+        ],
+        "31": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 32,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,32,4,836",
+      "sequences": [
+        32,
+        33,
+        34,
+        35
+      ],
+      "field_counts": {
+        "32": [
+          30
+        ],
+        "33": [
+          30
+        ],
+        "34": [
+          30
+        ],
+        "35": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 36,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,36,4,836",
+      "sequences": [
+        36,
+        37,
+        38,
+        39
+      ],
+      "field_counts": {
+        "36": [
+          30
+        ],
+        "37": [
+          30
+        ],
+        "38": [
+          30
+        ],
+        "39": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 40,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,40,4,836",
+      "sequences": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "field_counts": {
+        "40": [
+          30
+        ],
+        "41": [
+          30
+        ],
+        "42": [
+          30
+        ],
+        "43": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 44,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,44,4,836",
+      "sequences": [
+        44,
+        45,
+        46,
+        47
+      ],
+      "field_counts": {
+        "44": [
+          30
+        ],
+        "45": [
+          30
+        ],
+        "46": [
+          30
+        ],
+        "47": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 48,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,48,4,836",
+      "sequences": [
+        48,
+        49,
+        50,
+        51
+      ],
+      "field_counts": {
+        "48": [
+          30
+        ],
+        "49": [
+          30
+        ],
+        "50": [
+          30
+        ],
+        "51": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 52,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,52,4,836",
+      "sequences": [
+        52,
+        53,
+        54,
+        55
+      ],
+      "field_counts": {
+        "52": [
+          30
+        ],
+        "53": [
+          30
+        ],
+        "54": [
+          30
+        ],
+        "55": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 56,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,56,4,836",
+      "sequences": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "field_counts": {
+        "56": [
+          30
+        ],
+        "57": [
+          30
+        ],
+        "58": [
+          30
+        ],
+        "59": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 60,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,60,4,836",
+      "sequences": [
+        60,
+        61,
+        62,
+        63
+      ],
+      "field_counts": {
+        "60": [
+          30
+        ],
+        "61": [
+          30
+        ],
+        "62": [
+          30
+        ],
+        "63": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 64,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,64,4,836",
+      "sequences": [
+        64,
+        65,
+        66,
+        67
+      ],
+      "field_counts": {
+        "64": [
+          30
+        ],
+        "65": [
+          30
+        ],
+        "66": [
+          30
+        ],
+        "67": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 68,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,68,4,836",
+      "sequences": [
+        68,
+        69,
+        70,
+        71
+      ],
+      "field_counts": {
+        "68": [
+          30
+        ],
+        "69": [
+          30
+        ],
+        "70": [
+          30
+        ],
+        "71": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 72,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,72,4,836",
+      "sequences": [
+        72,
+        73,
+        74,
+        75
+      ],
+      "field_counts": {
+        "72": [
+          30
+        ],
+        "73": [
+          30
+        ],
+        "74": [
+          30
+        ],
+        "75": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 76,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,76,4,836",
+      "sequences": [
+        76,
+        77,
+        78,
+        79
+      ],
+      "field_counts": {
+        "76": [
+          30
+        ],
+        "77": [
+          30
+        ],
+        "78": [
+          30
+        ],
+        "79": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 80,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,80,4,836",
+      "sequences": [
+        80,
+        81,
+        82,
+        83
+      ],
+      "field_counts": {
+        "80": [
+          30
+        ],
+        "81": [
+          30
+        ],
+        "82": [
+          30
+        ],
+        "83": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 84,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,84,4,836",
+      "sequences": [
+        84,
+        85,
+        86,
+        87
+      ],
+      "field_counts": {
+        "84": [
+          30
+        ],
+        "85": [
+          30
+        ],
+        "86": [
+          30
+        ],
+        "87": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 88,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,88,4,836",
+      "sequences": [
+        88,
+        89,
+        90,
+        91
+      ],
+      "field_counts": {
+        "88": [
+          30
+        ],
+        "89": [
+          30
+        ],
+        "90": [
+          30
+        ],
+        "91": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 92,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,92,4,836",
+      "sequences": [
+        92,
+        93,
+        94,
+        95
+      ],
+      "field_counts": {
+        "92": [
+          30
+        ],
+        "93": [
+          30
+        ],
+        "94": [
+          30
+        ],
+        "95": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 96,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,96,4,836",
+      "sequences": [
+        96,
+        97,
+        98,
+        99
+      ],
+      "field_counts": {
+        "96": [
+          30
+        ],
+        "97": [
+          30
+        ],
+        "98": [
+          30
+        ],
+        "99": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 100,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,100,4,836",
+      "sequences": [
+        100,
+        101,
+        102,
+        103
+      ],
+      "field_counts": {
+        "100": [
+          30
+        ],
+        "101": [
+          30
+        ],
+        "102": [
+          30
+        ],
+        "103": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 104,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,104,4,836",
+      "sequences": [
+        104,
+        105,
+        106,
+        107
+      ],
+      "field_counts": {
+        "104": [
+          30
+        ],
+        "105": [
+          30
+        ],
+        "106": [
+          30
+        ],
+        "107": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 108,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,108,4,836",
+      "sequences": [
+        108,
+        109,
+        110,
+        111
+      ],
+      "field_counts": {
+        "108": [
+          30
+        ],
+        "109": [
+          30
+        ],
+        "110": [
+          30
+        ],
+        "111": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 112,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,112,4,836",
+      "sequences": [
+        112,
+        113,
+        114,
+        115
+      ],
+      "field_counts": {
+        "112": [
+          30
+        ],
+        "113": [
+          30
+        ],
+        "114": [
+          30
+        ],
+        "115": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 116,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,116,4,836",
+      "sequences": [
+        116,
+        117,
+        118,
+        119
+      ],
+      "field_counts": {
+        "116": [
+          30
+        ],
+        "117": [
+          30
+        ],
+        "118": [
+          30
+        ],
+        "119": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 120,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,120,4,836",
+      "sequences": [
+        120,
+        121,
+        122,
+        123
+      ],
+      "field_counts": {
+        "120": [
+          30
+        ],
+        "121": [
+          30
+        ],
+        "122": [
+          30
+        ],
+        "123": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 124,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,124,4,836",
+      "sequences": [
+        124,
+        125,
+        126,
+        127
+      ],
+      "field_counts": {
+        "124": [
+          30
+        ],
+        "125": [
+          30
+        ],
+        "126": [
+          30
+        ],
+        "127": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 128,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,128,4,836",
+      "sequences": [
+        128,
+        129,
+        130,
+        131
+      ],
+      "field_counts": {
+        "128": [
+          30
+        ],
+        "129": [
+          30
+        ],
+        "130": [
+          30
+        ],
+        "131": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 132,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,132,4,836",
+      "sequences": [
+        132,
+        133,
+        134,
+        135
+      ],
+      "field_counts": {
+        "132": [
+          30
+        ],
+        "133": [
+          30
+        ],
+        "134": [
+          30
+        ],
+        "135": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 136,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,136,4,836",
+      "sequences": [
+        136,
+        137,
+        138,
+        139
+      ],
+      "field_counts": {
+        "136": [
+          30
+        ],
+        "137": [
+          30
+        ],
+        "138": [
+          30
+        ],
+        "139": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 140,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,140,4,836",
+      "sequences": [
+        140,
+        141,
+        142,
+        143
+      ],
+      "field_counts": {
+        "140": [
+          30
+        ],
+        "141": [
+          30
+        ],
+        "142": [
+          30
+        ],
+        "143": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 144,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,144,4,836",
+      "sequences": [
+        144,
+        145,
+        146,
+        147
+      ],
+      "field_counts": {
+        "144": [
+          30
+        ],
+        "145": [
+          30
+        ],
+        "146": [
+          30
+        ],
+        "147": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 148,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,148,4,836",
+      "sequences": [
+        148,
+        149,
+        150,
+        151
+      ],
+      "field_counts": {
+        "148": [
+          30
+        ],
+        "149": [
+          30
+        ],
+        "150": [
+          30
+        ],
+        "151": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 152,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,152,4,836",
+      "sequences": [
+        152,
+        153,
+        154,
+        155
+      ],
+      "field_counts": {
+        "152": [
+          30
+        ],
+        "153": [
+          30
+        ],
+        "154": [
+          30
+        ],
+        "155": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 156,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,156,4,836",
+      "sequences": [
+        156,
+        157,
+        158,
+        159
+      ],
+      "field_counts": {
+        "156": [
+          30
+        ],
+        "157": [
+          30
+        ],
+        "158": [
+          30
+        ],
+        "159": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 160,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,160,4,836",
+      "sequences": [
+        160,
+        161,
+        162,
+        163
+      ],
+      "field_counts": {
+        "160": [
+          30
+        ],
+        "161": [
+          30
+        ],
+        "162": [
+          30
+        ],
+        "163": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 164,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,164,4,836",
+      "sequences": [
+        164,
+        165,
+        166,
+        167
+      ],
+      "field_counts": {
+        "164": [
+          30
+        ],
+        "165": [
+          30
+        ],
+        "166": [
+          30
+        ],
+        "167": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 168,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,168,4,836",
+      "sequences": [
+        168,
+        169,
+        170,
+        171
+      ],
+      "field_counts": {
+        "168": [
+          30
+        ],
+        "169": [
+          30
+        ],
+        "170": [
+          30
+        ],
+        "171": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 172,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,172,4,836",
+      "sequences": [
+        172,
+        173,
+        174,
+        175
+      ],
+      "field_counts": {
+        "172": [
+          30
+        ],
+        "173": [
+          30
+        ],
+        "174": [
+          30
+        ],
+        "175": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 176,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,176,4,836",
+      "sequences": [
+        176,
+        177,
+        178,
+        179
+      ],
+      "field_counts": {
+        "176": [
+          30
+        ],
+        "177": [
+          30
+        ],
+        "178": [
+          30
+        ],
+        "179": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 180,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,180,4,836",
+      "sequences": [
+        180,
+        181,
+        182,
+        183
+      ],
+      "field_counts": {
+        "180": [
+          30
+        ],
+        "181": [
+          30
+        ],
+        "182": [
+          30
+        ],
+        "183": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 184,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,184,4,836",
+      "sequences": [
+        184,
+        185,
+        186,
+        187
+      ],
+      "field_counts": {
+        "184": [
+          30
+        ],
+        "185": [
+          30
+        ],
+        "186": [
+          30
+        ],
+        "187": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 188,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,188,4,836",
+      "sequences": [
+        188,
+        189,
+        190,
+        191
+      ],
+      "field_counts": {
+        "188": [
+          30
+        ],
+        "189": [
+          30
+        ],
+        "190": [
+          30
+        ],
+        "191": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 192,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,192,4,836",
+      "sequences": [
+        192,
+        193,
+        194,
+        195
+      ],
+      "field_counts": {
+        "192": [
+          30
+        ],
+        "193": [
+          30
+        ],
+        "194": [
+          30
+        ],
+        "195": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 196,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,196,4,836",
+      "sequences": [
+        196,
+        197,
+        198,
+        199
+      ],
+      "field_counts": {
+        "196": [
+          30
+        ],
+        "197": [
+          30
+        ],
+        "198": [
+          30
+        ],
+        "199": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 200,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,200,4,836",
+      "sequences": [
+        200,
+        201,
+        202,
+        203
+      ],
+      "field_counts": {
+        "200": [
+          30
+        ],
+        "201": [
+          30
+        ],
+        "202": [
+          30
+        ],
+        "203": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 204,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,204,4,836",
+      "sequences": [
+        204,
+        205,
+        206,
+        207
+      ],
+      "field_counts": {
+        "204": [
+          30
+        ],
+        "205": [
+          30
+        ],
+        "206": [
+          30
+        ],
+        "207": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 208,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,208,4,836",
+      "sequences": [
+        208,
+        209,
+        210,
+        211
+      ],
+      "field_counts": {
+        "208": [
+          30
+        ],
+        "209": [
+          30
+        ],
+        "210": [
+          30
+        ],
+        "211": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 212,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,212,4,836",
+      "sequences": [
+        212,
+        213,
+        214,
+        215
+      ],
+      "field_counts": {
+        "212": [
+          30
+        ],
+        "213": [
+          30
+        ],
+        "214": [
+          30
+        ],
+        "215": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 216,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,216,4,836",
+      "sequences": [
+        216,
+        217,
+        218,
+        219
+      ],
+      "field_counts": {
+        "216": [
+          30
+        ],
+        "217": [
+          30
+        ],
+        "218": [
+          30
+        ],
+        "219": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 220,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,220,4,836",
+      "sequences": [
+        220,
+        221,
+        222,
+        223
+      ],
+      "field_counts": {
+        "220": [
+          30
+        ],
+        "221": [
+          30
+        ],
+        "222": [
+          30
+        ],
+        "223": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 224,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,224,4,836",
+      "sequences": [
+        224,
+        225,
+        226,
+        227
+      ],
+      "field_counts": {
+        "224": [
+          30
+        ],
+        "225": [
+          30
+        ],
+        "226": [
+          30
+        ],
+        "227": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 228,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,228,4,836",
+      "sequences": [
+        228,
+        229,
+        230,
+        231
+      ],
+      "field_counts": {
+        "228": [
+          30
+        ],
+        "229": [
+          30
+        ],
+        "230": [
+          30
+        ],
+        "231": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 232,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,232,4,836",
+      "sequences": [
+        232,
+        233,
+        234,
+        235
+      ],
+      "field_counts": {
+        "232": [
+          30
+        ],
+        "233": [
+          30
+        ],
+        "234": [
+          30
+        ],
+        "235": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 236,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,236,4,836",
+      "sequences": [
+        236,
+        237,
+        238,
+        239
+      ],
+      "field_counts": {
+        "236": [
+          30
+        ],
+        "237": [
+          30
+        ],
+        "238": [
+          30
+        ],
+        "239": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 240,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,240,4,836",
+      "sequences": [
+        240,
+        241,
+        242,
+        243
+      ],
+      "field_counts": {
+        "240": [
+          30
+        ],
+        "241": [
+          30
+        ],
+        "242": [
+          30
+        ],
+        "243": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 244,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,244,4,836",
+      "sequences": [
+        244,
+        245,
+        246,
+        247
+      ],
+      "field_counts": {
+        "244": [
+          30
+        ],
+        "245": [
+          30
+        ],
+        "246": [
+          30
+        ],
+        "247": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 248,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,248,4,836",
+      "sequences": [
+        248,
+        249,
+        250,
+        251
+      ],
+      "field_counts": {
+        "248": [
+          30
+        ],
+        "249": [
+          30
+        ],
+        "250": [
+          30
+        ],
+        "251": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 252,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,252,4,836",
+      "sequences": [
+        252,
+        253,
+        254,
+        255
+      ],
+      "field_counts": {
+        "252": [
+          30
+        ],
+        "253": [
+          30
+        ],
+        "254": [
+          30
+        ],
+        "255": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 256,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,256,4,836",
+      "sequences": [
+        256,
+        257,
+        258,
+        259
+      ],
+      "field_counts": {
+        "256": [
+          30
+        ],
+        "257": [
+          30
+        ],
+        "258": [
+          30
+        ],
+        "259": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 260,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,260,4,836",
+      "sequences": [
+        260,
+        261
+      ],
+      "field_counts": {
+        "260": [
+          30
+        ],
+        "261": [
+          47
+        ]
+      },
+      "error": "bad/missing rows [261, 262, 263]; order [260, 261]"
+    },
+    {
+      "offset": 260,
+      "count": 4,
+      "attempt": 2,
+      "reply": "WLOG,END,260,4,836",
+      "sequences": [
+        260,
+        261,
+        262,
+        263
+      ],
+      "field_counts": {
+        "260": [
+          30
+        ],
+        "261": [
+          30
+        ],
+        "262": [
+          30
+        ],
+        "263": [
+          30
+        ]
+      },
+      "error": null
+    },
+    {
+      "offset": 260,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,260,4,836",
+      "order": [
+        260,
+        261,
+        262,
+        263
+      ],
+      "error": null
+    },
+    {
+      "offset": 264,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,264,4,836",
+      "order": [
+        264,
+        265,
+        266,
+        267
+      ],
+      "error": null
+    },
+    {
+      "offset": 268,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,268,4,836",
+      "order": [
+        268,
+        269,
+        270,
+        271
+      ],
+      "error": null
+    },
+    {
+      "offset": 272,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,272,4,836",
+      "order": [
+        272,
+        273,
+        274,
+        275
+      ],
+      "error": null
+    },
+    {
+      "offset": 276,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,276,4,836",
+      "order": [
+        276,
+        277,
+        278,
+        279
+      ],
+      "error": null
+    },
+    {
+      "offset": 280,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,280,4,836",
+      "order": [
+        280,
+        281,
+        282,
+        283
+      ],
+      "error": null
+    },
+    {
+      "offset": 284,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,284,4,836",
+      "order": [
+        284,
+        285,
+        286,
+        287
+      ],
+      "error": null
+    },
+    {
+      "offset": 288,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,288,4,836",
+      "order": [
+        288,
+        289,
+        290,
+        291
+      ],
+      "error": null
+    },
+    {
+      "offset": 292,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,292,4,836",
+      "order": [
+        292,
+        293,
+        294,
+        295
+      ],
+      "error": null
+    },
+    {
+      "offset": 296,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,296,4,836",
+      "order": [
+        296,
+        297,
+        298,
+        299
+      ],
+      "error": null
+    },
+    {
+      "offset": 300,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,300,4,836",
+      "order": [
+        300,
+        301,
+        302,
+        303
+      ],
+      "error": null
+    },
+    {
+      "offset": 304,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,304,4,836",
+      "order": [
+        304,
+        305,
+        306,
+        307
+      ],
+      "error": null
+    },
+    {
+      "offset": 308,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,308,4,836",
+      "order": [
+        308,
+        309,
+        310,
+        311
+      ],
+      "error": null
+    },
+    {
+      "offset": 312,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,312,4,836",
+      "order": [
+        312,
+        313,
+        314,
+        315
+      ],
+      "error": null
+    },
+    {
+      "offset": 316,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,316,4,836",
+      "order": [
+        316,
+        317,
+        318,
+        319
+      ],
+      "error": null
+    },
+    {
+      "offset": 320,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,320,4,836",
+      "order": [
+        320,
+        321,
+        322,
+        323
+      ],
+      "error": null
+    },
+    {
+      "offset": 324,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,324,4,836",
+      "order": [
+        324,
+        325,
+        326,
+        327
+      ],
+      "error": null
+    },
+    {
+      "offset": 328,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,328,4,836",
+      "order": [
+        328,
+        329,
+        330,
+        331
+      ],
+      "error": null
+    },
+    {
+      "offset": 332,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,332,4,836",
+      "order": [
+        332,
+        333,
+        334,
+        335
+      ],
+      "error": null
+    },
+    {
+      "offset": 336,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,336,4,836",
+      "order": [
+        336,
+        337,
+        338,
+        339
+      ],
+      "error": null
+    },
+    {
+      "offset": 340,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,340,4,836",
+      "order": [
+        340,
+        341,
+        342,
+        343
+      ],
+      "error": null
+    },
+    {
+      "offset": 344,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,344,4,836",
+      "order": [
+        344,
+        345,
+        346,
+        347
+      ],
+      "error": null
+    },
+    {
+      "offset": 348,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,348,4,836",
+      "order": [
+        348,
+        349,
+        350,
+        351
+      ],
+      "error": null
+    },
+    {
+      "offset": 352,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,352,4,836",
+      "order": [
+        352,
+        353,
+        354,
+        355
+      ],
+      "error": null
+    },
+    {
+      "offset": 356,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,356,4,836",
+      "order": [
+        356,
+        357,
+        358,
+        359
+      ],
+      "error": null
+    },
+    {
+      "offset": 360,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,360,4,836",
+      "order": [
+        360,
+        361,
+        362,
+        363
+      ],
+      "error": null
+    },
+    {
+      "offset": 364,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,364,4,836",
+      "order": [
+        364,
+        365,
+        366,
+        367
+      ],
+      "error": null
+    },
+    {
+      "offset": 368,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,368,4,836",
+      "order": [
+        368,
+        369,
+        370,
+        371
+      ],
+      "error": null
+    },
+    {
+      "offset": 372,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,372,4,836",
+      "order": [
+        372,
+        373,
+        374,
+        375
+      ],
+      "error": null
+    },
+    {
+      "offset": 376,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,376,4,836",
+      "order": [
+        376,
+        377,
+        378,
+        379
+      ],
+      "error": null
+    },
+    {
+      "offset": 380,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,380,4,836",
+      "order": [
+        380,
+        381,
+        382,
+        383
+      ],
+      "error": null
+    },
+    {
+      "offset": 384,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,384,4,836",
+      "order": [
+        384,
+        385,
+        386,
+        387
+      ],
+      "error": null
+    },
+    {
+      "offset": 388,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,388,4,836",
+      "order": [
+        388,
+        389,
+        390,
+        391
+      ],
+      "error": null
+    },
+    {
+      "offset": 392,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,392,4,836",
+      "order": [
+        392,
+        393,
+        394,
+        395
+      ],
+      "error": null
+    },
+    {
+      "offset": 396,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,396,4,836",
+      "order": [
+        396,
+        397,
+        398,
+        399
+      ],
+      "error": null
+    },
+    {
+      "offset": 400,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,400,4,836",
+      "order": [
+        400,
+        401,
+        402,
+        403
+      ],
+      "error": null
+    },
+    {
+      "offset": 404,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,404,4,836",
+      "order": [
+        404,
+        405,
+        406,
+        407
+      ],
+      "error": null
+    },
+    {
+      "offset": 408,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,408,4,836",
+      "order": [
+        408,
+        409,
+        410,
+        411
+      ],
+      "error": null
+    },
+    {
+      "offset": 412,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,412,4,836",
+      "order": [
+        412,
+        413,
+        414,
+        415
+      ],
+      "error": null
+    },
+    {
+      "offset": 416,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,416,4,836",
+      "order": [
+        416,
+        417,
+        418,
+        419
+      ],
+      "error": null
+    },
+    {
+      "offset": 420,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,420,4,836",
+      "order": [
+        420,
+        421,
+        422,
+        423
+      ],
+      "error": null
+    },
+    {
+      "offset": 424,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,424,4,836",
+      "order": [
+        424,
+        425,
+        426,
+        427
+      ],
+      "error": null
+    },
+    {
+      "offset": 428,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,428,4,836",
+      "order": [
+        428,
+        429,
+        430,
+        431
+      ],
+      "error": null
+    },
+    {
+      "offset": 432,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,432,4,836",
+      "order": [
+        432,
+        433,
+        434,
+        435
+      ],
+      "error": null
+    },
+    {
+      "offset": 436,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,436,4,836",
+      "order": [
+        436,
+        437,
+        438,
+        439
+      ],
+      "error": null
+    },
+    {
+      "offset": 440,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,440,4,836",
+      "order": [
+        440,
+        441,
+        442,
+        443
+      ],
+      "error": null
+    },
+    {
+      "offset": 444,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,444,4,836",
+      "order": [
+        444,
+        445,
+        446,
+        447
+      ],
+      "error": null
+    },
+    {
+      "offset": 448,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,448,4,836",
+      "order": [
+        448,
+        449,
+        450,
+        451
+      ],
+      "error": null
+    },
+    {
+      "offset": 452,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,452,4,836",
+      "order": [
+        452,
+        453,
+        454,
+        455
+      ],
+      "error": null
+    },
+    {
+      "offset": 456,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,456,4,836",
+      "order": [
+        456,
+        457,
+        458,
+        459
+      ],
+      "error": null
+    },
+    {
+      "offset": 460,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,460,4,836",
+      "order": [
+        460,
+        461,
+        462,
+        463
+      ],
+      "error": null
+    },
+    {
+      "offset": 464,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,464,4,836",
+      "order": [
+        464,
+        465,
+        466,
+        467
+      ],
+      "error": null
+    },
+    {
+      "offset": 468,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,468,4,836",
+      "order": [
+        468,
+        469,
+        470,
+        471
+      ],
+      "error": null
+    },
+    {
+      "offset": 472,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,472,4,836",
+      "order": [
+        472,
+        473,
+        474,
+        475
+      ],
+      "error": null
+    },
+    {
+      "offset": 476,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,476,4,836",
+      "order": [
+        476,
+        477,
+        478,
+        479
+      ],
+      "error": null
+    },
+    {
+      "offset": 480,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,480,4,836",
+      "order": [
+        480,
+        481,
+        482,
+        483
+      ],
+      "error": null
+    },
+    {
+      "offset": 484,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,484,4,836",
+      "order": [
+        484,
+        485,
+        486,
+        487
+      ],
+      "error": null
+    },
+    {
+      "offset": 488,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,488,4,836",
+      "order": [
+        488,
+        489,
+        490,
+        491
+      ],
+      "error": null
+    },
+    {
+      "offset": 492,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,492,4,836",
+      "order": [
+        492,
+        493,
+        494,
+        495
+      ],
+      "error": null
+    },
+    {
+      "offset": 496,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,496,4,836",
+      "order": [
+        496,
+        497,
+        498,
+        499
+      ],
+      "error": null
+    },
+    {
+      "offset": 500,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,500,4,836",
+      "order": [
+        500,
+        501,
+        502,
+        503
+      ],
+      "error": null
+    },
+    {
+      "offset": 504,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,504,4,836",
+      "order": [
+        504,
+        505,
+        506,
+        507
+      ],
+      "error": null
+    },
+    {
+      "offset": 508,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,508,4,836",
+      "order": [
+        508,
+        509,
+        510,
+        511
+      ],
+      "error": null
+    },
+    {
+      "offset": 512,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,512,4,836",
+      "order": [
+        512,
+        513,
+        514,
+        515
+      ],
+      "error": null
+    },
+    {
+      "offset": 516,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,516,4,836",
+      "order": [
+        516,
+        517,
+        518,
+        519
+      ],
+      "error": null
+    },
+    {
+      "offset": 520,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,520,4,836",
+      "order": [
+        520,
+        521,
+        522,
+        523
+      ],
+      "error": null
+    },
+    {
+      "offset": 524,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,524,4,836",
+      "order": [
+        524,
+        525,
+        526,
+        527
+      ],
+      "error": null
+    },
+    {
+      "offset": 528,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,528,4,836",
+      "order": [
+        528,
+        529,
+        530,
+        531
+      ],
+      "error": null
+    },
+    {
+      "offset": 532,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,532,4,836",
+      "order": [
+        532,
+        533,
+        534,
+        535
+      ],
+      "error": null
+    },
+    {
+      "offset": 536,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,536,4,836",
+      "order": [
+        536,
+        537,
+        538,
+        539
+      ],
+      "error": null
+    },
+    {
+      "offset": 540,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,540,4,836",
+      "order": [
+        540,
+        541,
+        542,
+        543
+      ],
+      "error": null
+    },
+    {
+      "offset": 544,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,544,4,836",
+      "order": [
+        544,
+        545,
+        546,
+        547
+      ],
+      "error": null
+    },
+    {
+      "offset": 548,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,548,4,836",
+      "order": [
+        548,
+        549,
+        550,
+        551
+      ],
+      "error": null
+    },
+    {
+      "offset": 552,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,552,4,836",
+      "order": [
+        552,
+        553,
+        554,
+        555
+      ],
+      "error": null
+    },
+    {
+      "offset": 556,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,556,4,836",
+      "order": [
+        556,
+        557,
+        558,
+        559
+      ],
+      "error": null
+    },
+    {
+      "offset": 560,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,560,4,836",
+      "order": [
+        560,
+        561,
+        562,
+        563
+      ],
+      "error": null
+    },
+    {
+      "offset": 564,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,564,4,836",
+      "order": [
+        564,
+        565,
+        566,
+        567
+      ],
+      "error": null
+    },
+    {
+      "offset": 568,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,568,4,836",
+      "order": [
+        568,
+        569,
+        570,
+        571
+      ],
+      "error": null
+    },
+    {
+      "offset": 572,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,572,4,836",
+      "order": [
+        572,
+        573,
+        574,
+        575
+      ],
+      "error": null
+    },
+    {
+      "offset": 576,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,576,4,836",
+      "order": [
+        576,
+        577,
+        578,
+        579
+      ],
+      "error": null
+    },
+    {
+      "offset": 580,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,580,4,836",
+      "order": [
+        580,
+        581,
+        582,
+        583
+      ],
+      "error": null
+    },
+    {
+      "offset": 584,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,584,4,836",
+      "order": [
+        584,
+        585,
+        586,
+        587
+      ],
+      "error": null
+    },
+    {
+      "offset": 588,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,588,4,836",
+      "order": [
+        588,
+        589,
+        590,
+        591
+      ],
+      "error": null
+    },
+    {
+      "offset": 592,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,592,4,836",
+      "order": [
+        592,
+        593,
+        594,
+        595
+      ],
+      "error": null
+    },
+    {
+      "offset": 596,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,596,4,836",
+      "order": [
+        596,
+        597,
+        598,
+        599
+      ],
+      "error": null
+    },
+    {
+      "offset": 600,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,600,4,836",
+      "order": [
+        600,
+        601,
+        602,
+        603
+      ],
+      "error": null
+    },
+    {
+      "offset": 604,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,604,4,836",
+      "order": [
+        604,
+        605,
+        606,
+        607
+      ],
+      "error": null
+    },
+    {
+      "offset": 608,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,608,4,836",
+      "order": [
+        608,
+        609,
+        610,
+        611
+      ],
+      "error": null
+    },
+    {
+      "offset": 612,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,612,4,836",
+      "order": [
+        612,
+        613,
+        614,
+        615
+      ],
+      "error": null
+    },
+    {
+      "offset": 616,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,616,4,836",
+      "order": [
+        616,
+        617,
+        618,
+        619
+      ],
+      "error": null
+    },
+    {
+      "offset": 620,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,620,4,836",
+      "order": [
+        620,
+        621,
+        622,
+        623
+      ],
+      "error": null
+    },
+    {
+      "offset": 624,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,624,4,836",
+      "order": [
+        624,
+        625,
+        626,
+        627
+      ],
+      "error": null
+    },
+    {
+      "offset": 628,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,628,4,836",
+      "order": [
+        628,
+        629,
+        630,
+        631
+      ],
+      "error": null
+    },
+    {
+      "offset": 632,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,632,4,836",
+      "order": [
+        632,
+        633,
+        634,
+        635
+      ],
+      "error": null
+    },
+    {
+      "offset": 636,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,636,4,836",
+      "order": [
+        636,
+        637,
+        638,
+        639
+      ],
+      "error": null
+    },
+    {
+      "offset": 640,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,640,4,836",
+      "order": [
+        640,
+        641,
+        642,
+        643
+      ],
+      "error": null
+    },
+    {
+      "offset": 644,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,644,4,836",
+      "order": [
+        644,
+        645,
+        646,
+        647
+      ],
+      "error": null
+    },
+    {
+      "offset": 648,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,648,4,836",
+      "order": [
+        648,
+        649,
+        650,
+        651
+      ],
+      "error": null
+    },
+    {
+      "offset": 652,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,652,4,836",
+      "order": [
+        652,
+        653,
+        654,
+        655
+      ],
+      "error": null
+    },
+    {
+      "offset": 656,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,656,4,836",
+      "order": [
+        656,
+        657,
+        658,
+        659
+      ],
+      "error": null
+    },
+    {
+      "offset": 660,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,660,4,836",
+      "order": [
+        660,
+        661,
+        662,
+        663
+      ],
+      "error": null
+    },
+    {
+      "offset": 664,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,664,4,836",
+      "order": [
+        664,
+        665,
+        666,
+        667
+      ],
+      "error": null
+    },
+    {
+      "offset": 668,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,668,4,836",
+      "order": [
+        668,
+        669,
+        670,
+        671
+      ],
+      "error": null
+    },
+    {
+      "offset": 672,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,672,4,836",
+      "order": [
+        672,
+        673,
+        674,
+        675
+      ],
+      "error": null
+    },
+    {
+      "offset": 676,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,676,4,836",
+      "order": [
+        676,
+        677,
+        678,
+        679
+      ],
+      "error": null
+    },
+    {
+      "offset": 680,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,680,4,836",
+      "order": [
+        680,
+        681,
+        682,
+        683
+      ],
+      "error": null
+    },
+    {
+      "offset": 684,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,684,4,836",
+      "order": [
+        684,
+        685,
+        686,
+        687
+      ],
+      "error": null
+    },
+    {
+      "offset": 688,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,688,4,836",
+      "order": [
+        688,
+        689,
+        690,
+        691
+      ],
+      "error": null
+    },
+    {
+      "offset": 692,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,692,4,836",
+      "order": [
+        692,
+        693,
+        694,
+        695
+      ],
+      "error": null
+    },
+    {
+      "offset": 696,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,696,4,836",
+      "order": [
+        696,
+        697,
+        698,
+        699
+      ],
+      "error": null
+    },
+    {
+      "offset": 700,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,700,4,836",
+      "order": [
+        700,
+        701,
+        702,
+        703
+      ],
+      "error": null
+    },
+    {
+      "offset": 704,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,704,4,836",
+      "order": [
+        704,
+        705,
+        706,
+        707
+      ],
+      "error": null
+    },
+    {
+      "offset": 708,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,708,4,836",
+      "order": [
+        708,
+        709,
+        710,
+        711
+      ],
+      "error": null
+    },
+    {
+      "offset": 712,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,712,4,836",
+      "order": [
+        712,
+        713,
+        714,
+        715
+      ],
+      "error": null
+    },
+    {
+      "offset": 716,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,716,4,836",
+      "order": [
+        716,
+        717,
+        718,
+        719
+      ],
+      "error": null
+    },
+    {
+      "offset": 720,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,720,4,836",
+      "order": [
+        720,
+        721,
+        722,
+        723
+      ],
+      "error": null
+    },
+    {
+      "offset": 724,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,724,4,836",
+      "order": [
+        724,
+        725,
+        726,
+        727
+      ],
+      "error": null
+    },
+    {
+      "offset": 728,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,728,4,836",
+      "order": [
+        728,
+        729,
+        730,
+        731
+      ],
+      "error": null
+    },
+    {
+      "offset": 732,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,732,4,836",
+      "order": [
+        732,
+        733,
+        734,
+        735
+      ],
+      "error": null
+    },
+    {
+      "offset": 736,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,736,4,836",
+      "order": [
+        736,
+        737,
+        738,
+        739
+      ],
+      "error": null
+    },
+    {
+      "offset": 740,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,740,4,836",
+      "order": [
+        740,
+        741,
+        742,
+        743
+      ],
+      "error": null
+    },
+    {
+      "offset": 744,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,744,4,836",
+      "order": [
+        744,
+        745,
+        746,
+        747
+      ],
+      "error": null
+    },
+    {
+      "offset": 748,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,748,4,836",
+      "order": [
+        748,
+        749,
+        750,
+        751
+      ],
+      "error": null
+    },
+    {
+      "offset": 752,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,752,4,836",
+      "order": [
+        752,
+        753,
+        754,
+        755
+      ],
+      "error": null
+    },
+    {
+      "offset": 756,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,756,4,836",
+      "order": [
+        756,
+        757,
+        758,
+        759
+      ],
+      "error": null
+    },
+    {
+      "offset": 760,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,760,4,836",
+      "order": [
+        760,
+        761,
+        762,
+        763
+      ],
+      "error": null
+    },
+    {
+      "offset": 764,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,764,4,836",
+      "order": [
+        764,
+        765,
+        766,
+        767
+      ],
+      "error": null
+    },
+    {
+      "offset": 768,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,768,4,836",
+      "order": [
+        768,
+        769,
+        770,
+        771
+      ],
+      "error": null
+    },
+    {
+      "offset": 772,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,772,4,836",
+      "order": [
+        772,
+        773,
+        774,
+        775
+      ],
+      "error": null
+    },
+    {
+      "offset": 776,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,776,4,836",
+      "order": [
+        776,
+        777,
+        778,
+        779
+      ],
+      "error": null
+    },
+    {
+      "offset": 780,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,780,4,836",
+      "order": [
+        780,
+        781,
+        782,
+        783
+      ],
+      "error": null
+    },
+    {
+      "offset": 784,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,784,4,836",
+      "order": [
+        784,
+        785,
+        786,
+        787
+      ],
+      "error": null
+    },
+    {
+      "offset": 788,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,788,4,836",
+      "order": [
+        788,
+        789,
+        790,
+        791
+      ],
+      "error": null
+    },
+    {
+      "offset": 792,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,792,4,836",
+      "order": [
+        792,
+        793,
+        794,
+        795
+      ],
+      "error": null
+    },
+    {
+      "offset": 796,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,796,4,836",
+      "order": [
+        796,
+        797,
+        798,
+        799
+      ],
+      "error": null
+    },
+    {
+      "offset": 800,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,800,4,836",
+      "order": [
+        800,
+        801,
+        802,
+        803
+      ],
+      "error": null
+    },
+    {
+      "offset": 804,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,804,4,836",
+      "order": [
+        804,
+        805,
+        806,
+        807
+      ],
+      "error": null
+    },
+    {
+      "offset": 808,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,808,4,836",
+      "order": [
+        808,
+        809,
+        810,
+        811
+      ],
+      "error": null
+    },
+    {
+      "offset": 812,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,812,4,836",
+      "order": [
+        812,
+        813,
+        814,
+        815
+      ],
+      "error": null
+    },
+    {
+      "offset": 816,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,816,4,836",
+      "order": [
+        816,
+        817,
+        818,
+        819
+      ],
+      "error": null
+    },
+    {
+      "offset": 820,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,820,4,836",
+      "order": [
+        820,
+        821,
+        822,
+        823
+      ],
+      "error": null
+    },
+    {
+      "offset": 824,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,824,4,836",
+      "order": [
+        824,
+        825,
+        826,
+        827
+      ],
+      "error": null
+    },
+    {
+      "offset": 828,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,828,4,836",
+      "order": [
+        828,
+        829,
+        830,
+        831
+      ],
+      "error": null
+    },
+    {
+      "offset": 832,
+      "count": 4,
+      "attempt": 1,
+      "reply": "WLOG,END,832,4,836",
+      "order": [
+        832,
+        833,
+        834,
+        835
+      ],
+      "error": null
+    }
+  ],
+  "resume_errors": [],
+  "archive_complete": true,
+  "archive_dir": "D:\\my_code\\my_code\\大创\\pid-tuning-adapter\\runs\\R23-WLOG-preserved-raw-batch4-20261022-184113-92000"
+}

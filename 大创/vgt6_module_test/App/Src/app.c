@@ -15,10 +15,13 @@
 #include "stack_usage.h"
 #include "stm32f4xx_hal.h"
 #include "telemetry.h"
+#include "tof.h"
+#include "timebase.h"
 
 #define APP_IMU_PERIOD_MS 10U
 
 static uint32_t imu_tick;
+static uint32_t control_end_us;
 
 void App_Init(void)
 {
@@ -39,7 +42,8 @@ void App_Init(void)
   Ps2Control_Init();
   Display_Init();
   Telemetry_Init();
-  imu_tick = HAL_GetTick();
+  Tof_Init();
+  Timebase_Capture(&imu_tick, &control_end_us);
 
   /* No boot banner or periodic telemetry: the Bluetooth link only replies
    * after an explicit command. Use STATUS/HELP to request diagnostics. */
@@ -52,6 +56,7 @@ void App_Init(void)
 void App_Process(void)
 {
   uint32_t now;
+  uint32_t now_us, control_end_ms;
   uint32_t elapsed;
   float dt_seconds;
   GyroSnapshot gyro;
@@ -68,14 +73,19 @@ void App_Process(void)
     return;
   }
   SerialDma_Process();
+  /* Consume completed range reads before the next motor protection update. */
+  Tof_Process();
   Ps2_Process();
   Ps2Control_Process();
   ChassisTest_Process();
   Battery_Process();
   Telemetry_Process();
-  now = HAL_GetTick();
+  Timebase_Capture(&now, &now_us);
   elapsed = now - imu_tick;
-  if (elapsed >= APP_IMU_PERIOD_MS)
+  /* Millisecond phase can release a nominal 10 ms loop after only 9 ms.
+   * Anchor the next release to the previous completed control block in us.
+   * Never catch up by duplicating feedback or synthesizing timestamps. */
+  if ((uint32_t)(now_us - control_end_us) >= APP_IMU_PERIOD_MS * 1000U)
   {
     if (elapsed > 100U)
     {
@@ -97,6 +107,7 @@ void App_Process(void)
     gyro = Gyro_GetSnapshot();
     HAL_GPIO_WritePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin,
                       (gyro.connected != 0U) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    Timebase_Capture(&control_end_ms, &control_end_us);
   }
 
   Display_Process();

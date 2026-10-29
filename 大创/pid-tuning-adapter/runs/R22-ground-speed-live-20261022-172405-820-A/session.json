@@ -1,0 +1,465 @@
+{
+  "status": "failed",
+  "motion_started": true,
+  "selection": "pending",
+  "history": [],
+  "plan": {
+    "loop": "wheel_speed",
+    "initial": [
+      1.2,
+      0.0991
+    ],
+    "bounds": [
+      [
+        0.72,
+        1.68
+      ],
+      [
+        0.0595,
+        0.1387
+      ]
+    ],
+    "validation_targets": [
+      -30.0,
+      25.0
+    ],
+    "method": "bo",
+    "rounds": 5,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R22",
+  "caps": "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40",
+  "controller": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+  "wheel": "A",
+  "all_initial_gains": [
+    1.2,
+    0.0991,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.1008,
+    0.0
+  ],
+  "ram_only": true,
+  "measurement_wheels": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "simultaneous_measurement": true,
+  "form": "incremental",
+  "period_s": 0.01,
+  "ki_unit": "PWM_percent/RPM/update",
+  "kd_step": 0,
+  "scoring_source": "validated_downloaded_WLOG",
+  "training_target": 30,
+  "baseline_seconds": 2,
+  "seconds": 7,
+  "objective_weights": {
+    "normalized_iae": 1.0,
+    "overshoot": 2.0,
+    "steady_error_rms": 1.0,
+    "normalized_settling": 0.5,
+    "saturation_fraction": 0.1
+  },
+  "profile": "four wheels on ground under normal load; WLOG scores outbound encoder-distance leg; every test returns to origin",
+  "ground_distance_m": 1.0,
+  "required_test_setup": "four_wheels_on_ground_not_lifted",
+  "wheel_aggregation": "worst wheel for score and each metric",
+  "error": "STOP: {'type': 'result', 'id': 36, 'ok': False, 'error': 'MCU reply timeout: STOP'}",
+  "restored_readback": null,
+  "restoration_error": "STOP: {'type': 'result', 'id': 37, 'ok': False, 'error': 'hardware disconnected'}",
+  "commands": [
+    {
+      "host_monotonic": 11202.812,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ATEL,57456,0,1,0,-1,0,0,19,0,0,0,0,12192"
+      }
+    },
+    {
+      "host_monotonic": 11203.109,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,9"
+      }
+    },
+    {
+      "host_monotonic": 11203.234,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R22"
+      }
+    },
+    {
+      "host_monotonic": 11203.328,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40"
+      }
+    },
+    {
+      "host_monotonic": 11203.671,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 11204.031,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 11204.64,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "LINK,190,22,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 11204.968,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "STACK,4096,2512,1584,1"
+      }
+    },
+    {
+      "host_monotonic": 11205.203,
+      "command": "SPEEDLIMIT",
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "SPEEDLIMIT,160"
+      }
+    },
+    {
+      "host_monotonic": 11205.328,
+      "command": "YAWGET",
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "host_monotonic": 11206.031,
+      "command": "HEADGET",
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "host_monotonic": 11206.171,
+      "command": "PIDGET",
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "host_monotonic": 11206.859,
+      "command": "HLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "HLOG,STATUS,0,0,1024,0,0"
+      }
+    },
+    {
+      "host_monotonic": 11207.156,
+      "command": "WLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "WLOG,STATUS,0,0,1024,0,0"
+      }
+    },
+    {
+      "host_monotonic": 11207.546,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R22"
+      }
+    },
+    {
+      "host_monotonic": 11208.031,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40"
+      }
+    },
+    {
+      "host_monotonic": 11209.406,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 11210.031,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 11210.187,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "LINK,293,34,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 11210.703,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 20,
+        "ok": true,
+        "reply": "STACK,4096,2512,1584,1"
+      }
+    },
+    {
+      "host_monotonic": 11211.046,
+      "command": "SPEEDLIMIT",
+      "result": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "SPEEDLIMIT,160"
+      }
+    },
+    {
+      "host_monotonic": 11211.171,
+      "command": "YAWGET",
+      "result": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "host_monotonic": 11211.296,
+      "command": "HEADGET",
+      "result": {
+        "type": "result",
+        "id": 23,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "host_monotonic": 11212.546,
+      "command": "PIDGET",
+      "result": {
+        "type": "result",
+        "id": 24,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "host_monotonic": 11213.562,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 25,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 11214.0,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 26,
+        "ok": true,
+        "reply": "ATEL,68571,0,1,0,1,0,0,18,0,0,0,0,12184"
+      }
+    },
+    {
+      "host_monotonic": 11214.906,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 27,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,19"
+      }
+    },
+    {
+      "host_monotonic": 11216.187,
+      "command": "ENCZERO",
+      "result": {
+        "type": "result",
+        "id": 28,
+        "ok": true,
+        "reply": "ACK,ENCZERO"
+      }
+    },
+    {
+      "host_monotonic": 11216.281,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 29,
+        "ok": true,
+        "reply": "ENC,70858,1,380,0,0,0,0,0,0,0,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 11216.859,
+      "command": "WLOG,CLEAR",
+      "result": {
+        "type": "result",
+        "id": 30,
+        "ok": true,
+        "reply": "WLOG,CLEAR,OK"
+      }
+    },
+    {
+      "host_monotonic": 11217.125,
+      "command": "WLOG,START",
+      "result": {
+        "type": "result",
+        "id": 31,
+        "ok": true,
+        "reply": "WLOG,START,OK"
+      }
+    },
+    {
+      "host_monotonic": 11217.203,
+      "command": "ARM",
+      "result": {
+        "type": "result",
+        "id": 32,
+        "ok": true,
+        "reply": "ACK,ARM,WHEELS_OFF_GROUND"
+      }
+    },
+    {
+      "host_monotonic": 11217.687,
+      "command": "SPEED,1",
+      "result": {
+        "type": "result",
+        "id": 33,
+        "ok": true,
+        "reply": "ACK,SPEED,1"
+      }
+    },
+    {
+      "host_monotonic": 11217.937,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 34,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 11220.25,
+      "command": "DRV,30,0,0",
+      "drive_lease_ms": 5514,
+      "result": {
+        "type": "result",
+        "id": 35,
+        "ok": false,
+        "error": "MCU reply timeout: DRV,30,0,0"
+      }
+    },
+    {
+      "host_monotonic": 11223.265,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 36,
+        "ok": false,
+        "error": "MCU reply timeout: STOP"
+      }
+    },
+    {
+      "host_monotonic": 11226.265,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 37,
+        "ok": false,
+        "error": "hardware disconnected"
+      }
+    },
+    {
+      "host_monotonic": 11227.203,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 38,
+        "ok": false,
+        "error": "hardware disconnected"
+      }
+    }
+  ],
+  "cleanup_error": "STOP: {'type': 'result', 'id': 38, 'ok': False, 'error': 'hardware disconnected'}"
+}

@@ -1,0 +1,28 @@
+{
+  "note": "Offline hypothesis only; upper bits are lost. Not a valid frame or proof of which device corrupted it.",
+  "bytes": 102,
+  "lowThreeBits010": 98,
+  "chunks": [
+    {
+      "hostMs": 16951.800000000047,
+      "rawHex": "862813cac2b2ca6282628a626a9a82626a9a82626a9a82626a9a82626a8a8a62",
+      "bytes": 32,
+      "lowThreeBits010": 29,
+      "hypothesisAsciiLowFiveBits": "0%\"9869,0,1,-30,-30,-30,-30,-11,"
+    },
+    {
+      "hostMs": 16954.699999999953,
+      "rawHex": "6a8aaa626a8aba626aca626a9a8292626a92b2a2626a92aaca626a9a92ca626a9a82626a9a82626a9a82626a9a82628a929aa2b2626a8ab29262aa92ca628a62",
+      "bytes": 64,
+      "lowThreeBits010": 64,
+      "hypothesisAsciiLowFiveBits": "-15,-17,-9,-302,-264,-259,-329,-30,-30,-30,-30,12346,-162,529,1,"
+    },
+    {
+      "hostMs": 16955.5,
+      "rawHex": "aa92ca628afe",
+      "bytes": 6,
+      "lowThreeBits010": 5,
+      "hypothesisAsciiLowFiveBits": "529,1?"
+    }
+  ]
+}

@@ -1,0 +1,814 @@
+{
+  "status": "failed",
+  "motion_started": true,
+  "selection": "pending",
+  "history": [],
+  "plan": {
+    "loop": "wheel_speed",
+    "initial": [
+      1.2,
+      0.0991
+    ],
+    "bounds": [
+      [
+        0.72,
+        1.68
+      ],
+      [
+        0.0595,
+        0.1387
+      ]
+    ],
+    "validation_targets": [
+      -30.0,
+      25.0
+    ],
+    "method": "bo",
+    "rounds": 5,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R23",
+  "caps": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS",
+  "controller": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+  "wheel": "A",
+  "all_initial_gains": [
+    1.2,
+    0.0991,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.1008,
+    0.0
+  ],
+  "ram_only": true,
+  "measurement_wheels": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "simultaneous_measurement": true,
+  "form": "incremental",
+  "period_s": 0.01,
+  "ki_unit": "PWM_percent/RPM/update",
+  "kd_step": 0,
+  "scoring_source": "validated_downloaded_WLOG",
+  "training_target": 30,
+  "baseline_seconds": 2.0,
+  "seconds": 7.0,
+  "objective_weights": {
+    "normalized_iae": 1.0,
+    "overshoot": 2.0,
+    "steady_error_rms": 1.0,
+    "normalized_settling": 0.5,
+    "saturation_fraction": 0.1
+  },
+  "profile": "four wheels on ground under normal load; WLOG scores outbound encoder-distance leg; every test returns to origin",
+  "ground_distance_m": 1.0,
+  "required_test_setup": "four_wheels_on_ground_not_lifted",
+  "wheel_aggregation": "worst wheel for score and each metric",
+  "error": "invalid WLOG field count/type",
+  "restored_readback": null,
+  "commands": [
+    {
+      "host_monotonic": 14625.828,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ATEL,891825,0,1,0,0,0,0,90405,-91086,0,0,0,11704"
+      }
+    },
+    {
+      "host_monotonic": 14625.937,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,6"
+      }
+    },
+    {
+      "host_monotonic": 14626.062,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R23"
+      }
+    },
+    {
+      "host_monotonic": 14626.14,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS"
+      }
+    },
+    {
+      "host_monotonic": 14626.421,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 14626.593,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 14626.703,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "LINK,6676,866,0,0,0,1"
+      }
+    },
+    {
+      "host_monotonic": 14626.796,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "STACK,4096,2592,1504,1"
+      }
+    },
+    {
+      "host_monotonic": 14626.906,
+      "command": "SPEEDLIMIT",
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "SPEEDLIMIT,160"
+      }
+    },
+    {
+      "host_monotonic": 14627.0,
+      "command": "YAWGET",
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "host_monotonic": 14627.109,
+      "command": "HEADGET",
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "host_monotonic": 14627.25,
+      "command": "PIDGET",
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "host_monotonic": 14627.406,
+      "command": "HLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "HLOG,STATUS,0,0,1024,0,0"
+      }
+    },
+    {
+      "host_monotonic": 14627.515,
+      "command": "WLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "WLOG,STATUS,0,60,1024,0,60"
+      }
+    },
+    {
+      "host_monotonic": 14627.609,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R23"
+      }
+    },
+    {
+      "host_monotonic": 14627.828,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS"
+      }
+    },
+    {
+      "host_monotonic": 14628.078,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 14628.281,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 14628.375,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "LINK,6779,878,0,0,0,1"
+      }
+    },
+    {
+      "host_monotonic": 14628.468,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 20,
+        "ok": true,
+        "reply": "STACK,4096,2592,1504,1"
+      }
+    },
+    {
+      "host_monotonic": 14628.578,
+      "command": "SPEEDLIMIT",
+      "result": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "SPEEDLIMIT,160"
+      }
+    },
+    {
+      "host_monotonic": 14628.703,
+      "command": "YAWGET",
+      "result": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "host_monotonic": 14628.812,
+      "command": "HEADGET",
+      "result": {
+        "type": "result",
+        "id": 23,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "host_monotonic": 14629.0,
+      "command": "PIDGET",
+      "result": {
+        "type": "result",
+        "id": 24,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "host_monotonic": 14629.25,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 25,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 14629.328,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 26,
+        "ok": true,
+        "reply": "ATEL,895313,0,1,0,-4,0,0,90398,-91086,0,0,0,11707"
+      }
+    },
+    {
+      "host_monotonic": 14629.468,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 27,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,1"
+      }
+    },
+    {
+      "host_monotonic": 14629.656,
+      "command": "ENCZERO",
+      "result": {
+        "type": "result",
+        "id": 28,
+        "ok": true,
+        "reply": "ACK,ENCZERO"
+      }
+    },
+    {
+      "host_monotonic": 14629.75,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 29,
+        "ok": true,
+        "reply": "ENC,895732,1,380,0,0,0,0,0,0,0,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 14629.875,
+      "command": "WLOG,CLEAR",
+      "result": {
+        "type": "result",
+        "id": 30,
+        "ok": true,
+        "reply": "WLOG,CLEAR,OK"
+      }
+    },
+    {
+      "host_monotonic": 14629.984,
+      "command": "WLOG,START",
+      "result": {
+        "type": "result",
+        "id": 31,
+        "ok": true,
+        "reply": "WLOG,START,OK"
+      }
+    },
+    {
+      "host_monotonic": 14630.156,
+      "command": "ARM",
+      "result": {
+        "type": "result",
+        "id": 32,
+        "ok": true,
+        "reply": "ACK,ARM,WHEELS_OFF_GROUND"
+      }
+    },
+    {
+      "host_monotonic": 14630.281,
+      "command": "SPEED,1",
+      "result": {
+        "type": "result",
+        "id": 33,
+        "ok": true,
+        "reply": "ACK,SPEED,1"
+      }
+    },
+    {
+      "host_monotonic": 14630.375,
+      "command": "DRV,0,0,0",
+      "result": {
+        "type": "result",
+        "id": 34,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 14632.453,
+      "command": "DRV,30,0,0",
+      "drive_lease_ms": 5514,
+      "result": {
+        "type": "result",
+        "id": 35,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 14638.234,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 36,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 14638.515,
+      "command": "WLOG,STOP",
+      "result": {
+        "type": "result",
+        "id": 37,
+        "ok": true,
+        "reply": "WLOG,STOP,OK"
+      }
+    },
+    {
+      "host_monotonic": 14638.718,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 38,
+        "ok": true,
+        "reply": "ENC,904710,1,380,-1103,-1106,-1105,-1105,0,0,0,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 14638.937,
+      "command": "ARM",
+      "result": {
+        "type": "result",
+        "id": 39,
+        "ok": true,
+        "reply": "ACK,ARM,WHEELS_OFF_GROUND"
+      }
+    },
+    {
+      "host_monotonic": 14639.203,
+      "command": "SPEED,1",
+      "result": {
+        "type": "result",
+        "id": 40,
+        "ok": true,
+        "reply": "ACK,SPEED,1"
+      }
+    },
+    {
+      "host_monotonic": 14639.5,
+      "command": "DRV,-30,0,0",
+      "drive_lease_ms": 6396,
+      "result": {
+        "type": "result",
+        "id": 41,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 14646.187,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 42,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 14646.281,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 43,
+        "ok": true,
+        "reply": "ENC,912270,1,380,146,151,149,149,0,0,1,0,0,0,157,0"
+      }
+    },
+    {
+      "host_monotonic": 14646.39,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 44,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 14646.453,
+      "command": "TEL,0",
+      "result": {
+        "type": "result",
+        "id": 45,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      }
+    },
+    {
+      "host_monotonic": 14646.531,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 46,
+        "ok": true,
+        "reply": "ATEL,912526,0,1,0,-162,0,0,91258,-91086,0,0,0,11646"
+      }
+    },
+    {
+      "host_monotonic": 14646.703,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 47,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,14"
+      }
+    },
+    {
+      "host_monotonic": 14646.812,
+      "command": "WLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 48,
+        "ok": true,
+        "reply": "WLOG,STATUS,0,836,1024,0,836"
+      }
+    },
+    {
+      "host_monotonic": 14646.953,
+      "command": "WLOG,READ,0,8",
+      "result": {
+        "type": "result",
+        "id": 49,
+        "ok": true,
+        "reply": "WLOG,END,0,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14647.812,
+      "command": "WLOG,READ,8,8",
+      "result": {
+        "type": "result",
+        "id": 50,
+        "ok": true,
+        "reply": "WLOG,END,8,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14648.625,
+      "command": "WLOG,READ,16,8",
+      "result": {
+        "type": "result",
+        "id": 51,
+        "ok": true,
+        "reply": "WLOG,END,16,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14649.453,
+      "command": "WLOG,READ,24,8",
+      "result": {
+        "type": "result",
+        "id": 52,
+        "ok": true,
+        "reply": "WLOG,END,24,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14650.312,
+      "command": "WLOG,READ,32,8",
+      "result": {
+        "type": "result",
+        "id": 53,
+        "ok": true,
+        "reply": "WLOG,END,32,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14651.14,
+      "command": "WLOG,READ,40,8",
+      "result": {
+        "type": "result",
+        "id": 54,
+        "ok": true,
+        "reply": "WLOG,END,40,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14651.968,
+      "command": "WLOG,READ,48,8",
+      "result": {
+        "type": "result",
+        "id": 55,
+        "ok": true,
+        "reply": "WLOG,END,48,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14652.812,
+      "command": "WLOG,READ,56,8",
+      "result": {
+        "type": "result",
+        "id": 56,
+        "ok": true,
+        "reply": "WLOG,END,56,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14653.64,
+      "command": "WLOG,READ,64,8",
+      "result": {
+        "type": "result",
+        "id": 57,
+        "ok": true,
+        "reply": "WLOG,END,64,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14654.468,
+      "command": "WLOG,READ,72,8",
+      "result": {
+        "type": "result",
+        "id": 58,
+        "ok": true,
+        "reply": "WLOG,END,72,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14655.312,
+      "command": "WLOG,READ,80,8",
+      "result": {
+        "type": "result",
+        "id": 59,
+        "ok": true,
+        "reply": "WLOG,END,80,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14656.109,
+      "command": "WLOG,READ,88,8",
+      "result": {
+        "type": "result",
+        "id": 60,
+        "ok": true,
+        "reply": "WLOG,END,88,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14656.953,
+      "command": "WLOG,READ,96,8",
+      "result": {
+        "type": "result",
+        "id": 61,
+        "ok": true,
+        "reply": "WLOG,END,96,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14657.781,
+      "command": "WLOG,READ,104,8",
+      "result": {
+        "type": "result",
+        "id": 62,
+        "ok": true,
+        "reply": "WLOG,END,104,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14658.609,
+      "command": "WLOG,READ,112,8",
+      "result": {
+        "type": "result",
+        "id": 63,
+        "ok": true,
+        "reply": "WLOG,END,112,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14659.468,
+      "command": "WLOG,READ,120,8",
+      "result": {
+        "type": "result",
+        "id": 64,
+        "ok": true,
+        "reply": "WLOG,END,120,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14660.312,
+      "command": "WLOG,READ,128,8",
+      "result": {
+        "type": "result",
+        "id": 65,
+        "ok": true,
+        "reply": "WLOG,END,128,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14661.171,
+      "command": "WLOG,READ,136,8",
+      "result": {
+        "type": "result",
+        "id": 66,
+        "ok": true,
+        "reply": "WLOG,END,136,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14662.0,
+      "command": "WLOG,READ,144,8",
+      "result": {
+        "type": "result",
+        "id": 67,
+        "ok": true,
+        "reply": "WLOG,END,144,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14662.859,
+      "command": "WLOG,READ,152,8",
+      "result": {
+        "type": "result",
+        "id": 68,
+        "ok": true,
+        "reply": "WLOG,END,152,8,836"
+      }
+    },
+    {
+      "host_monotonic": 14663.968,
+      "command": "TEL,1",
+      "result": {
+        "type": "result",
+        "id": 69,
+        "ok": true,
+        "reply": "ACK,TEL,1"
+      }
+    },
+    {
+      "host_monotonic": 14664.093,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 70,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 14664.171,
+      "command": "WLOG,STOP",
+      "result": {
+        "type": "result",
+        "id": 71,
+        "ok": true,
+        "reply": "WLOG,STOP,OK"
+      }
+    },
+    {
+      "host_monotonic": 14664.281,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 72,
+        "ok": true,
+        "reply": "ATEL,930279,0,1,0,4,0,0,91243,-91086,0,0,0,11681"
+      }
+    },
+    {
+      "host_monotonic": 14664.453,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 73,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,7"
+      }
+    }
+  ]
+}

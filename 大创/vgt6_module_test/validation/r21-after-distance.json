@@ -1,0 +1,1937 @@
+{
+  "motion_started": false,
+  "commands": [
+    {
+      "command": "DISARM",
+      "host_monotonic": 1644.453,
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    },
+    {
+      "command": "TEL,0",
+      "host_monotonic": 1644.562,
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      }
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 1644.64,
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      }
+    },
+    {
+      "command": "ANGLESTATUS",
+      "host_monotonic": 1644.703,
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "ATEL,27605,0,1,0,0,0,0,3,0,0,0,0,12168"
+      }
+    },
+    {
+      "command": "PS2STATUS",
+      "host_monotonic": 1644.796,
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,4"
+      }
+    },
+    {
+      "command": "SPEEDSTATUS",
+      "host_monotonic": 1644.906,
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "TEL,27808,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12168,-13,-3,1,-3,4,0"
+      }
+    },
+    {
+      "command": "VER",
+      "host_monotonic": 1645.031,
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R21"
+      }
+    },
+    {
+      "command": "CAPS",
+      "host_monotonic": 1645.125,
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST"
+      }
+    },
+    {
+      "command": "UART",
+      "host_monotonic": 1645.328,
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x04,0,0,1,0,0"
+      }
+    },
+    {
+      "command": "LINK",
+      "host_monotonic": 1645.421,
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "LINK,110,11,0,0,1,0"
+      }
+    },
+    {
+      "command": "STACK",
+      "host_monotonic": 1645.515,
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "STACK,4096,2448,1648,1"
+      }
+    },
+    {
+      "command": "TOFINFO",
+      "host_monotonic": 1645.593,
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "TOFINFO,LONG,33,40,2,120,697,28501,33"
+      }
+    },
+    {
+      "command": "TOF,1",
+      "host_monotonic": 1645.734,
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "ACK,TOF,1"
+      }
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 1653.796,
+      "result": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      }
+    },
+    {
+      "command": "TOFINFO",
+      "host_monotonic": 1653.859,
+      "result": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "TOFINFO,LONG,33,40,2,120,901,36759,17"
+      }
+    },
+    {
+      "command": "TEL,1",
+      "host_monotonic": 1653.968,
+      "result": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "ACK,TEL,1"
+      }
+    },
+    {
+      "command": "TOF,1",
+      "host_monotonic": 1654.031,
+      "result": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "ACK,TOF,1"
+      }
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 1658.109,
+      "result": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      }
+    },
+    {
+      "command": "TEL,0",
+      "host_monotonic": 1658.171,
+      "result": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      }
+    },
+    {
+      "command": "DISARM",
+      "host_monotonic": 1658.265,
+      "result": {
+        "type": "result",
+        "id": 20,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    },
+    {
+      "command": "ANGLESTATUS",
+      "host_monotonic": 1658.328,
+      "result": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "ATEL,41241,0,1,0,0,0,0,4,0,0,0,0,12166"
+      }
+    },
+    {
+      "command": "PS2STATUS",
+      "host_monotonic": 1658.421,
+      "result": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,1"
+      }
+    },
+    {
+      "command": "SPEEDSTATUS",
+      "host_monotonic": 1658.562,
+      "result": {
+        "type": "result",
+        "id": 23,
+        "ok": true,
+        "reply": "TEL,41466,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12166,0,0,1,0,4,0"
+      }
+    },
+    {
+      "command": "UART",
+      "host_monotonic": 1658.687,
+      "result": {
+        "type": "result",
+        "id": 24,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x04,0,0,1,0,0"
+      }
+    },
+    {
+      "command": "LINK",
+      "host_monotonic": 1658.812,
+      "result": {
+        "type": "result",
+        "id": 25,
+        "ok": true,
+        "reply": "LINK,234,26,0,0,1,0"
+      }
+    },
+    {
+      "command": "STACK",
+      "host_monotonic": 1658.89,
+      "result": {
+        "type": "result",
+        "id": 26,
+        "ok": true,
+        "reply": "STACK,4096,2448,1648,1"
+      }
+    },
+    {
+      "command": "YAWGET",
+      "host_monotonic": 1658.984,
+      "result": {
+        "type": "result",
+        "id": 27,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "command": "HEADGET",
+      "host_monotonic": 1659.078,
+      "result": {
+        "type": "result",
+        "id": 28,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "command": "PIDGET",
+      "host_monotonic": 1659.187,
+      "result": {
+        "type": "result",
+        "id": 29,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 1659.343,
+      "result": {
+        "type": "result",
+        "id": 30,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      }
+    },
+    {
+      "command": "TEL,0",
+      "host_monotonic": 1659.421,
+      "result": {
+        "type": "result",
+        "id": 31,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      }
+    },
+    {
+      "command": "DISARM",
+      "host_monotonic": 1659.5,
+      "result": {
+        "type": "result",
+        "id": 32,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    }
+  ],
+  "wire": [
+    {
+      "host_monotonic": 1644.453,
+      "raw": "STATUS,1,ble connected\n"
+    },
+    {
+      "host_monotonic": 1644.562,
+      "raw": "ACK,DISARM\n"
+    },
+    {
+      "host_monotonic": 1644.562,
+      "raw": "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    },
+    {
+      "host_monotonic": 1644.64,
+      "raw": "ACK,TEL,0\n"
+    },
+    {
+      "host_monotonic": 1644.64,
+      "raw": "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "host_monotonic": 1644.703,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 1644.703,
+      "raw": "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 1644.796,
+      "raw": "ATEL,27605,0,1,0,0,0,0,3,0,0,0,0,12168\n"
+    },
+    {
+      "host_monotonic": 1644.796,
+      "raw": "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"ATEL,27605,0,1,0,0,0,0,3,0,0,0,0,12168\"}"
+    },
+    {
+      "host_monotonic": 1644.906,
+      "raw": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,4\n"
+    },
+    {
+      "host_monotonic": 1644.906,
+      "raw": "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,4\"}"
+    },
+    {
+      "host_monotonic": 1645.031,
+      "raw": "TEL,27808,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12168,-13,-3,1,-3,4,0\n"
+    },
+    {
+      "host_monotonic": 1645.031,
+      "raw": "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"TEL,27808,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12168,-13,-3,1,-3,4,0\"}"
+    },
+    {
+      "host_monotonic": 1645.125,
+      "raw": "VER,VGT6_BM50_ATTITUDE_R21\n"
+    },
+    {
+      "host_monotonic": 1645.125,
+      "raw": "{\"type\": \"result\", \"id\": 7, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R21\"}"
+    },
+    {
+      "host_monotonic": 1645.328,
+      "raw": "CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST\n"
+    },
+    {
+      "host_monotonic": 1645.328,
+      "raw": "{\"type\": \"result\", \"id\": 8, \"ok\": true, \"reply\": \"CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST\"}"
+    },
+    {
+      "host_monotonic": 1645.421,
+      "raw": "UART,9600,42000000,4375,0x04,0,0,1,0,0\n"
+    },
+    {
+      "host_monotonic": 1645.421,
+      "raw": "{\"type\": \"result\", \"id\": 9, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x04,0,0,1,0,0\"}"
+    },
+    {
+      "host_monotonic": 1645.515,
+      "raw": "LINK,110,11,0,0,1,0\n"
+    },
+    {
+      "host_monotonic": 1645.515,
+      "raw": "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"LINK,110,11,0,0,1,0\"}"
+    },
+    {
+      "host_monotonic": 1645.593,
+      "raw": "STACK,4096,2448,1648,1\n"
+    },
+    {
+      "host_monotonic": 1645.593,
+      "raw": "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"STACK,4096,2448,1648,1\"}"
+    },
+    {
+      "host_monotonic": 1645.734,
+      "raw": "TOFINFO,LONG,33,40,2,120,697,28501,33\n"
+    },
+    {
+      "host_monotonic": 1645.734,
+      "raw": "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"TOFINFO,LONG,33,40,2,120,697,28501,33\"}"
+    },
+    {
+      "host_monotonic": 1645.796,
+      "raw": "ACK,TOF,1\n"
+    },
+    {
+      "host_monotonic": 1645.796,
+      "raw": "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"ACK,TOF,1\"}"
+    },
+    {
+      "host_monotonic": 1645.937,
+      "raw": "TOF,28734,1,1,168,9,22,0\n"
+    },
+    {
+      "host_monotonic": 1646.031,
+      "raw": "TOF,28834,1,1,166,9,40,0\n"
+    },
+    {
+      "host_monotonic": 1646.125,
+      "raw": "TOF,28934,1,1,165,9,20,0\n"
+    },
+    {
+      "host_monotonic": 1646.234,
+      "raw": "TOF,29034,1,1,164,9,38,0\n"
+    },
+    {
+      "host_monotonic": 1646.312,
+      "raw": "TOF,29134,1,1,165,9,16,0\n"
+    },
+    {
+      "host_monotonic": 1646.437,
+      "raw": "TOF,29234,1,1,163,9,36,0\n"
+    },
+    {
+      "host_monotonic": 1646.546,
+      "raw": "TOF,29334,1,1,169,9,13,0\n"
+    },
+    {
+      "host_monotonic": 1646.64,
+      "raw": "TOF,29434,1,1,170,9,32,0\n"
+    },
+    {
+      "host_monotonic": 1646.718,
+      "raw": "TOF,29534,1,1,166,9,10,0\n"
+    },
+    {
+      "host_monotonic": 1646.843,
+      "raw": "TOF,29634,1,1,169,9,29,0\n"
+    },
+    {
+      "host_monotonic": 1646.921,
+      "raw": "TOF,29734,1,1,168,9,7,0\n"
+    },
+    {
+      "host_monotonic": 1647.015,
+      "raw": "TOF,29834,1,1,167,9,27,0\n"
+    },
+    {
+      "host_monotonic": 1647.125,
+      "raw": "TOF,29934,1,1,164,9,6,0\n"
+    },
+    {
+      "host_monotonic": 1647.218,
+      "raw": "TOF,30034,1,1,167,9,24,0\n"
+    },
+    {
+      "host_monotonic": 1647.328,
+      "raw": "TOF,30134,1,1,168,9,3,0\n"
+    },
+    {
+      "host_monotonic": 1647.421,
+      "raw": "TOF,30234,1,1,168,9,21,0\n"
+    },
+    {
+      "host_monotonic": 1647.531,
+      "raw": "TOF,30334,1,1,170,9,40,0\n"
+    },
+    {
+      "host_monotonic": 1647.625,
+      "raw": "TOF,30434,1,1,166,9,18,0\n"
+    },
+    {
+      "host_monotonic": 1647.734,
+      "raw": "TOF,30534,1,1,168,9,38,0\n"
+    },
+    {
+      "host_monotonic": 1647.828,
+      "raw": "TOF,30634,1,1,166,9,16,0\n"
+    },
+    {
+      "host_monotonic": 1647.921,
+      "raw": "TOF,30734,1,1,166,9,34,0\n"
+    },
+    {
+      "host_monotonic": 1648.031,
+      "raw": "TOF,30834,1,1,163,9,12,0\n"
+    },
+    {
+      "host_monotonic": 1648.125,
+      "raw": "TOF,30934,1,1,166,9,32,0\n"
+    },
+    {
+      "host_monotonic": 1648.234,
+      "raw": "TOF,31034,1,1,167,9,10,0\n"
+    },
+    {
+      "host_monotonic": 1648.312,
+      "raw": "TOF,31134,1,1,171,9,29,0\n"
+    },
+    {
+      "host_monotonic": 1648.437,
+      "raw": "TOF,31234,1,1,162,9,8,0\n"
+    },
+    {
+      "host_monotonic": 1648.515,
+      "raw": "TOF,31334,1,1,168,9,26,0\n"
+    },
+    {
+      "host_monotonic": 1648.609,
+      "raw": "TOF,31434,1,1,167,9,4,0\n"
+    },
+    {
+      "host_monotonic": 1648.734,
+      "raw": "TOF,31534,1,1,165,9,24,0\n"
+    },
+    {
+      "host_monotonic": 1648.812,
+      "raw": "TOF,31634,1,1,165,9,1,0\n"
+    },
+    {
+      "host_monotonic": 1648.921,
+      "raw": "TOF,31734,1,1,170,9,21,0\n"
+    },
+    {
+      "host_monotonic": 1649.046,
+      "raw": "TOF,31834,1,1,169,9,39,0\n"
+    },
+    {
+      "host_monotonic": 1649.171,
+      "raw": "TOF,31934,1,1,167,9,18,0\n"
+    },
+    {
+      "host_monotonic": 1649.218,
+      "raw": "TOF,32034,1,1,166,9,36,0\n"
+    },
+    {
+      "host_monotonic": 1649.359,
+      "raw": "TOF,32134,1,1,168,9,16,0\n"
+    },
+    {
+      "host_monotonic": 1649.421,
+      "raw": "TOF,32234,1,1,172,9,34,0\n"
+    },
+    {
+      "host_monotonic": 1649.515,
+      "raw": "TOF,32334,1,1,168,9,13,0\n"
+    },
+    {
+      "host_monotonic": 1649.625,
+      "raw": "TOF,32434,1,1,170,9,32,0\n"
+    },
+    {
+      "host_monotonic": 1649.718,
+      "raw": "TOF,32534,1,1,169,9,10,0\n"
+    },
+    {
+      "host_monotonic": 1649.828,
+      "raw": "TOF,32634,1,1,171,9,28,0\n"
+    },
+    {
+      "host_monotonic": 1649.937,
+      "raw": "TOF,32734,1,1,167,9,6,0\n"
+    },
+    {
+      "host_monotonic": 1650.031,
+      "raw": "TOF,32834,1,1,162,9,26,0\n"
+    },
+    {
+      "host_monotonic": 1650.125,
+      "raw": "TOF,32934,1,1,165,9,4,0\n"
+    },
+    {
+      "host_monotonic": 1650.234,
+      "raw": "TOF,33034,1,1,172,9,22,0\n"
+    },
+    {
+      "host_monotonic": 1650.343,
+      "raw": "TOF,33134,1,1,168,9,1,0\n"
+    },
+    {
+      "host_monotonic": 1650.437,
+      "raw": "TOF,33234,1,1,165,9,21,0\n"
+    },
+    {
+      "host_monotonic": 1650.531,
+      "raw": "TOF,33334,1,1,168,9,39,0\n"
+    },
+    {
+      "host_monotonic": 1650.625,
+      "raw": "TOF,33434,1,1,168,9,18,0\n"
+    },
+    {
+      "host_monotonic": 1650.734,
+      "raw": "TOF,33534,1,1,169,9,36,0\n"
+    },
+    {
+      "host_monotonic": 1650.812,
+      "raw": "TOF,33634,1,1,164,9,15,0\n"
+    },
+    {
+      "host_monotonic": 1650.937,
+      "raw": "TOF,33734,1,1,169,9,33,0\n"
+    },
+    {
+      "host_monotonic": 1651.046,
+      "raw": "TOF,33834,1,1,168,9,11,0\n"
+    },
+    {
+      "host_monotonic": 1651.156,
+      "raw": "TOF,33934,1,1,172,9,30,0\n"
+    },
+    {
+      "host_monotonic": 1651.218,
+      "raw": "TOF,34034,1,1,165,9,8,0\n"
+    },
+    {
+      "host_monotonic": 1651.343,
+      "raw": "TOF,34134,1,1,162,9,28,0\n"
+    },
+    {
+      "host_monotonic": 1651.453,
+      "raw": "TOF,34234,1,1,166,9,6,0\n"
+    },
+    {
+      "host_monotonic": 1651.515,
+      "raw": "TOF,34334,1,1,172,9,26,0\n"
+    },
+    {
+      "host_monotonic": 1651.625,
+      "raw": "TOF,34434,1,1,167,9,4,0\n"
+    },
+    {
+      "host_monotonic": 1651.718,
+      "raw": "TOF,34534,1,1,168,9,22,0\n"
+    },
+    {
+      "host_monotonic": 1651.859,
+      "raw": "TOF,34634,1,1,168,9,1,0\n"
+    },
+    {
+      "host_monotonic": 1651.921,
+      "raw": "TOF,34734,1,1,168,9,20,0\n"
+    },
+    {
+      "host_monotonic": 1652.031,
+      "raw": "TOF,34834,1,1,164,9,38,0\n"
+    },
+    {
+      "host_monotonic": 1652.125,
+      "raw": "TOF,34934,1,1,167,9,16,0\n"
+    },
+    {
+      "host_monotonic": 1652.234,
+      "raw": "TOF,35034,1,1,173,9,36,0\n"
+    },
+    {
+      "host_monotonic": 1652.328,
+      "raw": "TOF,35134,1,1,165,9,13,0\n"
+    },
+    {
+      "host_monotonic": 1652.437,
+      "raw": "TOF,35234,1,1,171,9,33,0\n"
+    },
+    {
+      "host_monotonic": 1652.531,
+      "raw": "TOF,35334,1,1,169,9,11,0\n"
+    },
+    {
+      "host_monotonic": 1652.625,
+      "raw": "TOF,35434,1,1,164,9,30,0\n"
+    },
+    {
+      "host_monotonic": 1652.734,
+      "raw": "TOF,35534,1,1,162,9,8,0\n"
+    },
+    {
+      "host_monotonic": 1652.828,
+      "raw": "TOF,35634,1,1,167,9,28,0\n"
+    },
+    {
+      "host_monotonic": 1652.937,
+      "raw": "TOF,35734,1,1,166,9,6,0\n"
+    },
+    {
+      "host_monotonic": 1653.015,
+      "raw": "TOF,35834,1,1,167,9,24,0\n"
+    },
+    {
+      "host_monotonic": 1653.156,
+      "raw": "TOF,35934,1,1,162,9,2,0\n"
+    },
+    {
+      "host_monotonic": 1653.234,
+      "raw": "TOF,36034,1,1,167,9,22,0\n"
+    },
+    {
+      "host_monotonic": 1653.343,
+      "raw": "TOF,36134,1,1,167,9,1,0\n"
+    },
+    {
+      "host_monotonic": 1653.437,
+      "raw": "TOF,36234,1,1,168,9,20,0\n"
+    },
+    {
+      "host_monotonic": 1653.515,
+      "raw": "TOF,36334,1,1,164,9,38,0\n"
+    },
+    {
+      "host_monotonic": 1653.625,
+      "raw": "TOF,36434,1,1,167,9,16,0\n"
+    },
+    {
+      "host_monotonic": 1653.718,
+      "raw": "TOF,36534,1,1,166,9,36,0\n"
+    },
+    {
+      "host_monotonic": 1653.828,
+      "raw": "TOF,36634,1,1,163,9,14,0\n"
+    },
+    {
+      "host_monotonic": 1653.859,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 1653.859,
+      "raw": "{\"type\": \"result\", \"id\": 14, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 1653.968,
+      "raw": "TOFINFO,LONG,33,40,2,120,901,36759,17\n"
+    },
+    {
+      "host_monotonic": 1653.968,
+      "raw": "{\"type\": \"result\", \"id\": 15, \"ok\": true, \"reply\": \"TOFINFO,LONG,33,40,2,120,901,36759,17\"}"
+    },
+    {
+      "host_monotonic": 1654.031,
+      "raw": "ACK,TEL,1\n"
+    },
+    {
+      "host_monotonic": 1654.031,
+      "raw": "{\"type\": \"result\", \"id\": 16, \"ok\": true, \"reply\": \"ACK,TEL,1\"}"
+    },
+    {
+      "host_monotonic": 1654.109,
+      "raw": "ACK,TOF,1\n"
+    },
+    {
+      "host_monotonic": 1654.109,
+      "raw": "{\"type\": \"result\", \"id\": 17, \"ok\": true, \"reply\": \"ACK,TOF,1\"}"
+    },
+    {
+      "host_monotonic": 1654.328,
+      "raw": "TOF,37137,1,1,168,9,29,0\n"
+    },
+    {
+      "host_monotonic": 1654.531,
+      "raw": "TOF,37337,1,1,161,9,27,0\n"
+    },
+    {
+      "host_monotonic": 1654.593,
+      "raw": "TEL,37369,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12170,0,0,1,0,4,0\n"
+    },
+    {
+      "host_monotonic": 1654.734,
+      "raw": "TOF,37537,1,1,162,9,25,0\n"
+    },
+    {
+      "host_monotonic": 1654.937,
+      "raw": "TOF,37737,1,1,167,9,22,0\n"
+    },
+    {
+      "host_monotonic": 1655.093,
+      "raw": "TEL,37869,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12169,0,0,1,0,3,0\n"
+    },
+    {
+      "host_monotonic": 1655.156,
+      "raw": "TOF,37937,1,1,169,9,19,0\n"
+    },
+    {
+      "host_monotonic": 1655.312,
+      "raw": "TOF,38137,1,1,168,9,15,0\n"
+    },
+    {
+      "host_monotonic": 1655.546,
+      "raw": "TOF,38337,1,1,170,9,14,0\n"
+    },
+    {
+      "host_monotonic": 1655.609,
+      "raw": "TEL,38369,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12167,0,0,1,0,3,0\n"
+    },
+    {
+      "host_monotonic": 1655.718,
+      "raw": "TOF,38537,1,1,169,9,11,0\n"
+    },
+    {
+      "host_monotonic": 1655.921,
+      "raw": "TOF,38737,1,1,165,9,7,0\n"
+    },
+    {
+      "host_monotonic": 1656.109,
+      "raw": "TEL,38869,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12171,-13,-3,1,-3,3,0\n"
+    },
+    {
+      "host_monotonic": 1656.125,
+      "raw": "TOF,38937,1,1,169,9,5,0\n"
+    },
+    {
+      "host_monotonic": 1656.328,
+      "raw": "TOF,39137,1,1,167,9,3,0\n"
+    },
+    {
+      "host_monotonic": 1656.531,
+      "raw": "TOF,39337,1,1,172,9,39,0\n"
+    },
+    {
+      "host_monotonic": 1656.593,
+      "raw": "TEL,39369,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12167,0,0,1,0,3,0\n"
+    },
+    {
+      "host_monotonic": 1656.734,
+      "raw": "TOF,39537,1,1,166,9,37,0\n"
+    },
+    {
+      "host_monotonic": 1656.937,
+      "raw": "TOF,39737,1,1,169,9,34,0\n"
+    },
+    {
+      "host_monotonic": 1657.093,
+      "raw": "TEL,39869,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12165,0,0,1,0,3,0\n"
+    },
+    {
+      "host_monotonic": 1657.125,
+      "raw": "TOF,39937,1,1,164,9,31,0\n"
+    },
+    {
+      "host_monotonic": 1657.343,
+      "raw": "TOF,40137,1,1,163,9,29,0\n"
+    },
+    {
+      "host_monotonic": 1657.546,
+      "raw": "TOF,40337,1,1,162,9,25,0\n"
+    },
+    {
+      "host_monotonic": 1657.593,
+      "raw": "TEL,40369,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12162,0,0,1,0,4,0\n"
+    },
+    {
+      "host_monotonic": 1657.718,
+      "raw": "TOF,40537,1,1,163,9,23,0\n"
+    },
+    {
+      "host_monotonic": 1657.953,
+      "raw": "TOF,40737,1,1,164,9,21,0\n"
+    },
+    {
+      "host_monotonic": 1658.109,
+      "raw": "TEL,40869,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12163,0,-1,1,-1,4,0\n"
+    },
+    {
+      "host_monotonic": 1658.125,
+      "raw": "TOF,40937,1,1,167,9,17,0\n"
+    },
+    {
+      "host_monotonic": 1658.171,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 1658.171,
+      "raw": "{\"type\": \"result\", \"id\": 18, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 1658.265,
+      "raw": "ACK,TEL,0\n"
+    },
+    {
+      "host_monotonic": 1658.265,
+      "raw": "{\"type\": \"result\", \"id\": 19, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "host_monotonic": 1658.328,
+      "raw": "ACK,DISARM\n"
+    },
+    {
+      "host_monotonic": 1658.328,
+      "raw": "{\"type\": \"result\", \"id\": 20, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    },
+    {
+      "host_monotonic": 1658.421,
+      "raw": "ATEL,41241,0,1,0,0,0,0,4,0,0,0,0,12166\n"
+    },
+    {
+      "host_monotonic": 1658.421,
+      "raw": "{\"type\": \"result\", \"id\": 21, \"ok\": true, \"reply\": \"ATEL,41241,0,1,0,0,0,0,4,0,0,0,0,12166\"}"
+    },
+    {
+      "host_monotonic": 1658.562,
+      "raw": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,1\n"
+    },
+    {
+      "host_monotonic": 1658.562,
+      "raw": "{\"type\": \"result\", \"id\": 22, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,1\"}"
+    },
+    {
+      "host_monotonic": 1658.687,
+      "raw": "TEL,41466,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12166,0,0,1,0,4,0\n"
+    },
+    {
+      "host_monotonic": 1658.687,
+      "raw": "{\"type\": \"result\", \"id\": 23, \"ok\": true, \"reply\": \"TEL,41466,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12166,0,0,1,0,4,0\"}"
+    },
+    {
+      "host_monotonic": 1658.812,
+      "raw": "UART,9600,42000000,4375,0x04,0,0,1,0,0\n"
+    },
+    {
+      "host_monotonic": 1658.812,
+      "raw": "{\"type\": \"result\", \"id\": 24, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x04,0,0,1,0,0\"}"
+    },
+    {
+      "host_monotonic": 1658.89,
+      "raw": "LINK,234,26,0,0,1,0\n"
+    },
+    {
+      "host_monotonic": 1658.89,
+      "raw": "{\"type\": \"result\", \"id\": 25, \"ok\": true, \"reply\": \"LINK,234,26,0,0,1,0\"}"
+    },
+    {
+      "host_monotonic": 1658.984,
+      "raw": "STACK,4096,2448,1648,1\n"
+    },
+    {
+      "host_monotonic": 1658.984,
+      "raw": "{\"type\": \"result\", \"id\": 26, \"ok\": true, \"reply\": \"STACK,4096,2448,1648,1\"}"
+    },
+    {
+      "host_monotonic": 1659.078,
+      "raw": "YAWPID,0.1815,1.8062,60,80,20\n"
+    },
+    {
+      "host_monotonic": 1659.078,
+      "raw": "{\"type\": \"result\", \"id\": 27, \"ok\": true, \"reply\": \"YAWPID,0.1815,1.8062,60,80,20\"}"
+    },
+    {
+      "host_monotonic": 1659.187,
+      "raw": "HEADPID,6.0000,1.2500,80,20,D_MEAS\n"
+    },
+    {
+      "host_monotonic": 1659.187,
+      "raw": "{\"type\": \"result\", \"id\": 28, \"ok\": true, \"reply\": \"HEADPID,6.0000,1.2500,80,20,D_MEAS\"}"
+    },
+    {
+      "host_monotonic": 1659.343,
+      "raw": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000\n"
+    },
+    {
+      "host_monotonic": 1659.343,
+      "raw": "{\"type\": \"result\", \"id\": 29, \"ok\": true, \"reply\": \"PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000\"}"
+    },
+    {
+      "host_monotonic": 1659.421,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 1659.421,
+      "raw": "{\"type\": \"result\", \"id\": 30, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 1659.5,
+      "raw": "ACK,TEL,0\n"
+    },
+    {
+      "host_monotonic": 1659.5,
+      "raw": "{\"type\": \"result\", \"id\": 31, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "host_monotonic": 1659.578,
+      "raw": "ACK,DISARM\n"
+    },
+    {
+      "host_monotonic": 1659.578,
+      "raw": "{\"type\": \"result\", \"id\": 32, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    }
+  ],
+  "phases": {
+    "distance_only": {
+      "rows": [
+        [
+          28734,
+          1,
+          1,
+          168,
+          9,
+          22,
+          0
+        ],
+        [
+          28834,
+          1,
+          1,
+          166,
+          9,
+          40,
+          0
+        ],
+        [
+          28934,
+          1,
+          1,
+          165,
+          9,
+          20,
+          0
+        ],
+        [
+          29034,
+          1,
+          1,
+          164,
+          9,
+          38,
+          0
+        ],
+        [
+          29134,
+          1,
+          1,
+          165,
+          9,
+          16,
+          0
+        ],
+        [
+          29234,
+          1,
+          1,
+          163,
+          9,
+          36,
+          0
+        ],
+        [
+          29334,
+          1,
+          1,
+          169,
+          9,
+          13,
+          0
+        ],
+        [
+          29434,
+          1,
+          1,
+          170,
+          9,
+          32,
+          0
+        ],
+        [
+          29534,
+          1,
+          1,
+          166,
+          9,
+          10,
+          0
+        ],
+        [
+          29634,
+          1,
+          1,
+          169,
+          9,
+          29,
+          0
+        ],
+        [
+          29734,
+          1,
+          1,
+          168,
+          9,
+          7,
+          0
+        ],
+        [
+          29834,
+          1,
+          1,
+          167,
+          9,
+          27,
+          0
+        ],
+        [
+          29934,
+          1,
+          1,
+          164,
+          9,
+          6,
+          0
+        ],
+        [
+          30034,
+          1,
+          1,
+          167,
+          9,
+          24,
+          0
+        ],
+        [
+          30134,
+          1,
+          1,
+          168,
+          9,
+          3,
+          0
+        ],
+        [
+          30234,
+          1,
+          1,
+          168,
+          9,
+          21,
+          0
+        ],
+        [
+          30334,
+          1,
+          1,
+          170,
+          9,
+          40,
+          0
+        ],
+        [
+          30434,
+          1,
+          1,
+          166,
+          9,
+          18,
+          0
+        ],
+        [
+          30534,
+          1,
+          1,
+          168,
+          9,
+          38,
+          0
+        ],
+        [
+          30634,
+          1,
+          1,
+          166,
+          9,
+          16,
+          0
+        ],
+        [
+          30734,
+          1,
+          1,
+          166,
+          9,
+          34,
+          0
+        ],
+        [
+          30834,
+          1,
+          1,
+          163,
+          9,
+          12,
+          0
+        ],
+        [
+          30934,
+          1,
+          1,
+          166,
+          9,
+          32,
+          0
+        ],
+        [
+          31034,
+          1,
+          1,
+          167,
+          9,
+          10,
+          0
+        ],
+        [
+          31134,
+          1,
+          1,
+          171,
+          9,
+          29,
+          0
+        ],
+        [
+          31234,
+          1,
+          1,
+          162,
+          9,
+          8,
+          0
+        ],
+        [
+          31334,
+          1,
+          1,
+          168,
+          9,
+          26,
+          0
+        ],
+        [
+          31434,
+          1,
+          1,
+          167,
+          9,
+          4,
+          0
+        ],
+        [
+          31534,
+          1,
+          1,
+          165,
+          9,
+          24,
+          0
+        ],
+        [
+          31634,
+          1,
+          1,
+          165,
+          9,
+          1,
+          0
+        ],
+        [
+          31734,
+          1,
+          1,
+          170,
+          9,
+          21,
+          0
+        ],
+        [
+          31834,
+          1,
+          1,
+          169,
+          9,
+          39,
+          0
+        ],
+        [
+          31934,
+          1,
+          1,
+          167,
+          9,
+          18,
+          0
+        ],
+        [
+          32034,
+          1,
+          1,
+          166,
+          9,
+          36,
+          0
+        ],
+        [
+          32134,
+          1,
+          1,
+          168,
+          9,
+          16,
+          0
+        ],
+        [
+          32234,
+          1,
+          1,
+          172,
+          9,
+          34,
+          0
+        ],
+        [
+          32334,
+          1,
+          1,
+          168,
+          9,
+          13,
+          0
+        ],
+        [
+          32434,
+          1,
+          1,
+          170,
+          9,
+          32,
+          0
+        ],
+        [
+          32534,
+          1,
+          1,
+          169,
+          9,
+          10,
+          0
+        ],
+        [
+          32634,
+          1,
+          1,
+          171,
+          9,
+          28,
+          0
+        ],
+        [
+          32734,
+          1,
+          1,
+          167,
+          9,
+          6,
+          0
+        ],
+        [
+          32834,
+          1,
+          1,
+          162,
+          9,
+          26,
+          0
+        ],
+        [
+          32934,
+          1,
+          1,
+          165,
+          9,
+          4,
+          0
+        ],
+        [
+          33034,
+          1,
+          1,
+          172,
+          9,
+          22,
+          0
+        ],
+        [
+          33134,
+          1,
+          1,
+          168,
+          9,
+          1,
+          0
+        ],
+        [
+          33234,
+          1,
+          1,
+          165,
+          9,
+          21,
+          0
+        ],
+        [
+          33334,
+          1,
+          1,
+          168,
+          9,
+          39,
+          0
+        ],
+        [
+          33434,
+          1,
+          1,
+          168,
+          9,
+          18,
+          0
+        ],
+        [
+          33534,
+          1,
+          1,
+          169,
+          9,
+          36,
+          0
+        ],
+        [
+          33634,
+          1,
+          1,
+          164,
+          9,
+          15,
+          0
+        ],
+        [
+          33734,
+          1,
+          1,
+          169,
+          9,
+          33,
+          0
+        ],
+        [
+          33834,
+          1,
+          1,
+          168,
+          9,
+          11,
+          0
+        ],
+        [
+          33934,
+          1,
+          1,
+          172,
+          9,
+          30,
+          0
+        ],
+        [
+          34034,
+          1,
+          1,
+          165,
+          9,
+          8,
+          0
+        ],
+        [
+          34134,
+          1,
+          1,
+          162,
+          9,
+          28,
+          0
+        ],
+        [
+          34234,
+          1,
+          1,
+          166,
+          9,
+          6,
+          0
+        ],
+        [
+          34334,
+          1,
+          1,
+          172,
+          9,
+          26,
+          0
+        ],
+        [
+          34434,
+          1,
+          1,
+          167,
+          9,
+          4,
+          0
+        ],
+        [
+          34534,
+          1,
+          1,
+          168,
+          9,
+          22,
+          0
+        ],
+        [
+          34634,
+          1,
+          1,
+          168,
+          9,
+          1,
+          0
+        ],
+        [
+          34734,
+          1,
+          1,
+          168,
+          9,
+          20,
+          0
+        ],
+        [
+          34834,
+          1,
+          1,
+          164,
+          9,
+          38,
+          0
+        ],
+        [
+          34934,
+          1,
+          1,
+          167,
+          9,
+          16,
+          0
+        ],
+        [
+          35034,
+          1,
+          1,
+          173,
+          9,
+          36,
+          0
+        ],
+        [
+          35134,
+          1,
+          1,
+          165,
+          9,
+          13,
+          0
+        ],
+        [
+          35234,
+          1,
+          1,
+          171,
+          9,
+          33,
+          0
+        ],
+        [
+          35334,
+          1,
+          1,
+          169,
+          9,
+          11,
+          0
+        ],
+        [
+          35434,
+          1,
+          1,
+          164,
+          9,
+          30,
+          0
+        ],
+        [
+          35534,
+          1,
+          1,
+          162,
+          9,
+          8,
+          0
+        ],
+        [
+          35634,
+          1,
+          1,
+          167,
+          9,
+          28,
+          0
+        ],
+        [
+          35734,
+          1,
+          1,
+          166,
+          9,
+          6,
+          0
+        ],
+        [
+          35834,
+          1,
+          1,
+          167,
+          9,
+          24,
+          0
+        ],
+        [
+          35934,
+          1,
+          1,
+          162,
+          9,
+          2,
+          0
+        ],
+        [
+          36034,
+          1,
+          1,
+          167,
+          9,
+          22,
+          0
+        ],
+        [
+          36134,
+          1,
+          1,
+          167,
+          9,
+          1,
+          0
+        ],
+        [
+          36234,
+          1,
+          1,
+          168,
+          9,
+          20,
+          0
+        ],
+        [
+          36334,
+          1,
+          1,
+          164,
+          9,
+          38,
+          0
+        ],
+        [
+          36434,
+          1,
+          1,
+          167,
+          9,
+          16,
+          0
+        ],
+        [
+          36534,
+          1,
+          1,
+          166,
+          9,
+          36,
+          0
+        ]
+      ],
+      "frames": 79,
+      "valid_frames": 79,
+      "interval_ms": {
+        "min": 100,
+        "max": 100,
+        "median": 100.0
+      },
+      "distance_mm": {
+        "min": 162,
+        "max": 173
+      },
+      "max_sample_age_ms": 40
+    },
+    "distance_and_speed": {
+      "rows": [
+        [
+          37137,
+          1,
+          1,
+          168,
+          9,
+          29,
+          0
+        ],
+        [
+          37337,
+          1,
+          1,
+          161,
+          9,
+          27,
+          0
+        ],
+        [
+          37537,
+          1,
+          1,
+          162,
+          9,
+          25,
+          0
+        ],
+        [
+          37737,
+          1,
+          1,
+          167,
+          9,
+          22,
+          0
+        ],
+        [
+          37937,
+          1,
+          1,
+          169,
+          9,
+          19,
+          0
+        ],
+        [
+          38137,
+          1,
+          1,
+          168,
+          9,
+          15,
+          0
+        ],
+        [
+          38337,
+          1,
+          1,
+          170,
+          9,
+          14,
+          0
+        ],
+        [
+          38537,
+          1,
+          1,
+          169,
+          9,
+          11,
+          0
+        ],
+        [
+          38737,
+          1,
+          1,
+          165,
+          9,
+          7,
+          0
+        ],
+        [
+          38937,
+          1,
+          1,
+          169,
+          9,
+          5,
+          0
+        ],
+        [
+          39137,
+          1,
+          1,
+          167,
+          9,
+          3,
+          0
+        ],
+        [
+          39337,
+          1,
+          1,
+          172,
+          9,
+          39,
+          0
+        ],
+        [
+          39537,
+          1,
+          1,
+          166,
+          9,
+          37,
+          0
+        ],
+        [
+          39737,
+          1,
+          1,
+          169,
+          9,
+          34,
+          0
+        ],
+        [
+          39937,
+          1,
+          1,
+          164,
+          9,
+          31,
+          0
+        ],
+        [
+          40137,
+          1,
+          1,
+          163,
+          9,
+          29,
+          0
+        ],
+        [
+          40337,
+          1,
+          1,
+          162,
+          9,
+          25,
+          0
+        ],
+        [
+          40537,
+          1,
+          1,
+          163,
+          9,
+          23,
+          0
+        ],
+        [
+          40737,
+          1,
+          1,
+          164,
+          9,
+          21,
+          0
+        ]
+      ],
+      "frames": 19,
+      "valid_frames": 19,
+      "interval_ms": {
+        "min": 200,
+        "max": 200,
+        "median": 200.0
+      },
+      "distance_mm": {
+        "min": 161,
+        "max": 172
+      },
+      "max_sample_age_ms": 39
+    }
+  },
+  "candidate_image_sha256": "422b07d54aa86cd3d28a282467748301bb0e5c20e96f0e923f215e067666a70a",
+  "sample_counter_hz": 24.703317994671835
+}

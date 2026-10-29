@@ -1,0 +1,480 @@
+Executing <Task finished name='Task-2' coro=<LiveSessionTests.test_capacity_rejected_before_arm_and_unresolved_logs_never_write() done, defined at D:\my_code\my_code\��\pid-tuning-adapter\test_attitude_tuner.py:319> result=None created at C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\runners.py:100> took 0.109 seconds
+................................................................F.E.FE...EE.
+======================================================================
+ERROR: test_capture_command_order_and_watchdog_use_without_real_time_or_hardware (test_wheel_log.WheelSessionTests.test_capture_command_order_and_watchdog_use_without_real_time_or_hardware)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "D:\my_code\my_code\��\pid-tuning-adapter\test_wheel_log.py", line 152, in test_capture_command_order_and_watchdog_use_without_real_time_or_hardware
+    rows=await s.collect(40,2,3)
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\my_code\my_code\��\pid-tuning-adapter\wheel_tuner.py", line 450, in collect
+    await expect('ARM','ACK,ARM,WHEELS_OFF_GROUND')
+  File "D:\my_code\my_code\��\pid-tuning-adapter\wheel_tuner.py", line 379, in expect
+    raise RuntimeError(f'{command} returned unexpected reply: {reply!r}')
+RuntimeError: ARM returned unexpected reply: 'ACK,ARM'
+
+======================================================================
+ERROR: test_failed_quality_aborts_without_blind_gain_write (test_wheel_log.WheelSessionTests.test_failed_quality_aborts_without_blind_gain_write)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "D:\my_code\my_code\��\pid-tuning-adapter\test_wheel_log.py", line 253, in test_failed_quality_aborts_without_blind_gain_write
+    report=json.loads((args.output/'session.json').read_text())
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\Temp\\tmp1qtptu34\\run\\session.json'
+
+======================================================================
+ERROR: test_refresh_overrun_returns_safely_and_excludes_trial (test_wheel_log.WheelSessionTests.test_refresh_overrun_returns_safely_and_excludes_trial)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "D:\my_code\my_code\��\pid-tuning-adapter\test_wheel_log.py", line 201, in test_refresh_overrun_returns_safely_and_excludes_trial
+    await session.collect(40,2,7,1.)
+  File "D:\my_code\my_code\��\pid-tuning-adapter\wheel_tuner.py", line 407, in collect
+    await expect('ARM','ACK,ARM,WHEELS_OFF_GROUND')
+  File "D:\my_code\my_code\��\pid-tuning-adapter\wheel_tuner.py", line 379, in expect
+    raise RuntimeError(f'{command} returned unexpected reply: {reply!r}')
+RuntimeError: ARM returned unexpected reply: 'ACK,ARM'
+
+======================================================================
+ERROR: test_simulated_campaign_measures_four_wheels_and_changes_only_selected_gains (test_wheel_log.WheelSessionTests.test_simulated_campaign_measures_four_wheels_and_changes_only_selected_gains)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "D:\my_code\my_code\��\pid-tuning-adapter\test_wheel_log.py", line 233, in test_simulated_campaign_measures_four_wheels_and_changes_only_selected_gains
+    report=await run(args)
+           ^^^^^^^^^^^^^^^
+  File "D:\my_code\my_code\��\pid-tuning-adapter\wheel_tuner.py", line 541, in run
+    raise ValueError('the first ground holdout must use the verified forward-command sign')
+ValueError: the first ground holdout must use the verified forward-command sign
+
+======================================================================
+FAIL: test_timed_leg_estimate_is_distance_and_speed_bounded (test_wheel_log.WheelQualityTests.test_timed_leg_estimate_is_distance_and_speed_bounded)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\my_code\my_code\��\pid-tuning-adapter\test_wheel_log.py", line 115, in test_timed_leg_estimate_is_distance_and_speed_bounded
+    self.assertAlmostEqual(timed_leg_seconds(1.,40),4.134,places=2)
+AssertionError: 3.6467786173024836 != 4.134 within 2 places (0.4872213826975167 difference)
+
+======================================================================
+FAIL: test_download_and_identical_retry (test_wheel_log.WheelSessionTests.test_download_and_identical_retry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\28097\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\asyncio\base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "D:\my_code\my_code\��\pid-tuning-adapter\test_wheel_log.py", line 214, in test_download_and_identical_retry
+    with self.assertRaises(RuntimeError):await s.download()
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 76 tests in 90.239s
+
+FAILED (failures=2, errors=4)
+{
+  "status": "complete",
+  "selection": "no_significant_training_improvement",
+  "best_gains": [
+    5.0,
+    1.25
+  ],
+  "best_score": 0.4109900550001555,
+  "experiments": 8,
+  "session": "D:\\Temp\\tmprskkr497\\session.json"
+}
+{
+  "capabilities": "CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US",
+  "gains": [
+    0.15,
+    2.5
+  ],
+  "inner": [
+    0.15,
+    2.5
+  ],
+  "scoring_source": "downloaded_HLOG",
+  "recording_budget_s": 10,
+  "campaign_plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.15,
+      2.5
+    ],
+    "bounds": [
+      [
+        0.09,
+        0.21
+      ],
+      [
+        1.5,
+        3.5
+      ]
+    ],
+    "validation_targets": [
+      -15,
+      7.5
+    ],
+    "method": "bo",
+    "rounds": 2,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "motion_started": false
+}
+{
+  "status": "complete",
+  "selection": "no_significant_training_improvement",
+  "best_gains": [
+    0.15,
+    2.5
+  ],
+  "best_score": 0.38757868376269733,
+  "experiments": 8,
+  "session": "D:\\Temp\\tmpsik9l689\\session.json"
+}
+{
+  "status": "complete",
+  "selection": "no_significant_training_improvement",
+  "best_gains": [
+    0.15,
+    2.5
+  ],
+  "best_score": 0.38757868376269733,
+  "experiments": 8,
+  "session": "D:\\Temp\\tmpqq65251y\\session.json"
+}
+{
+  "capabilities": "CAPS,ATTITUDE_R17,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE",
+  "gains": [
+    0.15,
+    2.5
+  ],
+  "inner": [
+    0.15,
+    2.5
+  ],
+  "scoring_source": "downloaded_HLOG",
+  "recording_budget_s": 10,
+  "campaign_plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.15,
+      2.5
+    ],
+    "bounds": [
+      [
+        0.09,
+        0.21
+      ],
+      [
+        1.5,
+        3.5
+      ]
+    ],
+    "validation_targets": [
+      -15,
+      7.5
+    ],
+    "method": "bo",
+    "rounds": 2,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "motion_started": false
+}
+{
+  "status": "complete",
+  "selection": "no_significant_training_improvement",
+  "best_gains": [
+    0.15,
+    2.5
+  ],
+  "best_score": 0.39918212146834803,
+  "experiments": 8,
+  "session": "D:\\Temp\\tmp4ua5zq3p\\session.json"
+}
+[HW<-] ACK,DRV,0,0,0
+[HW<-] ACK,DRV,0,0,0
+[HW<-] WLOG,END,0,1,1
+[HW<-] ACK,STOP
+{
+  "capabilities": "CAPS,ATTITUDE_R19,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B",
+  "gains": [
+    0.1815,
+    1.8062
+  ],
+  "inner": [
+    0.1815,
+    1.8062
+  ],
+  "scoring_source": "downloaded_HLOG",
+  "recording_budget_s": 10,
+  "campaign_plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.1815,
+      1.8062
+    ],
+    "bounds": [
+      [
+        0.1089,
+        0.2541
+      ],
+      [
+        1.0837,
+        2.5287
+      ]
+    ],
+    "validation_targets": [
+      -8,
+      16.0
+    ],
+    "method": "bo",
+    "rounds": 1,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "motion_started": false
+}
+{
+  "capabilities": "CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED",
+  "gains": [
+    0.1815,
+    1.8062
+  ],
+  "inner": [
+    0.1815,
+    1.8062
+  ],
+  "scoring_source": "downloaded_HLOG",
+  "recording_budget_s": 10,
+  "campaign_plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.1815,
+      1.8062
+    ],
+    "bounds": [
+      [
+        0.1089,
+        0.2541
+      ],
+      [
+        1.0837,
+        2.5287
+      ]
+    ],
+    "validation_targets": [
+      -8,
+      16.0
+    ],
+    "method": "bo",
+    "rounds": 1,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "motion_started": false
+}
+{
+  "capabilities": "CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST",
+  "gains": [
+    0.1815,
+    1.8062
+  ],
+  "inner": [
+    0.1815,
+    1.8062
+  ],
+  "scoring_source": "downloaded_HLOG",
+  "recording_budget_s": 10,
+  "campaign_plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.1815,
+      1.8062
+    ],
+    "bounds": [
+      [
+        0.1089,
+        0.2541
+      ],
+      [
+        1.0837,
+        2.5287
+      ]
+    ],
+    "validation_targets": [
+      -8,
+      16.0
+    ],
+    "method": "bo",
+    "rounds": 1,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "motion_started": false
+}
+{
+  "capabilities": "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40",
+  "gains": [
+    0.1815,
+    1.8062
+  ],
+  "inner": [
+    0.1815,
+    1.8062
+  ],
+  "scoring_source": "downloaded_HLOG",
+  "recording_budget_s": 10,
+  "campaign_plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.1815,
+      1.8062
+    ],
+    "bounds": [
+      [
+        0.1089,
+        0.2541
+      ],
+      [
+        1.0837,
+        2.5287
+      ]
+    ],
+    "validation_targets": [
+      -8,
+      16.0
+    ],
+    "method": "bo",
+    "rounds": 1,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "motion_started": false
+}
+{
+  "capabilities": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS",
+  "gains": [
+    0.1815,
+    1.8062
+  ],
+  "inner": [
+    0.1815,
+    1.8062
+  ],
+  "scoring_source": "downloaded_HLOG",
+  "recording_budget_s": 10,
+  "campaign_plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.1815,
+      1.8062
+    ],
+    "bounds": [
+      [
+        0.1089,
+        0.2541
+      ],
+      [
+        1.0837,
+        2.5287
+      ]
+    ],
+    "validation_targets": [
+      -8,
+      16.0
+    ],
+    "method": "bo",
+    "rounds": 1,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "motion_started": false
+}
+{
+  "capabilities": "CAPS,ATTITUDE_R24,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200",
+  "gains": [
+    0.1815,
+    1.8062
+  ],
+  "inner": [
+    0.1815,
+    1.8062
+  ],
+  "scoring_source": "downloaded_HLOG",
+  "recording_budget_s": 10,
+  "campaign_plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.1815,
+      1.8062
+    ],
+    "bounds": [
+      [
+        0.1089,
+        0.2541
+      ],
+      [
+        1.0837,
+        2.5287
+      ]
+    ],
+    "validation_targets": [
+      -8,
+      16.0
+    ],
+    "method": "bo",
+    "rounds": 1,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "motion_started": false
+}

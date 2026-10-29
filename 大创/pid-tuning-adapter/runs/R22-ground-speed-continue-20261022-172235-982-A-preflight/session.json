@@ -1,0 +1,90 @@
+{
+  "status": "failed",
+  "motion_started": false,
+  "selection": "pending",
+  "history": [],
+  "error": "UART unhealthy",
+  "restored_readback": null,
+  "commands": [
+    {
+      "host_monotonic": 11112.984,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ATEL,465566,0,1,0,0,0,0,252,0,0,0,0,12201"
+      }
+    },
+    {
+      "host_monotonic": 11113.187,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,14"
+      }
+    },
+    {
+      "host_monotonic": 11113.531,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R22"
+      }
+    },
+    {
+      "host_monotonic": 11113.843,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40"
+      }
+    },
+    {
+      "host_monotonic": 11114.093,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 11114.39,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x04,0,0,5,0,0"
+      }
+    },
+    {
+      "host_monotonic": 11114.546,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "LINK,476,48,0,0,5,1"
+      }
+    },
+    {
+      "host_monotonic": 11114.64,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "STACK,4096,2512,1584,1"
+      }
+    }
+  ]
+}

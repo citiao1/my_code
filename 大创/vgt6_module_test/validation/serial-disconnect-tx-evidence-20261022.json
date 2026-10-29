@@ -1,0 +1,26 @@
+{
+  "gpioa_moder": 2819270826,
+  "gpioa_afrl": 1431336721,
+  "rx_before": [
+    3795,
+    578,
+    0,
+    0,
+    0
+  ],
+  "rx_after": [
+    3815,
+    581,
+    0,
+    0,
+    0
+  ],
+  "tx_head_tail_busy_ready": [
+    13,
+    13,
+    0,
+    1
+  ],
+  "recent_tx_buffers": [],
+  "error": "IndexError('bytearray index out of range')"
+}

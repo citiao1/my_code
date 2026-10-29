@@ -1,0 +1,41 @@
+#ifndef TOF_FOLLOW_H
+#define TOF_FOLLOW_H
+
+#include <stdint.h>
+#include "tof.h"
+
+#define TOF_FOLLOW_MAX_RPM 80U
+#define TOF_FOLLOW_DEFAULT_TARGET_MM 500U
+#define TOF_FOLLOW_MIN_TARGET_MM 100U
+#define TOF_FOLLOW_MAX_TARGET_MM 2000U
+
+typedef struct { float forward, reverse; } TofFollowGains;
+
+typedef enum { TOF_FOLLOW_OFF, TOF_FOLLOW_TRACK, TOF_FOLLOW_SEARCH } TofFollowMode;
+typedef enum
+{
+  TOF_FOLLOW_NORMAL, TOF_FOLLOW_CANCELLED, TOF_FOLLOW_TIMEOUT,
+  TOF_FOLLOW_SENSOR_FAULT, TOF_FOLLOW_TOO_CLOSE, TOF_FOLLOW_CONTROL_FAULT
+} TofFollowReason;
+
+typedef struct
+{
+  TofFollowMode mode;
+  TofFollowReason reason;
+  uint16_t filtered_mm;
+  int16_t forward_rpm;
+  float turn_dps;
+} TofFollowSnapshot;
+
+void TofFollow_Init(void);
+uint8_t TofFollow_Start(const TofSnapshot *range, float yaw_deg, uint32_t now);
+void TofFollow_Stop(TofFollowReason reason);
+void TofFollow_Process(const TofSnapshot *range, float yaw_deg,
+                       float rate_dps, uint32_t now);
+TofFollowSnapshot TofFollow_GetSnapshot(void);
+TofFollowGains TofFollow_GetGains(void);
+uint8_t TofFollow_SetGains(float forward, float reverse);
+uint16_t TofFollow_GetTarget(void);
+uint8_t TofFollow_SetTarget(uint32_t distance_mm);
+
+#endif

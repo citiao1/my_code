@@ -1,0 +1,2 @@
+VERIFIED critical addresses, vector table and R26 marker at 0x0800593c; device 0x101f6413; flash 1024 KiB
+Core state after programming: RUNNING

@@ -1,0 +1,115 @@
+{
+  "evidence": "offline_replay_of_saved_HLOG",
+  "gain_proposals": false,
+  "ranking": false,
+  "weights": {
+    "normalized_iae": 1.0,
+    "overshoot": 2.0,
+    "steady_error_rms": 1.0,
+    "normalized_settling": 0.5,
+    "saturation_fraction": 0.1
+  },
+  "results": [
+    {
+      "raw": "pid-tuning-adapter\\runs\\direction-redo-20261021-a10-v20\\round-01-raw.json",
+      "quality": "failed",
+      "error": "original locked experiment phases required"
+    },
+    {
+      "raw": "pid-tuning-adapter\\runs\\rate-retune-r18-20261020-validate-a5-best\\round-01-raw.json",
+      "quality": "passed",
+      "metrics": {
+        "normalized_iae": 0.17981779857892996,
+        "overshoot": 0.3146,
+        "steady_error": 0.07610877525604329,
+        "settling_s": 3.3399989999999997,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 1.0218901373052713
+      },
+      "loop": "angular_velocity",
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "phases": [
+        [
+          0.0,
+          4.0
+        ],
+        [
+          5.0,
+          5.5
+        ],
+        [
+          -5.0,
+          5.5
+        ]
+      ]
+    },
+    {
+      "raw": "pid-tuning-adapter\\runs\\rate-retune-r18-20261021-tune-a5-ki-only\\round-01-raw.json",
+      "quality": "passed",
+      "metrics": {
+        "normalized_iae": 0.1820648048488968,
+        "overshoot": 0.2902,
+        "steady_error": 0.09537425056897744,
+        "settling_s": 2.699998000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8549614454422767
+      },
+      "loop": "angular_velocity",
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "phases": [
+        [
+          0.0,
+          4.0
+        ],
+        [
+          5.0,
+          5.5
+        ],
+        [
+          -5.0,
+          5.5
+        ]
+      ]
+    },
+    {
+      "raw": "pid-tuning-adapter\\runs\\rate-retune-r18-20261021-tune-a5-ki-only\\round-02-raw.json",
+      "quality": "passed",
+      "metrics": {
+        "normalized_iae": 0.19756740074218757,
+        "overshoot": 0.34799999999999986,
+        "steady_error": 0.07640329578097285,
+        "settling_s": 4.440001999999999,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 1.043831894439827
+      },
+      "loop": "angular_velocity",
+      "gains": [
+        0.1815,
+        1.5353
+      ],
+      "phases": [
+        [
+          0.0,
+          4.0
+        ],
+        [
+          5.0,
+          5.5
+        ],
+        [
+          -5.0,
+          5.5
+        ]
+      ]
+    }
+  ]
+}

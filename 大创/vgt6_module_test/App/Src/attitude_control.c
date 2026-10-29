@@ -7,6 +7,7 @@
 #include "speed_control.h"
 #include "stm32f4xx_hal.h"
 #include "telemetry.h"
+#include "timebase.h"
 
 #define ATTITUDE_WATCHDOG_MS 1500U
 /* High-level motion shaping; raw HEAD/YAW tuning keeps its controller form. */
@@ -53,10 +54,12 @@ static float wrap(float x)
 void AttitudeControl_Init(void)
 {
   memset(&state, 0, sizeof(state));
-  state.rate_kp = 0.15f;
-  state.rate_ki = 2.5f;
-  state.heading_kp = 6.0f;
-  state.heading_kd = 1.25f;
+  /* Startup defaults only. YAWPID/HEADPID update these RAM fields at runtime;
+   * Stop and the control loop preserve the latest accepted gains. */
+  state.rate_kp = 0.1815f;
+  state.rate_ki = 1.8062f;
+  state.heading_kp = 5.5f;
+  state.heading_kd = 2.5f;
   AttitudeControl_Stop();
 }
 void AttitudeControl_Stop(void)
@@ -368,6 +371,7 @@ void AttitudeControl_Process(uint32_t elapsed_ms)
   SpeedControlSnapshot speed;
   float error, candidate, raw, output, limit, dt;
   int16_t applied_forward, applied_left;
+  uint32_t sample_ms, sample_us;
   if (!state.mode) return;
   if (!ready() || !SpeedControl_GetSnapshot().enabled ||
       HAL_GetTick() - command_tick > ATTITUDE_WATCHDOG_MS)
@@ -382,6 +386,7 @@ void AttitudeControl_Process(uint32_t elapsed_ms)
     ChassisTest_Stop();
     return;
   }
+  Timebase_Capture(&sample_ms, &sample_us);
   gyro = Gyro_GetSnapshot();
   if (!isfinite(gyro.yaw_deg) || !isfinite(gyro.rate_dps))
   {
@@ -454,7 +459,7 @@ void AttitudeControl_Process(uint32_t elapsed_ms)
                               (int16_t)lroundf(state.output_rpm));
   state.forward_rpm = applied_forward;
   state.left_rpm = applied_left;
-  Telemetry_Hlog_Record(&state);
+  Telemetry_Hlog_Record(&state, sample_ms, sample_us);
   accumulated_ms = 0U;
 }
 AttitudeControlSnapshot AttitudeControl_GetSnapshot(void) { return state; }

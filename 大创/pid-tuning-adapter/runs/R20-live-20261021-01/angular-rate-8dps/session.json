@@ -1,0 +1,1207 @@
+{
+  "loop": "angular_velocity",
+  "experiment": "spin",
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R20",
+  "capabilities": "CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "none",
+  "scoring_source": "downloaded_HLOG",
+  "log_period_s": 0.02,
+  "timestamp_unit": "us",
+  "limits": {
+    "wheel_rpm": 160,
+    "rotation_rpm": 60,
+    "rate_dps": 80
+  },
+  "training": {
+    "baseline": 0,
+    "target": 8.0,
+    "seconds": 6,
+    "baseline_seconds": 4
+  },
+  "inner_gains": [
+    0.1815,
+    1.8062
+  ],
+  "wheel_gains": [
+    1.2,
+    0.0991,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.1008,
+    0.0
+  ],
+  "ram_only": true,
+  "profile": {
+    "loop": "angular_velocity",
+    "mode": 1,
+    "controller_form": "parallel",
+    "controller_period_s": 0.02,
+    "reference_unit": "deg/s",
+    "output_unit": "RPM",
+    "output_limit": 60,
+    "parameters": [
+      "Kp",
+      "Ki"
+    ],
+    "derivative": "none",
+    "gain_decision_source": "validated_downloaded_HLOG",
+    "automatic_writeback": true
+  },
+  "objective": {
+    "step_weights": {
+      "normalized_iae": 1.0,
+      "overshoot": 2.0,
+      "steady_error_rms": 1.0,
+      "normalized_settling": 0.5,
+      "saturation_fraction": 0.1
+    },
+    "repeat_aggregation": "mean + 0.5 * sample_stdev",
+    "spin_aggregation": "mean of step scores; worst overshoot/saturation",
+    "acceptance": "independent holdout improvement plus per-case metric guards"
+  },
+  "plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.1815,
+      1.8062
+    ],
+    "bounds": [
+      [
+        0.1089,
+        0.2541
+      ],
+      [
+        1.0837,
+        2.5287
+      ]
+    ],
+    "validation_targets": [
+      -5.0,
+      5.0
+    ],
+    "method": "bo",
+    "rounds": 5,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "status": "complete",
+  "history": [
+    {
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "metrics": {
+        "normalized_iae": 0.16256903822940844,
+        "overshoot": 0.1981250000000001,
+        "steady_error": 0.06075524717390275,
+        "settling_s": 5.040858999999999,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8441901682940373
+      }
+    },
+    {
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "metrics": {
+        "normalized_iae": 0.16054640619949895,
+        "overshoot": 0.16149999999999998,
+        "steady_error": 0.05808566126073997,
+        "settling_s": 4.164417,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.7577140566633686
+      }
+    },
+    {
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "stage": "baseline_holdout",
+      "target": -5.0,
+      "repeat": 1,
+      "metrics": {
+        "normalized_iae": 0.1840216572090206,
+        "overshoot": 0.2078000000000002,
+        "steady_error": 0.10775144237240324,
+        "settling_s": 1.42889,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8244613519149704
+      }
+    },
+    {
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "stage": "baseline_holdout",
+      "target": -5.0,
+      "repeat": 2,
+      "metrics": {
+        "normalized_iae": 0.1828196499639261,
+        "overshoot": 0.2168000000000001,
+        "steady_error": 0.1061931259545551,
+        "settling_s": 1.6526800000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.857587814993685
+      }
+    },
+    {
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "stage": "baseline_holdout",
+      "target": 5.0,
+      "repeat": 1,
+      "metrics": {
+        "normalized_iae": 0.17696860121603472,
+        "overshoot": 0.25519999999999987,
+        "steady_error": 0.10121061867874008,
+        "settling_s": 1.449268,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.9073366357392795
+      }
+    },
+    {
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "stage": "baseline_holdout",
+      "target": 5.0,
+      "repeat": 2,
+      "metrics": {
+        "normalized_iae": 0.18002070581082835,
+        "overshoot": 0.23039999999999994,
+        "steady_error": 0.09136898087790335,
+        "settling_s": 1.3882139999999996,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8455665517691726
+      }
+    },
+    {
+      "gains": [
+        0.2065,
+        1.9926
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "metrics": {
+        "normalized_iae": 0.14973323056655777,
+        "overshoot": 0.21387500000000004,
+        "steady_error": 0.0595190760552778,
+        "settling_s": 5.571174000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8683451800685883
+      }
+    },
+    {
+      "gains": [
+        0.2065,
+        1.9926
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "metrics": {
+        "normalized_iae": 0.14697745746132396,
+        "overshoot": 0.1792499999999999,
+        "steady_error": 0.05726493277859261,
+        "settling_s": 5.081346000000002,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.796659650682654
+      }
+    },
+    {
+      "gains": [
+        0.1869,
+        1.9352
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "metrics": {
+        "normalized_iae": 0.14959258147094967,
+        "overshoot": 0.19162500000000016,
+        "steady_error": 0.05658718457197637,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8477342127732985
+      }
+    },
+    {
+      "gains": [
+        0.1869,
+        1.9352
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "metrics": {
+        "normalized_iae": 0.14859846097929896,
+        "overshoot": 0.1372500000000001,
+        "steady_error": 0.052460905595463056,
+        "settling_s": 5.855937000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.7094491317568489
+      }
+    },
+    {
+      "gains": [
+        0.1495,
+        1.4726
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "metrics": {
+        "normalized_iae": 0.1845987745626379,
+        "overshoot": 0.12824999999999998,
+        "steady_error": 0.06355247740332595,
+        "settling_s": 4.020318,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.6927614528027153
+      }
+    },
+    {
+      "gains": [
+        0.1495,
+        1.4726
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "metrics": {
+        "normalized_iae": 0.18693970672828772,
+        "overshoot": 0.20050000000000012,
+        "steady_error": 0.06621511015363288,
+        "settling_s": 5.164414000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.9576355870645752
+      }
+    },
+    {
+      "gains": [
+        0.1538,
+        2.1406
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "metrics": {
+        "normalized_iae": 0.14397894862693333,
+        "overshoot": 0.24287499999999995,
+        "steady_error": 0.06832048641367565,
+        "settling_s": 5.878271000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 1.0351486290176701
+      }
+    },
+    {
+      "gains": [
+        0.1538,
+        2.1406
+      ],
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "metrics": {
+        "normalized_iae": 0.1450115861289849,
+        "overshoot": 0.23199999999999998,
+        "steady_error": 0.07252438720012601,
+        "settling_s": 5.713678999999999,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.9191719587893007
+      }
+    }
+  ],
+  "best_gains": [
+    0.1815,
+    1.8062
+  ],
+  "best_score": 0.8315260349510483,
+  "selection": "no_significant_training_improvement",
+  "evidence": "validated_downloaded_HLOG",
+  "baseline_validated": true,
+  "baseline_holdout": [
+    {
+      "mean": 0.8410245834543277,
+      "stdev": 0.02342394667968488,
+      "worst": 0.857587814993685,
+      "variance_of_mean": 0.0002743406390263601,
+      "count": 2,
+      "objective": 0.8527365567941702,
+      "metrics": [
+        {
+          "normalized_iae": 0.1840216572090206,
+          "overshoot": 0.2078000000000002,
+          "steady_error": 0.10775144237240324,
+          "settling_s": 1.42889,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.8244613519149704
+        },
+        {
+          "normalized_iae": 0.1828196499639261,
+          "overshoot": 0.2168000000000001,
+          "steady_error": 0.1061931259545551,
+          "settling_s": 1.6526800000000001,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.857587814993685
+        }
+      ]
+    },
+    {
+      "mean": 0.8764515937542261,
+      "stdev": 0.04367804524972502,
+      "worst": 0.9073366357392795,
+      "variance_of_mean": 0.0009538858184185131,
+      "count": 2,
+      "objective": 0.8982906163790886,
+      "metrics": [
+        {
+          "normalized_iae": 0.17696860121603472,
+          "overshoot": 0.25519999999999987,
+          "steady_error": 0.10121061867874008,
+          "settling_s": 1.449268,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.9073366357392795
+        },
+        {
+          "normalized_iae": 0.18002070581082835,
+          "overshoot": 0.23039999999999994,
+          "steady_error": 0.09136898087790335,
+          "settling_s": 1.3882139999999996,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.8455665517691726
+        }
+      ]
+    }
+  ],
+  "training_trials": [
+    {
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "mean": 0.8009521124787029,
+      "stdev": 0.061147844944690714,
+      "worst": 0.8441901682940373,
+      "variance_of_mean": 0.001869529470689969,
+      "count": 2,
+      "objective": 0.8315260349510483,
+      "metrics": [
+        {
+          "normalized_iae": 0.16256903822940844,
+          "overshoot": 0.1981250000000001,
+          "steady_error": 0.06075524717390275,
+          "settling_s": 5.040858999999999,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.8441901682940373
+        },
+        {
+          "normalized_iae": 0.16054640619949895,
+          "overshoot": 0.16149999999999998,
+          "steady_error": 0.05808566126073997,
+          "settling_s": 4.164417,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.7577140566633686
+        }
+      ]
+    },
+    {
+      "gains": [
+        0.2065,
+        1.9926
+      ],
+      "mean": 0.8325024153756211,
+      "stdev": 0.05068932394174167,
+      "worst": 0.8683451800685883,
+      "variance_of_mean": 0.0012847037808354127,
+      "count": 2,
+      "objective": 0.8578470773464919,
+      "metrics": [
+        {
+          "normalized_iae": 0.14973323056655777,
+          "overshoot": 0.21387500000000004,
+          "steady_error": 0.0595190760552778,
+          "settling_s": 5.571174000000001,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.8683451800685883
+        },
+        {
+          "normalized_iae": 0.14697745746132396,
+          "overshoot": 0.1792499999999999,
+          "steady_error": 0.05726493277859261,
+          "settling_s": 5.081346000000002,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.796659650682654
+        }
+      ]
+    },
+    {
+      "gains": [
+        0.1869,
+        1.9352
+      ],
+      "mean": 0.7785916722650736,
+      "stdev": 0.09778231852366266,
+      "worst": 0.8477342127732985,
+      "variance_of_mean": 0.004780690907931511,
+      "count": 2,
+      "objective": 0.8274828315269049,
+      "metrics": [
+        {
+          "normalized_iae": 0.14959258147094967,
+          "overshoot": 0.19162500000000016,
+          "steady_error": 0.05658718457197637,
+          "settling_s": null,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.8477342127732985
+        },
+        {
+          "normalized_iae": 0.14859846097929896,
+          "overshoot": 0.1372500000000001,
+          "steady_error": 0.052460905595463056,
+          "settling_s": 5.855937000000001,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.7094491317568489
+        }
+      ]
+    },
+    {
+      "gains": [
+        0.1495,
+        1.4726
+      ],
+      "mean": 0.8251985199336452,
+      "stdev": 0.18729429649747717,
+      "worst": 0.9576355870645752,
+      "variance_of_mean": 0.017539576750242446,
+      "count": 2,
+      "objective": 0.9188456681823838,
+      "metrics": [
+        {
+          "normalized_iae": 0.1845987745626379,
+          "overshoot": 0.12824999999999998,
+          "steady_error": 0.06355247740332595,
+          "settling_s": 4.020318,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.6927614528027153
+        },
+        {
+          "normalized_iae": 0.18693970672828772,
+          "overshoot": 0.20050000000000012,
+          "steady_error": 0.06621511015363288,
+          "settling_s": 5.164414000000001,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.9576355870645752
+        }
+      ]
+    },
+    {
+      "gains": [
+        0.1538,
+        2.1406
+      ],
+      "mean": 0.9771602939034854,
+      "stdev": 0.08200788997791601,
+      "worst": 1.0351486290176701,
+      "variance_of_mean": 0.0033626470093149887,
+      "count": 2,
+      "objective": 1.0181642388924435,
+      "metrics": [
+        {
+          "normalized_iae": 0.14397894862693333,
+          "overshoot": 0.24287499999999995,
+          "steady_error": 0.06832048641367565,
+          "settling_s": 5.878271000000001,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 1.0351486290176701
+        },
+        {
+          "normalized_iae": 0.1450115861289849,
+          "overshoot": 0.23199999999999998,
+          "steady_error": 0.07252438720012601,
+          "settling_s": 5.713678999999999,
+          "saturation_fraction": 0,
+          "resolved_transient": true,
+          "score": 0.9191719587893007
+        }
+      ]
+    }
+  ],
+  "restored_readback": [
+    0.1815,
+    1.8062
+  ],
+  "optimizer_observations": 5,
+  "logs": [
+    {
+      "index": 1,
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          8.0,
+          6
+        ],
+        [
+          -8.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-01-raw.json",
+      "metrics": {
+        "normalized_iae": 0.16256903822940844,
+        "overshoot": 0.1981250000000001,
+        "steady_error": 0.06075524717390275,
+        "settling_s": 5.040858999999999,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8441901682940373
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 2,
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          8.0,
+          6
+        ],
+        [
+          -8.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-02-raw.json",
+      "metrics": {
+        "normalized_iae": 0.16054640619949895,
+        "overshoot": 0.16149999999999998,
+        "steady_error": 0.05808566126073997,
+        "settling_s": 4.164417,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.7577140566633686
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 3,
+      "stage": "baseline_holdout",
+      "target": -5.0,
+      "repeat": 1,
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          -5.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-03-raw.json",
+      "metrics": {
+        "normalized_iae": 0.1840216572090206,
+        "overshoot": 0.2078000000000002,
+        "steady_error": 0.10775144237240324,
+        "settling_s": 1.42889,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8244613519149704
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 4,
+      "stage": "baseline_holdout",
+      "target": -5.0,
+      "repeat": 2,
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          -5.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-04-raw.json",
+      "metrics": {
+        "normalized_iae": 0.1828196499639261,
+        "overshoot": 0.2168000000000001,
+        "steady_error": 0.1061931259545551,
+        "settling_s": 1.6526800000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.857587814993685
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 5,
+      "stage": "baseline_holdout",
+      "target": 5.0,
+      "repeat": 1,
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          5.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-05-raw.json",
+      "metrics": {
+        "normalized_iae": 0.17696860121603472,
+        "overshoot": 0.25519999999999987,
+        "steady_error": 0.10121061867874008,
+        "settling_s": 1.449268,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.9073366357392795
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 6,
+      "stage": "baseline_holdout",
+      "target": 5.0,
+      "repeat": 2,
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          5.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-06-raw.json",
+      "metrics": {
+        "normalized_iae": 0.18002070581082835,
+        "overshoot": 0.23039999999999994,
+        "steady_error": 0.09136898087790335,
+        "settling_s": 1.3882139999999996,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8455665517691726
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 7,
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "gains": [
+        0.2065,
+        1.9926
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          8.0,
+          6
+        ],
+        [
+          -8.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-07-raw.json",
+      "metrics": {
+        "normalized_iae": 0.14973323056655777,
+        "overshoot": 0.21387500000000004,
+        "steady_error": 0.0595190760552778,
+        "settling_s": 5.571174000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8683451800685883
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 8,
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "gains": [
+        0.2065,
+        1.9926
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          8.0,
+          6
+        ],
+        [
+          -8.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-08-raw.json",
+      "metrics": {
+        "normalized_iae": 0.14697745746132396,
+        "overshoot": 0.1792499999999999,
+        "steady_error": 0.05726493277859261,
+        "settling_s": 5.081346000000002,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.796659650682654
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 9,
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "gains": [
+        0.1869,
+        1.9352
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          8.0,
+          6
+        ],
+        [
+          -8.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-09-raw.json",
+      "metrics": {
+        "normalized_iae": 0.14959258147094967,
+        "overshoot": 0.19162500000000016,
+        "steady_error": 0.05658718457197637,
+        "settling_s": null,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.8477342127732985
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 10,
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "gains": [
+        0.1869,
+        1.9352
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          8.0,
+          6
+        ],
+        [
+          -8.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-10-raw.json",
+      "metrics": {
+        "normalized_iae": 0.14859846097929896,
+        "overshoot": 0.1372500000000001,
+        "steady_error": 0.052460905595463056,
+        "settling_s": 5.855937000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.7094491317568489
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 11,
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "gains": [
+        0.1495,
+        1.4726
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          8.0,
+          6
+        ],
+        [
+          -8.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-11-raw.json",
+      "metrics": {
+        "normalized_iae": 0.1845987745626379,
+        "overshoot": 0.12824999999999998,
+        "steady_error": 0.06355247740332595,
+        "settling_s": 4.020318,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.6927614528027153
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 12,
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "gains": [
+        0.1495,
+        1.4726
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          8.0,
+          6
+        ],
+        [
+          -8.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-12-raw.json",
+      "metrics": {
+        "normalized_iae": 0.18693970672828772,
+        "overshoot": 0.20050000000000012,
+        "steady_error": 0.06621511015363288,
+        "settling_s": 5.164414000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.9576355870645752
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 13,
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "gains": [
+        0.1538,
+        2.1406
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          8.0,
+          6
+        ],
+        [
+          -8.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-13-raw.json",
+      "metrics": {
+        "normalized_iae": 0.14397894862693333,
+        "overshoot": 0.24287499999999995,
+        "steady_error": 0.06832048641367565,
+        "settling_s": 5.878271000000001,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 1.0351486290176701
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    },
+    {
+      "index": 14,
+      "stage": "train",
+      "target": null,
+      "repeat": 2,
+      "gains": [
+        0.1538,
+        2.1406
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          8.0,
+          6
+        ],
+        [
+          -8.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate-8dps\\round-14-raw.json",
+      "metrics": {
+        "normalized_iae": 0.1450115861289849,
+        "overshoot": 0.23199999999999998,
+        "steady_error": 0.07252438720012601,
+        "settling_s": 5.713678999999999,
+        "saturation_fraction": 0,
+        "resolved_transient": true,
+        "score": 0.9191719587893007
+      },
+      "data_quality": "passed",
+      "quality": "passed"
+    }
+  ],
+  "writes": [
+    {
+      "old": [
+        0.1815,
+        1.8062
+      ],
+      "new": [
+        0.2065,
+        1.9926
+      ],
+      "readback": [
+        0.2065,
+        1.9926
+      ]
+    },
+    {
+      "old": [
+        0.2065,
+        1.9926
+      ],
+      "new": [
+        0.1815,
+        1.8062
+      ],
+      "readback": [
+        0.1815,
+        1.8062
+      ]
+    },
+    {
+      "old": [
+        0.1815,
+        1.8062
+      ],
+      "new": [
+        0.1869,
+        1.9352
+      ],
+      "readback": [
+        0.1869,
+        1.9352
+      ]
+    },
+    {
+      "old": [
+        0.1869,
+        1.9352
+      ],
+      "new": [
+        0.1815,
+        1.8062
+      ],
+      "readback": [
+        0.1815,
+        1.8062
+      ]
+    },
+    {
+      "old": [
+        0.1815,
+        1.8062
+      ],
+      "new": [
+        0.1495,
+        1.4726
+      ],
+      "readback": [
+        0.1495,
+        1.4726
+      ]
+    },
+    {
+      "old": [
+        0.1495,
+        1.4726
+      ],
+      "new": [
+        0.1794,
+        1.7671
+      ],
+      "readback": [
+        0.1794,
+        1.7671
+      ]
+    },
+    {
+      "old": [
+        0.1794,
+        1.7671
+      ],
+      "new": [
+        0.1815,
+        1.8062
+      ],
+      "readback": [
+        0.1815,
+        1.8062
+      ]
+    },
+    {
+      "old": [
+        0.1815,
+        1.8062
+      ],
+      "new": [
+        0.1538,
+        2.1406
+      ],
+      "readback": [
+        0.1538,
+        2.1406
+      ]
+    },
+    {
+      "old": [
+        0.1538,
+        2.1406
+      ],
+      "new": [
+        0.1815,
+        1.8062
+      ],
+      "readback": [
+        0.1815,
+        1.8062
+      ]
+    }
+  ],
+  "applied_gains": [
+    0.1815,
+    1.8062
+  ]
+}

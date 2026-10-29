@@ -1,0 +1,43 @@
+{
+  "source": "C:\\Users\\28097\\Desktop\\bm50-link-1792936972901.json",
+  "sha256": "deac5a9721ddc77c731e0704ef63d3d04656f396b77131a4c48c64144101fafc",
+  "clientVersion": "safe-link-v39",
+  "mode": "direct_web_serial",
+  "verified": true,
+  "stats": {
+    "rxBytes": 1378,
+    "rxLines": 118,
+    "badBytes": 0,
+    "timeouts": 0,
+    "txCommands": 118,
+    "keepAckMisses": 0,
+    "stopRecoveries": 0
+  },
+  "retained_span_ms": 194168.3999999999,
+  "ping_replies": 98,
+  "ping_median_ms": 21.850000000093132,
+  "ping_max_ms": 36.39999999990687,
+  "non_ping_commands": [
+    "STOP",
+    "DISARM",
+    "TEL,0",
+    "TOF,0",
+    "VER",
+    "UART",
+    "LINK",
+    "STACK",
+    "SPEEDLIMIT",
+    "SPEEDSTATUS",
+    "PIDGET",
+    "CAPS",
+    "PS2STATUS",
+    "YAWGET",
+    "HEADGET",
+    "ANGLESTATUS",
+    "HLOG,STATUS",
+    "WLOG,STATUS",
+    "TOF",
+    "STACK"
+  ],
+  "method": "User-supplied browser export from stopped direct v39 verification; no movement commands. It does not reproduce a hardware corruption fault."
+}

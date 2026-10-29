@@ -1,0 +1,531 @@
+{
+  "port": "COM12",
+  "baud": 115200,
+  "commands": [
+    {
+      "command": "STOP",
+      "lines": [
+        "ACK,STOP"
+      ],
+      "reply": "ACK,STOP",
+      "rttMs": 62.0
+    },
+    {
+      "command": "DISARM",
+      "lines": [
+        "ACK,DISARM"
+      ],
+      "reply": "ACK,DISARM",
+      "rttMs": 16.0
+    },
+    {
+      "command": "FD",
+      "lines": [
+        "FD,500"
+      ],
+      "reply": "FD,500",
+      "rttMs": 31.0
+    },
+    {
+      "command": "FD,99",
+      "lines": [
+        "ERR,FD,RANGE_100_2000_MM"
+      ],
+      "reply": "ERR,FD,RANGE_100_2000_MM",
+      "rttMs": 16.0
+    },
+    {
+      "command": "FD,4294967796",
+      "lines": [
+        "ERR,FD,RANGE_100_2000_MM"
+      ],
+      "reply": "ERR,FD,RANGE_100_2000_MM",
+      "rttMs": 31.0
+    },
+    {
+      "command": "FD",
+      "lines": [
+        "FD,500"
+      ],
+      "reply": "FD,500",
+      "rttMs": 47.0
+    },
+    {
+      "command": "FP",
+      "lines": [
+        "FP,0.0600,0.1800"
+      ],
+      "reply": "FP,0.0600,0.1800",
+      "rttMs": 16.0
+    },
+    {
+      "command": "FP,0.06,0.18",
+      "lines": [
+        "FP,0.0600,0.1800"
+      ],
+      "reply": "FP,0.0600,0.1800",
+      "rttMs": 15.0
+    },
+    {
+      "command": "FP,4,10",
+      "lines": [
+        "FP,4.0000,10.0000"
+      ],
+      "reply": "FP,4.0000,10.0000",
+      "rttMs": 32.0
+    },
+    {
+      "command": "FP",
+      "lines": [
+        "FP,4.0000,10.0000"
+      ],
+      "reply": "FP,4.0000,10.0000",
+      "rttMs": 31.0
+    },
+    {
+      "command": "FP,-1,10",
+      "lines": [
+        "ERR,FP,USE_NONNEGATIVE_FINITE,FORWARD,REVERSE"
+      ],
+      "reply": "ERR,FP,USE_NONNEGATIVE_FINITE,FORWARD,REVERSE",
+      "rttMs": 62.0
+    },
+    {
+      "command": "FP,0.06,0.18",
+      "lines": [
+        "FP,0.0600,0.1800"
+      ],
+      "reply": "FP,0.0600,0.1800",
+      "rttMs": 16.0
+    },
+    {
+      "command": "FP",
+      "lines": [
+        "FP,0.0600,0.1800"
+      ],
+      "reply": "FP,0.0600,0.1800",
+      "rttMs": 31.0
+    },
+    {
+      "command": "UART",
+      "lines": [
+        "UART,115200,42000000,364,0x00,0,0,0,0,0"
+      ],
+      "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0",
+      "rttMs": 31.0
+    },
+    {
+      "command": "FD,600",
+      "lines": [
+        "FD,600"
+      ],
+      "reply": "FD,600",
+      "rttMs": 16.0
+    },
+    {
+      "command": "FDBG,1",
+      "lines": [
+        "ACK,FDBG,1"
+      ],
+      "reply": "ACK,FDBG,1",
+      "rttMs": 31.0
+    },
+    {
+      "command": "PING",
+      "lines": [
+        "follow:600,-1,-1,0,0,0,0,25238",
+        "PONG"
+      ],
+      "reply": "PONG",
+      "rttMs": 16.0
+    },
+    {
+      "command": "PING",
+      "lines": [
+        "follow:600,-1,-1,0,0,0,0,25438",
+        "PONG"
+      ],
+      "reply": "PONG",
+      "rttMs": 31.0
+    },
+    {
+      "command": "PING",
+      "lines": [
+        "follow:600,-1,-1,0,0,0,0,25638",
+        "PONG"
+      ],
+      "reply": "PONG",
+      "rttMs": 31.0
+    },
+    {
+      "command": "PING",
+      "lines": [
+        "follow:600,-1,-1,0,0,0,0,25838",
+        "PONG"
+      ],
+      "reply": "PONG",
+      "rttMs": 31.0
+    },
+    {
+      "command": "PING",
+      "lines": [
+        "follow:600,-1,-1,0,0,0,0,26038",
+        "PONG"
+      ],
+      "reply": "PONG",
+      "rttMs": 31.0
+    },
+    {
+      "command": "FDBG,0",
+      "lines": [
+        "ACK,FDBG,0"
+      ],
+      "reply": "ACK,FDBG,0",
+      "rttMs": 31.0
+    },
+    {
+      "command": "FD,500",
+      "lines": [
+        "FD,500"
+      ],
+      "reply": "FD,500",
+      "rttMs": 16.0
+    },
+    {
+      "command": "UART",
+      "lines": [
+        "UART,115200,42000000,364,0x00,0,0,0,0,0"
+      ],
+      "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0",
+      "rttMs": 47.0
+    },
+    {
+      "command": "STACK",
+      "lines": [
+        "STACK,4096,1848,2248,1"
+      ],
+      "reply": "STACK,4096,1848,2248,1",
+      "rttMs": 31.0
+    },
+    {
+      "command": "ANGLESTATUS",
+      "lines": [
+        "ATEL,26346,0,1,0,8,0,0,7,0,0,0,0,12380"
+      ],
+      "reply": "ATEL,26346,0,1,0,8,0,0,7,0,0,0,0,12380",
+      "rttMs": 31.0
+    },
+    {
+      "command": "PS2STATUS",
+      "lines": [
+        "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10"
+      ],
+      "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10",
+      "rttMs": 32.0
+    },
+    {
+      "command": "FDBG,0",
+      "lines": [
+        "ACK,FDBG,0"
+      ],
+      "reply": "ACK,FDBG,0",
+      "rttMs": 15.0
+    },
+    {
+      "command": "STOP",
+      "lines": [
+        "ACK,STOP"
+      ],
+      "reply": "ACK,STOP",
+      "rttMs": 31.0
+    },
+    {
+      "command": "DISARM",
+      "lines": [
+        "ACK,DISARM"
+      ],
+      "reply": "ACK,DISARM",
+      "rttMs": 16.0
+    },
+    {
+      "command": "FD,500",
+      "lines": [
+        "FD,500"
+      ],
+      "reply": "FD,500",
+      "rttMs": 31.0
+    }
+  ],
+  "frames": [
+    {
+      "hostTime": 5396.812,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        22438
+      ]
+    },
+    {
+      "hostTime": 5397.0,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        22638
+      ]
+    },
+    {
+      "hostTime": 5397.203,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        22838
+      ]
+    },
+    {
+      "hostTime": 5397.406,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        23038
+      ]
+    },
+    {
+      "hostTime": 5397.593,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        23238
+      ]
+    },
+    {
+      "hostTime": 5397.796,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        23438
+      ]
+    },
+    {
+      "hostTime": 5398.0,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        23638
+      ]
+    },
+    {
+      "hostTime": 5398.203,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        23838
+      ]
+    },
+    {
+      "hostTime": 5398.406,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        24038
+      ]
+    },
+    {
+      "hostTime": 5398.593,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        24238
+      ]
+    },
+    {
+      "hostTime": 5398.796,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        24438
+      ]
+    },
+    {
+      "hostTime": 5399.015,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        24638
+      ]
+    },
+    {
+      "hostTime": 5399.203,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        24838
+      ]
+    },
+    {
+      "hostTime": 5399.406,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        25038
+      ]
+    },
+    {
+      "hostTime": 5399.609,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        25238
+      ]
+    },
+    {
+      "hostTime": 5399.812,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        25438
+      ]
+    },
+    {
+      "hostTime": 5400.015,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        25638
+      ]
+    },
+    {
+      "hostTime": 5400.218,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        25838
+      ]
+    },
+    {
+      "hostTime": 5400.406,
+      "values": [
+        600,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        26038
+      ]
+    }
+  ],
+  "streamSummary": {
+    "count": 19,
+    "first": [
+      600,
+      -1,
+      -1,
+      0,
+      0,
+      0,
+      0,
+      22438
+    ],
+    "last": [
+      600,
+      -1,
+      -1,
+      0,
+      0,
+      0,
+      0,
+      26038
+    ]
+  }
+}

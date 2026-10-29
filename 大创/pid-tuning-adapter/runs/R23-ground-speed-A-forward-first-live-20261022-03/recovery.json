@@ -1,0 +1,393 @@
+{
+  "status": "failed",
+  "origin_encoder": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "return_command_rpm": -25,
+  "steps": [
+    {
+      "step": 1,
+      "duration_s": 0.2,
+      "elapsed_s": 0.20300000000133878,
+      "max_drv_gap_s": 0.10900000000037835,
+      "before": [
+        -140,
+        -144,
+        -141,
+        -142
+      ],
+      "after": [
+        -79,
+        -77,
+        -75,
+        -77
+      ],
+      "delta": [
+        61,
+        67,
+        66,
+        65
+      ],
+      "remaining_distance_m": 0.0808464067354068
+    }
+  ],
+  "pid_writes": 0,
+  "gains_before": [
+    1.2,
+    0.0991,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.1008,
+    0.0
+  ],
+  "encoder_before": [
+    -140,
+    -144,
+    -141,
+    -142
+  ],
+  "motion_started": true,
+  "last_speed_m_s": 0.33489890832851815,
+  "error": "DRV,-25,0,0: {'type': 'result', 'id': 20, 'ok': False, 'error': 'ERR,DRV,SPEED_DISABLED_OR_RANGE'}",
+  "commands": [
+    {
+      "host_monotonic": 18462.515,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 18463.078,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "ATEL,4729215,0,1,0,-3,0,0,90318,-93136,0,0,0,11380"
+      }
+    },
+    {
+      "host_monotonic": 18463.875,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10"
+      }
+    },
+    {
+      "host_monotonic": 18464.421,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R23"
+      }
+    },
+    {
+      "host_monotonic": 18464.937,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS"
+      }
+    },
+    {
+      "host_monotonic": 18465.437,
+      "command": "WLOGINFO",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED"
+      }
+    },
+    {
+      "host_monotonic": 18466.375,
+      "command": "UART",
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 18466.906,
+      "command": "LINK",
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "LINK,33504,2816,0,0,0,1"
+      }
+    },
+    {
+      "host_monotonic": 18467.671,
+      "command": "STACK",
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "STACK,4096,2632,1464,1"
+      }
+    },
+    {
+      "host_monotonic": 18468.281,
+      "command": "SPEEDLIMIT",
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "SPEEDLIMIT,160"
+      }
+    },
+    {
+      "host_monotonic": 18468.906,
+      "command": "YAWGET",
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "YAWPID,0.1815,1.8062,60,80,20"
+      }
+    },
+    {
+      "host_monotonic": 18469.468,
+      "command": "HEADGET",
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+      }
+    },
+    {
+      "host_monotonic": 18470.39,
+      "command": "PIDGET",
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000"
+      }
+    },
+    {
+      "host_monotonic": 18470.921,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "ENC,4737037,1,380,-140,-144,-141,-142,0,0,0,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 18471.484,
+      "command": "ARM",
+      "result": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "ACK,ARM,WHEELS_OFF_GROUND"
+      }
+    },
+    {
+      "host_monotonic": 18471.921,
+      "command": "SPEED,1",
+      "result": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "ACK,SPEED,1"
+      }
+    },
+    {
+      "host_monotonic": 18472.671,
+      "command": "DRV,-25,0,0",
+      "drive_lease_ms": 200,
+      "result": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "ACK,DRV"
+      }
+    },
+    {
+      "host_monotonic": 18473.703,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 18474.5,
+      "command": "ENC",
+      "result": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "ENC,4740614,1,380,-79,-77,-75,-77,0,0,0,0,0,0,0,0"
+      }
+    },
+    {
+      "host_monotonic": 18475.078,
+      "command": "DRV,-25,0,0",
+      "drive_lease_ms": 169,
+      "result": {
+        "type": "result",
+        "id": 20,
+        "ok": false,
+        "error": "ERR,DRV,SPEED_DISABLED_OR_RANGE"
+      },
+      "wire": [
+        "TOF,4740713,1,0,-1,4,17,0",
+        "TEL,4741054,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11372,-19,8,1,8,90210,0",
+        "ERR,DRV,SPEED_DISABLED_OR_RANGE",
+        "{\"type\": \"result\", \"id\": 20, \"ok\": false, \"error\": \"ERR,DRV,SPEED_DISABLED_OR_RANGE\"}"
+      ],
+      "error": "RuntimeError: DRV,-25,0,0: {'type': 'result', 'id': 20, 'ok': False, 'error': 'ERR,DRV,SPEED_DISABLED_OR_RANGE'}"
+    },
+    {
+      "host_monotonic": 18475.531,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "ACK,STOP"
+      }
+    },
+    {
+      "host_monotonic": 18476.468,
+      "command": "DISARM",
+      "result": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    }
+  ],
+  "wire": [
+    "STATUS,1,ble connected",
+    "TOF,4728113,1,0,-1,4,25,0",
+    "TEL,4728402,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11391,0,1,1,1,90321,0",
+    "ACK,STOP",
+    "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "TEL,4728902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11381,14,2,1,2,90320,0",
+    "TOF,4729113,1,0,-1,4,10,0",
+    "ATEL,4729215,0,1,0,-3,0,0,90318,-93136,0,0,0,11380",
+    "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"ATEL,4729215,0,1,0,-3,0,0,90318,-93136,0,0,0,11380\"}",
+    "TEL,4729402,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11379,0,0,1,0,90318,0",
+    "TEL,4729902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11380,0,0,1,0,90315,0",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10",
+    "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10\"}",
+    "TOF,4730113,1,0,-1,4,38,0",
+    "TEL,4730402,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11392,0,0,1,0,90312,0",
+    "TOF,4730513,1,0,-1,7,22,0",
+    "VER,VGT6_BM50_ATTITUDE_R23",
+    "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R23\"}",
+    "TOF,4730713,1,0,-1,4,19,0",
+    "TEL,4730902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11388,0,1,1,1,90310,0",
+    "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS",
+    "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS\"}",
+    "TOF,4731313,1,1,3705,9,10,0",
+    "TEL,4731402,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11381,0,0,1,0,90308,0",
+    "TOF,4731513,1,0,-1,4,20,0",
+    "WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED",
+    "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"WLOG,INFO,10000,1024,INCREMENTAL,KI_STEP,KD_STEP,70,30,60,160,380,FRONT_REVERSED\"}",
+    "TEL,4731902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11382,0,-2,1,-2,90305,0",
+    "TEL,4732402,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11382,0,5,1,5,90303,0",
+    "UART,9600,42000000,4375,0x00,0,0,0,0,0",
+    "{\"type\": \"result\", \"id\": 7, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x00,0,0,0,0,0\"}",
+    "TOF,4732713,1,0,-1,4,2,0",
+    "TEL,4732902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11399,0,-4,1,-4,90301,0",
+    "LINK,33504,2816,0,0,0,1",
+    "{\"type\": \"result\", \"id\": 8, \"ok\": true, \"reply\": \"LINK,33504,2816,0,0,0,1\"}",
+    "TEL,4733402,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11391,11,2,1,2,90300,0",
+    "TOF,4733713,1,0,-1,4,30,0",
+    "STACK,4096,2632,1464,1",
+    "{\"type\": \"result\", \"id\": 9, \"ok\": true, \"reply\": \"STACK,4096,2632,1464,1\"}",
+    "TEL,4733902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11394,0,-1,1,-1,90298,0",
+    "TOF,4734313,1,1,3676,9,10,0",
+    "TEL,4734402,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11389,0,-1,1,-1,90296,0",
+    "SPEEDLIMIT,160",
+    "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"SPEEDLIMIT,160\"}",
+    "TOF,4734513,1,0,-1,4,20,0",
+    "TEL,4734902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11375,0,0,1,0,90294,0",
+    "YAWPID,0.1815,1.8062,60,80,20",
+    "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"YAWPID,0.1815,1.8062,60,80,20\"}",
+    "TEL,4735402,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11387,0,0,1,0,90292,0",
+    "TOF,4735513,1,0,-1,4,46,0",
+    "HEADPID,6.0000,1.2500,80,20,D_MEAS",
+    "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"HEADPID,6.0000,1.2500,80,20,D_MEAS\"}",
+    "TEL,4735902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11386,0,0,1,0,90288,0",
+    "TEL,4736402,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11392,0,0,1,0,90286,0",
+    "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000",
+    "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000\"}",
+    "TOF,4736713,1,0,-1,4,31,0",
+    "TEL,4736902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11381,0,0,1,0,90284,0",
+    "ENC,4737037,1,380,-140,-144,-141,-142,0,0,0,0,0,0,0,0",
+    "{\"type\": \"result\", \"id\": 14, \"ok\": true, \"reply\": \"ENC,4737037,1,380,-140,-144,-141,-142,0,0,0,0,0,0,0,0\"}",
+    "TEL,4737402,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11379,14,3,1,3,90282,0",
+    "TOF,4737513,1,1,3758,9,8,0",
+    "ACK,ARM,WHEELS_OFF_GROUND",
+    "{\"type\": \"result\", \"id\": 15, \"ok\": true, \"reply\": \"ACK,ARM,WHEELS_OFF_GROUND\"}",
+    "TOF,4737713,1,0,-1,4,17,0",
+    "TEL,4737902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11396,0,-4,1,-4,90279,0",
+    "ACK,SPEED,1",
+    "{\"type\": \"result\", \"id\": 16, \"ok\": true, \"reply\": \"ACK,SPEED,1\"}",
+    "TEL,4738554,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11397,0,0,1,0,90278,1",
+    "TOF,4738713,1,0,-1,4,2,0",
+    "ACK,DRV",
+    "{\"type\": \"result\", \"id\": 17, \"ok\": true, \"reply\": \"ACK,DRV\"}",
+    "TEL,4739054,0,1,25,25,25,25,10,9,8,9,257,250,264,259,25,25,25,25,11370,-376,-235,1,-235,90285,1",
+    "{\"type\": \"drive_lease\", \"event\": \"complete\", \"id\": 17, \"error\": null, \"max_gap_s\": 0.10900000000037835}",
+    "TEL,4739554,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11378,-16,5,1,5,90286,1",
+    "TOF,4739713,1,0,-1,4,20,0",
+    "ACK,DRV",
+    "ACK,DRV",
+    "ACK,STOP",
+    "{\"type\": \"result\", \"id\": 18, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "TEL,4740054,0,0,0,0,0,0,0,0,0,0,1,2,2,0,0,0,0,0,11375,-436,224,1,224,90224,0",
+    "TOF,4740513,1,1,3723,9,8,0",
+    "TEL,4740554,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11379,0,-3,1,-3,90210,0",
+    "ENC,4740614,1,380,-79,-77,-75,-77,0,0,0,0,0,0,0,0",
+    "{\"type\": \"result\", \"id\": 19, \"ok\": true, \"reply\": \"ENC,4740614,1,380,-79,-77,-75,-77,0,0,0,0,0,0,0,0\"}",
+    "TOF,4740713,1,0,-1,4,17,0",
+    "TEL,4741054,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11372,-19,8,1,8,90210,0",
+    "ERR,DRV,SPEED_DISABLED_OR_RANGE",
+    "{\"type\": \"result\", \"id\": 20, \"ok\": false, \"error\": \"ERR,DRV,SPEED_DISABLED_OR_RANGE\"}",
+    "TOF,4741313,1,0,-1,7,39,0",
+    "TOF,4741513,1,0,-1,4,6,0",
+    "TEL,4741554,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11382,0,9,1,9,90209,0",
+    "ACK,STOP",
+    "{\"type\": \"result\", \"id\": 21, \"ok\": true, \"reply\": \"ACK,STOP\"}",
+    "TEL,4742054,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11387,-10,-3,1,-3,90207,0",
+    "TOF,4742513,1,0,-1,4,34,0",
+    "TEL,4742554,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11384,0,0,1,0,90204,0",
+    "ACK,DISARM",
+    "{\"type\": \"result\", \"id\": 22, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+  ]
+}

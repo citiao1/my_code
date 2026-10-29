@@ -1,0 +1,2006 @@
+{
+  "mode": "direct_web_serial",
+  "baud": 115200,
+  "port": {
+    "usbProductId": 29987,
+    "usbVendorId": 6790
+  },
+  "verified": false,
+  "fault": "车端应答超时：STOP；仍有回传，但该命令未确认",
+  "stats": {
+    "rxBytes": 2127,
+    "rxLines": 62,
+    "badBytes": 9,
+    "timeouts": 1,
+    "txCommands": 38,
+    "keepAckMisses": 0
+  },
+  "heartbeatAckMisses": 0,
+  "lastRxAt": 21038.79999999999,
+  "motionReport": {
+    "receivedAt": 20850.29999999999,
+    "tick": 998829,
+    "mode": 0,
+    "imuReady": true,
+    "enabled": false
+  },
+  "traceDropped": 0,
+  "trace": [
+    {
+      "hostMs": 11175.700000000012,
+      "event": "tx",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 11176.700000000012,
+      "event": "write_done",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 11195.900000000023,
+      "event": "rx",
+      "detail": "41434b2c53544f500d0a"
+    },
+    {
+      "hostMs": 11196.400000000023,
+      "event": "reply",
+      "detail": {
+        "command": "STOP",
+        "line": "ACK,STOP",
+        "elapsedMs": 20.900000000023283
+      }
+    },
+    {
+      "hostMs": 11196.799999999988,
+      "event": "tx",
+      "detail": "DISARM"
+    },
+    {
+      "hostMs": 11196.900000000023,
+      "event": "write_done",
+      "detail": "DISARM"
+    },
+    {
+      "hostMs": 11229.099999999977,
+      "event": "rx",
+      "detail": "41434b2c44495341524d0d0a"
+    },
+    {
+      "hostMs": 11229.299999999988,
+      "event": "reply",
+      "detail": {
+        "command": "DISARM",
+        "line": "ACK,DISARM",
+        "elapsedMs": 32.5
+      }
+    },
+    {
+      "hostMs": 11229.400000000023,
+      "event": "tx",
+      "detail": "TEL,0"
+    },
+    {
+      "hostMs": 11229.400000000023,
+      "event": "write_done",
+      "detail": "TEL,0"
+    },
+    {
+      "hostMs": 11251.200000000012,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 11251.299999999988,
+      "event": "rx",
+      "detail": "434b2c54454c2c300d0a"
+    },
+    {
+      "hostMs": 11251.5,
+      "event": "reply",
+      "detail": {
+        "command": "TEL,0",
+        "line": "ACK,TEL,0",
+        "elapsedMs": 22.20000000001164
+      }
+    },
+    {
+      "hostMs": 11251.599999999977,
+      "event": "tx",
+      "detail": "TOF,0"
+    },
+    {
+      "hostMs": 11251.700000000012,
+      "event": "write_done",
+      "detail": "TOF,0"
+    },
+    {
+      "hostMs": 11274,
+      "event": "rx",
+      "detail": "41434b2c544f462c300d0a"
+    },
+    {
+      "hostMs": 11274.099999999977,
+      "event": "reply",
+      "detail": {
+        "command": "TOF,0",
+        "line": "ACK,TOF,0",
+        "elapsedMs": 22.5
+      }
+    },
+    {
+      "hostMs": 11274.200000000012,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 11274.299999999988,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 11296.299999999988,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 11296.400000000023,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.20000000001164
+      }
+    },
+    {
+      "hostMs": 11296.5,
+      "event": "verified",
+      "detail": {
+        "usbProductId": 29987,
+        "usbVendorId": 6790
+      }
+    },
+    {
+      "hostMs": 11296.799999999988,
+      "event": "tx",
+      "detail": "VER"
+    },
+    {
+      "hostMs": 11296.900000000023,
+      "event": "write_done",
+      "detail": "VER"
+    },
+    {
+      "hostMs": 11319,
+      "event": "rx",
+      "detail": "56"
+    },
+    {
+      "hostMs": 11319.099999999977,
+      "event": "rx",
+      "detail": "45522c564754365f424d35305f41545449545544455f5232340d0a"
+    },
+    {
+      "hostMs": 11319.299999999988,
+      "event": "reply",
+      "detail": {
+        "command": "VER",
+        "line": "VER,VGT6_BM50_ATTITUDE_R24",
+        "elapsedMs": 22.5
+      }
+    },
+    {
+      "hostMs": 11319.299999999988,
+      "event": "tx",
+      "detail": "UART"
+    },
+    {
+      "hostMs": 11319.299999999988,
+      "event": "write_done",
+      "detail": "UART"
+    },
+    {
+      "hostMs": 11364,
+      "event": "rx",
+      "detail": "554152542c3131353230302c34323030303030302c3336342c307830302c302c"
+    },
+    {
+      "hostMs": 11365.200000000012,
+      "event": "rx",
+      "detail": "302c302c302c300d0a"
+    },
+    {
+      "hostMs": 11365.400000000023,
+      "event": "reply",
+      "detail": {
+        "command": "UART",
+        "line": "UART,115200,42000000,364,0x00,0,0,0,0,0",
+        "elapsedMs": 46.100000000034925
+      }
+    },
+    {
+      "hostMs": 11365.5,
+      "event": "tx",
+      "detail": "LINK"
+    },
+    {
+      "hostMs": 11365.5,
+      "event": "write_done",
+      "detail": "LINK"
+    },
+    {
+      "hostMs": 11397.599999999977,
+      "event": "rx",
+      "detail": "4c"
+    },
+    {
+      "hostMs": 11397.599999999977,
+      "event": "rx",
+      "detail": "494e4b2c3236332c33352c302c302c302c300d0a"
+    },
+    {
+      "hostMs": 11397.700000000012,
+      "event": "reply",
+      "detail": {
+        "command": "LINK",
+        "line": "LINK,263,35,0,0,0,0",
+        "elapsedMs": 32.29999999998836
+      }
+    },
+    {
+      "hostMs": 11397.700000000012,
+      "event": "tx",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 11397.799999999988,
+      "event": "write_done",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 11420.299999999988,
+      "event": "rx",
+      "detail": "535441434b2c343039362c323532302c313537362c310d0a"
+    },
+    {
+      "hostMs": 11420.799999999988,
+      "event": "reply",
+      "detail": {
+        "command": "STACK",
+        "line": "STACK,4096,2520,1576,1",
+        "elapsedMs": 23.099999999976717
+      }
+    },
+    {
+      "hostMs": 11420.900000000023,
+      "event": "tx",
+      "detail": "SPEEDLIMIT"
+    },
+    {
+      "hostMs": 11420.900000000023,
+      "event": "write_done",
+      "detail": "SPEEDLIMIT"
+    },
+    {
+      "hostMs": 11442.400000000023,
+      "event": "rx",
+      "detail": "53"
+    },
+    {
+      "hostMs": 11442.5,
+      "event": "rx",
+      "detail": "504545444c494d49542c3136300d0a"
+    },
+    {
+      "hostMs": 11442.599999999977,
+      "event": "reply",
+      "detail": {
+        "command": "SPEEDLIMIT",
+        "line": "SPEEDLIMIT,160",
+        "elapsedMs": 21.699999999953434
+      }
+    },
+    {
+      "hostMs": 11442.700000000012,
+      "event": "tx",
+      "detail": "SPEEDSTATUS"
+    },
+    {
+      "hostMs": 11442.700000000012,
+      "event": "write_done",
+      "detail": "SPEEDSTATUS"
+    },
+    {
+      "hostMs": 11466.5,
+      "event": "rx",
+      "detail": "54454c2c3938393434392c302c302c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 11466.799999999988,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 11467,
+      "event": "rx",
+      "detail": "302c302c302c302c302c302c302c31323530322c302c302c312c302c393336"
+    },
+    {
+      "hostMs": 11467.799999999988,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 11467.900000000023,
+      "event": "rx",
+      "detail": "302c300d0a"
+    },
+    {
+      "hostMs": 11468.200000000012,
+      "event": "reply",
+      "detail": {
+        "command": "SPEEDSTATUS",
+        "line": "TEL,989449,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12502,0,0,1,0,93600,0",
+        "elapsedMs": 25.600000000034925
+      }
+    },
+    {
+      "hostMs": 11468.299999999988,
+      "event": "tx",
+      "detail": "PIDGET"
+    },
+    {
+      "hostMs": 11468.299999999988,
+      "event": "write_done",
+      "detail": "PIDGET"
+    },
+    {
+      "hostMs": 11499.400000000023,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 11499.5,
+      "event": "rx",
+      "detail": "49442c312e323030302c302e303939312c302e303030302c312e323030302c"
+    },
+    {
+      "hostMs": 11501,
+      "event": "rx",
+      "detail": "302e303939382c302e303030302c312e323030302c302e303939382c302e3030"
+    },
+    {
+      "hostMs": 11501.900000000023,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 11501.900000000023,
+      "event": "rx",
+      "detail": "302c312e323030302c302e313030382c302e303030300d0a"
+    },
+    {
+      "hostMs": 11502.200000000012,
+      "event": "reply",
+      "detail": {
+        "command": "PIDGET",
+        "line": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000",
+        "elapsedMs": 33.90000000002328
+      }
+    },
+    {
+      "hostMs": 11502.200000000012,
+      "event": "tx",
+      "detail": "CAPS"
+    },
+    {
+      "hostMs": 11502.200000000012,
+      "event": "write_done",
+      "detail": "CAPS"
+    },
+    {
+      "hostMs": 11533.900000000023,
+      "event": "rx",
+      "detail": "43"
+    },
+    {
+      "hostMs": 11533.900000000023,
+      "event": "rx",
+      "detail": "4150532c41545449545544455f5232342c32302c31302c3136302c36302c36"
+    },
+    {
+      "hostMs": 11535.200000000012,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 11535.200000000012,
+      "event": "rx",
+      "detail": "2c38302c53504545445f54554e41424c452c484c4f472c5053322c54524143"
+    },
+    {
+      "hostMs": 11536.299999999988,
+      "event": "rx",
+      "detail": "4b"
+    },
+    {
+      "hostMs": 11536.299999999988,
+      "event": "rx",
+      "detail": "4d4f56452c484c4f475f4d4f44452c484c4f475f55532c544f465f444c3142"
+    },
+    {
+      "hostMs": 11538,
+      "event": "rx",
+      "detail": "2c574c4f475f55532c544f465f47554152442c46524f4e545f52455645525345"
+    },
+    {
+      "hostMs": 11538.799999999988,
+      "event": "rx",
+      "detail": "44"
+    },
+    {
+      "hostMs": 11538.799999999988,
+      "event": "rx",
+      "detail": "2c544f465f464153542c544f465f47554152445f3230305f3130305f34302c"
+    },
+    {
+      "hostMs": 11540,
+      "event": "rx",
+      "detail": "55"
+    },
+    {
+      "hostMs": 11540.099999999977,
+      "event": "rx",
+      "detail": "4152545f514f532c53455249414c5f3131353230300d0a"
+    },
+    {
+      "hostMs": 11540.200000000012,
+      "event": "reply",
+      "detail": {
+        "command": "CAPS",
+        "line": "CAPS,ATTITUDE_R24,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200",
+        "elapsedMs": 38
+      }
+    },
+    {
+      "hostMs": 11540.200000000012,
+      "event": "tx",
+      "detail": "PS2STATUS"
+    },
+    {
+      "hostMs": 11540.299999999988,
+      "event": "write_done",
+      "detail": "PS2STATUS"
+    },
+    {
+      "hostMs": 11577.900000000023,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 11577.900000000023,
+      "event": "rx",
+      "detail": "53322c312c302c307837332c3078303030302c3132382c3132382c3132382c"
+    },
+    {
+      "hostMs": 11579,
+      "event": "rx",
+      "detail": "31"
+    },
+    {
+      "hostMs": 11579,
+      "event": "rx",
+      "detail": "32382c33302c302c300d0a"
+    },
+    {
+      "hostMs": 11579.099999999977,
+      "event": "reply",
+      "detail": {
+        "command": "PS2STATUS",
+        "line": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,0",
+        "elapsedMs": 38.899999999965075
+      }
+    },
+    {
+      "hostMs": 11579.200000000012,
+      "event": "tx",
+      "detail": "YAWGET"
+    },
+    {
+      "hostMs": 11579.200000000012,
+      "event": "write_done",
+      "detail": "YAWGET"
+    },
+    {
+      "hostMs": 11600.200000000012,
+      "event": "rx",
+      "detail": "59"
+    },
+    {
+      "hostMs": 11600.200000000012,
+      "event": "rx",
+      "detail": "41575049442c302e313831352c312e383036322c36302c38302c32300d0a"
+    },
+    {
+      "hostMs": 11600.400000000023,
+      "event": "reply",
+      "detail": {
+        "command": "YAWGET",
+        "line": "YAWPID,0.1815,1.8062,60,80,20",
+        "elapsedMs": 21.20000000001164
+      }
+    },
+    {
+      "hostMs": 11600.5,
+      "event": "tx",
+      "detail": "HEADGET"
+    },
+    {
+      "hostMs": 11600.5,
+      "event": "write_done",
+      "detail": "HEADGET"
+    },
+    {
+      "hostMs": 11622.599999999977,
+      "event": "rx",
+      "detail": "48"
+    },
+    {
+      "hostMs": 11622.700000000012,
+      "event": "rx",
+      "detail": "4541445049442c362e303030302c312e323530302c38302c32302c445f4d45"
+    },
+    {
+      "hostMs": 11623.700000000012,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 11623.799999999988,
+      "event": "rx",
+      "detail": "530d0a"
+    },
+    {
+      "hostMs": 11623.900000000023,
+      "event": "reply",
+      "detail": {
+        "command": "HEADGET",
+        "line": "HEADPID,6.0000,1.2500,80,20,D_MEAS",
+        "elapsedMs": 23.400000000023283
+      }
+    },
+    {
+      "hostMs": 11623.900000000023,
+      "event": "tx",
+      "detail": "ANGLESTATUS"
+    },
+    {
+      "hostMs": 11623.900000000023,
+      "event": "write_done",
+      "detail": "ANGLESTATUS"
+    },
+    {
+      "hostMs": 11667.799999999988,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 11667.900000000023,
+      "event": "rx",
+      "detail": "54454c2c3938393632392c302c312c302c302c302c39333236392c39333630"
+    },
+    {
+      "hostMs": 11669,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 11669,
+      "event": "rx",
+      "detail": "2c2d3635382c302c302c302c31323530320d0a"
+    },
+    {
+      "hostMs": 11669.599999999977,
+      "event": "reply",
+      "detail": {
+        "command": "ANGLESTATUS",
+        "line": "ATEL,989629,0,1,0,0,0,93269,93600,-658,0,0,0,12502",
+        "elapsedMs": 45.699999999953434
+      }
+    },
+    {
+      "hostMs": 11669.599999999977,
+      "event": "tx",
+      "detail": "HLOG,STATUS"
+    },
+    {
+      "hostMs": 11669.599999999977,
+      "event": "write_done",
+      "detail": "HLOG,STATUS"
+    },
+    {
+      "hostMs": 11690,
+      "event": "rx",
+      "detail": "48"
+    },
+    {
+      "hostMs": 11690.099999999977,
+      "event": "rx",
+      "detail": "4c4f472c5354415455532c302c302c313032342c302c300d0a"
+    },
+    {
+      "hostMs": 11690.200000000012,
+      "event": "reply",
+      "detail": {
+        "command": "HLOG,STATUS",
+        "line": "HLOG,STATUS,0,0,1024,0,0",
+        "elapsedMs": 20.600000000034925
+      }
+    },
+    {
+      "hostMs": 11690.299999999988,
+      "event": "tx",
+      "detail": "WLOG,STATUS"
+    },
+    {
+      "hostMs": 11690.299999999988,
+      "event": "write_done",
+      "detail": "WLOG,STATUS"
+    },
+    {
+      "hostMs": 11712.5,
+      "event": "rx",
+      "detail": "57"
+    },
+    {
+      "hostMs": 11712.599999999977,
+      "event": "rx",
+      "detail": "4c4f472c5354415455532c302c302c313032342c302c300d0a"
+    },
+    {
+      "hostMs": 11712.599999999977,
+      "event": "reply",
+      "detail": {
+        "command": "WLOG,STATUS",
+        "line": "WLOG,STATUS,0,0,1024,0,0",
+        "elapsedMs": 22.29999999998836
+      }
+    },
+    {
+      "hostMs": 11712.599999999977,
+      "event": "tx",
+      "detail": "TOF"
+    },
+    {
+      "hostMs": 11712.599999999977,
+      "event": "write_done",
+      "detail": "TOF"
+    },
+    {
+      "hostMs": 11735.099999999977,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 11735.200000000012,
+      "event": "rx",
+      "detail": "4f462c3938393731392c312c302c2d312c342c32302c300d0a"
+    },
+    {
+      "hostMs": 11735.200000000012,
+      "event": "reply",
+      "detail": {
+        "command": "TOF",
+        "line": "TOF,989719,1,0,-1,4,20,0",
+        "elapsedMs": 22.600000000034925
+      }
+    },
+    {
+      "hostMs": 11735.299999999988,
+      "event": "tx",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 11735.400000000023,
+      "event": "write_done",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 11757.5,
+      "event": "rx",
+      "detail": "53"
+    },
+    {
+      "hostMs": 11757.5,
+      "event": "rx",
+      "detail": "5441434b2c343039362c323532302c313537362c310d0a"
+    },
+    {
+      "hostMs": 11757.599999999977,
+      "event": "reply",
+      "detail": {
+        "command": "STACK",
+        "line": "STACK,4096,2520,1576,1",
+        "elapsedMs": 22.29999999998836
+      }
+    },
+    {
+      "hostMs": 13161.900000000023,
+      "event": "tx",
+      "detail": "ARM"
+    },
+    {
+      "hostMs": 13161.900000000023,
+      "event": "write_done",
+      "detail": "ARM"
+    },
+    {
+      "hostMs": 13186.5,
+      "event": "rx",
+      "detail": "41434b2c41524d2c574845454c535f4f46465f47524f554e440d0a"
+    },
+    {
+      "hostMs": 13186.700000000012,
+      "event": "reply",
+      "detail": {
+        "command": "ARM",
+        "line": "ACK,ARM,WHEELS_OFF_GROUND",
+        "elapsedMs": 24.79999999998836
+      }
+    },
+    {
+      "hostMs": 13504.200000000012,
+      "event": "tx",
+      "detail": "SPEED,1"
+    },
+    {
+      "hostMs": 13504.299999999988,
+      "event": "write_done",
+      "detail": "SPEED,1"
+    },
+    {
+      "hostMs": 13535,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 13535,
+      "event": "rx",
+      "detail": "434b2c53504545442c310d0a"
+    },
+    {
+      "hostMs": 13535.200000000012,
+      "event": "reply",
+      "detail": {
+        "command": "SPEED,1",
+        "line": "ACK,SPEED,1",
+        "elapsedMs": 31.100000000034925
+      }
+    },
+    {
+      "hostMs": 13839.400000000023,
+      "event": "rx",
+      "detail": "54454c2c3939313831392c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 13840.400000000023,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 13840.400000000023,
+      "event": "rx",
+      "detail": "302c302c302c302c302c302c302c31323439382c302c312c312c312c393336"
+    },
+    {
+      "hostMs": 13841.700000000012,
+      "event": "rx",
+      "detail": "30302c310d0a"
+    },
+    {
+      "hostMs": 14143,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 14143.099999999977,
+      "event": "rx",
+      "detail": "454c2c3939323131392c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 14144.200000000012,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323439332c302c312c312c312c393336"
+    },
+    {
+      "hostMs": 14145.400000000023,
+      "event": "rx",
+      "detail": "30312c310d0a"
+    },
+    {
+      "hostMs": 14446.5,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 14446.599999999977,
+      "event": "rx",
+      "detail": "454c2c3939323431392c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 14447.799999999988,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 14447.799999999988,
+      "event": "rx",
+      "detail": "302c302c302c302c302c302c302c31323439382c302c302c312c302c393336"
+    },
+    {
+      "hostMs": 14449.200000000012,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 14449.200000000012,
+      "event": "rx",
+      "detail": "312c310d0a"
+    },
+    {
+      "hostMs": 14739.299999999988,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 14739.400000000023,
+      "event": "rx",
+      "detail": "454c2c3939323731392c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 14740.200000000012,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 14740.200000000012,
+      "event": "rx",
+      "detail": "302c302c302c302c302c302c302c31323439362c302c372c312c372c393336"
+    },
+    {
+      "hostMs": 14741.5,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 14741.599999999977,
+      "event": "rx",
+      "detail": "312c310d0a"
+    },
+    {
+      "hostMs": 15042.799999999988,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 15042.900000000023,
+      "event": "rx",
+      "detail": "454c2c3939333031392c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 15044.299999999988,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323439342c302c2d312c312c2d312c39"
+    },
+    {
+      "hostMs": 15045.400000000023,
+      "event": "rx",
+      "detail": "333630312c310d0a"
+    },
+    {
+      "hostMs": 15210.099999999977,
+      "event": "tx",
+      "detail": "TOF,1"
+    },
+    {
+      "hostMs": 15210.099999999977,
+      "event": "write_done",
+      "detail": "TOF,1"
+    },
+    {
+      "hostMs": 15233.799999999988,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 15233.799999999988,
+      "event": "rx",
+      "detail": "434b2c544f462c310d0a"
+    },
+    {
+      "hostMs": 15234,
+      "event": "reply",
+      "detail": {
+        "command": "TOF,1",
+        "line": "ACK,TOF,1",
+        "elapsedMs": 23.900000000023283
+      }
+    },
+    {
+      "hostMs": 15234.099999999977,
+      "event": "tx",
+      "detail": "TOF"
+    },
+    {
+      "hostMs": 15234.200000000012,
+      "event": "write_done",
+      "detail": "TOF"
+    },
+    {
+      "hostMs": 15256.299999999988,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 15256.400000000023,
+      "event": "rx",
+      "detail": "4f462c3939333234302c312c302c2d312c342c32392c300d0a"
+    },
+    {
+      "hostMs": 15256.400000000023,
+      "event": "reply",
+      "detail": {
+        "command": "TOF",
+        "line": "TOF,993240,1,0,-1,4,29,0",
+        "elapsedMs": 22.400000000023283
+      }
+    },
+    {
+      "hostMs": 15436.400000000023,
+      "event": "rx",
+      "detail": "544f462c3939333431382c312c312c333531342c392c33332c300d0a"
+    },
+    {
+      "hostMs": 15549.200000000012,
+      "event": "rx",
+      "detail": "54454c2c3939333531392c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 15550.299999999988,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 15550.299999999988,
+      "event": "rx",
+      "detail": "302c302c302c302c302c302c302c31323439362c302c302c312c302c393336"
+    },
+    {
+      "hostMs": 15551.599999999977,
+      "event": "rx",
+      "detail": "30312c310d0a"
+    },
+    {
+      "hostMs": 15638.700000000012,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 15638.700000000012,
+      "event": "rx",
+      "detail": "4f462c3939333631382c312c302c2d312c342c322c300d0a"
+    },
+    {
+      "hostMs": 15701.700000000012,
+      "event": "tx",
+      "detail": "MOVE,0,30,0"
+    },
+    {
+      "hostMs": 15701.700000000012,
+      "event": "write_done",
+      "detail": "MOVE,0,30,0"
+    },
+    {
+      "hostMs": 15728.5,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 15728.599999999977,
+      "event": "rx",
+      "detail": "434b2c4d4f56450d0a"
+    },
+    {
+      "hostMs": 15728.900000000023,
+      "event": "reply",
+      "detail": {
+        "command": "MOVE,0,30,0",
+        "line": "ACK,MOVE",
+        "elapsedMs": 27.20000000001164
+      }
+    },
+    {
+      "hostMs": 15824,
+      "event": "tx",
+      "detail": "KEEP"
+    },
+    {
+      "hostMs": 15824.099999999977,
+      "event": "write_done",
+      "detail": "KEEP"
+    },
+    {
+      "hostMs": 15852.5,
+      "event": "rx",
+      "detail": "41434b2c4b4545500d0a"
+    },
+    {
+      "hostMs": 15852.599999999977,
+      "event": "reply",
+      "detail": {
+        "command": "KEEP",
+        "line": "ACK,KEEP",
+        "elapsedMs": 28.599999999976717
+      }
+    },
+    {
+      "hostMs": 15869.599999999977,
+      "event": "tx",
+      "detail": "MOVE,-30,30,0"
+    },
+    {
+      "hostMs": 15869.700000000012,
+      "event": "write_done",
+      "detail": "MOVE,-30,30,0"
+    },
+    {
+      "hostMs": 15897.5,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 15897.5,
+      "event": "rx",
+      "detail": "434b2c4d4f56450d0a"
+    },
+    {
+      "hostMs": 15897.900000000023,
+      "event": "reply",
+      "detail": {
+        "command": "MOVE,-30,30,0",
+        "line": "ACK,MOVE",
+        "elapsedMs": 28.300000000046566
+      }
+    },
+    {
+      "hostMs": 15899.900000000023,
+      "event": "tx",
+      "detail": "MOVE,-30,0,0"
+    },
+    {
+      "hostMs": 15900,
+      "event": "write_done",
+      "detail": "MOVE,-30,0,0"
+    },
+    {
+      "hostMs": 15919.799999999988,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 15920,
+      "event": "rx",
+      "detail": "434b2c4d4f56450d0a"
+    },
+    {
+      "hostMs": 15920.200000000012,
+      "event": "reply",
+      "detail": {
+        "command": "MOVE,-30,0,0",
+        "line": "ACK,MOVE",
+        "elapsedMs": 20.29999999998836
+      }
+    },
+    {
+      "hostMs": 15920.299999999988,
+      "event": "tx",
+      "detail": "MOVE,-30,-30,0"
+    },
+    {
+      "hostMs": 15920.299999999988,
+      "event": "write_done",
+      "detail": "MOVE,-30,-30,0"
+    },
+    {
+      "hostMs": 15942.400000000023,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 15942.400000000023,
+      "event": "rx",
+      "detail": "434b2c4d4f56450d0a"
+    },
+    {
+      "hostMs": 15942.5,
+      "event": "reply",
+      "detail": {
+        "command": "MOVE,-30,-30,0",
+        "line": "ACK,MOVE",
+        "elapsedMs": 22.20000000001164
+      }
+    },
+    {
+      "hostMs": 15950.5,
+      "event": "tx",
+      "detail": "MOVE,0,-30,0"
+    },
+    {
+      "hostMs": 15950.5,
+      "event": "write_done",
+      "detail": "MOVE,0,-30,0"
+    },
+    {
+      "hostMs": 15965.099999999977,
+      "event": "rx",
+      "detail": "41434b2c4d4f56450d0a"
+    },
+    {
+      "hostMs": 15965.400000000023,
+      "event": "reply",
+      "detail": {
+        "command": "MOVE,0,-30,0",
+        "line": "ACK,MOVE",
+        "elapsedMs": 15
+      }
+    },
+    {
+      "hostMs": 16107.099999999977,
+      "event": "tx",
+      "detail": "MOVE,30,-30,0"
+    },
+    {
+      "hostMs": 16107.099999999977,
+      "event": "write_done",
+      "detail": "MOVE,30,-30,0"
+    },
+    {
+      "hostMs": 16133.599999999977,
+      "event": "rx",
+      "detail": "fe"
+    },
+    {
+      "hostMs": 16133.700000000012,
+      "event": "rx",
+      "detail": "7ffcfe82ecfd33f02c30e1"
+    },
+    {
+      "hostMs": 16853.70000000001,
+      "event": "rx",
+      "detail": "544f462c3939343831392c312c302c2d312c342c31362c300d0a"
+    },
+    {
+      "hostMs": 17236.20000000001,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 17236.20000000001,
+      "event": "rx",
+      "detail": "4f462c3939353231392c312c312c333336302c392c31322c300d0a"
+    },
+    {
+      "hostMs": 17340.29999999999,
+      "event": "tx",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 17340.400000000023,
+      "event": "write_done",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 17359.70000000001,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 17359.70000000001,
+      "event": "rx",
+      "detail": "434b2c53544f500d0a"
+    },
+    {
+      "hostMs": 17359.900000000023,
+      "event": "reply",
+      "detail": {
+        "command": "STOP",
+        "line": "ACK,STOP",
+        "elapsedMs": 19.600000000034925
+      }
+    },
+    {
+      "hostMs": 17549.29999999999,
+      "event": "tx",
+      "detail": "MOVE,0,30,0"
+    },
+    {
+      "hostMs": 17549.29999999999,
+      "event": "write_done",
+      "detail": "MOVE,0,30,0"
+    },
+    {
+      "hostMs": 17573.5,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 17573.5,
+      "event": "rx",
+      "detail": "434b2c4d4f56450d0a"
+    },
+    {
+      "hostMs": 17573.70000000001,
+      "event": "reply",
+      "detail": {
+        "command": "MOVE,0,30,0",
+        "line": "ACK,MOVE",
+        "elapsedMs": 24.400000000023283
+      }
+    },
+    {
+      "hostMs": 17749.599999999977,
+      "event": "tx",
+      "detail": "MOVE,-30,30,0"
+    },
+    {
+      "hostMs": 17749.70000000001,
+      "event": "write_done",
+      "detail": "MOVE,-30,30,0"
+    },
+    {
+      "hostMs": 17764.79999999999,
+      "event": "rx",
+      "detail": "41434b2c4d4f56450d0a"
+    },
+    {
+      "hostMs": 17764.900000000023,
+      "event": "reply",
+      "detail": {
+        "command": "MOVE,-30,30,0",
+        "line": "ACK,MOVE",
+        "elapsedMs": 15.300000000046566
+      }
+    },
+    {
+      "hostMs": 17821.400000000023,
+      "event": "tx",
+      "detail": "MOVE,-30,0,0"
+    },
+    {
+      "hostMs": 17821.400000000023,
+      "event": "write_done",
+      "detail": "MOVE,-30,0,0"
+    },
+    {
+      "hostMs": 17843.599999999977,
+      "event": "rx",
+      "detail": "41434b2c4d4f56450d0a"
+    },
+    {
+      "hostMs": 17843.70000000001,
+      "event": "reply",
+      "detail": {
+        "command": "MOVE,-30,0,0",
+        "line": "ACK,MOVE",
+        "elapsedMs": 22.29999999998836
+      }
+    },
+    {
+      "hostMs": 17843.79999999999,
+      "event": "tx",
+      "detail": "KEEP"
+    },
+    {
+      "hostMs": 17843.79999999999,
+      "event": "write_done",
+      "detail": "KEEP"
+    },
+    {
+      "hostMs": 18147.900000000023,
+      "event": "tx",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 18147.900000000023,
+      "event": "write_done",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 18169.900000000023,
+      "event": "rx",
+      "detail": "0a53544f500a"
+    },
+    {
+      "hostMs": 18350.20000000001,
+      "event": "rx",
+      "detail": "4154454c2c3939363332392c302c312c302c3631352c302c39333236392c3934"
+    },
+    {
+      "hostMs": 18351.400000000023,
+      "event": "rx",
+      "detail": "3836312c2d3831362c302c302c302c31323434300d0a"
+    },
+    {
+      "hostMs": 18845.099999999977,
+      "event": "rx",
+      "detail": "544f462c3939363831392c312c312c333339332c392c33322c300d0a"
+    },
+    {
+      "hostMs": 18856.400000000023,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 18856.400000000023,
+      "event": "rx",
+      "detail": "54454c2c3939363832392c302c312c302c342c302c39333236392c39343835"
+    },
+    {
+      "hostMs": 18857.5,
+      "event": "rx",
+      "detail": "362c2d3831362c302c302c302c31323436390d0a"
+    },
+    {
+      "hostMs": 19036.20000000001,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 19036.20000000001,
+      "event": "rx",
+      "detail": "4f462c3939373031392c312c312c333336312c392c33302c300d0a"
+    },
+    {
+      "hostMs": 19238.70000000001,
+      "event": "rx",
+      "detail": "544f462c3939373231392c312c302c2d312c342c32362c300d0a"
+    },
+    {
+      "hostMs": 19351.5,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 19351.5,
+      "event": "rx",
+      "detail": "54454c2c3939373332392c302c312c302c31302c302c39333236392c393438"
+    },
+    {
+      "hostMs": 19352.599999999977,
+      "event": "rx",
+      "detail": "35"
+    },
+    {
+      "hostMs": 19352.599999999977,
+      "event": "rx",
+      "detail": "342c2d3831362c302c302c302c31323438310d0a"
+    },
+    {
+      "hostMs": 19654.900000000023,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 19654.900000000023,
+      "event": "rx",
+      "detail": "4f462c3939373631392c312c312c333337322c392c32312c300d0a"
+    },
+    {
+      "hostMs": 19846.599999999977,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 19846.599999999977,
+      "event": "rx",
+      "detail": "4f462c3939373831392c312c302c2d312c342c31392c300d0a4154454c2c39"
+    },
+    {
+      "hostMs": 19847.599999999977,
+      "event": "rx",
+      "detail": "39"
+    },
+    {
+      "hostMs": 19847.70000000001,
+      "event": "rx",
+      "detail": "373832392c302c312c302c2d372c302c39333236392c39343835332c2d3831"
+    },
+    {
+      "hostMs": 19849.400000000023,
+      "event": "rx",
+      "detail": "362c302c302c302c31323437390d0a"
+    },
+    {
+      "hostMs": 20037.5,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 20037.5,
+      "event": "rx",
+      "detail": "4f462c3939383031392c312c312c333431362c392c31362c300d0a"
+    },
+    {
+      "hostMs": 20239.900000000023,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 20239.900000000023,
+      "event": "rx",
+      "detail": "4f462c3939383231392c312c312c333336322c392c31342c300d0a"
+    },
+    {
+      "hostMs": 20352.5,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 20352.5,
+      "event": "rx",
+      "detail": "54454c2c3939383332392c302c312c302c302c302c39333236392c39343835"
+    },
+    {
+      "hostMs": 20353.900000000023,
+      "event": "rx",
+      "detail": "302c2d3831362c302c302c302c31323438370d0a"
+    },
+    {
+      "hostMs": 20443,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 20443,
+      "event": "rx",
+      "detail": "4f462c3939383431392c312c312c333430302c392c31322c300d0a"
+    },
+    {
+      "hostMs": 20633.70000000001,
+      "event": "rx",
+      "detail": "544f462c3939383631392c312c312c333338362c392c382c300d0a"
+    },
+    {
+      "hostMs": 20848,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 20848.099999999977,
+      "event": "rx",
+      "detail": "4f462c3939383831392c312c302c2d312c342c362c300d0a4154454c2c3939"
+    },
+    {
+      "hostMs": 20849.20000000001,
+      "event": "rx",
+      "detail": "383832392c302c312c302c322c302c39333236392c39343834372c2d3831362c"
+    },
+    {
+      "hostMs": 20850.29999999999,
+      "event": "rx",
+      "detail": "302c302c302c31323439330d0a"
+    },
+    {
+      "hostMs": 21038.79999999999,
+      "event": "rx",
+      "detail": "544f462c3939393031392c312c312c333337312c392c342c300d0a"
+    },
+    {
+      "hostMs": 21156.099999999977,
+      "event": "command_timeout",
+      "detail": {
+        "command": "STOP",
+        "rxAgeMs": 117.29999999998836,
+        "writeDone": true,
+        "motionReport": {
+          "receivedAt": 20850.29999999999,
+          "tick": 998829,
+          "mode": 0,
+          "imuReady": true,
+          "enabled": false
+        }
+      }
+    },
+    {
+      "hostMs": 21156.20000000001,
+      "event": "fault",
+      "detail": "车端应答超时：STOP；仍有回传，但该命令未确认"
+    }
+  ],
+  "clientVersion": "keep-watchdog-v38",
+  "uiTrace": [
+    {
+      "hostMs": 913.5,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 978896,
+        "zone": "invalid",
+        "mm": -1,
+        "age": 15,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 9585.200000000012,
+      "event": "window_blur",
+      "detail": {}
+    },
+    {
+      "hostMs": 15436.5,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 993418,
+        "zone": "clear",
+        "mm": 3514,
+        "age": 33,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 15638.700000000012,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 993618,
+        "zone": "invalid",
+        "mm": -1,
+        "age": 2,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 15701.599999999977,
+      "event": "keydown",
+      "detail": {
+        "key": "a",
+        "keys": [
+          "a"
+        ]
+      }
+    },
+    {
+      "hostMs": 15869.5,
+      "event": "keydown",
+      "detail": {
+        "key": "s",
+        "keys": [
+          "a",
+          "s"
+        ]
+      }
+    },
+    {
+      "hostMs": 15899.799999999988,
+      "event": "keyup",
+      "detail": {
+        "key": "a",
+        "keys": [
+          "s"
+        ]
+      }
+    },
+    {
+      "hostMs": 15919.599999999977,
+      "event": "keydown",
+      "detail": {
+        "key": "d",
+        "keys": [
+          "s",
+          "d"
+        ]
+      }
+    },
+    {
+      "hostMs": 15950.400000000023,
+      "event": "keyup",
+      "detail": {
+        "key": "s",
+        "keys": [
+          "d"
+        ]
+      }
+    },
+    {
+      "hostMs": 16107,
+      "event": "keydown",
+      "detail": {
+        "key": "w",
+        "keys": [
+          "d",
+          "w"
+        ]
+      }
+    },
+    {
+      "hostMs": 16153.099999999977,
+      "event": "keyup",
+      "detail": {
+        "key": "d",
+        "keys": [
+          "w"
+        ]
+      }
+    },
+    {
+      "hostMs": 16436,
+      "event": "keydown",
+      "detail": {
+        "key": "a",
+        "keys": [
+          "w",
+          "a"
+        ]
+      }
+    },
+    {
+      "hostMs": 16638.900000000023,
+      "event": "keyup",
+      "detail": {
+        "key": "a",
+        "keys": [
+          "w"
+        ]
+      }
+    },
+    {
+      "hostMs": 16896.70000000001,
+      "event": "keydown",
+      "detail": {
+        "key": "d",
+        "keys": [
+          "w",
+          "d"
+        ]
+      }
+    },
+    {
+      "hostMs": 16964.29999999999,
+      "event": "keyup",
+      "detail": {
+        "key": "w",
+        "keys": [
+          "d"
+        ]
+      }
+    },
+    {
+      "hostMs": 17145.20000000001,
+      "event": "keydown",
+      "detail": {
+        "key": "s",
+        "keys": [
+          "d",
+          "s"
+        ]
+      }
+    },
+    {
+      "hostMs": 17236.20000000001,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 995219,
+        "zone": "clear",
+        "mm": 3360,
+        "age": 12,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 17314.599999999977,
+      "event": "keyup",
+      "detail": {
+        "key": "d",
+        "keys": [
+          "s"
+        ]
+      }
+    },
+    {
+      "hostMs": 17340.099999999977,
+      "event": "keyup",
+      "detail": {
+        "key": "s",
+        "keys": []
+      }
+    },
+    {
+      "hostMs": 17340.099999999977,
+      "event": "stop_requested",
+      "detail": {
+        "reason": "user_stop",
+        "keys": [],
+        "vector": {
+          "forward": -1,
+          "left": 0,
+          "rotate": 0
+        }
+      }
+    },
+    {
+      "hostMs": 17549.29999999999,
+      "event": "keydown",
+      "detail": {
+        "key": "a",
+        "keys": [
+          "a"
+        ]
+      }
+    },
+    {
+      "hostMs": 17749.599999999977,
+      "event": "keydown",
+      "detail": {
+        "key": "s",
+        "keys": [
+          "a",
+          "s"
+        ]
+      }
+    },
+    {
+      "hostMs": 17821.400000000023,
+      "event": "keyup",
+      "detail": {
+        "key": "a",
+        "keys": [
+          "s"
+        ]
+      }
+    },
+    {
+      "hostMs": 18147.70000000001,
+      "event": "keyup",
+      "detail": {
+        "key": "s",
+        "keys": []
+      }
+    },
+    {
+      "hostMs": 18147.70000000001,
+      "event": "stop_requested",
+      "detail": {
+        "reason": "user_stop",
+        "keys": [],
+        "vector": {
+          "forward": -1,
+          "left": 0,
+          "rotate": 0
+        }
+      }
+    },
+    {
+      "hostMs": 18618.79999999999,
+      "event": "keydown",
+      "detail": {
+        "key": "s",
+        "keys": [
+          "s"
+        ]
+      }
+    },
+    {
+      "hostMs": 19017.20000000001,
+      "event": "keyup",
+      "detail": {
+        "key": "s",
+        "keys": []
+      }
+    },
+    {
+      "hostMs": 19017.20000000001,
+      "event": "stop_requested",
+      "detail": {
+        "reason": "user_stop",
+        "keys": [],
+        "vector": {
+          "forward": -1,
+          "left": 0,
+          "rotate": 0
+        }
+      }
+    },
+    {
+      "hostMs": 19238.70000000001,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 997219,
+        "zone": "invalid",
+        "mm": -1,
+        "age": 26,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 19654.900000000023,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 997619,
+        "zone": "clear",
+        "mm": 3372,
+        "age": 21,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 19846.599999999977,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 997819,
+        "zone": "invalid",
+        "mm": -1,
+        "age": 19,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 20037.5,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 998019,
+        "zone": "clear",
+        "mm": 3416,
+        "age": 16,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 20359.400000000023,
+      "event": "keydown",
+      "detail": {
+        "key": "w",
+        "keys": [
+          "w"
+        ]
+      }
+    },
+    {
+      "hostMs": 20630.29999999999,
+      "event": "keyup",
+      "detail": {
+        "key": "w",
+        "keys": []
+      }
+    },
+    {
+      "hostMs": 20824.900000000023,
+      "event": "keydown",
+      "detail": {
+        "key": "d",
+        "keys": [
+          "d"
+        ]
+      }
+    },
+    {
+      "hostMs": 20848.099999999977,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 998819,
+        "zone": "invalid",
+        "mm": -1,
+        "age": 6,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 21024.599999999977,
+      "event": "keydown",
+      "detail": {
+        "key": "s",
+        "keys": [
+          "d",
+          "s"
+        ]
+      }
+    },
+    {
+      "hostMs": 21038.79999999999,
+      "event": "keyup",
+      "detail": {
+        "key": "d",
+        "keys": [
+          "s"
+        ]
+      }
+    },
+    {
+      "hostMs": 21038.900000000023,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 999019,
+        "zone": "clear",
+        "mm": 3371,
+        "age": 4,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 21201.5,
+      "event": "keydown",
+      "detail": {
+        "key": "a",
+        "keys": [
+          "s",
+          "a"
+        ]
+      }
+    },
+    {
+      "hostMs": 21302.5,
+      "event": "keyup",
+      "detail": {
+        "key": "s",
+        "keys": [
+          "a"
+        ]
+      }
+    },
+    {
+      "hostMs": 21419,
+      "event": "keyup",
+      "detail": {
+        "key": "a",
+        "keys": []
+      }
+    },
+    {
+      "hostMs": 21615.70000000001,
+      "event": "keydown",
+      "detail": {
+        "key": "w",
+        "keys": [
+          "w"
+        ]
+      }
+    },
+    {
+      "hostMs": 21742.29999999999,
+      "event": "keydown",
+      "detail": {
+        "key": "d",
+        "keys": [
+          "w",
+          "d"
+        ]
+      }
+    },
+    {
+      "hostMs": 21843.70000000001,
+      "event": "keyup",
+      "detail": {
+        "key": "w",
+        "keys": [
+          "d"
+        ]
+      }
+    },
+    {
+      "hostMs": 21928.099999999977,
+      "event": "keyup",
+      "detail": {
+        "key": "d",
+        "keys": []
+      }
+    }
+  ],
+  "uiTraceDropped": 0,
+  "inputState": {
+    "keys": [],
+    "vector": {
+      "forward": 0,
+      "left": 0,
+      "rotate": 0
+    },
+    "ownsAngleMotion": false,
+    "driveActive": false,
+    "keepPending": false
+  }
+}

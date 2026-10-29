@@ -4,16 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VGT6 四轮控制台</title>
-  <link rel="stylesheet" href="touch-remote.css?v=20">
+  <link rel="stylesheet" href="touch-remote.css?v=21">
 </head>
 <body>
   <header class="topbar">
     <div><h1>VGT6 VEHICLE CONSOLE</h1><p>BM50 四轮 · IMU660RC · 级联控制</p></div>
     <div class="connection-tools">
+      <select id="transportSelect" aria-label="连接方式"><option value="serial" selected>串口直连</option><option value="bridge">桥接（兼容）</option></select>
       <span id="connectionBadge" class="badge offline"><span class="dot"></span>未连接</span>
       <button id="connectButton" class="button connect" type="button">连接</button>
+      <button id="linkLogButton" class="button secondary" type="button">导出链路诊断 v42</button>
     </div>
   </header>
+  <p class="event-text">串口直连与桥接不能同时占用串口。使用直连前请退出兼容模式窗口及其他串口工具，再点击连接。</p>
   <main class="workspace">
     <section class="tuning-section">
       <div class="section-heading">
@@ -52,8 +55,8 @@
       <section class="angle-panel">
         <div class="section-heading"><div><span>INNER LOOP</span><h2>角速度 PI</h2></div><output id="rateReadback">等待回读</output></div>
         <div class="angle-inputs">
-          <label>Kp<input id="rateKp" type="number" min="0" max="100" step="0.0001" value="0.15"></label>
-          <label>Ki / s<input id="rateKi" type="number" min="0" max="100" step="0.0001" value="2.5"></label>
+          <label>Kp<input id="rateKp" type="number" min="0" max="100" step="0.0001" value="0.1815"></label>
+          <label>Ki / s<input id="rateKi" type="number" min="0" max="100" step="0.0001" value="1.8062"></label>
           <label>目标 °/s<input id="rateTarget" type="number" min="-80" max="80" value="15"></label>
         </div>
         <div class="tuning-actions"><button id="ratePidButton" class="button secondary angle-command" disabled>写入并回读 PI</button><button id="rateStartButton" class="button connect angle-command" disabled>启动角速度环</button></div>
@@ -70,17 +73,28 @@
         <p class="hint">最短角误差 · D 使用实测角速度 · 先整定内层 PI，再整定方向</p>
       </section>
       <section class="angle-panel hlog-panel">
-        <div class="section-heading"><div><span>RAM LOGGER</span><h2>方向环 HLOG</h2></div><output id="hlogStatus">未查询</output></div>
+        <div class="section-heading"><div><span>RAM LOGGER</span><h2>角速度 / 航向 HLOG</h2></div><output id="hlogStatus">未查询</output></div>
         <div class="tuning-actions hlog-actions">
           <button id="hlogClearButton" class="button secondary hlog-command" type="button" disabled>清空 RAM 日志</button>
           <button id="hlogStartButton" class="button connect hlog-command" type="button" disabled>开始记录</button>
           <button id="hlogStopButton" class="stop-button hlog-command" type="button" disabled>停止记录</button>
           <button id="hlogReadButton" class="button secondary hlog-command" type="button" disabled>读取并下载 CSV</button>
         </div>
-        <p class="hint">1024 条环形 RAM 记录；读取前必须停止运动。日志不会写入 Flash。</p>
+        <p class="hint">20 ms / 50 Hz · 1024 条，约 20.48 秒。开始记录后再启动角环；每轮停车、停止记录后下载。mode=1 角速度，2 航向；溢出日志不可用于整定。只用 RAM，不写 Flash。</p>
+      </section>
+      <section class="angle-panel hlog-panel">
+        <div class="section-heading"><div><span>100 HZ RAM LOGGER</span><h2>四轮速度 WLOG</h2></div><output id="wlogStatus">未查询</output></div>
+        <div class="tuning-actions hlog-actions">
+          <button id="wlogClearButton" class="button secondary" disabled>清空轮速日志</button>
+          <button id="wlogStartButton" class="button connect" disabled>开始记录轮速</button>
+          <button id="wlogStopButton" class="stop-button" disabled>停止记录轮速</button>
+          <button id="wlogReadButton" class="button secondary" disabled>下载轮速 CSV</button>
+        </div>
+        <p class="hint">10 ms / 100 Hz · 1024 条，约10.24秒，建议单次≤9秒。含四轮目标、原始/滤波反馈、PWM及限速状态。与角环日志共用RAM，清空会替换上一份日志；先停车再切换、下载。</p>
       </section>
       <section class="angle-panel">
         <div class="section-heading"><div><span>CHASSIS</span><h2>四轮运动</h2></div></div>
+        <p class="hint" id="frontFrameState">车头方向等待固件确认</p>
         <label>平移轮速 <input id="driveSpeed" type="number" min="1" max="100" value="30"> RPM</label>
         <label>原地转速 <input id="driveTurnRate" type="number" min="1" max="80" value="20"> °/s</label>
         <div class="drive-pad"><button class="button drive-command turn-left" data-forward="0" data-left="0" data-rotate="1" disabled>Q 左转</button><button class="button drive-command up" data-forward="1" data-left="0" data-rotate="0" disabled>↑ 前进</button><button class="button drive-command turn-right" data-forward="0" data-left="0" data-rotate="-1" disabled>E 右转</button><button class="button drive-command left" data-forward="0" data-left="1" data-rotate="0" disabled>← 左移</button><button class="stop-button pad-stop" id="padStop" disabled>停止</button><button class="button drive-command right" data-forward="0" data-left="-1" data-rotate="0" disabled>右移 →</button><button class="button drive-command down" data-forward="-1" data-left="0" data-rotate="0" disabled>↓ 后退</button></div>
@@ -112,12 +126,19 @@
       </section>
     </section>
     <section class="tuning-section telemetry-surface">
-        <div class="section-heading"><div><span>TELEMETRY</span><h2>实时反馈</h2></div><select id="chartLoop"><option value="rate">角速度 °/s</option><option value="heading">方向 °</option><option value="wheel">1 号轮 RPM</option></select></div>
+        <div class="section-heading"><div><span>TELEMETRY</span><h2>实时反馈</h2></div><select id="chartLoop"><option value="rate">角速度 °/s</option><option value="heading">方向 °</option><option value="wheel_all">四轮同屏 RPM</option><option value="wheel1">1 号轮（A）RPM</option><option value="wheel2">2 号轮（B）RPM</option><option value="wheel3">3 号轮（C）RPM</option><option value="wheel4">4 号轮（D）RPM</option></select></div>
       <div class="metrics"><div><span>角速度</span><output id="rateActual">— °/s</output></div><div><span>航向</span><output id="yawActual">— °</output></div><div><span>电池</span><output id="batteryActual">— V</output></div><div><span>模式</span><output id="angleMode">停止</output></div></div>
+      <div class="tof-reading" aria-live="polite">
+        <div><span>TOF 距离</span><output id="tofDistance">— mm</output><small id="tofState">等待查询</small><small id="frontGuardState">等待保护能力查询</small></div>
+        <label><input id="tofRealtime" type="checkbox">实时距离</label>
+      </div>
+      <button id="speedOnlyButton" class="button secondary" type="button" disabled>速度环专用模式（暂时停用外环）</button>
+      <p id="speedOnlyStatus" class="hint"></p>
       <canvas id="responseChart" width="700" height="320" aria-label="目标与实际响应波形"></canvas>
-      <p class="hint chart-legend">绿色：目标 · 蓝色：实际 · 切换观察量会清空图表</p>
-      <p class="hint">VOFA / FireWater / TCP 127.0.0.1:1347<br>角环：I1/I2 目标/实际 °/s，I4/I5 目标/实际 °<br>速度：I1..I4 实际 A..D，I5..I8 目标 A..D</p>
-      <p id="eventText" class="event-text">等待蓝牙桥接</p>
+      <p class="hint chart-legend">虚线：目标 · 实线：实际；四轮同屏 A绿 / B蓝 / C橙 / D紫。单轮目标绿、实际蓝。低频显示，切换清空。</p>
+      <p class="hint">串口直连：本页直接接收 TEL / ATEL，不经过桥接。<br>仅兼容桥接模式提供 VOFA / FireWater / TCP 127.0.0.1:1347<br>角环：I1/I2 目标/实际 °/s，I4/I5 目标/实际 °<br>速度：I1..I4 实际 A..D，I5..I8 目标 A..D</p>
+      <details><summary>断线与停车验证历史（刷新后保留）</summary><p id="linkHistoryStatus" class="hint"></p><pre id="linkHistory" style="white-space:pre-wrap;max-height:280px;overflow:auto"></pre></details>
+      <p id="eventText" class="event-text">等待连接</p>
       <p class="event-text">固件：<span id="firmwareVersion">未查询</span></p>
       <p class="event-text">链路：<span id="linkStatus">未查询</span></p>
       <p class="event-text">串口：<span id="uartStatus">未查询</span></p>
@@ -129,7 +150,10 @@
       <details><summary>最近命令与应答（不记录周期 TEL）</summary><pre id="commandLog"></pre></details>
     </section>
   </main>
-  <script src="chassis-test.js?v=2"></script>
-  <script src="touch-remote.js?v=26"></script>
+  <script src="wheel-log.js?v=1"></script>
+  <script src="chassis-test.js?v=3"></script>
+  <script src="serial-transport.js?v=6"></script>
+<script src="link-journal.js?v=2"></script>
+<script src="touch-remote.js?v=42"></script>
 </body>
 </html>

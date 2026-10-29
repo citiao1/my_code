@@ -1,0 +1,1 @@
+PASS: ToF 33/40 ms configuration, 40-phase near-stop latency <=46 ms, validity/staleness, unplug/retry and wrap

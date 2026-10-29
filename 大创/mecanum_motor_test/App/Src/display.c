@@ -1,18 +1,11 @@
 #include "display.h"
-
+#include "app.h"
+#include "oled.h"
+#include "servo_test.h"
+#include "stm32f4xx_hal.h"
 #include <stdio.h>
 
-#include "battery.h"
-#include "gyro.h"
-#include "motor.h"
-#include "oled.h"
-#include "ps2_control.h"
-#include "speed_control.h"
-#include "stm32f4xx_hal.h"
-#include "vehicle.h"
-
-#define DISPLAY_PERIOD_MS 250U
-
+#define DISPLAY_PERIOD_MS 100U
 static uint32_t display_tick;
 
 static void Display_PrintLine(uint8_t y, char *text)
@@ -31,31 +24,22 @@ void Display_Process(void)
 {
   char line[24];
   uint32_t now = HAL_GetTick();
-  SpeedControlSnapshot speed;
-  GyroSnapshot gyro;
-  char gyro_status;
-
-  if ((now - display_tick) < DISPLAY_PERIOD_MS)
-  {
-    return;
-  }
+  ServoTestSnapshot servo;
+  if ((now - display_tick) < DISPLAY_PERIOD_MS) return;
   display_tick = now;
-  speed = SpeedControl_GetSnapshot();
-  gyro = Gyro_GetSnapshot();
-  gyro_status = gyro.ready ? 'R' : (gyro.calibrating ? 'C' : 'E');
-
+  servo = ServoTest_GetSnapshot();
   OLED_NewFrame();
-  (void)snprintf(line, sizeof(line), "%-4s SET:%3u RPM", Vehicle_GetModeText(), Vehicle_GetSpeed());
-  Display_PrintLine(0U, line);
-  (void)snprintf(line, sizeof(line), "A:%4d B:%4d", speed.rpm[MOTOR_A], speed.rpm[MOTOR_B]);
+  Display_PrintLine(0U, APP_FIRMWARE_VERSION);
+  (void)snprintf(line, sizeof(line), "KEY:%u PRESS:%05lu",
+                 (unsigned)servo.key_down, (unsigned long)(servo.presses % 100000U));
   Display_PrintLine(16U, line);
-  (void)snprintf(line, sizeof(line), "C:%4d D:%4d", speed.rpm[MOTOR_C], speed.rpm[MOTOR_D]);
+  (void)snprintf(line, sizeof(line), "%s CMD:%c OK:%04lu",
+                 ServoTest_GetModeText(),
+                 servo.last_command, (unsigned long)(servo.commands % 10000U));
   Display_PrintLine(32U, line);
-  (void)snprintf(line, sizeof(line), "BAT:%2u.%02u EN:%u G:%c P:%c",
-                 Battery_GetMillivolts() / 1000U,
-                 (Battery_GetMillivolts() % 1000U) / 10U,
-                 Motor_IsEnabled(), gyro_status,
-                 Ps2Control_GetStatusChar());
+  (void)snprintf(line, sizeof(line), "UP:%06lu ERR:%03lu",
+                 (unsigned long)((now / 1000U) % 1000000U),
+                 (unsigned long)(servo.errors % 1000U));
   Display_PrintLine(48U, line);
   OLED_ShowFrame();
 }

@@ -1,0 +1,95 @@
+{
+  "status": "failed",
+  "purpose": "repeat_negative_30rpm_four_wheel_holdout_diagnostic",
+  "target_command_rpm": -30,
+  "baseline_seconds": 2.0,
+  "phase_limit_seconds": 7.0,
+  "encoder_distance_m": 1.0,
+  "ram_only": true,
+  "pid_writes": false,
+  "required_setup": "four wheels on ground; synchronous all-wheel outbound then reverse to encoder origin",
+  "records": [],
+  "wire": [
+    "STATUS,1,ble connected",
+    "{\"type\": \"result\", \"id\": 1, \"ok\": false, \"error\": \"MCU reply timeout: ANGLESTATUS\"}",
+    "TEL,1229272,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12320,-51,-15,1,-15,-122,0",
+    "{\"type\": \"result\", \"id\": 2, \"ok\": false, \"error\": \"MCU reply timeout: STOP\"}",
+    "{\"type\": \"result\", \"id\": 3, \"ok\": false, \"error\": \"MCU reply timeout: WLOG,STOP\"}",
+    "{\"type\": \"result\", \"id\": 4, \"ok\": false, \"error\": \"MCU reply timeout: DISARM\"}",
+    "ATEL,65809,0,1,0,-1,0,0,-15,0,0,0,0,12311",
+    "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"ATEL,65809,0,1,0,-1,0,0,-15,0,0,0,0,12311\"}",
+    "ACK,STOP",
+    "WLOG,STOP,OK",
+    "ACK,DISARM",
+    "{\"type\": \"result\", \"id\": 6, \"ok\": false, \"error\": \"MCU reply timeout: PS2STATUS\"}"
+  ],
+  "commands": [
+    {
+      "host_monotonic": 10194.906,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": false,
+        "error": "MCU reply timeout: ANGLESTATUS"
+      }
+    },
+    {
+      "host_monotonic": 10197.921,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": false,
+        "error": "MCU reply timeout: STOP"
+      }
+    },
+    {
+      "host_monotonic": 10200.968,
+      "command": "WLOG,STOP",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": false,
+        "error": "MCU reply timeout: WLOG,STOP"
+      }
+    },
+    {
+      "host_monotonic": 10203.984,
+      "command": "DISARM",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": false,
+        "error": "MCU reply timeout: DISARM"
+      }
+    },
+    {
+      "host_monotonic": 10206.984,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "ATEL,65809,0,1,0,-1,0,0,-15,0,0,0,0,12311"
+      }
+    },
+    {
+      "host_monotonic": 10207.328,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": false,
+        "error": "MCU reply timeout: PS2STATUS"
+      }
+    }
+  ],
+  "bridge": "BRIDGE,BM50_ACK_R3",
+  "started_local_time": "2026-10-22T17:07:18+0800",
+  "error": "ANGLESTATUS: {'type': 'result', 'id': 1, 'ok': False, 'error': 'MCU reply timeout: ANGLESTATUS'}",
+  "cleanup_stop_error": "STOP: {'type': 'result', 'id': 2, 'ok': False, 'error': 'MCU reply timeout: STOP'}",
+  "cleanup_wlog_error": "WLOG,STOP: {'type': 'result', 'id': 3, 'ok': False, 'error': 'MCU reply timeout: WLOG,STOP'}",
+  "cleanup_disarm_error": "DISARM: {'type': 'result', 'id': 4, 'ok': False, 'error': 'MCU reply timeout: DISARM'}",
+  "postcheck_error": "PS2STATUS: {'type': 'result', 'id': 6, 'ok': False, 'error': 'MCU reply timeout: PS2STATUS'}"
+}

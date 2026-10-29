@@ -1,4 +1,5 @@
 #include "telemetry.h"
+#include "app_config.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -12,44 +13,124 @@
 #include "serial_dma.h"
 #include "speed_control.h"
 #include "stm32f4xx_hal.h"
+#include "tof.h"
+#include "tof_follow.h"
 
-/* 9600 baud provides ~960 bytes/s. Leave room for command ACKs and for
- * BLE notification buffering instead of saturating UART at 5 Hz. */
+/* Keep the conservative display rate at 115200 baud: radio buffering and
+ * control reply latency still matter more than UART line capacity. */
 #define TELEMETRY_PERIOD_MS 300U
 
 static uint8_t telemetry_periodic;
 static uint32_t telemetry_tick;
 static uint8_t attitude_stream;
-static TelemetryHeadingLogRecord heading_log[TELEMETRY_HLOG_CAPACITY];
+/* One capture at a time; union keeps four-wheel 100 Hz recording inside SRAM.
+ * CLEAR explicitly selects the format. No dynamic allocation or ISR logging. */
+#if APP_ENABLE_TUNING_LOG
+static union
+{
+  TelemetryHeadingLogRecord heading[TELEMETRY_HLOG_CAPACITY];
+  TelemetryWheelLogRecord wheel[TELEMETRY_HLOG_CAPACITY];
+} log_storage;
+#define heading_log log_storage.heading
+static uint8_t wheel_log_selected;
 static uint16_t heading_log_start;
 static uint16_t heading_log_count;
 static uint32_t heading_log_sequence;
 static uint8_t heading_log_active;
 static uint8_t heading_log_overflow;
+#endif
+static uint8_t tof_stream;
+static uint32_t tof_tick, hlog_read_tick;
+static uint8_t hlog_read_seen;
+static uint8_t periodic_send;
+static uint8_t periodic_written;
+static TofSnapshot last_tof_report;
+static uint32_t tof_report_tick;
+static uint8_t tof_report_seen;
+static uint8_t follow_stream;
+static uint32_t follow_tick;
+
+static uint8_t write_live(const char *message)
+{
+  if (periodic_send)
+  {
+    periodic_written = SerialDma_WriteTelemetry(message);
+    return periodic_written;
+  }
+  return SerialDma_Write(message);
+}
 
 void Telemetry_Init(void)
 {
   telemetry_periodic = 0U;
+  periodic_send = 0U;
+  tof_report_seen = 0U;
   attitude_stream = 0U;
   telemetry_tick = HAL_GetTick();
   Telemetry_Hlog_Clear();
+  tof_stream = hlog_read_seen = 0U;
+  tof_tick = HAL_GetTick();
+  follow_stream = 0U;
+  follow_tick = HAL_GetTick();
 }
 
 void Telemetry_Process(void)
 {
   uint32_t now = HAL_GetTick();
+  uint8_t ranging_stream = tof_stream && !Telemetry_Hlog_IsActive() &&
+      (!hlog_read_seen || now - hlog_read_tick >= 1500U);
+  uint32_t tof_period = telemetry_periodic ? 200U : 100U;
+  uint32_t status_period = ranging_stream ? 500U :
+      (attitude_stream ? 200U : TELEMETRY_PERIOD_MS);
+  /* Wait cheaply for the command quiet window. A 120ms heartbeat can otherwise
+   * repeatedly collide with a 300ms status slot and suppress every curve point. */
+  if (!SerialDma_CanWriteTelemetry()) return;
+  periodic_send = 1U;
+
+  /* VOFA direct serial uses an exclusive 5 Hz FireWater stream. Latest state
+   * only, command quiet window/TX priority unchanged, no capture buffer. */
+  if (follow_stream)
+  {
+    periodic_written = 0U;
+    if (!Telemetry_Hlog_IsActive() && now - follow_tick >= 200U)
+      Telemetry_SendFollow();
+    if (periodic_written) follow_tick = now;
+    periodic_send = 0U;
+    return;
+  }
+
+  /* Distance: 10 Hz alone, 5 Hz alongside 2 Hz TEL/ATEL. With conservative rates,
+   * even 55-byte TOF + 255-byte TEL stays below 800 bytes/s. Captures and
+   * downloads retain their UART budget; the local guard never pauses. */
+  if (ranging_stream && now - tof_tick >= tof_period)
+  {
+    TofSnapshot tof = Tof_GetSnapshot();
+    tof_tick = now;
+    /* Repeating one invalid result at 5..10 Hz wastes BLE UART capacity.
+     * Report every transition promptly, then a 1 Hz invalid-state heartbeat.
+     * Valid ranges retain their normal rate; local ranging never pauses. */
+    if (tof.valid || !tof_report_seen || last_tof_report.valid ||
+        tof.connected != last_tof_report.connected ||
+        tof.range_status != last_tof_report.range_status ||
+        tof.errors != last_tof_report.errors || now - tof_report_tick >= 1000U)
+      Telemetry_SendTof();
+  }
 
   if ((telemetry_periodic != 0U) &&
-      ((now - telemetry_tick) >= (attitude_stream ? 200U : TELEMETRY_PERIOD_MS)))
+      ((now - telemetry_tick) >= status_period))
   {
-    telemetry_tick = now;
+    periodic_written = 0U;
     if (attitude_stream) Telemetry_SendAttitude();
     else Telemetry_SendSpeedStatus();
+    /* Retry the current state when TX is free; never queue missed samples. */
+    if (periodic_written) telemetry_tick = now;
   }
+  periodic_send = 0U;
 }
 
 void Telemetry_SetPeriodic(uint8_t enable)
 {
+  follow_stream = 0U;
   attitude_stream = 0U;
   telemetry_periodic = (enable != 0U) ? 1U : 0U;
   telemetry_tick = HAL_GetTick();
@@ -59,6 +140,55 @@ void Telemetry_SetAttitude(uint8_t enable)
 {
   Telemetry_SetPeriodic(enable);
   attitude_stream = 1U;
+}
+
+void Telemetry_SetTof(uint8_t enable)
+{
+  follow_stream = 0U;
+  tof_stream = enable != 0U;
+  tof_report_seen = 0U;
+  tof_tick = HAL_GetTick();
+}
+
+void Telemetry_SetFollow(uint8_t enable)
+{
+  follow_stream = enable != 0U;
+  if (enable) telemetry_periodic = attitude_stream = tof_stream = 0U;
+  follow_tick = HAL_GetTick();
+}
+
+void Telemetry_SendFollow(void)
+{
+  char message[128];
+  TofSnapshot tof = Tof_GetSnapshot();
+  TofFollowSnapshot f = TofFollow_GetSnapshot();
+  uint16_t target = TofFollow_GetTarget();
+  uint8_t valid = tof.connected && tof.ready && tof.valid &&
+      tof.age_ms <= TOF_MAX_AGE_MS;
+  int filtered = valid && f.mode == TOF_FOLLOW_TRACK ? (int)f.filtered_mm : -1;
+  /* Channels: target/raw/filtered/error mm, forward RPM, raw valid, mode, tick.
+   * Invalid raw/filtered are -1, never a fabricated zero-distance target. */
+  (void)snprintf(message, sizeof(message), "follow:%u,%d,%d,%d,%d,%u,%u,%lu\r\n",
+      (unsigned)target, valid ? (int)tof.distance_mm : -1, filtered,
+      filtered >= 0 ? filtered - (int)target : 0,
+      (int)f.forward_rpm, valid, (unsigned)f.mode, (unsigned long)HAL_GetTick());
+  (void)write_live(message);
+}
+
+void Telemetry_SendTof(void)
+{
+  char message[112];
+  TofSnapshot tof = Tof_GetSnapshot();
+  (void)snprintf(message, sizeof(message), "TOF,%lu,%u,%u,%d,%u,%lu,%lu\r\n",
+      (unsigned long)HAL_GetTick(), tof.connected, tof.valid,
+      tof.valid ? (int)tof.distance_mm : -1, tof.range_status,
+      (unsigned long)tof.age_ms, (unsigned long)tof.errors);
+  if (write_live(message))
+  {
+    last_tof_report = tof;
+    tof_report_tick = HAL_GetTick();
+    tof_report_seen = 1U;
+  }
 }
 
 void Telemetry_SendAttitude(void)
@@ -74,16 +204,18 @@ void Telemetry_SendAttitude(void)
       (long)(g.yaw_deg * 1000), (long)(a.error_deg * 1000),
       (long)(a.output_dps * 1000), a.saturated,
       SpeedControl_GetSnapshot().enabled, Battery_GetSnapshot().voltage_mv);
-  SerialDma_Write(message);
+  write_live(message);
 }
 
-void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude)
+#if APP_ENABLE_TUNING_LOG
+void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude,
+                           uint32_t tick_ms, uint32_t tick_us)
 {
   TelemetryHeadingLogRecord *record;
   uint16_t index;
 
-  if ((heading_log_active == 0U) || (attitude == NULL) ||
-      (attitude->mode != 2U))
+  if (wheel_log_selected || (heading_log_active == 0U) || (attitude == NULL) ||
+      ((attitude->mode != 1U) && (attitude->mode != 2U)))
   {
     return;
   }
@@ -102,7 +234,8 @@ void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude)
   }
   record = &heading_log[index];
   record->sequence = heading_log_sequence++;
-  record->tick = HAL_GetTick();
+  record->tick = tick_ms;
+  record->tick_us = tick_us;
   record->target_heading_mdeg = (int32_t)lroundf(attitude->target_deg * 1000.0f);
   record->actual_heading_mdeg = (int32_t)lroundf(attitude->feedback_deg * 1000.0f);
   record->heading_error_mdeg = (int32_t)lroundf(attitude->error_deg * 1000.0f);
@@ -111,12 +244,14 @@ void Telemetry_Hlog_Record(const AttitudeControlSnapshot *attitude)
   record->heading_output_mdps = (int32_t)lroundf(attitude->output_dps * 1000.0f);
   record->rate_output_mrpm = (int32_t)lroundf(attitude->output_rpm * 1000.0f);
   record->saturated = attitude->saturated;
+  record->mode = attitude->mode;
   record->forward_rpm = attitude->forward_rpm;
   record->left_rpm = attitude->left_rpm;
 }
 
 void Telemetry_Hlog_Clear(void)
 {
+  wheel_log_selected = 0U;
   heading_log_start = 0U;
   heading_log_count = 0U;
   heading_log_sequence = 0U;
@@ -126,7 +261,7 @@ void Telemetry_Hlog_Clear(void)
 
 uint8_t Telemetry_Hlog_Start(void)
 {
-  if (heading_log_active != 0U)
+  if (wheel_log_selected || heading_log_active != 0U)
   {
     return 0U;
   }
@@ -155,9 +290,11 @@ uint8_t Telemetry_Hlog_SendStatus(void)
   char message[96];
   int length = snprintf(message, sizeof(message),
                         "HLOG,STATUS,%u,%u,%u,%u,%lu\r\n",
-                        heading_log_active, heading_log_count,
-                        TELEMETRY_HLOG_CAPACITY, heading_log_overflow,
-                        (unsigned long)heading_log_sequence);
+                        wheel_log_selected ? 0U : heading_log_active,
+                        wheel_log_selected ? 0U : heading_log_count,
+                        TELEMETRY_HLOG_CAPACITY,
+                        wheel_log_selected ? 0U : heading_log_overflow,
+                        (unsigned long)(wheel_log_selected ? 0U : heading_log_sequence));
   if ((length <= 0) || ((size_t)length >= sizeof(message)))
   {
     return 0U;
@@ -173,6 +310,10 @@ uint8_t Telemetry_Hlog_SendRead(uint32_t offset, uint32_t count)
   uint32_t actual_count;
   int length;
   TelemetryHeadingLogRecord record;
+  hlog_read_seen = 1U;
+  hlog_read_tick = HAL_GetTick();
+
+  if (wheel_log_selected) return SerialDma_Write("ERR,HLOG,WLOG_SELECTED\r\n");
 
   if (offset >= heading_log_count)
   {
@@ -189,13 +330,14 @@ uint8_t Telemetry_Hlog_SendRead(uint32_t offset, uint32_t count)
                           (uint16_t)index) % TELEMETRY_HLOG_CAPACITY];
     length = snprintf(
         message, sizeof(message),
-        "HLOG,DATA,%lu,%lu,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%u,%d,%d\r\n",
+        "HLOG,DATA,%lu,%lu,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%u,%d,%d,%u,%lu\r\n",
         (unsigned long)record.sequence, (unsigned long)record.tick,
         (long)record.target_heading_mdeg, (long)record.actual_heading_mdeg,
         (long)record.heading_error_mdeg, (long)record.target_rate_mdps,
         (long)record.actual_rate_mdps, (long)record.heading_output_mdps,
         (long)record.rate_output_mrpm, record.saturated,
-        (int)record.forward_rpm, (int)record.left_rpm);
+        (int)record.forward_rpm, (int)record.left_rpm, record.mode,
+        (unsigned long)record.tick_us);
     if ((length <= 0) || ((size_t)length >= sizeof(message)) ||
         (SerialDma_Write(message) == 0U))
     {
@@ -212,6 +354,129 @@ uint8_t Telemetry_Hlog_SendRead(uint32_t offset, uint32_t count)
   }
   return SerialDma_Write(message);
 }
+
+void Telemetry_Wlog_Clear(void)
+{
+  Telemetry_Hlog_Clear();
+  wheel_log_selected = 1U;
+}
+
+uint8_t Telemetry_Wlog_Start(void)
+{
+  if (!wheel_log_selected || heading_log_active) return 0U;
+  heading_log_active = 1U;
+  return 1U;
+}
+
+void Telemetry_Wlog_Record(const SpeedControlSnapshot *speed,
+    const EncoderSnapshot *encoder, uint32_t tick_ms, uint32_t tick_us)
+{
+  TelemetryWheelLogRecord *record;
+  TofSnapshot tof;
+  uint32_t i;
+  uint16_t index;
+  if (!wheel_log_selected || !heading_log_active) return;
+  if (heading_log_count < TELEMETRY_HLOG_CAPACITY)
+  {
+    index = (uint16_t)((heading_log_start + heading_log_count++) % TELEMETRY_HLOG_CAPACITY);
+  }
+  else
+  {
+    index = heading_log_start;
+    heading_log_start = (uint16_t)((heading_log_start + 1U) % TELEMETRY_HLOG_CAPACITY);
+    heading_log_overflow = 1U;
+  }
+  record = &log_storage.wheel[index];
+  record->sequence = heading_log_sequence++;
+  record->tick = tick_ms;
+  record->tick_us = tick_us;
+  for (i = 0U; i < 4U; ++i)
+  {
+    record->target[i] = speed->target_rpm[i];
+    record->actual_x10[i] = speed->actual_rpm_x10[i];
+    record->raw_x10[i] = encoder->rpm_x10[i];
+    record->pwm_mpercent[i] = speed->output_mpercent[i];
+  }
+  record->enabled = speed->enabled;
+  record->armed = ChassisTest_GetSnapshot().armed;
+  record->mode = AttitudeControl_GetSnapshot().mode;
+  record->encoder_ready = encoder->ready;
+  record->saturated_mask = speed->saturated_mask;
+  record->tof_limited = speed->tof_limited;
+  record->battery_mv = Battery_GetSnapshot().voltage_mv;
+  tof = Tof_GetSnapshot();
+  record->tof_valid = tof.connected && tof.valid;
+  record->distance_mm = record->tof_valid ? (int16_t)tof.distance_mm : -1;
+}
+
+uint8_t Telemetry_Wlog_SendStatus(void)
+{
+  char message[96];
+  (void)snprintf(message, sizeof(message), "WLOG,STATUS,%u,%u,1024,%u,%lu\r\n",
+      wheel_log_selected ? heading_log_active : 0U,
+      wheel_log_selected ? heading_log_count : 0U,
+      wheel_log_selected ? heading_log_overflow : 0U,
+      (unsigned long)(wheel_log_selected ? heading_log_sequence : 0U));
+  return SerialDma_Write(message);
+}
+
+uint8_t Telemetry_Wlog_SendRead(uint32_t offset, uint32_t count)
+{
+  static char message[256];
+  uint32_t n, i, count_read = 0U;
+  int length;
+  hlog_read_seen = 1U;
+  hlog_read_tick = HAL_GetTick();
+  if (!wheel_log_selected) return SerialDma_Write("ERR,WLOG,USE_CLEAR_FIRST\r\n");
+  if (offset < heading_log_count)
+  {
+    count_read = heading_log_count - offset;
+    if (count_read > count) count_read = count;
+  }
+  for (n = 0U; n < count_read; ++n)
+  {
+    const TelemetryWheelLogRecord *r = &log_storage.wheel[
+        (heading_log_start + offset + n) % TELEMETRY_HLOG_CAPACITY];
+    length = snprintf(message, sizeof(message), "WLOG,DATA,%lu,%lu,%lu,%u,%u,%u",
+        (unsigned long)r->sequence, (unsigned long)r->tick,
+        (unsigned long)r->tick_us, r->enabled, r->armed, r->mode);
+    for (i = 0U; i < 4U; ++i)
+      length += snprintf(message + length, sizeof(message) - (size_t)length,
+          ",%ld,%ld,%ld,%ld", (long)r->target[i], (long)r->actual_x10[i],
+          (long)r->raw_x10[i], (long)r->pwm_mpercent[i]);
+    length += snprintf(message + length, sizeof(message) - (size_t)length,
+        ",%u,%u,%u,%d,%u,%u\r\n", r->saturated_mask, r->tof_limited,
+        r->battery_mv, r->distance_mm, r->tof_valid, r->encoder_ready);
+    if (length <= 0 || (size_t)length >= sizeof(message) ||
+        !SerialDma_Write(message)) return 0U;
+  }
+  (void)snprintf(message, sizeof(message), "WLOG,END,%lu,%lu,%u\r\n",
+      (unsigned long)offset, (unsigned long)count_read, heading_log_count);
+  return SerialDma_Write(message);
+}
+
+#else
+void Telemetry_Hlog_Record(const AttitudeControlSnapshot *a, uint32_t ms, uint32_t us)
+{ (void)a; (void)ms; (void)us; }
+void Telemetry_Wlog_Record(const SpeedControlSnapshot *s, const EncoderSnapshot *e,
+                          uint32_t ms, uint32_t us)
+{ (void)s; (void)e; (void)ms; (void)us; }
+void Telemetry_Hlog_Clear(void) {}
+void Telemetry_Wlog_Clear(void) {}
+uint8_t Telemetry_Hlog_Start(void) { return 0U; }
+uint8_t Telemetry_Wlog_Start(void) { return 0U; }
+uint8_t Telemetry_Hlog_Stop(void) { return 1U; }
+uint8_t Telemetry_Hlog_IsActive(void) { return 0U; }
+uint16_t Telemetry_Hlog_Count(void) { return 0U; }
+uint8_t Telemetry_Hlog_SendStatus(void)
+{ return SerialDma_Write("HLOG,STATUS,0,0,0,0,0\r\n"); }
+uint8_t Telemetry_Wlog_SendStatus(void)
+{ return SerialDma_Write("WLOG,STATUS,0,0,0,0,0\r\n"); }
+uint8_t Telemetry_Hlog_SendRead(uint32_t offset, uint32_t count)
+{ (void)offset; (void)count; return SerialDma_Write("ERR,LOG,DISABLED\r\n"); }
+uint8_t Telemetry_Wlog_SendRead(uint32_t offset, uint32_t count)
+{ return Telemetry_Hlog_SendRead(offset, count); }
+#endif
 
 uint8_t Telemetry_IsPeriodic(void)
 {
@@ -344,5 +609,5 @@ void Telemetry_SendSpeedStatus(void)
     (void)snprintf(&message[length], sizeof(message) - (size_t)length,
                    "\r\n");
   }
-  SerialDma_Write(message);
+  write_live(message);
 }

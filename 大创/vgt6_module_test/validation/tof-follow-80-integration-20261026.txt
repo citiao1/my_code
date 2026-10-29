@@ -1,0 +1,1 @@
+PASS: real PS2/attitude/speed integration L1 edge/START isolation, R1/SELECT/manual override, packet loss, raw 100mm stop and 8s timeout

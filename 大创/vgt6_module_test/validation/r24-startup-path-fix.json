@@ -1,0 +1,32 @@
+{
+  "PING": {
+    "type": "result",
+    "id": 1,
+    "ok": true,
+    "reply": "PONG"
+  },
+  "VER": {
+    "type": "result",
+    "id": 2,
+    "ok": true,
+    "reply": "VER,VGT6_BM50_ATTITUDE_R24"
+  },
+  "UART": {
+    "type": "result",
+    "id": 3,
+    "ok": true,
+    "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0"
+  },
+  "DISARM": {
+    "type": "result",
+    "id": 4,
+    "ok": true,
+    "reply": "ACK,DISARM"
+  },
+  "ANGLESTATUS": {
+    "type": "result",
+    "id": 5,
+    "ok": true,
+    "reply": "ATEL,5472170,0,1,0,0,0,0,618,0,0,0,0,12361"
+  }
+}

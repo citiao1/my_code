@@ -1,0 +1,329 @@
+<svg width="2070" height="1155"
+ viewBox="0 1950 6900 3850"
+ xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  version="1.2" baseProfile="tiny">
+<defs>
+<style>
+.txt{fill:#000;stroke:none;dominant-baseline:baseline;font-family:Arial}
+</style>
+<g id="s1" transform="translate(-4950,2750) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<rect  gd="bx"  x = "4950" y = "2750" width = "1400" height = "2700"/>
+</g>
+<g id="s2" transform="translate(-4950,3150) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<line  gd="l"  x1 = "4750" y1 = "3150" x2 = "4950" y2 = "3150"/>
+</g>
+<g id="s3" transform="translate(-4950,2850) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<path  gd="pth"  vector-effect="none" fill-rule="evenodd" d="M4950,2820 L4980,2850 L4950,2880 L4950,2820" />
+<line  gd="l"  x1 = "4750" y1 = "2850" x2 = "4950" y2 = "2850"/>
+</g>
+<g id="s4" transform="translate(-3050,2750) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<line  gd="l"  x1 = "3050" y1 = "2650" x2 = "3050" y2 = "2750"/>
+<line  gd="l"  x1 = "2950" y1 = "2750" x2 = "3150" y2 = "2750"/>
+<line  gd="l"  x1 = "3000" y1 = "2800" x2 = "3100" y2 = "2800"/>
+<line  gd="l"  x1 = "3040" y1 = "2850" x2 = "3060" y2 = "2850"/>
+</g>
+<g id="s5" transform="translate(-4550,4150) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<path  gd="pth"  vector-effect="none" fill-rule="evenodd" d="M4500,4150 L4550,4050 L4600,4150 L4500,4150" />
+<line  gd="l"  x1 = "4550" y1 = "4250" x2 = "4550" y2 = "4050"/>
+</g>
+<g id="s6" transform="translate(-650,3350) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<rect  gd="bx"  x = "550" y = "3310" width = "300" height = "80"/>
+</g>
+<g id="s7" transform="translate(-550,3350) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<line  gd="l"  x1 = "450" y1 = "3350" x2 = "550" y2 = "3350"/>
+</g>
+<g id="s8" transform="translate(3350,1350) rotate(270) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<ellipse  gd="e"  cx = "1350" cy = "3350" rx="120" ry="120"/>
+<line  gd="l"  x1 = "1400" y1 = "3300" x2 = "1400" y2 = "3400"/>
+<line  gd="l"  x1 = "1250" y1 = "3350" x2 = "1320" y2 = "3350"/>
+<line  gd="l"  x1 = "1400" y1 = "3350" x2 = "1450" y2 = "3350"/>
+<path  gd="pth"  vector-effect="none" fill-rule="evenodd" d="M1400,3350 L1320,3410 L1320,3290 L1400,3350" />
+</g>
+<g id="s9" transform="translate(-3450,3950) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<rect  gd="bx"  x = "3370" y = "3850" width = "50" height = "200"/>
+<rect  gd="bx"  x = "3480" y = "3850" width = "50" height = "200"/>
+<line  gd="l"  x1 = "3530" y1 = "3950" x2 = "3550" y2 = "3950"/>
+<line  gd="l"  x1 = "3370" y1 = "3950" x2 = "3350" y2 = "3950"/>
+<line  gd="l"  x1 = "3480" y1 = "3900" x2 = "3530" y2 = "3850"/>
+<line  gd="l"  x1 = "3480" y1 = "3950" x2 = "3530" y2 = "3900"/>
+<line  gd="l"  x1 = "3480" y1 = "4000" x2 = "3530" y2 = "3950"/>
+<line  gd="l"  x1 = "3480" y1 = "4050" x2 = "3530" y2 = "4000"/>
+</g>
+<g id="s10" transform="translate(3750,1350) rotate(270) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<ellipse  gd="e"  cx = "1350" cy = "3750" rx="120" ry="120"/>
+<line  gd="l"  x1 = "1400" y1 = "3700" x2 = "1400" y2 = "3800"/>
+<line  gd="l"  x1 = "1250" y1 = "3750" x2 = "1320" y2 = "3750"/>
+<line  gd="l"  x1 = "1400" y1 = "3750" x2 = "1450" y2 = "3750"/>
+<path  gd="pth"  vector-effect="none" fill-rule="evenodd" d="M1400,3750 L1320,3810 L1320,3690 L1400,3750" />
+</g>
+<g id="s11" transform="translate(4150,1350) rotate(270) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<ellipse  gd="e"  cx = "1350" cy = "4150" rx="120" ry="120"/>
+<line  gd="l"  x1 = "1400" y1 = "4100" x2 = "1400" y2 = "4200"/>
+<line  gd="l"  x1 = "1250" y1 = "4150" x2 = "1320" y2 = "4150"/>
+<line  gd="l"  x1 = "1400" y1 = "4150" x2 = "1450" y2 = "4150"/>
+<path  gd="pth"  vector-effect="none" fill-rule="evenodd" d="M1400,4150 L1320,4210 L1320,4090 L1400,4150" />
+</g>
+<g id="s12" transform="translate(-2950,4350) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<ellipse  gd="e"  cx = "3070" cy = "4350" rx="30" ry="30"/>
+<ellipse  gd="e"  cx = "2830" cy = "4350" rx="30" ry="30"/>
+<line  gd="l"  x1 = "2810" y1 = "4270" x2 = "3090" y2 = "4270"/>
+<rect  gd="bx"  x = "2870" y = "4220" width = "160" height = "50"/>
+</g>
+<g id="s13" transform="translate(-3150,4250) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<ellipse  gd="e"  cx = "3150" cy = "4250" rx="40" ry="40"/>
+<line  gd="l"  x1 = "3150" y1 = "4270" x2 = "3150" y2 = "4230"/>
+<line  gd="l"  x1 = "3150" y1 = "4270" x2 = "3140" y2 = "4260"/>
+<line  gd="l"  x1 = "3150" y1 = "4270" x2 = "3160" y2 = "4260"/>
+<line  gd="l"  x1 = "3140" y1 = "4240" x2 = "3150" y2 = "4230"/>
+<line  gd="l"  x1 = "3150" y1 = "4230" x2 = "3160" y2 = "4240"/>
+</g>
+<g id="s14" transform="translate(2750,3850) rotate(-90) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<line  gd="l"  x1 = "3700" y1 = "2850" x2 = "4000" y2 = "2850"/>
+<line  gd="l"  x1 = "3700" y1 = "2650" x2 = "4000" y2 = "2650"/>
+<rect  gd="bx"  x = "3750" y = "2700" width = "200" height = "100"/>
+</g>
+<g id="s15" transform="translate(-3450,2350) scale(1,-1)" stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<line  gd="l"  x1 = "3480" y1 = "2250" x2 = "3480" y2 = "2450"/>
+<line  gd="l"  x1 = "3420" y1 = "2250" x2 = "3420" y2 = "2450"/>
+<line  gd="l"  x1 = "3420" y1 = "2350" x2 = "3350" y2 = "2350"/>
+<line  gd="l"  x1 = "3480" y1 = "2350" x2 = "3550" y2 = "2350"/>
+</g>
+</defs>
+<g>
+<g  stroke-linecap="round" fill="none" stroke="rgb(0,0,0)" stroke-width="16" font-size="80px">
+<g name="wires"><polyline  gd="pyl"  points = "4750,4250 4550,4250"/>
+<polyline  gd="pyl"  points = "950,3350 1150,3350"/>
+<polyline  gd="pyl"  points = "4750,4650 2450,4650 2450,3350 1550,3350"/>
+<polyline  gd="pyl"  points = "450,3350 150,3350"/>
+<polyline  gd="pyl"  points = "150,3150 150,3350"/>
+<polyline  gd="pyl"  points = "450,3750 150,3750"/>
+<polyline  gd="pyl"  points = "150,3350 150,3750"/>
+<polyline  gd="pyl"  points = "450,4150 150,4150"/>
+<polyline  gd="pyl"  points = "150,3750 150,4150"/>
+<polyline  gd="pyl"  points = "450,4550 150,4550"/>
+<polyline  gd="pyl"  points = "150,4150 150,4550"/>
+<polyline  gd="pyl"  points = "450,4950 150,4950"/>
+<polyline  gd="pyl"  points = "150,4550 150,4950"/>
+<polyline  gd="pyl"  points = "450,5350 150,5350 150,5250"/>
+<polyline  gd="pyl"  points = "150,4950 150,5250"/>
+<polyline  gd="pyl"  points = "4750,3550 4250,3550"/>
+<polyline  gd="pyl"  points = "4150,3550 4250,3550"/>
+<polyline  gd="pyl"  points = "2650,3850 2650,3850"/>
+<polyline  gd="pyl"  points = "950,3750 1150,3750"/>
+<polyline  gd="pyl"  points = "4750,4750 2350,4750 2350,3750 1550,3750"/>
+<polyline  gd="pyl"  points = "950,4150 1150,4150"/>
+<polyline  gd="pyl"  points = "4750,4850 2250,4850 2250,4150 1550,4150"/>
+<polyline  gd="pyl"  points = "950,4550 1150,4550"/>
+<polyline  gd="pyl"  points = "4750,4950 2150,4950 2150,4550 1550,4550"/>
+<polyline  gd="pyl"  points = "950,4950 1150,4950"/>
+<polyline  gd="pyl"  points = "4750,5050 2050,5050 2050,4950 1550,4950"/>
+<polyline  gd="pyl"  points = "950,5350 1150,5350"/>
+<polyline  gd="pyl"  points = "4750,5150 2050,5150 2050,5350 1550,5350"/>
+<polyline  gd="pyl"  points = "3200,4350 3550,4350"/>
+<polyline  gd="pyl"  points = "3250,3950 2650,3950"/>
+<polyline  gd="pyl"  points = "2650,3850 2650,3950"/>
+<polyline  gd="pyl"  points = "2700,4350 2650,4350 2650,3950"/>
+<polyline  gd="pyl"  points = "3650,3950 4250,3950"/>
+<polyline  gd="pyl"  points = "4250,3550 4250,3950"/>
+<polyline  gd="pyl"  points = "4050,4350 4250,4350 4250,3950"/>
+<polyline  gd="pyl"  points = "3250,3050 3250,3050"/>
+<polyline  gd="pyl"  points = "3650,3550 3250,3550 3250,3050"/>
+<polyline  gd="pyl"  points = "3250,2350 3250,2650"/>
+<polyline  gd="pyl"  points = "3250,3050 3250,2650"/>
+<polyline  gd="pyl"  points = "3050,2650 3250,2650"/>
+<polyline  gd="pyl"  points = "3850,2550 3850,2350"/>
+<polyline  gd="pyl"  points = "3650,2350 3850,2350"/>
+<polyline  gd="pyl"  points = "4750,2850 4750,2350 3850,2350"/>
+<polyline  gd="pyl"  points = "3850,2950 3850,3050"/>
+<polyline  gd="pyl"  points = "3650,3050 3850,3050"/>
+<polyline  gd="pyl"  points = "4750,3150 3850,3150 3850,3050"/>
+</g>
+<g name="objects"><g name="U1" type="component"><use href="#s1" transform="translate(4950,2750) scale(1,-1)"/><g type="pins"><g name="XTAL2"><use href="#s2" transform="translate(4950,3150) scale(1,-1)"/><text x="5000" y="3150" class="txt" baseline-shift="-35">XTAL2</text><text x="4850" y="3150" class="txt" text-anchor="end" baseline-shift="10">18</text></g>
+<g name="XTAL1"><use href="#s3" transform="translate(4950,2850) scale(1,-1)"/><text x="5000" y="2850" class="txt" baseline-shift="-35">XTAL1</text><text x="4850" y="2850" class="txt" text-anchor="end" baseline-shift="10">19</text></g>
+<g name="ALE"><use href="#s2" transform="translate(4950,4150) scale(1,-1)"/><text x="5000" y="4150" class="txt" baseline-shift="-35">ALE</text><text x="4850" y="4150" class="txt" text-anchor="end" baseline-shift="10">30</text></g>
+<g name="$EA$"><use href="#s2" transform="translate(4950,4250) scale(1,-1)"/><text x="5000" y="4250" class="txt" baseline-shift="-35">EA</text><text x="4850" y="4250" class="txt" text-anchor="end" baseline-shift="10">31</text></g>
+<g name="$PSEN$"><use href="#s2" transform="translate(4950,4050) scale(1,-1)"/><text x="5000" y="4050" class="txt" baseline-shift="-35">PSEN</text><text x="4850" y="4050" class="txt" text-anchor="end" baseline-shift="10">29</text></g>
+<g name="RST"><use href="#s2" transform="translate(4950,3550) scale(1,-1)"/><text x="5000" y="3550" class="txt" baseline-shift="-35">RST</text><text x="4850" y="3550" class="txt" text-anchor="end" baseline-shift="10">9</text></g>
+<g name="P0.0/AD0"><use href="#s2" transform="translate(6350,2850) scale(-1,-1)"/><text x="6300" y="2850" class="txt" text-anchor="end" baseline-shift="-35">P0.0/AD0</text><text x="6450" y="2850" class="txt" baseline-shift="10">39</text></g>
+<g name="P0.1/AD1"><use href="#s2" transform="translate(6350,2950) scale(-1,-1)"/><text x="6300" y="2950" class="txt" text-anchor="end" baseline-shift="-35">P0.1/AD1</text><text x="6450" y="2950" class="txt" baseline-shift="10">38</text></g>
+<g name="P0.2/AD2"><use href="#s2" transform="translate(6350,3050) scale(-1,-1)"/><text x="6300" y="3050" class="txt" text-anchor="end" baseline-shift="-35">P0.2/AD2</text><text x="6450" y="3050" class="txt" baseline-shift="10">37</text></g>
+<g name="P0.3/AD3"><use href="#s2" transform="translate(6350,3150) scale(-1,-1)"/><text x="6300" y="3150" class="txt" text-anchor="end" baseline-shift="-35">P0.3/AD3</text><text x="6450" y="3150" class="txt" baseline-shift="10">36</text></g>
+<g name="P0.4/AD4"><use href="#s2" transform="translate(6350,3250) scale(-1,-1)"/><text x="6300" y="3250" class="txt" text-anchor="end" baseline-shift="-35">P0.4/AD4</text><text x="6450" y="3250" class="txt" baseline-shift="10">35</text></g>
+<g name="P0.5/AD5"><use href="#s2" transform="translate(6350,3350) scale(-1,-1)"/><text x="6300" y="3350" class="txt" text-anchor="end" baseline-shift="-35">P0.5/AD5</text><text x="6450" y="3350" class="txt" baseline-shift="10">34</text></g>
+<g name="P0.6/AD6"><use href="#s2" transform="translate(6350,3450) scale(-1,-1)"/><text x="6300" y="3450" class="txt" text-anchor="end" baseline-shift="-35">P0.6/AD6</text><text x="6450" y="3450" class="txt" baseline-shift="10">33</text></g>
+<g name="P0.7/AD7"><use href="#s2" transform="translate(6350,3550) scale(-1,-1)"/><text x="6300" y="3550" class="txt" text-anchor="end" baseline-shift="-35">P0.7/AD7</text><text x="6450" y="3550" class="txt" baseline-shift="10">32</text></g>
+<g name="P1.0"><use href="#s2" transform="translate(4950,4650) scale(1,-1)"/><text x="5000" y="4650" class="txt" baseline-shift="-35">P1.0</text><text x="4850" y="4650" class="txt" text-anchor="end" baseline-shift="10">1</text></g>
+<g name="P1.1"><use href="#s2" transform="translate(4950,4750) scale(1,-1)"/><text x="5000" y="4750" class="txt" baseline-shift="-35">P1.1</text><text x="4850" y="4750" class="txt" text-anchor="end" baseline-shift="10">2</text></g>
+<g name="P1.2"><use href="#s2" transform="translate(4950,4850) scale(1,-1)"/><text x="5000" y="4850" class="txt" baseline-shift="-35">P1.2</text><text x="4850" y="4850" class="txt" text-anchor="end" baseline-shift="10">3</text></g>
+<g name="P1.3"><use href="#s2" transform="translate(4950,4950) scale(1,-1)"/><text x="5000" y="4950" class="txt" baseline-shift="-35">P1.3</text><text x="4850" y="4950" class="txt" text-anchor="end" baseline-shift="10">4</text></g>
+<g name="P1.4"><use href="#s2" transform="translate(4950,5050) scale(1,-1)"/><text x="5000" y="5050" class="txt" baseline-shift="-35">P1.4</text><text x="4850" y="5050" class="txt" text-anchor="end" baseline-shift="10">5</text></g>
+<g name="P1.5"><use href="#s2" transform="translate(4950,5150) scale(1,-1)"/><text x="5000" y="5150" class="txt" baseline-shift="-35">P1.5</text><text x="4850" y="5150" class="txt" text-anchor="end" baseline-shift="10">6</text></g>
+<g name="P1.6"><use href="#s2" transform="translate(4950,5250) scale(1,-1)"/><text x="5000" y="5250" class="txt" baseline-shift="-35">P1.6</text><text x="4850" y="5250" class="txt" text-anchor="end" baseline-shift="10">7</text></g>
+<g name="P1.7"><use href="#s2" transform="translate(4950,5350) scale(1,-1)"/><text x="5000" y="5350" class="txt" baseline-shift="-35">P1.7</text><text x="4850" y="5350" class="txt" text-anchor="end" baseline-shift="10">8</text></g>
+<g name="P3.0/RXD"><use href="#s2" transform="translate(6350,4650) scale(-1,-1)"/><text x="6300" y="4650" class="txt" text-anchor="end" baseline-shift="-35">P3.0/RXD</text><text x="6450" y="4650" class="txt" baseline-shift="10">10</text></g>
+<g name="P3.1/TXD"><use href="#s2" transform="translate(6350,4750) scale(-1,-1)"/><text x="6300" y="4750" class="txt" text-anchor="end" baseline-shift="-35">P3.1/TXD</text><text x="6450" y="4750" class="txt" baseline-shift="10">11</text></g>
+<g name="P3.2/$INT0$"><use href="#s2" transform="translate(6350,4850) scale(-1,-1)"/><text x="6300" y="4850" class="txt" text-anchor="end" baseline-shift="-35">P3.2/INT0</text><text x="6450" y="4850" class="txt" baseline-shift="10">12</text></g>
+<g name="P3.3/$INT1$"><use href="#s2" transform="translate(6350,4950) scale(-1,-1)"/><text x="6300" y="4950" class="txt" text-anchor="end" baseline-shift="-35">P3.3/INT1</text><text x="6450" y="4950" class="txt" baseline-shift="10">13</text></g>
+<g name="P3.4/T0"><use href="#s2" transform="translate(6350,5050) scale(-1,-1)"/><text x="6300" y="5050" class="txt" text-anchor="end" baseline-shift="-35">P3.4/T0</text><text x="6450" y="5050" class="txt" baseline-shift="10">14</text></g>
+<g name="P3.7/$RD$"><use href="#s2" transform="translate(6350,5350) scale(-1,-1)"/><text x="6300" y="5350" class="txt" text-anchor="end" baseline-shift="-35">P3.7/RD</text><text x="6450" y="5350" class="txt" baseline-shift="10">17</text></g>
+<g name="P3.6/$WR$"><use href="#s2" transform="translate(6350,5250) scale(-1,-1)"/><text x="6300" y="5250" class="txt" text-anchor="end" baseline-shift="-35">P3.6/WR</text><text x="6450" y="5250" class="txt" baseline-shift="10">16</text></g>
+<g name="P3.5/T1"><use href="#s2" transform="translate(6350,5150) scale(-1,-1)"/><text x="6300" y="5150" class="txt" text-anchor="end" baseline-shift="-35">P3.5/T1</text><text x="6450" y="5150" class="txt" baseline-shift="10">15</text></g>
+<g name="P2.7/A15"><use href="#s2" transform="translate(6350,4450) scale(-1,-1)"/><text x="6300" y="4450" class="txt" text-anchor="end" baseline-shift="-35">P2.7/A15</text><text x="6450" y="4450" class="txt" baseline-shift="10">28</text></g>
+<g name="P2.0/A8"><use href="#s2" transform="translate(6350,3750) scale(-1,-1)"/><text x="6300" y="3750" class="txt" text-anchor="end" baseline-shift="-35">P2.0/A8</text><text x="6450" y="3750" class="txt" baseline-shift="10">21</text></g>
+<g name="P2.1/A9"><use href="#s2" transform="translate(6350,3850) scale(-1,-1)"/><text x="6300" y="3850" class="txt" text-anchor="end" baseline-shift="-35">P2.1/A9</text><text x="6450" y="3850" class="txt" baseline-shift="10">22</text></g>
+<g name="P2.2/A10"><use href="#s2" transform="translate(6350,3950) scale(-1,-1)"/><text x="6300" y="3950" class="txt" text-anchor="end" baseline-shift="-35">P2.2/A10</text><text x="6450" y="3950" class="txt" baseline-shift="10">23</text></g>
+<g name="P2.3/A11"><use href="#s2" transform="translate(6350,4050) scale(-1,-1)"/><text x="6300" y="4050" class="txt" text-anchor="end" baseline-shift="-35">P2.3/A11</text><text x="6450" y="4050" class="txt" baseline-shift="10">24</text></g>
+<g name="P2.4/A12"><use href="#s2" transform="translate(6350,4150) scale(-1,-1)"/><text x="6300" y="4150" class="txt" text-anchor="end" baseline-shift="-35">P2.4/A12</text><text x="6450" y="4150" class="txt" baseline-shift="10">25</text></g>
+<g name="P2.5/A13"><use href="#s2" transform="translate(6350,4250) scale(-1,-1)"/><text x="6300" y="4250" class="txt" text-anchor="end" baseline-shift="-35">P2.5/A13</text><text x="6450" y="4250" class="txt" baseline-shift="10">26</text></g>
+<g name="P2.6/A14"><use href="#s2" transform="translate(6350,4350) scale(-1,-1)"/><text x="6300" y="4350" class="txt" text-anchor="end" baseline-shift="-35">P2.6/A14</text><text x="6450" y="4350" class="txt" baseline-shift="10">27</text></g>
+</g>
+<g name="ref" type="label"><text x="4942" y="2742" class="txt" font-size="120" baseline-shift="10">U1</text></g>
+<g name="value" type="label"><text x="4942" y="5458" class="txt" baseline-shift="-80">AT89C51</text></g>
+</g>
+<g type="terminal"><use href="#s4" transform="translate(3050,2750) scale(1,-1)"/><text x="2950" y="2950" class="txt" baseline-shift="-35">GND</text></g>
+<g type="terminal"><use href="#s5" transform="translate(4550,4150) scale(1,-1)"/><text x="4450" y="3950" class="txt" baseline-shift="-35">VCC</text></g>
+<g type="terminal"><use href="#s5" transform="translate(150,3050) scale(1,-1)"/><text x="50" y="2850" class="txt" baseline-shift="-35">VCC</text></g>
+<g name="R1" type="component"><use href="#s6" transform="translate(650,3350) scale(1,-1)"/><g type="pins"><g name="1"><use href="#s7" transform="translate(550,3350) scale(1,-1)"/></g>
+<g name="2"><use href="#s7" transform="translate(850,3350) scale(-1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="542" y="3302" class="txt" font-size="120" baseline-shift="10">R1</text></g>
+<g name="value" type="label"><text x="542" y="3398" class="txt" baseline-shift="-80">680</text></g>
+</g>
+<g name="R2" type="component"><use href="#s6" transform="translate(650,3750) scale(1,-1)"/><g type="pins"><g name="1"><use href="#s7" transform="translate(550,3750) scale(1,-1)"/></g>
+<g name="2"><use href="#s7" transform="translate(850,3750) scale(-1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="542" y="3702" class="txt" font-size="120" baseline-shift="10">R2</text></g>
+<g name="value" type="label"><text x="542" y="3798" class="txt" baseline-shift="-80">680</text></g>
+</g>
+<g name="R3" type="component"><use href="#s6" transform="translate(650,4150) scale(1,-1)"/><g type="pins"><g name="1"><use href="#s7" transform="translate(550,4150) scale(1,-1)"/></g>
+<g name="2"><use href="#s7" transform="translate(850,4150) scale(-1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="542" y="4102" class="txt" font-size="120" baseline-shift="10">R3</text></g>
+<g name="value" type="label"><text x="542" y="4198" class="txt" baseline-shift="-80">680</text></g>
+</g>
+<g name="R4" type="component"><use href="#s6" transform="translate(650,4550) scale(1,-1)"/><g type="pins"><g name="1"><use href="#s7" transform="translate(550,4550) scale(1,-1)"/></g>
+<g name="2"><use href="#s7" transform="translate(850,4550) scale(-1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="542" y="4502" class="txt" font-size="120" baseline-shift="10">R4</text></g>
+<g name="value" type="label"><text x="542" y="4598" class="txt" baseline-shift="-80">680</text></g>
+</g>
+<g name="R5" type="component"><use href="#s6" transform="translate(650,4950) scale(1,-1)"/><g type="pins"><g name="1"><use href="#s7" transform="translate(550,4950) scale(1,-1)"/></g>
+<g name="2"><use href="#s7" transform="translate(850,4950) scale(-1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="542" y="4902" class="txt" font-size="120" baseline-shift="10">R5</text></g>
+<g name="value" type="label"><text x="542" y="4998" class="txt" baseline-shift="-80">680</text></g>
+</g>
+<g name="R6" type="component"><use href="#s6" transform="translate(650,5350) scale(1,-1)"/><g type="pins"><g name="1"><use href="#s7" transform="translate(550,5350) scale(1,-1)"/></g>
+<g name="2"><use href="#s7" transform="translate(850,5350) scale(-1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="542" y="5302" class="txt" font-size="120" baseline-shift="10">R6</text></g>
+<g name="value" type="label"><text x="542" y="5398" class="txt" baseline-shift="-80">680</text></g>
+</g>
+<g name="D1" type="component"><use href="#s8" transform="translate(1350,3350) rotate(270) scale(1,-1)"/><g type="pins"><g name="A"><use href="#s7" transform="translate(1250,3350) rotate(180) scale(-1,-1)"/></g>
+<g name="K"><use href="#s7" transform="translate(1450,3350) rotate(180) scale(1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="1210" y="3180" class="txt" font-size="120" baseline-shift="10">D1</text></g>
+<g name="value" type="label"><text x="1600" y="3250" class="txt" baseline-shift="-80">NS_GREEN </text></g>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "150" cy = "3350" rx="20" ry="20"/>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "150" cy = "3750" rx="20" ry="20"/>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "150" cy = "4150" rx="20" ry="20"/>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "150" cy = "4550" rx="20" ry="20"/>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "150" cy = "4950" rx="20" ry="20"/>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "150" cy = "5250" rx="20" ry="20"/>
+</g>
+<g name="R9" type="component"><use href="#s6" transform="translate(3850,3550) scale(1,-1)"/><g type="pins"><g name="1"><use href="#s7" transform="translate(3750,3550) scale(1,-1)"/></g>
+<g name="2"><use href="#s7" transform="translate(4050,3550) scale(-1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="3742" y="3502" class="txt" font-size="120" baseline-shift="10">R9</text></g>
+<g name="value" type="label"><text x="3742" y="3598" class="txt" baseline-shift="-80">10k</text></g>
+</g>
+<g name="C1" type="component"><use href="#s9" transform="translate(3450,3950) scale(1,-1)"/><g type="pins"><g name="+"><use href="#s7" transform="translate(3350,3950) scale(1,-1)"/></g>
+<g name="-"><use href="#s7" transform="translate(3550,3950) scale(-1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="3342" y="3842" class="txt" font-size="120" baseline-shift="10">C1</text></g>
+<g name="value" type="label"><text x="3342" y="4058" class="txt" baseline-shift="-80">1uF</text></g>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "4250" cy = "3550" rx="20" ry="20"/>
+</g>
+<g type="terminal"><use href="#s5" transform="translate(2650,3750) scale(1,-1)"/><text x="2550" y="3550" class="txt" baseline-shift="-35">VCC</text></g>
+<g type="junction"><ellipse  gd="e"  cx = "2650" cy = "3850" rx="20" ry="20"/>
+</g>
+<g name="D2" type="component"><use href="#s10" transform="translate(1350,3750) rotate(270) scale(1,-1)"/><g type="pins"><g name="A"><use href="#s7" transform="translate(1250,3750) rotate(180) scale(-1,-1)"/></g>
+<g name="K"><use href="#s7" transform="translate(1450,3750) rotate(180) scale(1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="1210" y="3580" class="txt" font-size="120" baseline-shift="10">D2</text></g>
+<g name="value" type="label"><text x="1600" y="3650" class="txt" baseline-shift="-80">NS_YELLOW </text></g>
+</g>
+<g name="D3" type="component"><use href="#s11" transform="translate(1350,4150) rotate(270) scale(1,-1)"/><g type="pins"><g name="A"><use href="#s7" transform="translate(1250,4150) rotate(180) scale(-1,-1)"/></g>
+<g name="K"><use href="#s7" transform="translate(1450,4150) rotate(180) scale(1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="1210" y="3980" class="txt" font-size="120" baseline-shift="10">D3</text></g>
+<g name="value" type="label"><text x="1600" y="4050" class="txt" baseline-shift="-80">NS_RED </text></g>
+</g>
+<g name="D4" type="component"><use href="#s8" transform="translate(1350,4550) rotate(270) scale(1,-1)"/><g type="pins"><g name="A"><use href="#s7" transform="translate(1250,4550) rotate(180) scale(-1,-1)"/></g>
+<g name="K"><use href="#s7" transform="translate(1450,4550) rotate(180) scale(1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="1210" y="4380" class="txt" font-size="120" baseline-shift="10">D4</text></g>
+<g name="value" type="label"><text x="1600" y="4450" class="txt" baseline-shift="-80">EW_GREEN </text></g>
+</g>
+<g name="D5" type="component"><use href="#s10" transform="translate(1350,4950) rotate(270) scale(1,-1)"/><g type="pins"><g name="A"><use href="#s7" transform="translate(1250,4950) rotate(180) scale(-1,-1)"/></g>
+<g name="K"><use href="#s7" transform="translate(1450,4950) rotate(180) scale(1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="1210" y="4780" class="txt" font-size="120" baseline-shift="10">D5</text></g>
+<g name="value" type="label"><text x="1600" y="4850" class="txt" baseline-shift="-80">EW_YELLOW </text></g>
+</g>
+<g name="D6" type="component"><use href="#s11" transform="translate(1350,5350) rotate(270) scale(1,-1)"/><g type="pins"><g name="A"><use href="#s7" transform="translate(1250,5350) rotate(180) scale(-1,-1)"/></g>
+<g name="K"><use href="#s7" transform="translate(1450,5350) rotate(180) scale(1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="1210" y="5180" class="txt" font-size="120" baseline-shift="10">D6</text></g>
+<g name="value" type="label"><text x="1600" y="5250" class="txt" baseline-shift="-80">EW_RED </text></g>
+</g>
+<g name="BUTTON#0014" type="component"><use href="#s12" transform="translate(2950,4350) scale(1,-1)"/><g type="pins"><g name="1"><use href="#s7" transform="translate(2800,4350) scale(1,-1)"/></g>
+<g name="2"><use href="#s7" transform="translate(3100,4350) scale(-1,-1)"/></g>
+</g>
+<use href="#s13" transform="translate(3150,4250) scale(1,-1)"/></g>
+<g name="R10" type="component"><use href="#s6" transform="translate(3750,4350) scale(1,-1)"/><g type="pins"><g name="1"><use href="#s7" transform="translate(3650,4350) scale(1,-1)"/></g>
+<g name="2"><use href="#s7" transform="translate(3950,4350) scale(-1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="3642" y="4302" class="txt" font-size="120" baseline-shift="10">R10</text></g>
+<g name="value" type="label"><text x="3642" y="4398" class="txt" baseline-shift="-80">1k</text></g>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "2650" cy = "3950" rx="20" ry="20"/>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "4250" cy = "3950" rx="20" ry="20"/>
+</g>
+<g name="X1" type="component"><use href="#s14" transform="translate(3850,2750) rotate(-90) scale(1,-1)"/><g type="pins"><g name="1"><use href="#s7" transform="translate(3850,2850) rotate(-90) scale(1,-1)"/></g>
+<g name="2"><use href="#s7" transform="translate(3850,2650) rotate(-90) scale(-1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="4058" y="2642" class="txt" font-size="120" baseline-shift="-80">X1</text></g>
+<g name="value" type="label"><text x="4058" y="2792" class="txt" baseline-shift="-80">12 MHz </text></g>
+</g>
+<g name="C2" type="component"><use href="#s15" transform="translate(3450,2350) scale(1,-1)"/><g type="pins"><g name="2"><use href="#s7" transform="translate(3550,2350) scale(-1,-1)"/></g>
+<g name="1"><use href="#s7" transform="translate(3350,2350) scale(1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="3342" y="2242" class="txt" font-size="120" baseline-shift="10">C2</text></g>
+<g name="value" type="label"><text x="3342" y="2458" class="txt" baseline-shift="-80">30pF</text></g>
+</g>
+<g name="C3" type="component"><use href="#s15" transform="translate(3450,3050) scale(1,-1)"/><g type="pins"><g name="2"><use href="#s7" transform="translate(3550,3050) scale(-1,-1)"/></g>
+<g name="1"><use href="#s7" transform="translate(3350,3050) scale(1,-1)"/></g>
+</g>
+<g name="ref" type="label"><text x="3342" y="2942" class="txt" font-size="120" baseline-shift="10">C3</text></g>
+<g name="value" type="label"><text x="3342" y="3158" class="txt" baseline-shift="-80">30pF</text></g>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "3250" cy = "3050" rx="20" ry="20"/>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "3250" cy = "2650" rx="20" ry="20"/>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "3850" cy = "2350" rx="20" ry="20"/>
+</g>
+<g type="junction"><ellipse  gd="e"  cx = "3850" cy = "3050" rx="20" ry="20"/>
+</g>
+</g>
+</g>
+</g>
+</svg>

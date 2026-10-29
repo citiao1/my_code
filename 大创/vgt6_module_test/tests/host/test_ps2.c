@@ -14,6 +14,8 @@
 #include "gyro.h"
 #include "encoder.h"
 #include "telemetry.h"
+#include "tof.h"
+#include "tof_follow.h"
 
 HostDwt host_dwt;
 HostCoreDebug host_debug;
@@ -27,6 +29,7 @@ static unsigned stop_count;
 static uint8_t detach_in_delay;
 static GyroSnapshot gyro;
 static EncoderSnapshot encoder;
+static TofSnapshot tof;
 #define enabled (SpeedControl_GetSnapshot().enabled)
 #define forward (Ps2Control_GetSnapshot().forward_rpm)
 #define left (Ps2Control_GetSnapshot().left_rpm)
@@ -109,8 +112,19 @@ uint8_t Motor_Run(MotorChannel channel, int8_t direction, uint8_t duty)
 uint8_t Motor_Recover(MotorChannel channel) { (void)channel; return 1U; }
 GyroSnapshot Gyro_GetSnapshot(void) { return gyro; }
 EncoderSnapshot Encoder_GetSnapshot(void) { return encoder; }
-void Telemetry_Hlog_Record(const AttitudeControlSnapshot *snapshot)
-{ (void)snapshot; }
+void Telemetry_Hlog_Record(const AttitudeControlSnapshot *snapshot,
+                           uint32_t ms, uint32_t us)
+{ (void)snapshot; (void)ms; (void)us; }
+TofSnapshot Tof_GetSnapshot(void)
+{
+  TofSnapshot s = tof;
+  s.age_ms = tick - s.sample_tick;
+  if (s.age_ms > TOF_MAX_AGE_MS) s.valid = 0;
+  return s;
+}
+void Telemetry_Wlog_Record(const SpeedControlSnapshot *s, const EncoderSnapshot *e,
+                           uint32_t ms, uint32_t us)
+{ (void)s; (void)e; (void)ms; (void)us; }
 static void poll(void) { tick += 20U; Ps2_Process(); }
 static void buttons(uint16_t pressed)
 {
@@ -264,7 +278,7 @@ static void test_manual_authority_and_noise(void)
     assert(AttitudeControl_GetSnapshot().target_deg == target);
     assert(AttitudeControl_GetSnapshot().output_rpm == 0.0f);
     for (unsigned wheel = 0U; wheel < 4U; ++wheel)
-      assert(SpeedControl_GetSnapshot().target_rpm[wheel] == 140);
+      assert(SpeedControl_GetSnapshot().target_rpm[wheel] == -140);
   }
   gyro.yaw_deg = target - 1.0f;
   gyro.rate_dps = 0.0f;
@@ -481,7 +495,93 @@ static void test_tracked_heading_plants(void)
   printf("PASS: 18 assumed fixed-heading plants/signs settle without late wheel hunting (not measured)\n");
   reset_manual(0.0f);
 }
-int main(void)
+static void follow_buttons(uint16_t pressed)
+{
+  tof.sample_tick = tick + 20U;
+  ++tof.samples;
+  buttons(pressed);
+}
+
+static void test_follow_controls(void)
+{
+  Ps2Control_Stop();
+  response[5] = response[7] = response[8] = 128U;
+  gyro.ready = 1U;
+  gyro.read_failures = 0U;
+  gyro.rate_dps = gyro.yaw_deg = 0.0f;
+  tof.ready = tof.connected = tof.valid = 1U;
+  tof.distance_mm = 1600U;
+  follow_buttons(0);
+  follow_buttons(PS2_BUTTON_L1);
+  assert(!Ps2Control_IsActive() && !TofFollow_GetSnapshot().mode);
+  follow_buttons(0);
+  follow_buttons(PS2_BUTTON_START | PS2_BUTTON_L1);
+  assert(enabled && !TofFollow_GetSnapshot().mode); /* START does not follow. */
+  follow_buttons(0);
+  follow_buttons(PS2_BUTTON_L1);
+  assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_SEARCH);
+  for (unsigned i = 0; i < 100; ++i) follow_buttons(PS2_BUTTON_L1);
+  assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK && forward > 0);
+  assert(forward == 63 && left == 0);
+  assert(Ps2Control_GetSnapshot().speed_rpm == 80);
+  follow_buttons(PS2_BUTTON_R1 | PS2_BUTTON_L1);
+  assert(enabled && !TofFollow_GetSnapshot().mode && forward == 0);
+  for (unsigned i = 0; i < 5; ++i) follow_buttons(PS2_BUTTON_L1);
+  assert(!TofFollow_GetSnapshot().mode); /* Held L1 cannot restart. */
+  follow_buttons(0); follow_buttons(PS2_BUTTON_L1);
+  assert(TofFollow_GetSnapshot().mode);
+  response[8] = 255;
+  follow_buttons(PS2_BUTTON_L1);
+  assert(!TofFollow_GetSnapshot().mode && enabled && forward < 0);
+  response[8] = 128;
+  follow_buttons(0); follow_buttons(PS2_BUTTON_L1);
+  response[6] = 0; /* Even the unused right-Y axis is a manual override. */
+  follow_buttons(0);
+  assert(!TofFollow_GetSnapshot().mode && enabled && forward == 0);
+  response[6] = 128;
+  follow_buttons(PS2_BUTTON_L1 | PS2_BUTTON_R1);
+  assert(!TofFollow_GetSnapshot().mode); /* Fresh simultaneous edges: R1 wins. */
+  follow_buttons(0); follow_buttons(PS2_BUTTON_L1);
+  follow_buttons(PS2_BUTTON_SELECT | PS2_BUTTON_L1);
+  assert(!enabled && !TofFollow_GetSnapshot().mode);
+  follow_buttons(0); follow_buttons(PS2_BUTTON_START); follow_buttons(0);
+  follow_buttons(PS2_BUTTON_L1);
+  response[2] = 0; /* A bad PS2 packet must cancel autonomous search too. */
+  follow_buttons(PS2_BUTTON_L1);
+  assert(!enabled && !TofFollow_GetSnapshot().mode);
+  response[2] = 0x5a;
+  for (unsigned i = 0; i < 30; ++i) follow_buttons(PS2_BUTTON_L1);
+  assert(!enabled && !TofFollow_GetSnapshot().mode);
+  assert(Ps2_GetSnapshot().valid);
+  follow_buttons(0); follow_buttons(PS2_BUTTON_START); follow_buttons(0);
+  tof.distance_mm = 500;
+  follow_buttons(PS2_BUTTON_L1);
+  for (unsigned i = 0; i < 20; ++i) follow_buttons(0);
+  assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK && forward == 0);
+  tof.distance_mm = 80;
+  for (unsigned i = 0; i < 100; ++i) follow_buttons(0);
+  assert(enabled && Ps2Control_IsActive());
+  assert(TofFollow_GetSnapshot().mode == TOF_FOLLOW_TRACK && forward < 0);
+  for (unsigned i = 0; i < 4; ++i)
+  {
+    assert(SpeedControl_GetSnapshot().target_rpm[i] > 0);
+    assert(SpeedControl_GetSnapshot().output_percent[i] > 0);
+  }
+  follow_buttons(PS2_BUTTON_SELECT);
+  /* Timeout locks rather than resuming any prior movement. */
+  tof.distance_mm = 3500;
+  follow_buttons(0); follow_buttons(PS2_BUTTON_START); follow_buttons(0);
+  follow_buttons(PS2_BUTTON_L1);
+  for (unsigned i = 0; i < 810; ++i) follow_buttons(PS2_BUTTON_L1);
+  assert(!enabled && !TofFollow_GetSnapshot().mode);
+  assert(TofFollow_GetSnapshot().reason == TOF_FOLLOW_TIMEOUT);
+  memset(&tof, 0, sizeof(tof));
+  follow_buttons(0); follow_buttons(PS2_BUTTON_START); follow_buttons(0);
+  assert(enabled);
+  puts("PASS: real PS2/attitude/speed integration L1 edge/START isolation, R1/SELECT/manual override, packet loss, 80mm retreat stays enabled and 16s timeout");
+}
+
+int main(int argc, char **argv)
 {
   memset(response, 0xff, sizeof(response));
   response[1] = 0x73U; response[2] = 0x5aU;
@@ -510,6 +610,8 @@ int main(void)
   buttons(PS2_BUTTON_L2 | PS2_BUTTON_R2); assert(forward == 140);
   response[5] = response[7] = response[8] = 128U;
   buttons(0);
+  test_follow_controls();
+  if (argc == 2 && !strcmp(argv[1], "--follow-only")) return 0;
   test_continuous_translation_and_hold();
   test_manual_authority_and_noise();
   test_manual_moving_feedback();

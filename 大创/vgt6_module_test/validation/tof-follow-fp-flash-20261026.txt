@@ -1,0 +1,7 @@
+VERIFIED critical addresses, vector table and R26 marker at 0x08005b44; device 0x101f6413; flash 1024 KiB
+Core state after programming: RUNNING
+Connected to STM32F407VGTx [Running]: puso_daplink_lab
+pyocd> Resetting target
+pyocd> 
+VERIFIED critical addresses, vector table and R26 marker at 0x08005b44; device 0x101f6413; flash 1024 KiB
+Core state after programming: RUNNING

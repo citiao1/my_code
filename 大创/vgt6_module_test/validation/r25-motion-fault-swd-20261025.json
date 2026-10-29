@@ -1,0 +1,188 @@
+{
+  "access": "read-only attach; no halt/reset/write/serial commands",
+  "snapshots": [
+    {
+      "time": 1792940340.4865274,
+      "core": "RUNNING",
+      "tick": 858632,
+      "faultRegisters": {
+        "cfsr": 0,
+        "hfsr": 0
+      },
+      "chassisBytes": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "angleMode": 0,
+      "speedEnabled": 0,
+      "targets": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "outputPercent": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "serialStats": [
+        2615,
+        344,
+        0,
+        0,
+        0
+      ],
+      "uartStats": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "uartBrr": 364,
+      "dmaTxRemaining": 0,
+      "rxHeadTailFlags": "3700370000000053",
+      "txHeadTailBusyReady": [
+        4,
+        4,
+        0,
+        1
+      ],
+      "lastCompletedTxSlot": "54454c2c3835383339362c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c31323335382c302c322c312c322c2d3739372c300d0a"
+    },
+    {
+      "time": 1792940341.5153308,
+      "core": "RUNNING",
+      "tick": 859659,
+      "faultRegisters": {
+        "cfsr": 0,
+        "hfsr": 0
+      },
+      "chassisBytes": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "angleMode": 0,
+      "speedEnabled": 0,
+      "targets": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "outputPercent": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "serialStats": [
+        2615,
+        344,
+        0,
+        0,
+        0
+      ],
+      "uartStats": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "uartBrr": 364,
+      "dmaTxRemaining": 25,
+      "rxHeadTailFlags": "3700370000000053",
+      "txHeadTailBusyReady": [
+        8,
+        8,
+        0,
+        1
+      ],
+      "lastCompletedTxSlot": "54454c2c3835393539362c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c31323335392c302c2d322c312c2d322c2d3739382c300d0a"
+    },
+    {
+      "time": 1792940342.471863,
+      "core": "RUNNING",
+      "tick": 860629,
+      "faultRegisters": {
+        "cfsr": 0,
+        "hfsr": 0
+      },
+      "chassisBytes": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "angleMode": 0,
+      "speedEnabled": 0,
+      "targets": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "outputPercent": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "serialStats": [
+        2615,
+        344,
+        0,
+        0,
+        0
+      ],
+      "uartStats": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "uartBrr": 364,
+      "dmaTxRemaining": 0,
+      "rxHeadTailFlags": "3700370000000053",
+      "txHeadTailBusyReady": [
+        11,
+        11,
+        0,
+        1
+      ],
+      "lastCompletedTxSlot": "54454c2c3836303439362c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c302c31323336312c302c302c312c302c2d3739392c300d0a"
+    }
+  ]
+}

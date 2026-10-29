@@ -1,0 +1,6 @@
+Interactive Simulation Log:
+PROSPICE 9.00.00 (Build 42422) (C) Labcenter Electronics 1993-2025.
+Loaded netlist 'D:\Temp\LISA6499.SDF' for design 'jiaotongdeng.pdsprj'
+MCS8051 model version 8.05.01 (Build 39091). [U1]
+Loading HEX file '../../jiaotongdeng/Objects/jiaotongdeng.hex'. [U1]
+Read total of 104 bytes from file '../../jiaotongdeng/Objects/jiaotongdeng.hex'. [U1]

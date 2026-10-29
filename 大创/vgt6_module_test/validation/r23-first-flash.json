@@ -1,0 +1,7 @@
+{
+  "source_commit": "c8405951",
+  "image_sha256": "C1A49C9F6DE61B437C2F052D313284D5D3A116BF2F1A646B737CE6F174DD23E5",
+  "flash-r23.log": "Load \"vgt6_module_test\\\\vgt6_module_test.axf\" \nErase Done.Programming Done.Verify OK.Application running ...\nFlash Load finished at 17:54:46\n",
+  "flash-r23-verify.log": "VERIFIED critical addresses, vector table and R23 marker at 0x08005ab8; device 0x101f6413; flash 1024 KiB\nCore state after programming: RUNNING\n",
+  "flash-r23-postverify.log": "VERIFIED critical addresses, vector table and R23 marker at 0x08005ab8; device 0x101f6413; flash 1024 KiB\nCore state after programming: RUNNING\n"
+}

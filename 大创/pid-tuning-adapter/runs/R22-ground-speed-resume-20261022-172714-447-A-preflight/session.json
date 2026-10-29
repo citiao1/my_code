@@ -1,0 +1,30 @@
+{
+  "status": "failed",
+  "motion_started": false,
+  "selection": "pending",
+  "history": [],
+  "error": "PS2STATUS: {'type': 'result', 'id': 2, 'ok': False, 'error': 'MCU reply timeout: PS2STATUS'}",
+  "restored_readback": null,
+  "commands": [
+    {
+      "host_monotonic": 11391.437,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ATEL,246011,0,1,0,-1,0,0,3429,0,0,0,1,12179"
+      }
+    },
+    {
+      "host_monotonic": 11391.796,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": false,
+        "error": "MCU reply timeout: PS2STATUS"
+      }
+    }
+  ]
+}

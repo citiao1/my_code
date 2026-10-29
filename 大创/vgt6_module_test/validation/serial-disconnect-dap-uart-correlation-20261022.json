@@ -1,0 +1,177 @@
+{
+  "mode": "read-only attach plus stopped serial commands; no target halt/reset/write",
+  "trials": [
+    {
+      "command": "STOP",
+      "before": {
+        "tick": 1096896,
+        "serial_stats": [
+          3769,
+          574,
+          0,
+          0,
+          0
+        ],
+        "rx_ndtr": 64,
+        "tx_state": [
+          10,
+          10,
+          0,
+          1
+        ],
+        "usart_sr": 192,
+        "rcc_csr": 234881024
+      },
+      "written": 6,
+      "after": {
+        "tick": 1098039,
+        "serial_stats": [
+          3775,
+          575,
+          0,
+          0,
+          0
+        ],
+        "rx_ndtr": 64,
+        "tx_state": [
+          1,
+          1,
+          0,
+          1
+        ],
+        "usart_sr": 192,
+        "rcc_csr": 234881024
+      },
+      "received_hex": ""
+    },
+    {
+      "command": "DISARM",
+      "before": {
+        "tick": 1098153,
+        "serial_stats": [
+          3775,
+          575,
+          0,
+          0,
+          0
+        ],
+        "rx_ndtr": 64,
+        "tx_state": [
+          2,
+          2,
+          0,
+          1
+        ],
+        "usart_sr": 192,
+        "rcc_csr": 234881024
+      },
+      "written": 8,
+      "after": {
+        "tick": 1099300,
+        "serial_stats": [
+          3783,
+          576,
+          0,
+          0,
+          0
+        ],
+        "rx_ndtr": 64,
+        "tx_state": [
+          7,
+          7,
+          0,
+          1
+        ],
+        "usart_sr": 192,
+        "rcc_csr": 234881024
+      },
+      "received_hex": ""
+    },
+    {
+      "command": "PING",
+      "before": {
+        "tick": 1099427,
+        "serial_stats": [
+          3783,
+          576,
+          0,
+          0,
+          0
+        ],
+        "rx_ndtr": 64,
+        "tx_state": [
+          8,
+          8,
+          0,
+          1
+        ],
+        "usart_sr": 192,
+        "rcc_csr": 234881024
+      },
+      "written": 6,
+      "after": {
+        "tick": 1100568,
+        "serial_stats": [
+          3789,
+          577,
+          0,
+          0,
+          0
+        ],
+        "rx_ndtr": 64,
+        "tx_state": [
+          14,
+          14,
+          0,
+          1
+        ],
+        "usart_sr": 192,
+        "rcc_csr": 234881024
+      },
+      "received_hex": ""
+    },
+    {
+      "command": "UART",
+      "before": {
+        "tick": 1100703,
+        "serial_stats": [
+          3789,
+          577,
+          0,
+          0,
+          0
+        ],
+        "rx_ndtr": 64,
+        "tx_state": [
+          14,
+          14,
+          0,
+          1
+        ],
+        "usart_sr": 192,
+        "rcc_csr": 234881024
+      },
+      "written": 6,
+      "after": {
+        "tick": 1101852,
+        "serial_stats": [
+          3795,
+          578,
+          0,
+          0,
+          0
+        ],
+        "rx_ndtr": 64,
+        "tx_state": [
+          5,
+          5,
+          0,
+          1
+        ],
+        "usart_sr": 192,
+        "rcc_csr": 234881024
+      },
+      "received_hex": ""
+    }
+  ]
+}

@@ -134,11 +134,11 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4107</DriverSelection>
+            <DriverSelection>4100</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>STLink\ST-LINKIII-KEIL_SWO.dll</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -515,6 +515,21 @@
               <FileType>1</FileType>
               <FilePath>../App/Src/ps2_control.c</FilePath>
             </File>
+            <File>
+              <FileName>tof_follow.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/tof_follow.c</FilePath>
+            </File>
+            <File>
+              <FileName>front_guard.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/front_guard.c</FilePath>
+            </File>
+            <File>
+              <FileName>tof.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../App/Src/tof.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -584,6 +599,11 @@
               <FileName>ps2.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Bsp/Src/ps2.c</FilePath>
+            </File>
+            <File>
+              <FileName>tof_bus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Bsp/Src/tof_bus.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -731,6 +751,16 @@
               <FileName>stm32f4xx_hal_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_i2c_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_dma_ex.c</FileName>

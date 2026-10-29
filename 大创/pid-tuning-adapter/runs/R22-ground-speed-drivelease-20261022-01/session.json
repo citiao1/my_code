@@ -1,0 +1,20 @@
+{
+  "status": "failed",
+  "motion_started": false,
+  "selection": "pending",
+  "history": [],
+  "error": "ANGLESTATUS: {'type': 'result', 'id': 1, 'ok': False, 'error': 'hardware disconnected'}",
+  "restored_readback": null,
+  "commands": [
+    {
+      "host_monotonic": 3743.781,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": false,
+        "error": "hardware disconnected"
+      }
+    }
+  ]
+}

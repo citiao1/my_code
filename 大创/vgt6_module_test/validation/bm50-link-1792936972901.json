@@ -1,0 +1,3042 @@
+{
+  "mode": "direct_web_serial",
+  "baud": 115200,
+  "port": {
+    "usbProductId": 29987,
+    "usbVendorId": 6790
+  },
+  "verified": true,
+  "recovering": false,
+  "stats": {
+    "rxBytes": 1378,
+    "rxLines": 118,
+    "badBytes": 0,
+    "timeouts": 0,
+    "txCommands": 118,
+    "keepAckMisses": 0,
+    "stopRecoveries": 0
+  },
+  "heartbeatAckMisses": 0,
+  "lastRxAt": 198905.30000000005,
+  "motionReport": {
+    "receivedAt": 5257.40000000014,
+    "tick": 2009963,
+    "mode": 0,
+    "imuReady": true,
+    "enabled": false
+  },
+  "traceDropped": 0,
+  "trace": [
+    {
+      "hostMs": 4736.90000000014,
+      "event": "tx",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 4737,
+      "event": "write_done",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 4762.100000000093,
+      "event": "rx",
+      "detail": "41434b2c53544f500d0a"
+    },
+    {
+      "hostMs": 4763.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "STOP",
+        "line": "ACK,STOP",
+        "elapsedMs": 26.699999999953434
+      }
+    },
+    {
+      "hostMs": 4763.800000000047,
+      "event": "tx",
+      "detail": "DISARM"
+    },
+    {
+      "hostMs": 4763.800000000047,
+      "event": "write_done",
+      "detail": "DISARM"
+    },
+    {
+      "hostMs": 4794.5,
+      "event": "rx",
+      "detail": "41434b2c44495341524d0d0a"
+    },
+    {
+      "hostMs": 4795.300000000047,
+      "event": "reply",
+      "detail": {
+        "command": "DISARM",
+        "line": "ACK,DISARM",
+        "elapsedMs": 31.5999999998603
+      }
+    },
+    {
+      "hostMs": 4795.700000000186,
+      "event": "tx",
+      "detail": "TEL,0"
+    },
+    {
+      "hostMs": 4795.800000000047,
+      "event": "write_done",
+      "detail": "TEL,0"
+    },
+    {
+      "hostMs": 4816.600000000093,
+      "event": "rx",
+      "detail": "41434b2c54454c2c300d0a"
+    },
+    {
+      "hostMs": 4816.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "TEL,0",
+        "line": "ACK,TEL,0",
+        "elapsedMs": 21.300000000046566
+      }
+    },
+    {
+      "hostMs": 4817.100000000093,
+      "event": "tx",
+      "detail": "TOF,0"
+    },
+    {
+      "hostMs": 4817.200000000186,
+      "event": "write_done",
+      "detail": "TOF,0"
+    },
+    {
+      "hostMs": 4839.300000000047,
+      "event": "rx",
+      "detail": "41434b2c544f462c300d0a"
+    },
+    {
+      "hostMs": 4839.300000000047,
+      "event": "reply",
+      "detail": {
+        "command": "TOF,0",
+        "line": "ACK,TOF,0",
+        "elapsedMs": 22.199999999953434
+      }
+    },
+    {
+      "hostMs": 4839.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 4839.40000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 4874.300000000047,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 4874.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 35
+      }
+    },
+    {
+      "hostMs": 4874.40000000014,
+      "event": "verified",
+      "detail": {
+        "usbProductId": 29987,
+        "usbVendorId": 6790
+      }
+    },
+    {
+      "hostMs": 4875.40000000014,
+      "event": "tx",
+      "detail": "VER"
+    },
+    {
+      "hostMs": 4875.40000000014,
+      "event": "write_done",
+      "detail": "VER"
+    },
+    {
+      "hostMs": 4895.5,
+      "event": "rx",
+      "detail": "5645522c564754365f424d35305f41545449545544455f5232340d0a"
+    },
+    {
+      "hostMs": 4895.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "VER",
+        "line": "VER,VGT6_BM50_ATTITUDE_R24",
+        "elapsedMs": 20.699999999953434
+      }
+    },
+    {
+      "hostMs": 4896,
+      "event": "tx",
+      "detail": "UART"
+    },
+    {
+      "hostMs": 4896.100000000093,
+      "event": "write_done",
+      "detail": "UART"
+    },
+    {
+      "hostMs": 4929.90000000014,
+      "event": "rx",
+      "detail": "554152542c3131353230302c34323030303030302c3336342c307830302c302c"
+    },
+    {
+      "hostMs": 4930.40000000014,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 4930.40000000014,
+      "event": "rx",
+      "detail": "2c302c302c300d0a"
+    },
+    {
+      "hostMs": 4930.600000000093,
+      "event": "reply",
+      "detail": {
+        "command": "UART",
+        "line": "UART,115200,42000000,364,0x00,0,0,0,0,0",
+        "elapsedMs": 34.60000000009313
+      }
+    },
+    {
+      "hostMs": 4930.700000000186,
+      "event": "tx",
+      "detail": "LINK"
+    },
+    {
+      "hostMs": 4930.800000000047,
+      "event": "write_done",
+      "detail": "LINK"
+    },
+    {
+      "hostMs": 4951.90000000014,
+      "event": "rx",
+      "detail": "4c494e4b2c343837322c3635372c302c302c302c300d0a"
+    },
+    {
+      "hostMs": 4952.300000000047,
+      "event": "reply",
+      "detail": {
+        "command": "LINK",
+        "line": "LINK,4872,657,0,0,0,0",
+        "elapsedMs": 21.5999999998603
+      }
+    },
+    {
+      "hostMs": 4952.5,
+      "event": "tx",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 4952.600000000093,
+      "event": "write_done",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 4974.100000000093,
+      "event": "rx",
+      "detail": "53"
+    },
+    {
+      "hostMs": 4974.200000000186,
+      "event": "rx",
+      "detail": "5441434b2c343039362c323536382c313532382c310d0a"
+    },
+    {
+      "hostMs": 4974.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "STACK",
+        "line": "STACK,4096,2568,1528,1",
+        "elapsedMs": 22.5
+      }
+    },
+    {
+      "hostMs": 4975.40000000014,
+      "event": "tx",
+      "detail": "SPEEDLIMIT"
+    },
+    {
+      "hostMs": 4975.5,
+      "event": "write_done",
+      "detail": "SPEEDLIMIT"
+    },
+    {
+      "hostMs": 5011.200000000186,
+      "event": "rx",
+      "detail": "53504545444c494d49542c3136300d0a"
+    },
+    {
+      "hostMs": 5011.5,
+      "event": "reply",
+      "detail": {
+        "command": "SPEEDLIMIT",
+        "line": "SPEEDLIMIT,160",
+        "elapsedMs": 36.0999999998603
+      }
+    },
+    {
+      "hostMs": 5011.600000000093,
+      "event": "tx",
+      "detail": "SPEEDSTATUS"
+    },
+    {
+      "hostMs": 5011.600000000093,
+      "event": "write_done",
+      "detail": "SPEEDSTATUS"
+    },
+    {
+      "hostMs": 5053.40000000014,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 5053.5,
+      "event": "rx",
+      "detail": "454c2c323030393736302c302c302c302c302c302c302c302c302c302c302c"
+    },
+    {
+      "hostMs": 5054.600000000093,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 5054.600000000093,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323436342c302c302c312c302c3930"
+    },
+    {
+      "hostMs": 5055.700000000186,
+      "event": "rx",
+      "detail": "3439302c300d0a"
+    },
+    {
+      "hostMs": 5056.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "SPEEDSTATUS",
+        "line": "TEL,2009760,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12464,0,0,1,0,90490,0",
+        "elapsedMs": 44.9000000001397
+      }
+    },
+    {
+      "hostMs": 5056.700000000186,
+      "event": "tx",
+      "detail": "PIDGET"
+    },
+    {
+      "hostMs": 5056.700000000186,
+      "event": "write_done",
+      "detail": "PIDGET"
+    },
+    {
+      "hostMs": 5075.5,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 5075.600000000093,
+      "event": "rx",
+      "detail": "49442c312e323030302c302e303939312c302e303030302c31"
+    },
+    {
+      "hostMs": 5087,
+      "event": "rx",
+      "detail": "2e"
+    },
+    {
+      "hostMs": 5087.100000000093,
+      "event": "rx",
+      "detail": "323030302c302e303939382c302e303030302c312e323030302c302e303939"
+    },
+    {
+      "hostMs": 5091.700000000186,
+      "event": "rx",
+      "detail": "382c302e303030302c312e323030302c302e313030382c302e303030300d0a"
+    },
+    {
+      "hostMs": 5092.300000000047,
+      "event": "reply",
+      "detail": {
+        "command": "PIDGET",
+        "line": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000",
+        "elapsedMs": 35.699999999953434
+      }
+    },
+    {
+      "hostMs": 5092.40000000014,
+      "event": "tx",
+      "detail": "CAPS"
+    },
+    {
+      "hostMs": 5092.5,
+      "event": "write_done",
+      "detail": "CAPS"
+    },
+    {
+      "hostMs": 5133.200000000186,
+      "event": "rx",
+      "detail": "434150532c41545449545544455f5232342c32302c31302c3136302c36302c36"
+    },
+    {
+      "hostMs": 5134.600000000093,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 5134.600000000093,
+      "event": "rx",
+      "detail": "2c38302c53504545445f54554e41424c452c484c4f472c5053322c54524143"
+    },
+    {
+      "hostMs": 5135.700000000186,
+      "event": "rx",
+      "detail": "4b"
+    },
+    {
+      "hostMs": 5135.800000000047,
+      "event": "rx",
+      "detail": "4d4f56452c484c4f475f4d4f44452c484c4f475f55532c544f465f444c3142"
+    },
+    {
+      "hostMs": 5136.800000000047,
+      "event": "rx",
+      "detail": "2c574c4f475f55532c544f465f47554152442c46524f4e545f52455645525345"
+    },
+    {
+      "hostMs": 5138,
+      "event": "rx",
+      "detail": "44"
+    },
+    {
+      "hostMs": 5138.100000000093,
+      "event": "rx",
+      "detail": "2c544f465f464153542c544f465f47554152445f3230305f3130305f34302c"
+    },
+    {
+      "hostMs": 5139.5,
+      "event": "rx",
+      "detail": "55"
+    },
+    {
+      "hostMs": 5139.700000000186,
+      "event": "rx",
+      "detail": "4152545f514f532c53455249414c5f3131353230300d0a"
+    },
+    {
+      "hostMs": 5140.5,
+      "event": "reply",
+      "detail": {
+        "command": "CAPS",
+        "line": "CAPS,ATTITUDE_R24,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200",
+        "elapsedMs": 48.0999999998603
+      }
+    },
+    {
+      "hostMs": 5141,
+      "event": "tx",
+      "detail": "PS2STATUS"
+    },
+    {
+      "hostMs": 5141.100000000093,
+      "event": "write_done",
+      "detail": "PS2STATUS"
+    },
+    {
+      "hostMs": 5177,
+      "event": "rx",
+      "detail": "5053322c312c302c307837332c3078303030302c3132382c3132382c3132382c"
+    },
+    {
+      "hostMs": 5178.100000000093,
+      "event": "rx",
+      "detail": "3132382c33302c302c31340d0a"
+    },
+    {
+      "hostMs": 5178.5,
+      "event": "reply",
+      "detail": {
+        "command": "PS2STATUS",
+        "line": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,14",
+        "elapsedMs": 37.5999999998603
+      }
+    },
+    {
+      "hostMs": 5178.90000000014,
+      "event": "tx",
+      "detail": "YAWGET"
+    },
+    {
+      "hostMs": 5178.90000000014,
+      "event": "write_done",
+      "detail": "YAWGET"
+    },
+    {
+      "hostMs": 5199.300000000047,
+      "event": "rx",
+      "detail": "5941575049442c302e313831352c312e383036322c36302c38302c32300d0a"
+    },
+    {
+      "hostMs": 5199.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "YAWGET",
+        "line": "YAWPID,0.1815,1.8062,60,80,20",
+        "elapsedMs": 21.100000000093132
+      }
+    },
+    {
+      "hostMs": 5200.100000000093,
+      "event": "tx",
+      "detail": "HEADGET"
+    },
+    {
+      "hostMs": 5200.300000000047,
+      "event": "write_done",
+      "detail": "HEADGET"
+    },
+    {
+      "hostMs": 5222.200000000186,
+      "event": "rx",
+      "detail": "484541445049442c362e303030302c312e323530302c38302c32302c445f4d45"
+    },
+    {
+      "hostMs": 5223.200000000186,
+      "event": "rx",
+      "detail": "41530d0a"
+    },
+    {
+      "hostMs": 5223.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "HEADGET",
+        "line": "HEADPID,6.0000,1.2500,80,20,D_MEAS",
+        "elapsedMs": 23.300000000046566
+      }
+    },
+    {
+      "hostMs": 5223.5,
+      "event": "tx",
+      "detail": "ANGLESTATUS"
+    },
+    {
+      "hostMs": 5223.600000000093,
+      "event": "write_done",
+      "detail": "ANGLESTATUS"
+    },
+    {
+      "hostMs": 5256.100000000093,
+      "event": "rx",
+      "detail": "4154454c2c323030393936332c302c312c302c302c302c39333236392c393034"
+    },
+    {
+      "hostMs": 5257.200000000186,
+      "event": "rx",
+      "detail": "39302c343438352c302c302c302c31323435370d0a"
+    },
+    {
+      "hostMs": 5258.800000000047,
+      "event": "reply",
+      "detail": {
+        "command": "ANGLESTATUS",
+        "line": "ATEL,2009963,0,1,0,0,0,93269,90490,4485,0,0,0,12457",
+        "elapsedMs": 35.300000000046566
+      }
+    },
+    {
+      "hostMs": 5259.100000000093,
+      "event": "tx",
+      "detail": "HLOG,STATUS"
+    },
+    {
+      "hostMs": 5259.100000000093,
+      "event": "write_done",
+      "detail": "HLOG,STATUS"
+    },
+    {
+      "hostMs": 5278.300000000047,
+      "event": "rx",
+      "detail": "484c4f472c5354415455532c302c302c313032342c302c300d0a"
+    },
+    {
+      "hostMs": 5278.600000000093,
+      "event": "reply",
+      "detail": {
+        "command": "HLOG,STATUS",
+        "line": "HLOG,STATUS,0,0,1024,0,0",
+        "elapsedMs": 19.600000000093132
+      }
+    },
+    {
+      "hostMs": 5278.90000000014,
+      "event": "tx",
+      "detail": "WLOG,STATUS"
+    },
+    {
+      "hostMs": 5278.90000000014,
+      "event": "write_done",
+      "detail": "WLOG,STATUS"
+    },
+    {
+      "hostMs": 5312,
+      "event": "rx",
+      "detail": "574c4f472c5354415455532c302c302c313032342c302c300d0a"
+    },
+    {
+      "hostMs": 5312.200000000186,
+      "event": "reply",
+      "detail": {
+        "command": "WLOG,STATUS",
+        "line": "WLOG,STATUS,0,0,1024,0,0",
+        "elapsedMs": 33.4000000001397
+      }
+    },
+    {
+      "hostMs": 5312.300000000047,
+      "event": "tx",
+      "detail": "TOF"
+    },
+    {
+      "hostMs": 5312.300000000047,
+      "event": "write_done",
+      "detail": "TOF"
+    },
+    {
+      "hostMs": 5334.40000000014,
+      "event": "rx",
+      "detail": "544f462c323031303035322c312c312c323833332c392c34312c300d0a"
+    },
+    {
+      "hostMs": 5334.800000000047,
+      "event": "reply",
+      "detail": {
+        "command": "TOF",
+        "line": "TOF,2010052,1,1,2833,9,41,0",
+        "elapsedMs": 22.5
+      }
+    },
+    {
+      "hostMs": 5334.90000000014,
+      "event": "tx",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 5334.90000000014,
+      "event": "write_done",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 5356.700000000186,
+      "event": "rx",
+      "detail": "535441434b2c343039362c323536382c313532382c310d0a"
+    },
+    {
+      "hostMs": 5356.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "STACK",
+        "line": "STACK,4096,2568,1528,1",
+        "elapsedMs": 22.100000000093132
+      }
+    },
+    {
+      "hostMs": 6878.200000000186,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 6878.300000000047,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 6898.200000000186,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 6898.200000000186,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20
+      }
+    },
+    {
+      "hostMs": 8881.800000000047,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 8881.90000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 8901.100000000093,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 8901.100000000093,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 19.300000000046566
+      }
+    },
+    {
+      "hostMs": 10885.300000000047,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 10885.40000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 10903.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 10904,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 18.799999999813735
+      }
+    },
+    {
+      "hostMs": 12889.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 12889.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 12917.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 12917.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 28.0999999998603
+      }
+    },
+    {
+      "hostMs": 14879.800000000047,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 14880,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 14897.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 14897.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 18.199999999953434
+      }
+    },
+    {
+      "hostMs": 16876,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 16876.100000000093,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 16900.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 16900.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 24.5
+      }
+    },
+    {
+      "hostMs": 18887.200000000186,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 18887.40000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 18903.700000000186,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 18903.800000000047,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 16.5999999998603
+      }
+    },
+    {
+      "hostMs": 20885.700000000186,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 20885.700000000186,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 20906,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 20906,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.299999999813735
+      }
+    },
+    {
+      "hostMs": 22887.600000000093,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 22887.600000000093,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 22908.800000000047,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 22908.800000000047,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.199999999953434
+      }
+    },
+    {
+      "hostMs": 24877.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 24877.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 24899.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 24900,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.5999999998603
+      }
+    },
+    {
+      "hostMs": 26887.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 26887.40000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 26913.300000000047,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 26913.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 26
+      }
+    },
+    {
+      "hostMs": 28883.300000000047,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 28883.40000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 28904.700000000186,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 28904.800000000047,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.5
+      }
+    },
+    {
+      "hostMs": 30874.700000000186,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 30874.90000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 30896,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 30896,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.399999999906868
+      }
+    },
+    {
+      "hostMs": 32889,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 32889.10000000009,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 32909.60000000009,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 32909.700000000186,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.700000000186265
+      }
+    },
+    {
+      "hostMs": 34889.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 34889.60000000009,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 34913.10000000009,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 34913.10000000009,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 23.600000000093132
+      }
+    },
+    {
+      "hostMs": 36882,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 36882,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 36903.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 36903.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.5
+      }
+    },
+    {
+      "hostMs": 38878.90000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 38878.90000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 38894.5,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 38894.60000000009,
+      "event": "rx",
+      "detail": "4f4e470d0a"
+    },
+    {
+      "hostMs": 38894.60000000009,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 15.699999999953434
+      }
+    },
+    {
+      "hostMs": 40880.80000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 40881,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 40908.700000000186,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 40908.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 28.199999999953434
+      }
+    },
+    {
+      "hostMs": 42882.200000000186,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 42882.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 42900.10000000009,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 42900.200000000186,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 18.100000000093132
+      }
+    },
+    {
+      "hostMs": 44882.30000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 44882.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 44914,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 44914.10000000009,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 31.800000000046566
+      }
+    },
+    {
+      "hostMs": 46883.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 46883.700000000186,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 46905.10000000009,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 46905.200000000186,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.600000000093132
+      }
+    },
+    {
+      "hostMs": 48886.200000000186,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 48886.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 48907.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 48907.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.299999999813735
+      }
+    },
+    {
+      "hostMs": 50882.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 50882.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 50899.30000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 50899.30000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 16.899999999906868
+      }
+    },
+    {
+      "hostMs": 52883,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 52883.10000000009,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 52912.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 52912.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 29.5
+      }
+    },
+    {
+      "hostMs": 54882.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 54882.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 54915.200000000186,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 54915.200000000186,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 32.800000000046566
+      }
+    },
+    {
+      "hostMs": 56889.30000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 56889.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 56917.80000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 56917.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 28.5
+      }
+    },
+    {
+      "hostMs": 58875.60000000009,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 58875.60000000009,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 58898.200000000186,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 58898.200000000186,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.700000000186265
+      }
+    },
+    {
+      "hostMs": 60890.10000000009,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 60890.10000000009,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 60912.10000000009,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 60912.10000000009,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.100000000093132
+      }
+    },
+    {
+      "hostMs": 62888.30000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 62888.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 62914.60000000009,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 62914.60000000009,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 26.300000000046566
+      }
+    },
+    {
+      "hostMs": 64884.200000000186,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 64884.200000000186,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 64906.30000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 64906.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.300000000046566
+      }
+    },
+    {
+      "hostMs": 66881.1000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 66881.1000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 66908.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 66908.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 27.800000000046566
+      }
+    },
+    {
+      "hostMs": 68880.80000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 68880.90000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 68899.70000000019,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 68899.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 19
+      }
+    },
+    {
+      "hostMs": 70878.80000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 70878.90000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 70913.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 70913.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 35.10000000009313
+      }
+    },
+    {
+      "hostMs": 72885.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 72885.70000000019,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 72904.80000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 72904.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 19.300000000046566
+      }
+    },
+    {
+      "hostMs": 74875.6000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 74875.70000000019,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 74896.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 74896.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.899999999906868
+      }
+    },
+    {
+      "hostMs": 76877.1000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 76877.1000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 76898.80000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 76898.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.800000000046566
+      }
+    },
+    {
+      "hostMs": 78882.20000000019,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 78882.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 78901.5,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 78901.5,
+      "event": "rx",
+      "detail": "4f4e470d0a"
+    },
+    {
+      "hostMs": 78901.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 19.399999999906868
+      }
+    },
+    {
+      "hostMs": 80886.20000000019,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 80886.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 80904.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 80904.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 18.299999999813735
+      }
+    },
+    {
+      "hostMs": 82888.80000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 82889,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 82907.6000000001,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 82907.6000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 18.800000000046566
+      }
+    },
+    {
+      "hostMs": 84888.6000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 84888.80000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 84909.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 84910,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.399999999906868
+      }
+    },
+    {
+      "hostMs": 86878.80000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 86879,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 86901.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 86901.6000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.800000000046566
+      }
+    },
+    {
+      "hostMs": 88881.90000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 88882.1000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 88904.20000000019,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 88904.20000000019,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.300000000046566
+      }
+    },
+    {
+      "hostMs": 90885.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 90885.40000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 90907.20000000019,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 90907.20000000019,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.9000000001397
+      }
+    },
+    {
+      "hostMs": 92879.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 92879.6000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 92898.40000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 92898.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 19
+      }
+    },
+    {
+      "hostMs": 94881,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 94881.1000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 94901.80000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 94901.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.800000000046566
+      }
+    },
+    {
+      "hostMs": 96882.1000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 96882.1000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 96904.30000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 96904.30000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.199999999953434
+      }
+    },
+    {
+      "hostMs": 98886.6000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 98886.80000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 98918.6000000001,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 98918.70000000019,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 32.10000000009313
+      }
+    },
+    {
+      "hostMs": 100888.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 100888.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 100910,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 100910,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.5999999998603
+      }
+    },
+    {
+      "hostMs": 102886.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 102886.6000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 102912.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 102912.6000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 26.100000000093132
+      }
+    },
+    {
+      "hostMs": 104878.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 104878.6000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 104904.40000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 104904.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 25.9000000001397
+      }
+    },
+    {
+      "hostMs": 106882.1000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 106882.20000000019,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 106907.30000000005,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 106907.40000000014,
+      "event": "rx",
+      "detail": "4f4e470d0a"
+    },
+    {
+      "hostMs": 106907.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 25.300000000046566
+      }
+    },
+    {
+      "hostMs": 108881.30000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 108881.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 108899.1000000001,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 108899.1000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 17.800000000046566
+      }
+    },
+    {
+      "hostMs": 110875.90000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 110876.1000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 110902.30000000005,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 110902.5,
+      "event": "rx",
+      "detail": "4f4e470d0a"
+    },
+    {
+      "hostMs": 110902.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 26.699999999953434
+      }
+    },
+    {
+      "hostMs": 112887.80000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 112887.80000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 112905,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 112905.1000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 17.300000000046566
+      }
+    },
+    {
+      "hostMs": 114879.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 114879.6000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 114896.80000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 114896.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 17.399999999906868
+      }
+    },
+    {
+      "hostMs": 116886.1000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 116886.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 116910.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 116911,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 24.899999999906868
+      }
+    },
+    {
+      "hostMs": 118876.1000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 118876.20000000019,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 118902.70000000019,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 118902.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 26.699999999953434
+      }
+    },
+    {
+      "hostMs": 120883.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 120883.40000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 120905.6000000001,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 120905.6000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.300000000046566
+      }
+    },
+    {
+      "hostMs": 122889.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 122889.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 122909.70000000019,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 122909.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.300000000046566
+      }
+    },
+    {
+      "hostMs": 124880,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 124880,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 124900.1000000001,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 124900.1000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.100000000093132
+      }
+    },
+    {
+      "hostMs": 126884.20000000019,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 126884.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 126914.6000000001,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 126914.6000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 30.399999999906868
+      }
+    },
+    {
+      "hostMs": 128880.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 128880.6000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 128905.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 128906,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 25.5999999998603
+      }
+    },
+    {
+      "hostMs": 130876.1000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 130876.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 130897.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 130897.6000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.5
+      }
+    },
+    {
+      "hostMs": 132884.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 132884.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 132911.80000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 132911.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 27.399999999906868
+      }
+    },
+    {
+      "hostMs": 134874.7000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 134874.80000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 134892.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 134892.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 17.799999999813735
+      }
+    },
+    {
+      "hostMs": 136884.30000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 136884.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 136917.7000000002,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 136917.7000000002,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 33.5
+      }
+    },
+    {
+      "hostMs": 138886.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 138886.40000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 138909.1000000001,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 138909.1000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.800000000046566
+      }
+    },
+    {
+      "hostMs": 140882.7000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 140882.80000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 140912,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 140912,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 29.299999999813735
+      }
+    },
+    {
+      "hostMs": 142880.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 142880.6000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 142903.30000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 142903.30000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 23
+      }
+    },
+    {
+      "hostMs": 144875.1000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 144875.2000000002,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 144894.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 144894.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 19.399999999906868
+      }
+    },
+    {
+      "hostMs": 146889,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 146889.2000000002,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 146908.40000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 146908.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 19.4000000001397
+      }
+    },
+    {
+      "hostMs": 148885.2000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 148885.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 148911.2000000002,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 148911.2000000002,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 26
+      }
+    },
+    {
+      "hostMs": 150886.1000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 150886.1000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 150902.80000000005,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 150902.80000000005,
+      "event": "rx",
+      "detail": "4f4e470d0a"
+    },
+    {
+      "hostMs": 150902.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 16.9000000001397
+      }
+    },
+    {
+      "hostMs": 152876.90000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 152876.90000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 152894.30000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 152894.30000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 17.5
+      }
+    },
+    {
+      "hostMs": 154876.30000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 154876.40000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 154897.1000000001,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 154897.1000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.899999999906868
+      }
+    },
+    {
+      "hostMs": 156888.30000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 156888.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 156911,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 156911.1000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.800000000046566
+      }
+    },
+    {
+      "hostMs": 158887.6000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 158887.7000000002,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 158914.30000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 158914.30000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 26.800000000046566
+      }
+    },
+    {
+      "hostMs": 160878.2000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 160878.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 160894.7000000002,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 160894.7000000002,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 16.5
+      }
+    },
+    {
+      "hostMs": 162885.80000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 162885.90000000014,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 162919.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 162919.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 34.10000000009313
+      }
+    },
+    {
+      "hostMs": 164887.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 164887.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 164911.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 164911.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 24
+      }
+    },
+    {
+      "hostMs": 166887.6000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 166887.7000000002,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 166914.7000000002,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 166914.7000000002,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 27.200000000186265
+      }
+    },
+    {
+      "hostMs": 168889.2000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 168889.2000000002,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 168917.7000000002,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 168917.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 28.5999999998603
+      }
+    },
+    {
+      "hostMs": 170889.2000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 170889.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 170909.30000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 170909.30000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.0999999998603
+      }
+    },
+    {
+      "hostMs": 172875.2000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 172875.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 172901.1000000001,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 172901.1000000001,
+      "event": "rx",
+      "detail": "4f4e470d0a"
+    },
+    {
+      "hostMs": 172901.1000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 26
+      }
+    },
+    {
+      "hostMs": 174875.5,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 174875.80000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 174903.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 174903.90000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 28.5
+      }
+    },
+    {
+      "hostMs": 176875.2000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 176875.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 176895.80000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 176895.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.5999999998603
+      }
+    },
+    {
+      "hostMs": 178889,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 178889.1000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 178910.2000000002,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 178910.2000000002,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.200000000186265
+      }
+    },
+    {
+      "hostMs": 180882.2000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 180882.2000000002,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 180901.6000000001,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 180901.6000000001,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 19.5
+      }
+    },
+    {
+      "hostMs": 182879.90000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 182880.1000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 182904.5,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 182904.5,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 24.5999999998603
+      }
+    },
+    {
+      "hostMs": 184889.7000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 184889.80000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 184907.30000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 184907.30000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 17.699999999953434
+      }
+    },
+    {
+      "hostMs": 186875.90000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 186876.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 186899,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 186899,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 23.199999999953434
+      }
+    },
+    {
+      "hostMs": 188882.2000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 188882.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 188901.90000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 188902,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 19.799999999813735
+      }
+    },
+    {
+      "hostMs": 190877.7000000002,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 190877.80000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 190893.40000000014,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 190893.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 15.699999999953434
+      }
+    },
+    {
+      "hostMs": 192882.40000000014,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 192882.5,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 192918.7000000002,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 192918.80000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 36.39999999990687
+      }
+    },
+    {
+      "hostMs": 194879,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 194879,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 194899.30000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 194899.40000000014,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.5
+      }
+    },
+    {
+      "hostMs": 196889.1000000001,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 196889.1000000001,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 196913.7000000002,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 196913.7000000002,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 24.600000000093132
+      }
+    },
+    {
+      "hostMs": 198884.30000000005,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 198884.30000000005,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 198905.30000000005,
+      "event": "rx",
+      "detail": "504f4e470d0a"
+    },
+    {
+      "hostMs": 198905.30000000005,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 21.0999999998603
+      }
+    }
+  ],
+  "clientVersion": "safe-link-v39",
+  "uiTrace": [
+    {
+      "hostMs": 5334.600000000093,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 2010052,
+        "zone": "clear",
+        "mm": 2833,
+        "age": 41,
+        "errors": 0
+      }
+    }
+  ],
+  "uiTraceDropped": 0,
+  "inputState": {
+    "keys": [],
+    "vector": {
+      "forward": 0,
+      "left": 0,
+      "rotate": 0
+    },
+    "ownsAngleMotion": false,
+    "driveActive": false,
+    "keepPending": false
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "port": "COM12",
+  "baud": 115200,
+  "commands": [
+    {
+      "command": "STOP",
+      "lines": [
+        "ACK,STOP"
+      ],
+      "reply": "ACK,STOP",
+      "rttMs": 15.0
+    },
+    {
+      "command": "DISARM",
+      "lines": [
+        "ACK,DISARM"
+      ],
+      "reply": "ACK,DISARM",
+      "rttMs": 94.0
+    },
+    {
+      "command": "VER",
+      "lines": [
+        "VER,VGT6_BM50_ATTITUDE_R26"
+      ],
+      "reply": "VER,VGT6_BM50_ATTITUDE_R26",
+      "rttMs": 203.0
+    },
+    {
+      "command": "PIDGET",
+      "lines": [
+        "PID,1.1000,0.0991,0.0000,1.1000,0.0998,0.0000,1.1000,0.0998,0.0000,1.1000,0.1008,0.0000"
+      ],
+      "reply": "PID,1.1000,0.0991,0.0000,1.1000,0.0998,0.0000,1.1000,0.0998,0.0000,1.1000,0.1008,0.0000",
+      "rttMs": 219.0
+    },
+    {
+      "command": "HEADGET",
+      "lines": [
+        "HEADPID,5.5000,2.5000,80,20,D_MEAS"
+      ],
+      "reply": "HEADPID,5.5000,2.5000,80,20,D_MEAS",
+      "rttMs": 94.0
+    },
+    {
+      "command": "YAWGET",
+      "lines": [
+        "YAWPID,0.1815,1.8062,60,80,20"
+      ],
+      "reply": "YAWPID,0.1815,1.8062,60,80,20",
+      "rttMs": 47.0
+    },
+    {
+      "command": "TOF",
+      "lines": [
+        "TOF,25193,1,1,140,9,13,0"
+      ],
+      "reply": "TOF,25193,1,1,140,9,13,0",
+      "rttMs": 31.0
+    },
+    {
+      "command": "STACK",
+      "lines": [
+        "STACK,4096,2280,1816,1"
+      ],
+      "reply": "STACK,4096,2280,1816,1",
+      "rttMs": 47.0
+    },
+    {
+      "command": "ANGLESTATUS",
+      "lines": [
+        "ATEL,25306,0,1,0,1,0,0,1,0,0,0,0,12540"
+      ],
+      "reply": "ATEL,25306,0,1,0,1,0,0,1,0,0,0,0,12540",
+      "rttMs": 234.0
+    },
+    {
+      "command": "SPEEDSTATUS",
+      "lines": [
+        "TEL,25587,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12537,0,-1,1,-1,1,0"
+      ],
+      "reply": "TEL,25587,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12537,0,-1,1,-1,1,0",
+      "rttMs": 156.0
+    },
+    {
+      "command": "PS2STATUS",
+      "lines": [
+        "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,6"
+      ],
+      "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,6",
+      "rttMs": 141.0
+    },
+    {
+      "command": "STOP",
+      "lines": [
+        "ACK,STOP"
+      ],
+      "reply": "ACK,STOP",
+      "rttMs": 109.0
+    },
+    {
+      "command": "DISARM",
+      "lines": [
+        "ACK,DISARM"
+      ],
+      "reply": "ACK,DISARM",
+      "rttMs": 78.0
+    }
+  ]
+}

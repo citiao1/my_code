@@ -1,0 +1,446 @@
+{
+  "method": "Offline reconstruction of original RX chunks using current consume() framing. hostMs is performance.now(), not wall time. No COM access, hardware operation, or firmware changes. TX timestamp precedes writer.write completion; it does not prove delivery to MCU. First incomplete retained line excluded when traceDropped>0.",
+  "captures": [
+    {
+      "source": "C:\\Users\\28097\\Downloads\\bm50-link-1792681196370.json",
+      "archive": "D:\\my_code\\my_code\\大创\\vgt6_module_test\\validation\\bm50-link-1792681196370.json",
+      "sha256": "fb5cfbd688ae07a8269d6a87b7fdaec3aff7a97773a0fb8491853ac43d94742d",
+      "mode": "direct_web_serial",
+      "port": {
+        "usbProductId": 29987,
+        "usbVendorId": 6790
+      },
+      "fault": {
+        "hostMs": 952505.6999999993,
+        "event": "fault",
+        "detail": "车端应答超时：STOP；USB串口打开不代表无线回传正常"
+      },
+      "stats_whole_session": {
+        "rxBytes": 46961,
+        "rxLines": 1822,
+        "badBytes": 1,
+        "timeouts": 1,
+        "txCommands": 929
+      },
+      "traceDropped": 2599,
+      "retained_span_ms": 130122.2,
+      "largest_rx_gaps": [
+        {
+          "duration_ms": 3092.8,
+          "before_ms": 947361.5999999978,
+          "resume_ms": 950454.3999999985
+        },
+        {
+          "duration_ms": 551.6,
+          "before_ms": 853514,
+          "resume_ms": 854065.5999999978
+        },
+        {
+          "duration_ms": 517.8,
+          "before_ms": 861131.0999999978,
+          "resume_ms": 861648.8999999985
+        },
+        {
+          "duration_ms": 517.2,
+          "before_ms": 880966.1999999993,
+          "resume_ms": 881483.3999999985
+        },
+        {
+          "duration_ms": 516.3,
+          "before_ms": 888235.3999999985,
+          "resume_ms": 888751.6999999993
+        }
+      ],
+      "final_stop": {
+        "hostMs": 949494.5,
+        "event": "tx",
+        "detail": "STOP"
+      },
+      "stop_wait_ms": 3011.2,
+      "rx_resumed_before_fault_ms": 2051.3,
+      "last_rx_age_at_fault_ms": 39.1,
+      "final_stop_ack_observed": false,
+      "five_seconds_before_gap": {
+        "rx_bytes_per_s": 217.2,
+        "tx_bytes_per_s": 35.4,
+        "tx_commands": 20,
+        "tx_command_counts": {
+          "PING": 2,
+          "MOVE": 8,
+          "STOP": 7,
+          "KEEP": 3
+        }
+      },
+      "non_ascii_bytes": [
+        {
+          "hostMs": 846088.1999999993,
+          "byte": "0xf8"
+        }
+      ],
+      "unknown_lines": [
+        {
+          "hostMs": 846144.3999999985,
+          "line": "KEEP"
+        }
+      ],
+      "fault_window_rx_lines": [
+        {
+          "hostMs": 946664.1999999993,
+          "line": "TOF,3008843,1,1,95,9,12,0"
+        },
+        {
+          "hostMs": 946754,
+          "line": "ACK,STOP"
+        },
+        {
+          "hostMs": 946866.5,
+          "line": "TOF,3009043,1,1,101,9,10,0"
+        },
+        {
+          "hostMs": 946945.1999999993,
+          "line": "ACK,MOVE"
+        },
+        {
+          "hostMs": 947069.1999999993,
+          "line": "TOF,3009243,1,1,107,9,6,0"
+        },
+        {
+          "hostMs": 947136.799999997,
+          "line": "ACK,STOP"
+        },
+        {
+          "hostMs": 947249.0999999978,
+          "line": "ACK,MOVE"
+        },
+        {
+          "hostMs": 947361.5999999978,
+          "line": "ACK,KEEP"
+        },
+        {
+          "hostMs": 950454.3999999985,
+          "line": "TOF,3012243,1,1,103,9,6,0"
+        },
+        {
+          "hostMs": 950456.799999997,
+          "line": "ATEL,3012431,0,1,0,-11,0,0,-104643,104644,0,0,0,12197"
+        },
+        {
+          "hostMs": 950457.799999997,
+          "line": "TOF,3012443,1,1,101,9,2,0"
+        },
+        {
+          "hostMs": 950467.299999997,
+          "line": "TOF,3012643,1,1,101,9,40,0"
+        },
+        {
+          "hostMs": 950673.6999999993,
+          "line": "TOF,3012843,1,1,96,9,38,0"
+        },
+        {
+          "hostMs": 950757.3999999985,
+          "line": "ATEL,3012931,0,1,0,0,0,0,-104643,104644,0,0,0,12193"
+        },
+        {
+          "hostMs": 950866,
+          "line": "TOF,3013043,1,1,106,9,36,0"
+        },
+        {
+          "hostMs": 951085.799999997,
+          "line": "TOF,3013243,1,1,98,9,32,0"
+        },
+        {
+          "hostMs": 951321.0999999978,
+          "line": "ATEL,3013431,0,1,0,3,0,0,-104644,104644,0,0,0,12192"
+        },
+        {
+          "hostMs": 951324.0999999978,
+          "line": "TOF,3013443,1,1,100,9,30,0"
+        },
+        {
+          "hostMs": 951465.5999999978,
+          "line": "TOF,3013643,1,1,104,9,27,0"
+        },
+        {
+          "hostMs": 951679.1999999993,
+          "line": "TOF,3013843,1,1,103,9,23,0"
+        },
+        {
+          "hostMs": 951759.3999999985,
+          "line": "ATEL,3013931,0,1,0,2,0,0,-104643,104644,0,0,0,12183"
+        },
+        {
+          "hostMs": 951881.6999999993,
+          "line": "TOF,3014043,1,1,103,9,22,0"
+        },
+        {
+          "hostMs": 952061.5999999978,
+          "line": "TOF,3014243,1,1,97,9,19,0"
+        },
+        {
+          "hostMs": 952299.5,
+          "line": "ATEL,3014431,0,1,0,-1,0,0,-104644,104644,0,0,0,12181"
+        },
+        {
+          "hostMs": 952301.6999999993,
+          "line": "TOF,3014443,1,1,100,9,16,0"
+        },
+        {
+          "hostMs": 952466.5999999978,
+          "line": "TOF,3014643,1,1,101,9,12,0"
+        }
+      ],
+      "fault_window_tx": [
+        {
+          "hostMs": 946720.5999999978,
+          "event": "tx",
+          "detail": "STOP"
+        },
+        {
+          "hostMs": 946912.3999999985,
+          "event": "tx",
+          "detail": "MOVE,-30,0,0"
+        },
+        {
+          "hostMs": 947107.5999999978,
+          "event": "tx",
+          "detail": "STOP"
+        },
+        {
+          "hostMs": 947229.8999999985,
+          "event": "tx",
+          "detail": "MOVE,30,0,0"
+        },
+        {
+          "hostMs": 947333.3999999985,
+          "event": "tx",
+          "detail": "KEEP"
+        },
+        {
+          "hostMs": 947731.5,
+          "event": "tx",
+          "detail": "KEEP"
+        },
+        {
+          "hostMs": 949494.5,
+          "event": "tx",
+          "detail": "STOP"
+        }
+      ],
+      "startup_health_queries": []
+    },
+    {
+      "source": "C:\\Users\\28097\\Downloads\\bm50-link-1792681250376.json",
+      "archive": "D:\\my_code\\my_code\\大创\\vgt6_module_test\\validation\\bm50-link-1792681250376.json",
+      "sha256": "f573f314c62e52fa4880d0bb1066f5ac971cb6571b088298c6734da7e009dd14",
+      "mode": "direct_web_serial",
+      "port": {
+        "usbProductId": 29987,
+        "usbVendorId": 6790
+      },
+      "fault": {
+        "hostMs": 1014894.0999999978,
+        "event": "fault",
+        "detail": "车端应答超时：STOP；USB串口打开不代表无线回传正常"
+      },
+      "stats_whole_session": {
+        "rxBytes": 5514,
+        "rxLines": 184,
+        "badBytes": 0,
+        "timeouts": 1,
+        "txCommands": 84
+      },
+      "traceDropped": 0,
+      "retained_span_ms": 26504.6,
+      "largest_rx_gaps": [
+        {
+          "duration_ms": 3116.7,
+          "before_ms": 1011152.5,
+          "resume_ms": 1014269.1999999993
+        },
+        {
+          "duration_ms": 1508.1,
+          "before_ms": 990008.3999999985,
+          "resume_ms": 991516.5
+        },
+        {
+          "duration_ms": 900.5,
+          "before_ms": 989085.799999997,
+          "resume_ms": 989986.299999997
+        },
+        {
+          "duration_ms": 393.8,
+          "before_ms": 1005953.3999999985,
+          "resume_ms": 1006347.1999999993
+        },
+        {
+          "duration_ms": 312.6,
+          "before_ms": 992127.0999999978,
+          "resume_ms": 992439.6999999993
+        }
+      ],
+      "final_stop": {
+        "hostMs": 1011893,
+        "event": "tx",
+        "detail": "STOP"
+      },
+      "stop_wait_ms": 3001.1,
+      "rx_resumed_before_fault_ms": 624.9,
+      "last_rx_age_at_fault_ms": 116.0,
+      "final_stop_ack_observed": false,
+      "five_seconds_before_gap": {
+        "rx_bytes_per_s": 225.2,
+        "tx_bytes_per_s": 44.6,
+        "tx_commands": 23,
+        "tx_command_counts": {
+          "STOP": 8,
+          "MOVE": 11,
+          "KEEP": 4
+        }
+      },
+      "non_ascii_bytes": [],
+      "unknown_lines": [
+        {
+          "hostMs": 988725.5999999978,
+          "line": "SPEEDLIMIT,160"
+        },
+        {
+          "hostMs": 1014269.1999999993,
+          "line": "3076128,1,1,689,9,14,0"
+        }
+      ],
+      "fault_window_rx_lines": [
+        {
+          "hostMs": 1010353.3999999985,
+          "line": "TOF,3072528,1,1,192,9,23,0"
+        },
+        {
+          "hostMs": 1010544.5999999978,
+          "line": "TOF,3072728,1,1,230,9,20,0"
+        },
+        {
+          "hostMs": 1010545.5999999978,
+          "line": "ACK,KEEP"
+        },
+        {
+          "hostMs": 1010746.8999999985,
+          "line": "TOF,3072928,1,1,277,9,17,0"
+        },
+        {
+          "hostMs": 1010804.6999999993,
+          "line": "ATEL,3072975,1,1,0,-562,-137,0,-104459,104459,0,0,1,12159"
+        },
+        {
+          "hostMs": 1010807.3999999985,
+          "line": "ACK,MOVE"
+        },
+        {
+          "hostMs": 1010949.799999997,
+          "line": "TOF,3073128,1,1,308,9,15,0"
+        },
+        {
+          "hostMs": 1010951.8999999985,
+          "line": "ACK,KEEP"
+        },
+        {
+          "hostMs": 1011050.6999999993,
+          "line": "ACK,MOVE"
+        },
+        {
+          "hostMs": 1011152.5,
+          "line": "TOF,3073328,1,1,333,9,8,0"
+        },
+        {
+          "hostMs": 1011152.5,
+          "line": "ACK,MOVE"
+        },
+        {
+          "hostMs": 1014269.1999999993,
+          "line": "3076128,1,1,689,9,14,0"
+        },
+        {
+          "hostMs": 1014270.8999999985,
+          "line": "TOF,3076328,1,1,691,9,8,0"
+        },
+        {
+          "hostMs": 1014272.799999997,
+          "line": "ATEL,3076336,0,1,0,2,0,0,-105397,105466,0,0,0,12180"
+        },
+        {
+          "hostMs": 1014377.5999999978,
+          "line": "TOF,3076528,1,1,695,9,9,0"
+        },
+        {
+          "hostMs": 1014583.1999999993,
+          "line": "TOF,3076728,1,1,683,9,6,0"
+        },
+        {
+          "hostMs": 1014777.0999999978,
+          "line": "ATEL,3076836,0,1,0,0,0,0,-105396,105466,0,0,0,12123"
+        },
+        {
+          "hostMs": 1014778.0999999978,
+          "line": "TOF,3076928,1,1,688,9,3,0"
+        }
+      ],
+      "fault_window_tx": [
+        {
+          "hostMs": 1010524,
+          "event": "tx",
+          "detail": "KEEP"
+        },
+        {
+          "hostMs": 1010768.5999999978,
+          "event": "tx",
+          "detail": "MOVE,-30,-30,0"
+        },
+        {
+          "hostMs": 1010925.1999999993,
+          "event": "tx",
+          "detail": "KEEP"
+        },
+        {
+          "hostMs": 1011026,
+          "event": "tx",
+          "detail": "MOVE,-30,0,0"
+        },
+        {
+          "hostMs": 1011120.5999999978,
+          "event": "tx",
+          "detail": "MOVE,-30,-30,0"
+        },
+        {
+          "hostMs": 1011315.3999999985,
+          "event": "tx",
+          "detail": "MOVE,-30,0,0"
+        },
+        {
+          "hostMs": 1011893,
+          "event": "tx",
+          "detail": "STOP"
+        }
+      ],
+      "startup_health_queries": [
+        {
+          "hostMs": 988545.6999999993,
+          "line": "VER,VGT6_BM50_ATTITUDE_R24"
+        },
+        {
+          "hostMs": 988648.0999999978,
+          "line": "UART,115200,42000000,364,0x04,0,0,7,0,0"
+        },
+        {
+          "hostMs": 988681,
+          "line": "LINK,12761,1841,0,0,7,0"
+        },
+        {
+          "hostMs": 988703.1999999993,
+          "line": "STACK,4096,2600,1496,1"
+        },
+        {
+          "hostMs": 989085.799999997,
+          "line": "STACK,4096,2600,1496,1"
+        }
+      ]
+    }
+  ]
+}

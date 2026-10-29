@@ -1,27 +1,19 @@
 #include "app.h"
 
-#include "battery.h"
 #include "display.h"
-#include "ps2_control.h"
-#include "vehicle.h"
+#include "servo_test.h"
+#include "servo_link.h"
 
 void App_Init(void)
 {
-  uint8_t vehicle_ready = Vehicle_Init();
-  (void)Battery_Init();
-
-  Ps2Control_Init();
+  ServoTest_Init();
+  ServoLink_Init();
   Display_Init();
-  if (vehicle_ready == 0U)
-  {
-    Vehicle_Stop();
-  }
 }
 
 void App_Process(void)
 {
-  Ps2Control_Process();
-  Vehicle_Process();
-  Battery_Process();
+  ServoLink_Process();
+  ServoTest_Process();
   Display_Process();
 }

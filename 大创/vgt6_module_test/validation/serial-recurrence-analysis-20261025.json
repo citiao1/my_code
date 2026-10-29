@@ -1,0 +1,47 @@
+{
+  "capture": "C:\\Users\\28097\\Desktop\\bm50-link-1792935768557.json",
+  "archive_sha256": "02392d2c33c0788bd7cf0f24fa378a3a447bbef7e459d449ad9f5633e564abc7",
+  "clientVersion": "keep-watchdog-v38",
+  "stats": {
+    "rxBytes": 2127,
+    "rxLines": 62,
+    "badBytes": 9,
+    "timeouts": 1,
+    "txCommands": 38,
+    "keepAckMisses": 0
+  },
+  "first_bad_chunks": [
+    {
+      "hostMs": 16133.599999999977,
+      "hex": "fe"
+    },
+    {
+      "hostMs": 16133.700000000012,
+      "hex": "7ffcfe82ecfd33f02c30e1"
+    }
+  ],
+  "largest_rx_gap_ms": 1429.0,
+  "final_STOP_tx_ms": 18147.900000000023,
+  "fault_ms": 21156.20000000001,
+  "stop_wait_ms": 3008.2999999999884,
+  "last_rx_age_ms": 117.40000000002328,
+  "timeout_event": [
+    {
+      "hostMs": 21156.099999999977,
+      "event": "command_timeout",
+      "detail": {
+        "command": "STOP",
+        "rxAgeMs": 117.29999999998836,
+        "writeDone": true,
+        "motionReport": {
+          "receivedAt": 20850.29999999999,
+          "tick": 998829,
+          "mode": 0,
+          "imuReady": true,
+          "enabled": false
+        }
+      }
+    }
+  ],
+  "method": "Original RX bytes retained; no repair, retransmission or hardware action."
+}

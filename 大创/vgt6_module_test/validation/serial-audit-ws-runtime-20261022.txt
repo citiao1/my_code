@@ -1,0 +1,112 @@
+[VOFA] TCP endpoint: 127.0.0.1:11347
+[WEB] WebSocket endpoint: ws://127.0.0.1:18766
+[SERIAL] opened: COM9 @ 115200; verifying MCU
+[HW->] STOP
+opening handshake failed
+Traceback (most recent call last):
+  File "D:\my_code\my_code\大创\pid-tuning-adapter\.venv\Lib\site-packages\websockets\http11.py", line 138, in parse
+    request_line = yield from parse_line(read_line)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\my_code\my_code\大创\pid-tuning-adapter\.venv\Lib\site-packages\websockets\http11.py", line 309, in parse_line
+    line = yield from read_line(MAX_LINE_LENGTH)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\my_code\my_code\大创\pid-tuning-adapter\.venv\Lib\site-packages\websockets\streams.py", line 46, in read_line
+    raise EOFError(f"stream ends after {p} bytes, before end of line")
+EOFError: stream ends after 0 bytes, before end of line
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\my_code\my_code\大创\pid-tuning-adapter\.venv\Lib\site-packages\websockets\server.py", line 545, in parse
+    request = yield from Request.parse(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\my_code\my_code\大创\pid-tuning-adapter\.venv\Lib\site-packages\websockets\http11.py", line 140, in parse
+    raise EOFError("connection closed while reading HTTP request line") from exc
+EOFError: connection closed while reading HTTP request line
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\my_code\my_code\大创\pid-tuning-adapter\.venv\Lib\site-packages\websockets\asyncio\server.py", line 356, in conn_handler
+    await connection.handshake(
+  File "D:\my_code\my_code\大创\pid-tuning-adapter\.venv\Lib\site-packages\websockets\asyncio\server.py", line 207, in handshake
+    raise self.protocol.handshake_exc
+websockets.exceptions.InvalidMessage: did not receive a valid HTTP request
+[WEB] console connected
+[HW<-] ACK,STOP
+[HW->] DISARM
+[HW<-] ACK,DISARM
+[HW->] TEL,0
+[HW<-] ACK,TEL,0
+[HW->] TOF,0
+[HW<-] ACK,TOF,0
+[HW->] PING
+[HW<-] PONG
+[HW->] STOP
+[HW<-] ACK,STOP
+[HW->] DISARM
+[HW<-] ACK,DISARM
+[HW->] TEL,0
+[HW<-] ACK,TEL,0
+[HW->] TOF,0
+[HW<-] ACK,TOF,0
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] PING
+[HW<-] PONG
+[HW->] VER
+[HW<-] VER,VGT6_BM50_ATTITUDE_R24
+[HW->] UART
+[HW<-] UART,115200,42000000,364,0x00,0,0,0,0,0
+[HW->] LINK
+[HW<-] LINK,5120,749,0,0,0,0
+[HW->] LINKQ
+[HW<-] LINKQ,0,0,127,0
+[HW->] SPEEDSTATUS
+[HW->] ANGLESTATUS
+[HW->] STOP
+[WEB] console disconnected

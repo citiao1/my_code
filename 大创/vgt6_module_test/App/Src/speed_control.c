@@ -8,6 +8,9 @@
 #include "mecanum.h"
 #include "motor.h"
 #include "pid.h"
+#include "front_guard.h"
+#include "telemetry.h"
+#include "timebase.h"
 #include "stm32f4xx_hal.h"
 
 #define SPEED_CONTROL_PERIOD_MS       10U
@@ -21,6 +24,9 @@ static PidController speed_pid[SPEED_CONTROL_CHANNEL_COUNT];
 static float filtered_rpm[SPEED_CONTROL_CHANNEL_COUNT];
 static uint32_t last_drive_tick;
 static uint8_t drive_watchdog_enabled;
+static uint8_t drive_mode;
+static int16_t requested_forward, requested_left, requested_rotation;
+static int32_t requested_wheel[4];
 static const float default_ki[4] = {0.0991f, 0.0998f, 0.0998f, 0.1008f};
 
 static uint8_t SpeedControl_IsValid(MotorChannel channel)
@@ -51,6 +57,7 @@ static void SpeedControl_ResetControllers(void)
   {
     Pid_Reset(&speed_pid[index]);
     speed_state.output_percent[index] = 0;
+    speed_state.output_mpercent[index] = 0;
   }
 }
 
@@ -72,6 +79,8 @@ void SpeedControl_Init(void)
   }
   last_drive_tick = HAL_GetTick();
   drive_watchdog_enabled = 0U;
+  drive_mode = 0U;
+  memset(requested_wheel, 0, sizeof(requested_wheel));
 }
 
 void SpeedControl_Stop(void)
@@ -79,6 +88,10 @@ void SpeedControl_Stop(void)
   uint32_t index;
 
   speed_state.enabled = 0U;
+  speed_state.saturated_mask = speed_state.tof_limited = 0U;
+  memset(requested_wheel, 0, sizeof(requested_wheel));
+  requested_forward = requested_left = requested_rotation = 0;
+  drive_mode = 0U;
   drive_watchdog_enabled = 0U;
   for (index = 0U; index < SPEED_CONTROL_CHANNEL_COUNT; ++index)
   {
@@ -120,6 +133,9 @@ uint8_t SpeedControl_SetTarget(MotorChannel channel, int32_t rpm)
     return 0U;
   }
   speed_state.target_rpm[(uint32_t)channel] = SpeedControl_ClampTarget(rpm);
+  if (drive_mode) memcpy(requested_wheel, speed_state.target_rpm, sizeof(requested_wheel));
+  drive_mode = 0U;
+  requested_wheel[(uint32_t)channel] = SpeedControl_ClampTarget(rpm);
   last_drive_tick = HAL_GetTick();
   drive_watchdog_enabled = 0U;
   return 1U;
@@ -135,7 +151,13 @@ uint8_t SpeedControl_SetDrive(int16_t forward_rpm,
   {
     return 0U;
   }
-  Mecanum_CalculateTargets(forward_rpm, left_rpm, rotate_rpm,
+  requested_forward = forward_rpm;
+  requested_left = left_rpm;
+  requested_rotation = rotate_rpm;
+  drive_mode = 1U;
+  /* Rotate the body frame by 180 degrees. Hardware channel and encoder
+   * polarities stay physical; positive yaw remains CCW. */
+  Mecanum_CalculateTargets((int16_t)-forward_rpm, (int16_t)-left_rpm, rotate_rpm,
                            speed_state.target_limit_rpm, &targets);
   speed_state.target_rpm[0] = targets.motor1_right_front;
   speed_state.target_rpm[1] = targets.motor2_left_front;
@@ -144,6 +166,60 @@ uint8_t SpeedControl_SetDrive(int16_t forward_rpm,
   last_drive_tick = HAL_GetTick();
   drive_watchdog_enabled = 1U;
   return 1U;
+}
+
+uint8_t SpeedControl_KeepAlive(void)
+{
+  if (!speed_state.enabled || drive_mode) return 0U;
+  last_drive_tick = HAL_GetTick();
+  drive_watchdog_enabled = 1U;
+  return 1U;
+}
+
+/* A stale lease cannot be revived by heartbeat alone. A new deliberate DRV
+ * command is required after the 300 ms watchdog, STOP or DISARM. */
+uint8_t SpeedControl_DriveKeepAlive(void)
+{
+  uint32_t now = HAL_GetTick();
+  if (!speed_state.enabled || !drive_mode || !drive_watchdog_enabled ||
+      now - last_drive_tick > SPEED_CONTROL_WATCHDOG_MS) return 0U;
+  last_drive_tick = now;
+  return 1U;
+}
+
+static void apply_front_guard(void)
+{
+  uint16_t limit = FrontGuard_ForwardLimit(speed_state.target_limit_rpm);
+  uint32_t i;
+  speed_state.tof_limited = 0U;
+  if (drive_mode)
+  {
+    MecanumWheelTargets targets;
+    int16_t forward = requested_forward;
+    if (forward > (int16_t)limit)
+    {
+      forward = (int16_t)limit;
+      speed_state.tof_limited = 1U;
+    }
+    Mecanum_CalculateTargets((int16_t)-forward, (int16_t)-requested_left,
+        requested_rotation, speed_state.target_limit_rpm, &targets);
+    speed_state.target_rpm[0] = targets.motor1_right_front;
+    speed_state.target_rpm[1] = targets.motor2_left_front;
+    speed_state.target_rpm[2] = targets.motor3_left_rear;
+    speed_state.target_rpm[3] = targets.motor4_right_rear;
+    return;
+  }
+  /* Raw single-wheel tests keep channel isolation. Scale their entire
+   * requested vector rather than starting the other three wheels. */
+  {
+    int32_t forward_x4 = -(requested_wheel[0] + requested_wheel[1] +
+                            requested_wheel[2] + requested_wheel[3]);
+    speed_state.tof_limited = forward_x4 > (int32_t)limit * 4;
+    for (i = 0U; i < 4U; ++i)
+      speed_state.target_rpm[i] = speed_state.tof_limited ?
+          requested_wheel[i] * (int32_t)limit * 4 / forward_x4 :
+          SpeedControl_ClampTarget(requested_wheel[i]);
+  }
 }
 
 uint8_t SpeedControl_SetPid(MotorChannel channel, float kp, float ki,
@@ -180,6 +256,7 @@ uint8_t SpeedControl_SetTargetLimit(uint16_t limit_rpm)
   {
     speed_state.target_rpm[index] =
         SpeedControl_ClampTarget(speed_state.target_rpm[index]);
+    requested_wheel[index] = SpeedControl_ClampTarget(requested_wheel[index]);
   }
   return 1U;
 }
@@ -190,17 +267,16 @@ void SpeedControl_Process(uint32_t elapsed_ms)
   ChassisTestSnapshot chassis;
   uint32_t now;
   uint32_t index;
+  uint32_t tick_ms, tick_us;
 
-  if ((elapsed_ms < SPEED_CONTROL_PERIOD_MS) ||
-      (speed_state.enabled == 0U))
+  if (elapsed_ms < SPEED_CONTROL_PERIOD_MS)
   {
     return;
   }
   chassis = ChassisTest_GetSnapshot();
-  if (chassis.armed == 0U)
+  if (speed_state.enabled && chassis.armed == 0U)
   {
     SpeedControl_Stop();
-    return;
   }
   now = HAL_GetTick();
   if ((drive_watchdog_enabled != 0U) &&
@@ -209,9 +285,26 @@ void SpeedControl_Process(uint32_t elapsed_ms)
     for (index = 0U; index < SPEED_CONTROL_CHANNEL_COUNT; ++index)
     {
       speed_state.target_rpm[index] = 0;
+      requested_wheel[index] = 0;
     }
   }
+  if (drive_watchdog_enabled && now - last_drive_tick > SPEED_CONTROL_WATCHDOG_MS)
+    requested_forward = requested_left = requested_rotation = 0;
+  if (speed_state.enabled) apply_front_guard();
+  Timebase_Capture(&tick_ms, &tick_us);
+  speed_state.saturated_mask = 0U;
   encoder = Encoder_GetSnapshot();
+  /* A watchdog-tracked single-wheel trial must stop on gross feedback fault.
+   * This is an abort guard, not a new tunable operating ceiling. */
+  if (speed_state.enabled && drive_watchdog_enabled && !drive_mode)
+  {
+    for (index = 0U; index < 4U; ++index)
+      if (encoder.rpm_x10[index] > 3000 || encoder.rpm_x10[index] < -3000)
+      {
+        ChassisTest_Stop();
+        break;
+      }
+  }
   for (index = 0U; index < SPEED_CONTROL_CHANNEL_COUNT; ++index)
   {
     float target = (float)speed_state.target_rpm[index];
@@ -233,6 +326,15 @@ void SpeedControl_Process(uint32_t elapsed_ms)
     speed_state.actual_rpm_x10[index] =
         (int32_t)((actual >= 0.0f) ? (actual * 10.0f + 0.5f) :
                                       (actual * 10.0f - 0.5f));
+    speed_state.output_mpercent[index] = 0;
+    if (!speed_state.enabled)
+    {
+      /* Disabled-loop logging observes feedback only. A timed raw JOG may
+       * own the motor outputs; do not overwrite it from the logger path. */
+      Pid_Reset(&speed_pid[index]);
+      speed_state.output_percent[index] = 0;
+      continue;
+    }
     if (fabsf(target) < SPEED_CONTROL_STOP_EPSILON)
     {
       Pid_Reset(&speed_pid[index]);
@@ -242,6 +344,9 @@ void SpeedControl_Process(uint32_t elapsed_ms)
     }
     output = Pid_Update(&speed_pid[index], target, actual,
                         (float)elapsed_ms / 1000.0f);
+    if (fabsf(output) >= SPEED_CONTROL_OUTPUT_LIMIT - 0.001f)
+      speed_state.saturated_mask |= (uint8_t)(1U << index);
+    speed_state.output_mpercent[index] = (int32_t)lroundf(output * 1000.0f);
     direction = (output >= 0.0f) ? 1 : -1;
     duty = (uint8_t)(fabsf(output) + 0.5f);
     if (duty == 0U)
@@ -251,12 +356,15 @@ void SpeedControl_Process(uint32_t elapsed_ms)
     else if (Motor_Run((MotorChannel)index, direction, duty) == 0U)
     {
       speed_state.output_percent[index] = 0;
+      speed_state.output_mpercent[index] = 0;
       continue;
     }
     speed_state.output_percent[index] =
         (output >= 0.0f) ? (int32_t)(output + 0.5f) :
                            (int32_t)(output - 0.5f);
+    speed_state.output_mpercent[index] = speed_state.output_percent[index] * 1000;
   }
+  Telemetry_Wlog_Record(&speed_state, &encoder, tick_ms, tick_us);
 }
 
 SpeedControlSnapshot SpeedControl_GetSnapshot(void)

@@ -19,8 +19,10 @@ function fixture(options = {}) {
     // Observable wheel-derived lateral bias, not unobservable ground slip.
     if (Math.hypot(forward, left) > 1) left += options.lateralBias ?? 0;
     const rotation = rate * 0.4;
-    const wheels = [forward + left + rotation, forward - left - rotation,
-      forward + left - rotation, forward - left + rotation];
+    const f = options.frontReversed ? -forward : forward;
+    const l = options.frontReversed ? -left : left;
+    const wheels = [f + l + rotation, f - l - rotation,
+      f + l - rotation, f - l + rotation];
     if (!options.blocked) counts = counts.map((v, i) => v + wheels[i] * 380 * dt / 60);
     yaw = k.wrap(yaw + rate * dt);
   }
@@ -59,6 +61,16 @@ function fixture(options = {}) {
 }
 const config = { kind: 'translation', rpm: 30, distance: 0.3, angle: 30,
   headingOffset: 0, confirmed: true };
+
+test('R20 reversed front uses physical encoders for translation, strafe and wrap', async () => {
+  assert.equal(k.bodyDelta([-380,-380,-380,-380],380,true).forward,Math.PI*.127);
+  assert.equal(k.bodyDelta([-380,380,-380,380],380,true).left,Math.PI*.127);
+  for(const angle of [0,45,90,180,-90]) {
+    const f=fixture({frontReversed:true,yaw:175});
+    const result=await k.run(f.port,{...config,angle,frontReversed:true});
+    assert.ok(result.residualM<.05,`${angle}: ${result.residualM}`);
+  }
+});
 
 test('signed RF/LF/LR/RR inverse cancels pure rotation, not strafe', () => {
   const scale = Math.PI * 0.127;

@@ -1,8 +1,9 @@
 param(
-    [Parameter(Mandatory = $true)]
     [ValidateSet("serial", "ble")]
-    [string]$Transport,
+    [string]$Transport = "serial",
     [string]$Port,
+    [ValidateRange(1200, 2000000)]
+    [int]$Baud = 115200,
     [string]$Device
 )
 
@@ -16,7 +17,7 @@ $BundledPython = Join-Path $env:USERPROFILE ".cache\codex-runtimes\codex-primary
 # Restart only the bridge from this exact project; unrelated listeners
 # must never be terminated simply because they use the same port.
 $BridgeScript = (Resolve-Path (Join-Path $BridgeDir "motor_vofa_bridge.py")).Path
-$BridgeScriptPattern = '(?:^|\s|")' + [regex]::Escape($BridgeScript) + '(?:"|\s|$)'
+$BridgeScriptPattern = '(?:^|\s|")' + [regex]::Escape($BridgeScript.Replace('/', '\')) + '(?:"|\s|$)'
 foreach ($BridgeListenPort in @(8766, 1347)) {
     $ExistingListener = Get-NetTCPConnection -LocalPort $BridgeListenPort -State Listen -ErrorAction SilentlyContinue
     if ($ExistingListener) {
@@ -27,7 +28,7 @@ foreach ($BridgeListenPort in @(8766, 1347)) {
         if ($ExistingProcesses.Count -ne $ExistingIds.Count -or
             @($ExistingProcesses | Where-Object {
                 $_.Name -notmatch '^python(w)?\.exe$' -or
-                $_.CommandLine -notmatch $BridgeScriptPattern
+                ($_.CommandLine -replace '/', '\') -notmatch $BridgeScriptPattern
             }).Count -ne 0) {
             throw "Port $BridgeListenPort is used by another program (PID $($ExistingIds -join ', ')). Close that program first."
         }
@@ -70,7 +71,7 @@ if (-not $WebPortInUse) {
         -WorkingDirectory $WebRoot -WindowStyle Hidden -PassThru
 }
 
-$BridgeArgs = @("--transport", $Transport)
+$BridgeArgs = @("--transport", $Transport, "--baud", "$Baud")
 if ($Port) { $BridgeArgs += @("--port", $Port) }
 if ($Device) { $BridgeArgs += @("--device", $Device) }
 
@@ -78,11 +79,11 @@ Write-Host ""
 Write-Host "Web console: http://127.0.0.1:8088"
 Write-Host "Transport:  $Transport"
 Write-Host "Bridge: BM50_ACK_R3 (LF resync; commands wait for MCU replies)."
-Write-Host "BLE scan accepts FFE0 advertisements and named UART modules."
+Write-Host "Serial baud: $Baud (8N1); auto-selects a unique CH340/CH910 USB port."
 Write-Host "Close this window to stop the bridge."
 Write-Host ""
 
-Start-Process "http://127.0.0.1:8088"
+Start-Process "http://127.0.0.1:8088/?transport=bridge"
 try {
     & $VenvPython (Join-Path $BridgeDir "motor_vofa_bridge.py") @BridgeArgs
 } finally {

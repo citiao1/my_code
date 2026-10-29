@@ -1,0 +1,34 @@
+{
+  "reason": "First run used upper middle element for even sample count; raw evidence is unchanged. Recomputed with statistics.median.",
+  "raw_sha256": "3d8f9f6574045ef103b6aeb56a4d9221137b77d88f3e0bac4c7c8e7658d28d88",
+  "phases": [
+    {
+      "name": "off",
+      "median_ms": 172.0,
+      "p95_ms": 329.0,
+      "max_ms": 344.0,
+      "n": 24
+    },
+    {
+      "name": "tof",
+      "median_ms": 219.0,
+      "p95_ms": 485.0,
+      "max_ms": 562.0,
+      "n": 24
+    },
+    {
+      "name": "tel",
+      "median_ms": 406.5,
+      "p95_ms": 859.0,
+      "max_ms": 1078.0,
+      "n": 24
+    },
+    {
+      "name": "both",
+      "median_ms": 633.0,
+      "p95_ms": 2047.0,
+      "max_ms": 3515.0,
+      "n": 24
+    }
+  ]
+}

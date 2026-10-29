@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-function consoleFixture() {
+function consoleFixture(options={}) {
   class Element {
     constructor(value = '') { this.value = value; this.listeners = {}; this.textContent = ''; }
     addEventListener(name, callback) { this.listeners[name] = callback; }
@@ -31,6 +31,7 @@ function consoleFixture() {
   const intervals = [];
   const windowListeners = {};
   const sent = [];
+  const timeouts = [];
   let now = 10000;
   let respond = true;
   let fail = '';
@@ -47,20 +48,21 @@ function consoleFixture() {
       queueMicrotask(() => {
         const command = request.command;
         const replies = {
-          VER: 'VER,VGT6_BM50_ATTITUDE_R16', LINK: 'LINK,42,3,0,0,0,0',
+          VER: 'VER,VGT6_BM50_ATTITUDE_R17', LINK: 'LINK,42,3,0,0,0,0',
           UART: 'UART,9600,42000000,4375,0x00,0,0,0,0,0',
           STACK: 'STACK,4096,1024,3072,1',
           SPEEDLIMIT: 'SPEEDLIMIT,160',
           SPEEDSTATUS: 'TEL,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12000,0,0,1,0,0,0',
           PIDGET: 'PID,1.2,0.2,0,1.2,0.2,0,1.2,0.2,0,1.2,0.2,0',
           ARM: 'ACK,ARM,WHEELS_OFF_GROUND', STOP: 'ACK,STOP',
-          CAPS: 'CAPS,ATTITUDE_R16,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE',
+          CAPS: 'CAPS,ATTITUDE_R17,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE',
           PS2STATUS: 'PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10',
           PS2RAW: 'PS2RAW,FF,73,5A,FF,FF,7F,80,7F,80,1,1',
           YAWGET: 'YAWPID,0.1500,2.5000,60,80,20',
           HEADGET: 'HEADPID,6.0000,1.2500,80,20,D_MEAS',
           ANGLESTATUS: 'ATEL,100,0,1,0,0,0,0,0,0,0,0,0,12000',
           'HLOG,STATUS': 'HLOG,STATUS,0,0,1024,0,0',
+          TOF: 'TOF,100,1,1,1234,9,0,0',
         };
         const reply = command === fail ? 'ERR,SPEED,ARM_FIRST' :
           replies[command] || `ACK,${command.startsWith('SPD,') ? 'SPD' : command.startsWith('PID,') ? 'PID' : command.startsWith('YAW,') ? 'YAW' : command}`;
@@ -75,10 +77,14 @@ function consoleFixture() {
     }
   }
   context = vm.createContext({
-    console, URL, URLSearchParams, WebSocket,
-    Date: { now: () => now },
-    setTimeout: () => ({}), clearTimeout: () => {},
-    setInterval: (callback) => intervals.push(callback),
+    console, URL, URLSearchParams, WebSocket, TextEncoder, performance,
+    navigator: {serial:options.port?{
+      getPorts:async()=>options.authorized?[options.port]:[],
+      requestPort:async()=>{if(options.forbidChooser)throw new Error('unexpected chooser');return options.port;},
+    }:undefined},
+    Date: class extends Date { static now(){return now;} },
+    setTimeout: (_callback, delay) => { timeouts.push(delay); return {}; }, clearTimeout: () => {},
+    setInterval: (callback) => intervals.push(callback), clearInterval:()=>{},
     localStorage: { getItem: () => '', setItem: () => {} },
     window: {
       location: { protocol: 'http:', hostname: '127.0.0.1', search: '' },
@@ -88,7 +94,8 @@ function consoleFixture() {
       activeElement: null,
       querySelector: (selector) => {
         if (!elements.has(selector)) {
-          const value = selector === '#speedLimitInput' ? '200' :
+          const value = selector === '#transportSelect' ? (options.port?'serial':'bridge') :
+            selector === '#speedLimitInput' ? '200' :
             selector === '#driveSpeed' ? '30' :
             selector === '#driveTurnRate' ? '20' :
             selector === '#chartLoop' ? 'rate' : '0';
@@ -101,11 +108,13 @@ function consoleFixture() {
     },
   });
   const source = fs.readFileSync(path.join(__dirname, '..', 'touch-remote.js'), 'utf8');
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'link-journal.js'), 'utf8'), context);
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'chassis-test.js'), 'utf8'), context);
+  if(options.port)vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'serial-transport.js'), 'utf8'),context);
   vm.runInContext(source, context);
   vm.runInContext('hardwareConnected = true; bridgeReady = true; firmwareCompatible = true; stackHealthy = true; connecting = false; updateUi()', context);
   return {
-    context, sent, rows, elements,
+    context, sent, rows, elements, timeouts,
     eval: (source) => vm.runInContext(source, context),
     line: (line) => { context.testLine = line; vm.runInContext('handleLine(testLine)', context); },
     advance: (ms) => { now += ms; intervals.forEach((callback) => callback()); },
@@ -115,6 +124,278 @@ function consoleFixture() {
     flush: async () => { for (let i = 0; i < 12; i++) await new Promise(setImmediate); },
   };
 }
+
+test('all four wheel target/feedback values reach the chart, with independent wheel selection',()=>{
+  const f=consoleFixture();
+  const tel='TEL,100,0,0,10,20,30,40,0,0,0,0,110,220,330,440,0,0,0,0,12000,0,0,1,0,0,1';
+  f.eval("document.querySelector('#chartLoop').value='wheel_all'");f.line(tel);
+  assert.deepEqual(JSON.parse(f.eval('JSON.stringify(chartSamples[0])')),{tick:100,target:[10,20,30,40],actual:[11,22,33,44]});
+  for(let i=1;i<=4;i++){
+    f.eval(`chartSamples.length=0;document.querySelector('#chartLoop').value='wheel${i}'`);f.line(tel);
+    assert.equal(f.eval('chartSamples[0].target'),i*10);assert.equal(f.eval('chartSamples[0].actual'),i*11);
+  }
+});
+test('speed-only mode stops first, never arms, sends raw DRV, and blocks angle/heading commands',async()=>{
+  const f=consoleFixture();f.eval('firmware.directSpeedKeep=true');
+  f.elements.get('#speedOnlyButton').listeners.click();await f.flush();
+  assert.deepEqual(f.sent,['STOP','ANGLESTATUS','TEL,1']);assert.equal(f.eval('speedOnlyMode'),true);
+  assert.equal(f.elements.get('#chartLoop').value,'wheel_all');
+  f.sent.length=0;f.eval('sendDriveVector(-1,0,0)');await f.flush();
+  assert.deepEqual(f.sent,['DRV,-30,0,0']);assert.equal(f.eval('ownsAngleMotion'),false);
+  assert.equal(f.eval('ownsSpeedMotion'),true);
+  const rejection=f.eval("writeCommand('YAW,10')");await assert.rejects(rejection,/停用/);
+  assert.ok(!f.sent.some(x=>/^(MOVE|YAW|HEAD),/.test(x)));
+  f.eval('releaseDrive()');await f.flush();assert.equal(f.sent.at(-1),'STOP');assert.equal(f.eval('ownsSpeedMotion'),false);
+});
+test('speed-only rotation is rejected and expired direct heartbeat stops without replay',async()=>{
+  const f=consoleFixture();f.eval('speedOnlyMode=true;firmware.directSpeedKeep=true');
+  f.eval('sendDriveVector(0,0,1)');await f.flush();assert.deepEqual(f.sent,[]);
+  f.eval('ownsSpeedMotion=true;speedLeaseSentAt=-1000');f.fail('DKEEP');f.advance(200);await f.flush();
+  assert.ok(f.sent.includes('DKEEP'));assert.equal(f.sent.at(-1),'STOP');
+  assert.equal(f.eval('ownsSpeedMotion'),false);assert.ok(!f.sent.some(x=>x.startsWith('DRV,')));
+});
+
+test('leaving speed-only mode stops and restores angular telemetry without starting an outer loop',async()=>{
+  const f=consoleFixture();f.eval('speedOnlyMode=true;firmware.directSpeedKeep=true');
+  f.elements.get('#speedOnlyButton').listeners.click();await f.flush();
+  assert.deepEqual(f.sent,['STOP','ANGLESTATUS','ATEL,1']);
+  assert.equal(f.eval('speedOnlyMode'),false);assert.equal(f.elements.get('#chartLoop').value,'rate');
+  assert.equal(f.eval('ownsAngleMotion'),false);assert.equal(f.eval('ownsSpeedMotion'),false);
+});
+
+test('direct speed target preserves an explicit telemetry-off choice for low-load diagnosis',async()=>{
+  const f=consoleFixture();f.eval('speedOnlyMode=true;setTelemetry(false)');
+  f.eval('sendDriveVector(-1,0,0)');await f.flush();
+  assert.deepEqual(f.sent,['DRV,-30,0,0']);assert.equal(f.eval('firmware.telemetryEnabled'),false);
+  f.eval('releaseDrive()');await f.flush();assert.equal(f.sent.at(-1),'STOP');
+});
+test('R25 without RAM logs is compatible and never queries unsupported log status',async()=>{
+  const f=consoleFixture();f.line('VER,VGT6_BM50_ATTITUDE_R25');
+  f.line('CAPS,ATTITUDE_R25,20,10,160,60,60,80,SPEED_TUNABLE,DKEEP,LOG_DISABLED');
+  assert.equal(f.eval('firmwareCompatible'),true);assert.equal(f.eval('firmware.directSpeedKeep'),true);
+  assert.equal(f.elements.get('#wlogStartButton').disabled,true);
+  assert.match(f.elements.get('#hlogStatus').textContent,/88 KiB/);
+});
+
+test('reconnect waits for the previous port release and prevents a second click from opening it twice',async()=>{
+  let release,closeCalls=0,openCalls=0,closed=false;
+  const closing=new Promise(resolve=>{release=()=>{closed=true;resolve();};});
+  const port={getInfo:()=>({usbVendorId:0x1a86}),
+    open:async()=>{assert.equal(closed,true);openCalls++;throw new Error('intentional test open failure');},close:async()=>{}};
+  const f=consoleFixture({port,authorized:true,forbidChooser:true});
+  f.context.previous={isOpen:()=>false,close:()=>{closeCalls++;return closing;},diagnostic:()=>({mode:'direct_web_serial'})};
+  f.eval('serialTransport=previous');const connect=f.eval('connectSerial()');
+  assert.equal(f.eval('connecting'),true);assert.equal(openCalls,0);assert.equal(closeCalls,1);
+  await f.eval('connectSerial()');assert.equal(closeCalls,1);
+  release();await connect;assert.equal(openCalls,1);assert.equal(f.eval('connecting'),false);
+});
+
+test('HLOG batch download waits longer than the bridge 20 second allowance', () => {
+  const f = consoleFixture();
+  f.noReply();
+  f.eval("socket = new WebSocket(); void writeCommand('HLOG,READ,0,8')");
+  assert.equal(f.timeouts.at(-1), 25000);
+  f.eval("void writeCommand('VER')");
+  assert.equal(f.timeouts.at(-1), 5000);
+});
+
+test('repeated STOP during one pending stop is coalesced rather than flooding the link', async()=>{
+  const f=consoleFixture();f.noReply();
+  const first=f.eval("writeCommand('STOP')");
+  const second=f.eval("writeCommand('STOP')");
+  assert.equal(first,second);assert.deepEqual(f.sent,['STOP']);
+  f.eval("handleResult({id:requestSerial,ok:true,reply:'ACK,STOP'})");
+  await first;
+});
+
+test('page serial mode verifies and queries through Web Serial with no WebSocket writes',async()=>{
+  let controller;const directSent=[];
+  const replies={
+    VER:'VER,VGT6_BM50_ATTITUDE_R24',UART:'UART,115200,42000000,364,0x00,0,0,0,0,0',
+    LINK:'LINK,42,3,0,0,0,0',STACK:'STACK,4096,1024,3072,1',SPEEDLIMIT:'SPEEDLIMIT,160',
+    SPEEDSTATUS:'TEL,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12000,0,0,1,0,0,0',
+    PIDGET:'PID,1.2,0.2,0,1.2,0.2,0,1.2,0.2,0,1.2,0.2,0',
+    CAPS:'CAPS,ATTITUDE_R24,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200',
+    PS2STATUS:'PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10',
+    YAWGET:'YAWPID,0.1815,1.8062,60,80,20',HEADGET:'HEADPID,6.0000,1.2500,80,20,D_MEAS',
+    ANGLESTATUS:'ATEL,100,0,1,0,0,0,0,0,0,0,0,0,12000',TOF:'TOF,100,1,0,-1,4,0,0',
+    'HLOG,STATUS':'HLOG,STATUS,0,0,1024,0,0','WLOG,STATUS':'WLOG,STATUS,0,0,1024,0,0',PING:'PONG',
+  };
+  const port={
+    getInfo:()=>({usbVendorId:0x1a86}),
+    readable:new ReadableStream({start(c){controller=c;}}),
+    writable:new WritableStream({write(data){
+      const command=new TextDecoder().decode(data).trim();directSent.push(command);
+      controller.enqueue(new TextEncoder().encode((replies[command]||'ACK,'+command)+'\r\n'));
+    }}),
+    async open(){},async close(){this.closed=true;},
+  };
+  const f=consoleFixture({port,authorized:true,forbidChooser:true});
+  f.eval('hardwareConnected=false;bridgeReady=false;firmwareCompatible=false;stackHealthy=false');
+  await f.eval('connectSerial()');await f.flush();
+  assert.equal(f.eval('connected() && firmwareCompatible && stackHealthy'),true);
+  assert.equal(await f.eval("writeCommand('PING')"),'PONG');
+  assert.deepEqual(f.sent,[]);assert.ok(directSent.includes('CAPS'));
+  assert.ok(!directSent.includes('ARM'));assert.ok(!directSent.some(x=>x.startsWith('MOVE,')));
+  await f.eval('disconnectBridge()');assert.equal(port.closed,true);assert.equal(f.eval('connected()'),false);
+});
+
+test('R17 stopped download checks fresh state, exact batches, modes and MCU ticks', async () => {
+  for (const fault of [null, 'active', 'moving', 'overflow', 'end', 'duplicate', 'tick', 'mode']) {
+    const f = consoleFixture();
+    const sent = [];
+    f.context.downloadSend = async (command) => {
+      sent.push(command);
+      if (command === 'ANGLESTATUS')
+        return `ATEL,100,${fault === 'moving' ? 1 : 0},1,0,0,0,0,0,0,0,0,0,12000`;
+      if (command === 'HLOG,STATUS')
+        return `HLOG,STATUS,${fault === 'active' ? 1 : 0},10,1024,${fault === 'overflow' ? 1 : 0},10`;
+      const [, , offsetText, countText] = command.split(',');
+      const offset = Number(offsetText), count = Number(countText);
+      for (let index = offset; index < offset + count; index += 1) {
+        const seq = fault === 'duplicate' && index === 1 ? 0 : index;
+        const tick = (0xfffffff0 + 20 * (fault === 'tick' && index === 1 ? 0 : index)) >>> 0;
+        const mode = fault === 'mode' && index === 1 ? 3 : 1;
+        f.line(`HLOG,DATA,${seq},${tick},0,0,0,15000,12000,0,5000,0,0,0,${mode}`);
+      }
+      return `HLOG,END,${fault === 'end' ? offset + 1 : offset},${count},10`;
+    };
+    const action = f.eval('readStoppedHlog(downloadSend)');
+    if (fault) {
+      await assert.rejects(action, undefined, fault);
+    } else {
+      const rows = await action;
+      assert.equal(rows.length, 10);
+      assert.deepEqual(sent, ['ANGLESTATUS', 'HLOG,STATUS', 'HLOG,READ,0,8', 'HLOG,READ,8,2']);
+      assert.match(f.eval('hlogCsv(hlogRows)'), /mode/);
+    }
+    assert.ok(sent.every(command => !/^(ARM|MOVE|HEAD,|YAW,|PID,)/.test(command)));
+  }
+});
+
+test('R18 downloads microsecond timestamps and rejects missing, mixed and out-of-range cadence', async () => {
+  for (const fault of [null, 'missing', 'mixed', 'short', 'long', 'inconsistent']) {
+    const f = consoleFixture();
+    f.line('VER,VGT6_BM50_ATTITUDE_R18');
+    assert.equal(f.eval('firmwareCompatible'), true);
+    f.line('CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US');
+    f.context.downloadSend = async command => {
+      if (command === 'ANGLESTATUS') return 'ATEL,100,0,1,0,0,0,0,0,0,0,0,0,12000';
+      if (command === 'HLOG,STATUS') return 'HLOG,STATUS,0,2,1024,0,2';
+      const dt = fault === 'short' ? 19899 : fault === 'long' ? 25001 : 20123;
+      for (let i = 0; i < 2; i += 1) {
+        const absolute = 4294967200 + i * dt;
+        const ms = fault === 'inconsistent' ? 0 : Math.floor(absolute / 1000);
+        const suffix = fault === 'missing' || (fault === 'mixed' && i === 1) ? '' : `,${absolute >>> 0}`;
+        f.line(`HLOG,DATA,${i},${ms},0,0,0,15000,12000,0,5000,0,0,0,1${suffix}`);
+      }
+      return 'HLOG,END,0,2,2';
+    };
+    if (fault) await assert.rejects(f.eval('readStoppedHlog(downloadSend)'), undefined, fault);
+    else {
+      const rows = await f.eval('readStoppedHlog(downloadSend)');
+      assert.equal(rows[1][13], 20027);
+      assert.match(f.eval('hlogCsv(hlogRows)'), /mode,tick_us\r\n/);
+    }
+  }
+});
+
+test('R19 ToF shows mm/cm, invalidates bad or stale readings, and resets on disconnect', () => {
+  const f = consoleFixture();
+  f.line('VER,VGT6_BM50_ATTITUDE_R19');
+  assert.equal(f.eval('firmwareCompatible'), true);
+  f.line('CAPS,ATTITUDE_R19,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B');
+  assert.equal(f.elements.get('#tofRealtime').disabled, false);
+  f.line('TOF,100,1,1,1234,9,12,0');
+  assert.equal(f.elements.get('#tofDistance').textContent, '1234 mm');
+  assert.match(f.elements.get('#tofState').textContent, /123\.4 cm/);
+  assert.equal(f.eval('firmware.receivedAt'), 0); // Distance is not motor feedback.
+  f.advance(1700);
+  assert.equal(f.elements.get('#tofDistance').textContent, '— mm');
+  for (const packet of ['TOF,100,1,1,NaN,9,0,0', 'TOF,100,1,1,-1,9,0,0',
+    'TOF,100,1,1,1200,9,351,0', 'TOF,100,0,1,1200,9,0,0',
+    'TOF,100,1,1,1200,4,0,0', 'TOF,100,1,1,4001,9,0,0',
+    'TOF,100,1,1,1200,9,0', 'TOF,100,1,0,1200,4,0,0']) {
+    f.line('TOF,100,1,1,1234,9,12,0');
+    f.line(packet);
+    assert.equal(f.elements.get('#tofDistance').textContent, '— mm', packet);
+  }
+  f.line('TOF,100,0,0,-1,255,4294967295,2');
+  assert.match(f.elements.get('#tofState').textContent, /未连接/);
+  f.line('TOF,100,1,0,-1,4,0,0');
+  assert.match(f.elements.get('#tofState').textContent, /测量无效/);
+  f.eval('resetLinkState()');
+  assert.equal(f.elements.get('#tofDistance').textContent, '— mm');
+  assert.equal(f.elements.get('#tofRealtime').checked, false);
+});
+
+test('R20 advertises reversed front, wheel logger and the explicit fail-open distance policy', () => {
+  const f=consoleFixture();
+  f.line('VER,VGT6_BM50_ATTITUDE_R20');
+  f.line('CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED');
+  assert.equal(f.eval('firmwareCompatible'),true);
+  assert.equal(f.elements.get('#wlogStartButton').disabled,false);
+  assert.match(f.elements.get('#frontFrameState').textContent,/右前 C/);
+  f.line('TOF,100,1,1,75,9,0,0');
+  assert.match(f.elements.get('#frontGuardState').textContent,/80 RPM/);
+  f.line('TOF,100,1,1,50,9,0,0');
+  assert.match(f.elements.get('#frontGuardState').textContent,/禁止前进/);
+  f.line('TOF,100,1,0,-1,4,0,0');
+  assert.match(f.elements.get('#frontGuardState').textContent,/保持原速度/);
+  f.eval('resetLinkState()');
+  assert.equal(f.eval('firmware.frontReversed'),false);
+  assert.equal(f.sent.length,0);
+});
+
+test('R22 advertises 200/100 mm guard and 40 RPM ceiling while R21 retains its old policy', () => {
+  const f = consoleFixture();
+  f.line('VER,VGT6_BM50_ATTITUDE_R22');
+  f.line('CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40');
+  assert.equal(f.eval('firmwareCompatible'), true);
+  for (const [mm, expected] of [[201,/不额外限制/],[200,/40 RPM/],[150,/20 RPM/],[100,/禁止前进/],[50,/禁止前进/]]) {
+    f.line(`TOF,100,1,1,${mm},9,0,0`);
+    assert.match(f.elements.get('#frontGuardState').textContent, expected);
+  }
+  f.line('SPEEDLIMIT,15');
+  f.line('TOF,100,1,1,200,9,0,0');
+  assert.match(f.elements.get('#frontGuardState').textContent, /15 RPM/);
+  f.line('CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST');
+  f.line('TOF,100,1,1,150,9,0,0');
+  assert.match(f.elements.get('#frontGuardState').textContent, /不额外限制/);
+  assert.equal(f.sent.length, 0);
+});
+
+test('R21 accepts fast distance frames and rejects measurements older than 120 ms', () => {
+  const f = consoleFixture();
+  f.line('VER,VGT6_BM50_ATTITUDE_R21');
+  f.line('CAPS,ATTITUDE_R21,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST');
+  assert.equal(f.eval('firmwareCompatible'), true);
+  assert.match(f.elements.get('#tofRealtime').title, /25 Hz/);
+  for (let tick = 100; tick <= 1000; tick += 100) {
+    f.line(`TOF,${tick},1,1,50,9,40,0`);
+    assert.equal(f.elements.get('#tofDistance').textContent, '50 mm');
+    assert.match(f.elements.get('#frontGuardState').textContent, /禁止前进/);
+  }
+  f.line('TOF,1100,1,1,50,9,121,0');
+  assert.equal(f.elements.get('#tofDistance').textContent, '— mm');
+  assert.equal(f.sent.length, 0);
+});
+
+test('ToF realtime sends only stream/query commands and old firmware leaves it disabled', async () => {
+  const f = consoleFixture();
+  f.line('CAPS,ATTITUDE_R18,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,HLOG_MODE,HLOG_US');
+  assert.equal(f.elements.get('#tofRealtime').disabled, true);
+  f.line('CAPS,ATTITUDE_R19,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,HLOG_MODE,HLOG_US,TOF_DL1B');
+  f.elements.get('#tofRealtime').checked = true;
+  f.elements.get('#tofRealtime').listeners.change();
+  await f.flush();
+  assert.deepEqual(f.sent, ['TOF,1', 'TOF']);
+  assert.equal(f.elements.get('#tofDistance').textContent, '1234 mm');
+  f.elements.get('#tofRealtime').checked = false;
+  f.elements.get('#tofRealtime').listeners.change();
+  await f.flush();
+  assert.equal(f.sent.at(-1), 'TOF,0');
+});
 
 test('PS2 diagnostic query reads status and raw bytes without enabling motors', async () => {
   const f = consoleFixture();
@@ -302,11 +583,11 @@ test('R3 bridge handshake matches this page', () => {
   assert.equal(f.eval('bridgeReady'), true);
 });
 
-test('R16 firmware passes the page compatibility check', () => {
+test('R17 firmware passes the page compatibility check', () => {
   const f = consoleFixture();
-  f.line('VER,VGT6_BM50_ATTITUDE_R16');
+  f.line('VER,VGT6_BM50_ATTITUDE_R17');
   assert.equal(f.eval('firmwareCompatible'), true);
-  assert.match(f.elements.get('#eventText').textContent, /ATTITUDE_R16/);
+  assert.match(f.elements.get('#eventText').textContent, /ATTITUDE_R17/);
 });
 
 test('PS2 status is shown without enabling motion', () => {
@@ -330,7 +611,7 @@ test('UART and stack diagnostics display the MCU measurements', () => {
 });
 
 test('old firmware disables motion but leaves STOP and query available', async () => {
-  for (const version of ['VGT6_BM50_SPEED_LINE_R3', 'VGT6_BM50_ATTITUDE_R13', 'VGT6_BM50_ATTITUDE_R14', 'VGT6_BM50_ATTITUDE_R15']) {
+  for (const version of ['VGT6_BM50_SPEED_LINE_R3', 'VGT6_BM50_ATTITUDE_R13', 'VGT6_BM50_ATTITUDE_R14', 'VGT6_BM50_ATTITUDE_R15', 'VGT6_BM50_ATTITUDE_R16']) {
     const f = consoleFixture();
     f.line(`VER,${version}`);
     assert.equal(f.elements.get('#armButton').disabled, true);
@@ -385,7 +666,7 @@ test('the page exposes RAM-only HLOG controls and capability state', () => {
   assert.match(html, /id="hlogStopButton"/);
   assert.match(html, /id="hlogReadButton"/);
   const f = consoleFixture();
-  f.line('CAPS,ATTITUDE_R16,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE');
+  f.line('CAPS,ATTITUDE_R17,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE');
   f.line('HLOG,STATUS,0,12,1024,0,12');
   assert.equal(f.eval('firmware.hlogSupported'), true);
   assert.match(f.elements.get('#hlogStatus').textContent, /已停止 · 12\/1024 条/);
@@ -398,6 +679,17 @@ test('HLOG data is parsed and exported with a stable CSV schema', () => {
   assert.match(csv, /^sequence,tick,target_heading_mdeg,actual_heading_mdeg/);
   assert.match(csv, /12,240,1000,1100,-100,500,450,20,10,0,30,-4/);
   assert.equal(f.eval('firmware.hlog.lastBatch'), 1);
+});
+
+test('R17 rate and heading logs export an explicit controller mode', () => {
+  const f = consoleFixture();
+  f.line('HLOG,DATA,0,120,0,0,0,15000,10000,0,1000,0,0,0,1');
+  f.line('HLOG,DATA,1,140,15000,12000,3000,8000,7600,40000,12000,0,20,0,2');
+  f.line('HLOG,DATA,2,160,0,0,0,0,0,0,0,0,0,0,3');
+  const csv = f.eval('hlogCsv(hlogRows)');
+  assert.match(csv, /forward_rpm,left_rpm,mode\r\n/);
+  assert.match(csv, /0,120,0,0,0,15000,10000,0,1000,0,0,0,1/);
+  assert.equal(f.eval('hlogRows.length'), 2);
 });
 test('PIDGET populates all four speed-loop rows', () => {
   const f = consoleFixture();
@@ -448,6 +740,50 @@ test('WASD drives while focused outside form controls and stops on release', asy
   f.key('keyup', event('w'));
   await f.flush();
   assert.deepEqual(f.sent, ['MOVE,30,0,0', 'STOP']);
+});
+
+test('TOF stop distance permits reverse and unexpected MCU stop is visible without repeat-key restart',async()=>{
+  const f=consoleFixture();
+  const event=(repeat=false)=>({key:'s',repeat,target:{tagName:'BODY'},preventDefault(){}});
+  f.key('keydown',event());await f.flush();
+  f.eval('firmware.tofGuard=true;firmware.tofMaxAge=120;firmware.guardStopMm=100');
+  f.line('TOF,100,1,1,98,9,10,0');
+  f.line('ATEL,100,1,1,0,0,0,0,0,0,0,0,1,12000');
+  f.advance(400);await f.flush();
+  assert.deepEqual(f.sent,['MOVE,-30,0,0','KEEP']);
+  f.line('ATEL,1600,0,1,0,0,0,0,0,0,0,0,0,12000');
+  assert.match(f.elements.get('#eventText').textContent,/车端已停止/);
+  f.advance(400);f.key('keydown',event(true));await f.flush();
+  assert.deepEqual(f.sent,['MOVE,-30,0,0','KEEP']);
+  assert.ok(f.eval("linkDiagnostic().uiTrace.some(e=>e.event==='motion_stopped')"));
+  f.key('keyup',event());await f.flush();f.key('keydown',event());await f.flush();
+  assert.equal(f.sent.at(-1),'MOVE,-30,0,0');
+});
+
+test('held key auto-repeat cannot restart motion after explicit STOP',async()=>{
+  const f=consoleFixture();const e=repeat=>({key:'s',repeat,target:{tagName:'BODY'},preventDefault(){}});
+  f.key('keydown',e(false));await f.flush();f.eval('stopMotion()');await f.flush();
+  f.key('keydown',e(true));await f.flush();
+  assert.deepEqual(f.sent,['MOVE,-30,0,0','STOP']);
+});
+
+test('link reset clears held keys and target vector so recovery cannot replay old motion',async()=>{
+  const f=consoleFixture();
+  f.key('keydown',{key:'s',repeat:false,target:{tagName:'BODY'},preventDefault(){}});await f.flush();
+  assert.equal(f.eval('driveActive'),true);
+  f.eval('resetLinkState()');
+  assert.equal(f.eval('driveKeys.size'),0);assert.equal(f.eval('driveVector.forward'),0);
+  assert.equal(f.eval('driveActive || driveMovePending || ownsAngleMotion'),false);
+  f.advance(400);await f.flush();assert.deepEqual(f.sent,['MOVE,-30,0,0']);
+});
+
+test('a soft KEEP ACK miss leaves the next heartbeat scheduled and records the event',async()=>{
+  const f=consoleFixture();
+  f.eval("ownsAngleMotion=true;writeCommand=async command=>{if(command==='KEEP')throw Object.assign(new Error('KEEP 确认丢失一次'),{heartbeatAckMissing:true});throw new Error('unexpected '+command)}");
+  f.advance(400);await f.flush();
+  assert.equal(f.eval('ownsAngleMotion'),true);assert.equal(f.eval('keepPending'),false);
+  assert.match(f.elements.get('#eventText').textContent,/KEEP 确认/);
+  assert.ok(f.eval("linkDiagnostic().uiTrace.some(e=>e.event==='keep_ack_missing')"));
 });
 
 test('A/D use the corrected lateral sign', async () => {
@@ -516,6 +852,30 @@ test('rapid simultaneous key presses deliver the latest vector after the pending
   await f.flush();
   assert.deepEqual(f.sent, ['MOVE,30,0,0', 'MOVE,30,0,20',
     'MOVE,30,0,0', 'STOP']);
+});
+
+test('release immediately sends STOP while MOVE is still awaiting its reply', async () => {
+  const f = consoleFixture();
+  f.noReply();
+  f.eval('sendDriveVector(1,0,0)');
+  assert.deepEqual(f.sent, ['MOVE,30,0,0']);
+  f.eval('releaseDrive()');
+  assert.deepEqual(f.sent, ['MOVE,30,0,0', 'STOP']);
+  f.eval('handleResult({id:1,ok:true,reply:"ACK,MOVE"})');
+  await f.flush();
+  assert.equal(f.eval('ownsAngleMotion'), false);
+  assert.equal(f.eval('driveActive'), false);
+  f.advance(400); await f.flush();
+  assert.deepEqual(f.sent, ['MOVE,30,0,0', 'STOP']);
+});
+
+test('a timed out MOVE triggers STOP without declaring the car idle', async () => {
+  const f = consoleFixture();
+  f.noReply();
+  f.eval('sendDriveVector(1,0,0)');
+  f.eval('handleResult({id:1,ok:false,error:"MCU reply timeout"})');
+  await f.flush();
+  assert.deepEqual(f.sent, ['MOVE,30,0,0', 'STOP']);
 });
 
 test('buttons stay visually enabled while a command is waiting', () => {

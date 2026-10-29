@@ -1,0 +1,3960 @@
+{
+  "mode": "direct_web_serial",
+  "baud": 115200,
+  "port": {
+    "usbProductId": 29987,
+    "usbVendorId": 6790
+  },
+  "verified": false,
+  "recovering": false,
+  "fault": "车端应答超时：DKEEP；仍有回传，但该命令未确认",
+  "stats": {
+    "rxBytes": 2153,
+    "rxLines": 51,
+    "badBytes": 0,
+    "timeouts": 1,
+    "txCommands": 34,
+    "keepAckMisses": 0,
+    "stopRecoveries": 0
+  },
+  "heartbeatAckMisses": 0,
+  "lastRxAt": 28131.800000000047,
+  "motionReport": {
+    "receivedAt": 25994.699999999953,
+    "source": "ACK,ARM,WHEELS_OFF_GROUND",
+    "mode": 0,
+    "imuReady": false,
+    "enabled": false
+  },
+  "traceDropped": 0,
+  "trace": [
+    {
+      "hostMs": 19595.800000000047,
+      "event": "tx",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 19595.900000000023,
+      "event": "write_done",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 19617.099999999977,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 19617.099999999977,
+      "event": "rx",
+      "detail": "434b2c53544f500d0a"
+    },
+    {
+      "hostMs": 19617.199999999953,
+      "event": "reply",
+      "detail": {
+        "command": "STOP",
+        "line": "ACK,STOP",
+        "elapsedMs": 21.399999999906868
+      }
+    },
+    {
+      "hostMs": 19617.199999999953,
+      "event": "tx",
+      "detail": "DISARM"
+    },
+    {
+      "hostMs": 19617.300000000047,
+      "event": "write_done",
+      "detail": "DISARM"
+    },
+    {
+      "hostMs": 19639.599999999977,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 19639.599999999977,
+      "event": "rx",
+      "detail": "434b2c44495341524d0d0a"
+    },
+    {
+      "hostMs": 19639.699999999953,
+      "event": "reply",
+      "detail": {
+        "command": "DISARM",
+        "line": "ACK,DISARM",
+        "elapsedMs": 22.5
+      }
+    },
+    {
+      "hostMs": 19639.699999999953,
+      "event": "tx",
+      "detail": "TEL,0"
+    },
+    {
+      "hostMs": 19639.699999999953,
+      "event": "write_done",
+      "detail": "TEL,0"
+    },
+    {
+      "hostMs": 19662.099999999977,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 19662.199999999953,
+      "event": "rx",
+      "detail": "434b2c54454c2c300d0a"
+    },
+    {
+      "hostMs": 19662.300000000047,
+      "event": "reply",
+      "detail": {
+        "command": "TEL,0",
+        "line": "ACK,TEL,0",
+        "elapsedMs": 22.600000000093132
+      }
+    },
+    {
+      "hostMs": 19662.300000000047,
+      "event": "tx",
+      "detail": "TOF,0"
+    },
+    {
+      "hostMs": 19662.300000000047,
+      "event": "write_done",
+      "detail": "TOF,0"
+    },
+    {
+      "hostMs": 19695.900000000023,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 19695.900000000023,
+      "event": "rx",
+      "detail": "434b2c544f462c300d0a"
+    },
+    {
+      "hostMs": 19695.900000000023,
+      "event": "reply",
+      "detail": {
+        "command": "TOF,0",
+        "line": "ACK,TOF,0",
+        "elapsedMs": 33.59999999997672
+      }
+    },
+    {
+      "hostMs": 19696,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 19696,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 19718.300000000047,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 19718.400000000023,
+      "event": "rx",
+      "detail": "4f4e470d0a"
+    },
+    {
+      "hostMs": 19718.400000000023,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 22.5
+      }
+    },
+    {
+      "hostMs": 19718.400000000023,
+      "event": "verified",
+      "detail": {
+        "usbProductId": 29987,
+        "usbVendorId": 6790
+      }
+    },
+    {
+      "hostMs": 19718.5,
+      "event": "tx",
+      "detail": "VER"
+    },
+    {
+      "hostMs": 19718.5,
+      "event": "write_done",
+      "detail": "VER"
+    },
+    {
+      "hostMs": 19740.900000000023,
+      "event": "rx",
+      "detail": "56"
+    },
+    {
+      "hostMs": 19740.900000000023,
+      "event": "rx",
+      "detail": "45522c564754365f424d35305f41545449545544455f5232350d0a"
+    },
+    {
+      "hostMs": 19741.099999999977,
+      "event": "reply",
+      "detail": {
+        "command": "VER",
+        "line": "VER,VGT6_BM50_ATTITUDE_R25",
+        "elapsedMs": 22.599999999976717
+      }
+    },
+    {
+      "hostMs": 19741.099999999977,
+      "event": "tx",
+      "detail": "UART"
+    },
+    {
+      "hostMs": 19741.199999999953,
+      "event": "write_done",
+      "detail": "UART"
+    },
+    {
+      "hostMs": 19774.900000000023,
+      "event": "rx",
+      "detail": "554152542c3131353230302c34323030303030302c3336342c307830302c302c"
+    },
+    {
+      "hostMs": 19776,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 19776,
+      "event": "rx",
+      "detail": "2c302c302c300d0a"
+    },
+    {
+      "hostMs": 19776.099999999977,
+      "event": "reply",
+      "detail": {
+        "command": "UART",
+        "line": "UART,115200,42000000,364,0x00,0,0,0,0,0",
+        "elapsedMs": 35
+      }
+    },
+    {
+      "hostMs": 19776.099999999977,
+      "event": "tx",
+      "detail": "LINK"
+    },
+    {
+      "hostMs": 19776.099999999977,
+      "event": "write_done",
+      "detail": "LINK"
+    },
+    {
+      "hostMs": 19797.199999999953,
+      "event": "rx",
+      "detail": "4c494e4b2c313330302c3137362c302c302c302c300d0a"
+    },
+    {
+      "hostMs": 19797.300000000047,
+      "event": "reply",
+      "detail": {
+        "command": "LINK",
+        "line": "LINK,1300,176,0,0,0,0",
+        "elapsedMs": 21.20000000006985
+      }
+    },
+    {
+      "hostMs": 19797.300000000047,
+      "event": "tx",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 19797.300000000047,
+      "event": "write_done",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 19830.800000000047,
+      "event": "rx",
+      "detail": "53"
+    },
+    {
+      "hostMs": 19830.800000000047,
+      "event": "rx",
+      "detail": "5441434b2c343039362c323435362c313634302c310d0a"
+    },
+    {
+      "hostMs": 19831,
+      "event": "reply",
+      "detail": {
+        "command": "STACK",
+        "line": "STACK,4096,2456,1640,1",
+        "elapsedMs": 33.699999999953434
+      }
+    },
+    {
+      "hostMs": 19831,
+      "event": "tx",
+      "detail": "SPEEDLIMIT"
+    },
+    {
+      "hostMs": 19831,
+      "event": "write_done",
+      "detail": "SPEEDLIMIT"
+    },
+    {
+      "hostMs": 19853.699999999953,
+      "event": "rx",
+      "detail": "53"
+    },
+    {
+      "hostMs": 19853.699999999953,
+      "event": "rx",
+      "detail": "504545444c494d49542c3136300d0a"
+    },
+    {
+      "hostMs": 19853.699999999953,
+      "event": "rx_unknown_line",
+      "detail": {
+        "line": "SPEEDLIMIT,160",
+        "pending": "SPEEDLIMIT"
+      }
+    },
+    {
+      "hostMs": 19854.199999999953,
+      "event": "reply",
+      "detail": {
+        "command": "SPEEDLIMIT",
+        "line": "SPEEDLIMIT,160",
+        "elapsedMs": 23.199999999953434
+      }
+    },
+    {
+      "hostMs": 19854.300000000047,
+      "event": "tx",
+      "detail": "SPEEDSTATUS"
+    },
+    {
+      "hostMs": 19854.300000000047,
+      "event": "write_done",
+      "detail": "SPEEDSTATUS"
+    },
+    {
+      "hostMs": 19887.5,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 19887.5,
+      "event": "rx",
+      "detail": "454c2c3531323830342c302c302c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 19888.599999999977,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 19888.599999999977,
+      "event": "rx",
+      "detail": "302c302c302c302c302c302c302c31323336372c302c312c312c312c2d3139"
+    },
+    {
+      "hostMs": 19889.699999999953,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 19889.699999999953,
+      "event": "rx",
+      "detail": "300d0a"
+    },
+    {
+      "hostMs": 19890,
+      "event": "reply",
+      "detail": {
+        "command": "SPEEDSTATUS",
+        "line": "TEL,512804,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12367,0,1,1,1,-19,0",
+        "elapsedMs": 35.800000000046566
+      }
+    },
+    {
+      "hostMs": 19890,
+      "event": "tx",
+      "detail": "PIDGET"
+    },
+    {
+      "hostMs": 19890,
+      "event": "write_done",
+      "detail": "PIDGET"
+    },
+    {
+      "hostMs": 19921.400000000023,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 19921.5,
+      "event": "rx",
+      "detail": "49442c312e323030302c302e303939312c302e303030302c312e323030302c"
+    },
+    {
+      "hostMs": 19922.599999999977,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 19922.599999999977,
+      "event": "rx",
+      "detail": "2e303939382c302e303030302c312e323030302c302e303939382c302e3030"
+    },
+    {
+      "hostMs": 19923.800000000047,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 19923.800000000047,
+      "event": "rx",
+      "detail": "302c312e323030302c302e313030382c302e303030300d0a"
+    },
+    {
+      "hostMs": 19924,
+      "event": "reply",
+      "detail": {
+        "command": "PIDGET",
+        "line": "PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000",
+        "elapsedMs": 34
+      }
+    },
+    {
+      "hostMs": 19924,
+      "event": "tx",
+      "detail": "CAPS"
+    },
+    {
+      "hostMs": 19924,
+      "event": "write_done",
+      "detail": "CAPS"
+    },
+    {
+      "hostMs": 19955.699999999953,
+      "event": "rx",
+      "detail": "43"
+    },
+    {
+      "hostMs": 19955.699999999953,
+      "event": "rx",
+      "detail": "4150532c41545449545544455f5232352c32302c31302c3136302c36302c36"
+    },
+    {
+      "hostMs": 19956.900000000023,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 19957,
+      "event": "rx",
+      "detail": "2c38302c53504545445f54554e41424c452c5053322c545241434b4d4f5645"
+    },
+    {
+      "hostMs": 19958.300000000047,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 19958.300000000047,
+      "event": "rx",
+      "detail": "544f465f444c31422c544f465f47554152442c46524f4e545f524556455253"
+    },
+    {
+      "hostMs": 19959.5,
+      "event": "rx",
+      "detail": "45"
+    },
+    {
+      "hostMs": 19959.599999999977,
+      "event": "rx",
+      "detail": "442c544f465f464153542c544f465f47554152445f3230305f3130305f3430"
+    },
+    {
+      "hostMs": 19961,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 19961,
+      "event": "rx",
+      "detail": "554152545f514f532c53455249414c5f3131353230302c444b4545502c4c4f"
+    },
+    {
+      "hostMs": 19962,
+      "event": "rx",
+      "detail": "475f44495341424c45440d0a"
+    },
+    {
+      "hostMs": 19962.099999999977,
+      "event": "reply",
+      "detail": {
+        "command": "CAPS",
+        "line": "CAPS,ATTITUDE_R25,20,10,160,60,60,80,SPEED_TUNABLE,PS2,TRACKMOVE,TOF_DL1B,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200,DKEEP,LOG_DISABLED",
+        "elapsedMs": 38.09999999997672
+      }
+    },
+    {
+      "hostMs": 19962.099999999977,
+      "event": "tx",
+      "detail": "PS2STATUS"
+    },
+    {
+      "hostMs": 19962.099999999977,
+      "event": "write_done",
+      "detail": "PS2STATUS"
+    },
+    {
+      "hostMs": 19999.699999999953,
+      "event": "rx",
+      "detail": "5053322c312c302c307837332c3078303030302c3132382c3132382c3132382c"
+    },
+    {
+      "hostMs": 20000.900000000023,
+      "event": "rx",
+      "detail": "31"
+    },
+    {
+      "hostMs": 20000.900000000023,
+      "event": "rx",
+      "detail": "32382c33302c302c380d0a"
+    },
+    {
+      "hostMs": 20001,
+      "event": "reply",
+      "detail": {
+        "command": "PS2STATUS",
+        "line": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,8",
+        "elapsedMs": 38.90000000002328
+      }
+    },
+    {
+      "hostMs": 20001,
+      "event": "tx",
+      "detail": "YAWGET"
+    },
+    {
+      "hostMs": 20001,
+      "event": "write_done",
+      "detail": "YAWGET"
+    },
+    {
+      "hostMs": 20022.199999999953,
+      "event": "rx",
+      "detail": "5941575049442c302e313831352c312e383036322c36302c38302c32300d0a"
+    },
+    {
+      "hostMs": 20022.199999999953,
+      "event": "reply",
+      "detail": {
+        "command": "YAWGET",
+        "line": "YAWPID,0.1815,1.8062,60,80,20",
+        "elapsedMs": 21.199999999953434
+      }
+    },
+    {
+      "hostMs": 20022.199999999953,
+      "event": "tx",
+      "detail": "HEADGET"
+    },
+    {
+      "hostMs": 20022.300000000047,
+      "event": "write_done",
+      "detail": "HEADGET"
+    },
+    {
+      "hostMs": 20044.599999999977,
+      "event": "rx",
+      "detail": "48"
+    },
+    {
+      "hostMs": 20044.699999999953,
+      "event": "rx",
+      "detail": "4541445049442c362e303030302c312e323530302c38302c32302c445f4d45"
+    },
+    {
+      "hostMs": 20045.800000000047,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 20045.900000000023,
+      "event": "rx",
+      "detail": "530d0a"
+    },
+    {
+      "hostMs": 20046,
+      "event": "reply",
+      "detail": {
+        "command": "HEADGET",
+        "line": "HEADPID,6.0000,1.2500,80,20,D_MEAS",
+        "elapsedMs": 23.800000000046566
+      }
+    },
+    {
+      "hostMs": 20046,
+      "event": "tx",
+      "detail": "ANGLESTATUS"
+    },
+    {
+      "hostMs": 20046,
+      "event": "write_done",
+      "detail": "ANGLESTATUS"
+    },
+    {
+      "hostMs": 20067.900000000023,
+      "event": "rx",
+      "detail": "4154454c2c3531323939362c302c312c302c302c302c302c2d31392c302c302c"
+    },
+    {
+      "hostMs": 20068.5,
+      "event": "rx",
+      "detail": "302c302c31323336360d0a"
+    },
+    {
+      "hostMs": 20068.800000000047,
+      "event": "reply",
+      "detail": {
+        "command": "ANGLESTATUS",
+        "line": "ATEL,512996,0,1,0,0,0,0,-19,0,0,0,0,12366",
+        "elapsedMs": 22.800000000046566
+      }
+    },
+    {
+      "hostMs": 20068.800000000047,
+      "event": "tx",
+      "detail": "TOF"
+    },
+    {
+      "hostMs": 20068.800000000047,
+      "event": "write_done",
+      "detail": "TOF"
+    },
+    {
+      "hostMs": 20089.699999999953,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 20089.699999999953,
+      "event": "rx",
+      "detail": "4f462c3531333031372c312c302c2d312c342c372c300d0a"
+    },
+    {
+      "hostMs": 20089.800000000047,
+      "event": "reply",
+      "detail": {
+        "command": "TOF",
+        "line": "TOF,513017,1,0,-1,4,7,0",
+        "elapsedMs": 21
+      }
+    },
+    {
+      "hostMs": 20089.900000000023,
+      "event": "tx",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 20089.900000000023,
+      "event": "write_done",
+      "detail": "STACK"
+    },
+    {
+      "hostMs": 20111.900000000023,
+      "event": "rx",
+      "detail": "53"
+    },
+    {
+      "hostMs": 20112,
+      "event": "rx",
+      "detail": "5441434b2c343039362c323537362c313532302c310d0a"
+    },
+    {
+      "hostMs": 20112.199999999953,
+      "event": "reply",
+      "detail": {
+        "command": "STACK",
+        "line": "STACK,4096,2576,1520,1",
+        "elapsedMs": 22.29999999993015
+      }
+    },
+    {
+      "hostMs": 21472,
+      "event": "tx",
+      "detail": "ARM"
+    },
+    {
+      "hostMs": 21472.099999999977,
+      "event": "write_done",
+      "detail": "ARM"
+    },
+    {
+      "hostMs": 21495.699999999953,
+      "event": "rx",
+      "detail": "41434b2c41524d2c574845454c535f4f46465f47524f554e440d0a"
+    },
+    {
+      "hostMs": 21495.699999999953,
+      "event": "reply",
+      "detail": {
+        "command": "ARM",
+        "line": "ACK,ARM,WHEELS_OFF_GROUND",
+        "elapsedMs": 23.699999999953434
+      }
+    },
+    {
+      "hostMs": 21801.099999999977,
+      "event": "tx",
+      "detail": "SPEED,1"
+    },
+    {
+      "hostMs": 21801.099999999977,
+      "event": "write_done",
+      "detail": "SPEED,1"
+    },
+    {
+      "hostMs": 21821.599999999977,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 21821.599999999977,
+      "event": "rx",
+      "detail": "434b2c53504545442c310d0a"
+    },
+    {
+      "hostMs": 21821.699999999953,
+      "event": "reply",
+      "detail": {
+        "command": "SPEED,1",
+        "line": "ACK,SPEED,1",
+        "elapsedMs": 20.599999999976717
+      }
+    },
+    {
+      "hostMs": 22125.699999999953,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 22125.699999999953,
+      "event": "rx",
+      "detail": "454c2c3531353035302c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 22127,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323336382c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 22128.099999999977,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 22128.099999999977,
+      "event": "rx",
+      "detail": "310d0a"
+    },
+    {
+      "hostMs": 22429.599999999977,
+      "event": "rx",
+      "detail": "54454c2c3531353335302c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 22430.800000000047,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 22431,
+      "event": "rx",
+      "detail": "302c302c302c302c302c302c302c31323337332c2d31332c2d332c312c2d33"
+    },
+    {
+      "hostMs": 22432.099999999977,
+      "event": "rx",
+      "detail": "2c2d31392c310d0a"
+    },
+    {
+      "hostMs": 22733.400000000023,
+      "event": "rx",
+      "detail": "54454c2c3531353635302c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 22734.5,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323337342c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 22735.699999999953,
+      "event": "rx",
+      "detail": "2c310d0a"
+    },
+    {
+      "hostMs": 23025.900000000023,
+      "event": "rx",
+      "detail": "54454c2c3531353935302c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 23027,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323337302c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 23028.199999999953,
+      "event": "rx",
+      "detail": "2c310d0a"
+    },
+    {
+      "hostMs": 23340.900000000023,
+      "event": "rx",
+      "detail": "54454c2c3531363235302c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 23342.099999999977,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323336372c31322c342c312c342c2d31"
+    },
+    {
+      "hostMs": 23343.800000000047,
+      "event": "rx",
+      "detail": "392c310d0a"
+    },
+    {
+      "hostMs": 23633.900000000023,
+      "event": "rx",
+      "detail": "54454c2c3531363535302c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 23634.400000000023,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323336392c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 23635.599999999977,
+      "event": "rx",
+      "detail": "2c310d0a"
+    },
+    {
+      "hostMs": 23724.699999999953,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 23724.800000000047,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 23745,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 23745,
+      "event": "rx",
+      "detail": "4f4e470d0a"
+    },
+    {
+      "hostMs": 23745,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.300000000046566
+      }
+    },
+    {
+      "hostMs": 23925.599999999977,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 23925.599999999977,
+      "event": "rx",
+      "detail": "454c2c3531363835302c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 23926.800000000047,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323337322c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 23928.099999999977,
+      "event": "rx",
+      "detail": "2c310d0a"
+    },
+    {
+      "hostMs": 24240.699999999953,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 24240.699999999953,
+      "event": "rx",
+      "detail": "454c2c3531373135302c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 24241.800000000047,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323336382c302c2d312c312c2d312c2d"
+    },
+    {
+      "hostMs": 24242.900000000023,
+      "event": "rx",
+      "detail": "31"
+    },
+    {
+      "hostMs": 24242.900000000023,
+      "event": "rx",
+      "detail": "392c310d0a"
+    },
+    {
+      "hostMs": 24380.800000000047,
+      "event": "tx",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 24380.900000000023,
+      "event": "write_done",
+      "detail": "STOP"
+    },
+    {
+      "hostMs": 24408.699999999953,
+      "event": "rx",
+      "detail": "41434b2c53544f500d0a"
+    },
+    {
+      "hostMs": 24408.900000000023,
+      "event": "reply",
+      "detail": {
+        "command": "STOP",
+        "line": "ACK,STOP",
+        "elapsedMs": 28.20000000006985
+      }
+    },
+    {
+      "hostMs": 24408.900000000023,
+      "event": "tx",
+      "detail": "ANGLESTATUS"
+    },
+    {
+      "hostMs": 24408.900000000023,
+      "event": "write_done",
+      "detail": "ANGLESTATUS"
+    },
+    {
+      "hostMs": 24442.699999999953,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 24442.800000000047,
+      "event": "rx",
+      "detail": "54454c2c3531373336302c302c312c302c302c302c302c2d31392c302c302c"
+    },
+    {
+      "hostMs": 24443.900000000023,
+      "event": "rx",
+      "detail": "30"
+    },
+    {
+      "hostMs": 24444,
+      "event": "rx",
+      "detail": "2c302c31323337320d0a"
+    },
+    {
+      "hostMs": 24444.199999999953,
+      "event": "reply",
+      "detail": {
+        "command": "ANGLESTATUS",
+        "line": "ATEL,517360,0,1,0,0,0,0,-19,0,0,0,0,12372",
+        "elapsedMs": 35.29999999993015
+      }
+    },
+    {
+      "hostMs": 24444.199999999953,
+      "event": "tx",
+      "detail": "TEL,1"
+    },
+    {
+      "hostMs": 24444.199999999953,
+      "event": "write_done",
+      "detail": "TEL,1"
+    },
+    {
+      "hostMs": 24465,
+      "event": "rx",
+      "detail": "41434b2c54454c2c310d0a"
+    },
+    {
+      "hostMs": 24465.300000000047,
+      "event": "reply",
+      "detail": {
+        "command": "TEL,1",
+        "line": "ACK,TEL,1",
+        "elapsedMs": 21.100000000093132
+      }
+    },
+    {
+      "hostMs": 24769.199999999953,
+      "event": "rx",
+      "detail": "54454c2c3531373639332c302c302c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 24770.400000000023,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323337382c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 24771.5,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 24771.599999999977,
+      "event": "rx",
+      "detail": "300d0a"
+    },
+    {
+      "hostMs": 25072.900000000023,
+      "event": "rx",
+      "detail": "54454c2c3531373939332c302c302c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 25074,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323337332c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 25075.199999999953,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 25075.199999999953,
+      "event": "rx",
+      "detail": "300d0a"
+    },
+    {
+      "hostMs": 25376.300000000047,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 25376.300000000047,
+      "event": "rx",
+      "detail": "454c2c3531383239332c302c302c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 25377.699999999953,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323336322c302c322c312c322c2d3139"
+    },
+    {
+      "hostMs": 25378.800000000047,
+      "event": "rx",
+      "detail": "2c300d0a"
+    },
+    {
+      "hostMs": 25669,
+      "event": "rx",
+      "detail": "54454c2c3531383539332c302c302c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 25670.300000000047,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323336302c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 25671.5,
+      "event": "rx",
+      "detail": "2c300d0a"
+    },
+    {
+      "hostMs": 25726.900000000023,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 25726.900000000023,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 25747.099999999977,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 25747.099999999977,
+      "event": "rx",
+      "detail": "4f4e470d0a"
+    },
+    {
+      "hostMs": 25747.099999999977,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 20.199999999953434
+      }
+    },
+    {
+      "hostMs": 25969.900000000023,
+      "event": "tx",
+      "detail": "ARM"
+    },
+    {
+      "hostMs": 25969.900000000023,
+      "event": "write_done",
+      "detail": "ARM"
+    },
+    {
+      "hostMs": 25972.5,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 25972.5,
+      "event": "rx",
+      "detail": "454c2c3531383839332c302c302c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 25973.800000000047,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323336312c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 25974.900000000023,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 25974.900000000023,
+      "event": "rx",
+      "detail": "300d0a"
+    },
+    {
+      "hostMs": 25994.599999999977,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 25994.599999999977,
+      "event": "rx",
+      "detail": "434b2c41524d2c574845454c535f4f46465f47524f554e440d0a"
+    },
+    {
+      "hostMs": 25994.699999999953,
+      "event": "reply",
+      "detail": {
+        "command": "ARM",
+        "line": "ACK,ARM,WHEELS_OFF_GROUND",
+        "elapsedMs": 24.79999999993015
+      }
+    },
+    {
+      "hostMs": 26276.400000000023,
+      "event": "rx",
+      "detail": "54454c2c3531393139332c302c302c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 26277.699999999953,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323336372c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 26278.900000000023,
+      "event": "rx",
+      "detail": "2c300d0a"
+    },
+    {
+      "hostMs": 26324.199999999953,
+      "event": "tx",
+      "detail": "SPEED,1"
+    },
+    {
+      "hostMs": 26324.199999999953,
+      "event": "write_done",
+      "detail": "SPEED,1"
+    },
+    {
+      "hostMs": 26343.300000000047,
+      "event": "rx",
+      "detail": "41434b2c53504545442c310d0a"
+    },
+    {
+      "hostMs": 26343.5,
+      "event": "reply",
+      "detail": {
+        "command": "SPEED,1",
+        "line": "ACK,SPEED,1",
+        "elapsedMs": 19.300000000046566
+      }
+    },
+    {
+      "hostMs": 26647.599999999977,
+      "event": "rx",
+      "detail": "54"
+    },
+    {
+      "hostMs": 26647.599999999977,
+      "event": "rx",
+      "detail": "454c2c3531393537322c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 26648.800000000047,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 26648.800000000047,
+      "event": "rx",
+      "detail": "302c302c302c302c302c302c302c31323336372c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 26649.900000000023,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 26649.900000000023,
+      "event": "rx",
+      "detail": "310d0a"
+    },
+    {
+      "hostMs": 26952,
+      "event": "rx",
+      "detail": "54454c2c3531393837322c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 26952.599999999977,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323337302c302c302c312c302c2d3139"
+    },
+    {
+      "hostMs": 26953.800000000047,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 26953.800000000047,
+      "event": "rx",
+      "detail": "310d0a"
+    },
+    {
+      "hostMs": 27255.099999999977,
+      "event": "rx",
+      "detail": "54454c2c3532303137322c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 27256.300000000047,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323333362c2d31332c2d332c312c2d33"
+    },
+    {
+      "hostMs": 27257.400000000023,
+      "event": "rx",
+      "detail": "2c"
+    },
+    {
+      "hostMs": 27257.5,
+      "event": "rx",
+      "detail": "2d31392c310d0a"
+    },
+    {
+      "hostMs": 27547.5,
+      "event": "rx",
+      "detail": "54454c2c3532303437322c302c312c302c302c302c302c302c302c302c302c30"
+    },
+    {
+      "hostMs": 27548.599999999977,
+      "event": "rx",
+      "detail": "2c302c302c302c302c302c302c302c31323334332c302c312c312c312c2d3139"
+    },
+    {
+      "hostMs": 27549.900000000023,
+      "event": "rx",
+      "detail": "2c310d0a"
+    },
+    {
+      "hostMs": 27720.800000000047,
+      "event": "tx",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 27720.900000000023,
+      "event": "write_done",
+      "detail": "PING"
+    },
+    {
+      "hostMs": 27738.199999999953,
+      "event": "rx",
+      "detail": "50"
+    },
+    {
+      "hostMs": 27738.199999999953,
+      "event": "rx",
+      "detail": "4f4e470d0a"
+    },
+    {
+      "hostMs": 27738.199999999953,
+      "event": "reply",
+      "detail": {
+        "command": "PING",
+        "line": "PONG",
+        "elapsedMs": 17.399999999906868
+      }
+    },
+    {
+      "hostMs": 27795.099999999977,
+      "event": "tx",
+      "detail": "DRV,30,0,0"
+    },
+    {
+      "hostMs": 27795.099999999977,
+      "event": "write_done",
+      "detail": "DRV,30,0,0"
+    },
+    {
+      "hostMs": 27816.900000000023,
+      "event": "rx",
+      "detail": "41434b2c4452560d0a"
+    },
+    {
+      "hostMs": 27816.900000000023,
+      "event": "reply",
+      "detail": {
+        "command": "DRV,30,0,0",
+        "line": "ACK,DRV",
+        "elapsedMs": 21.800000000046566
+      }
+    },
+    {
+      "hostMs": 27817,
+      "event": "tx",
+      "detail": "TEL,1"
+    },
+    {
+      "hostMs": 27817,
+      "event": "write_done",
+      "detail": "TEL,1"
+    },
+    {
+      "hostMs": 27862.400000000023,
+      "event": "rx",
+      "detail": "41"
+    },
+    {
+      "hostMs": 27862.400000000023,
+      "event": "rx",
+      "detail": "434b2c54454c2c310d0a"
+    },
+    {
+      "hostMs": 27862.900000000023,
+      "event": "reply",
+      "detail": {
+        "command": "TEL,1",
+        "line": "ACK,TEL,1",
+        "elapsedMs": 45.90000000002328
+      }
+    },
+    {
+      "hostMs": 27954.199999999953,
+      "event": "tx",
+      "detail": "DKEEP"
+    },
+    {
+      "hostMs": 27954.300000000047,
+      "event": "write_done",
+      "detail": "DKEEP"
+    },
+    {
+      "hostMs": 27974.599999999977,
+      "event": "rx",
+      "detail": "41434b2c444b4545500d0a"
+    },
+    {
+      "hostMs": 27974.599999999977,
+      "event": "reply",
+      "detail": {
+        "command": "DKEEP",
+        "line": "ACK,DKEEP",
+        "elapsedMs": 20.400000000023283
+      }
+    },
+    {
+      "hostMs": 28109.099999999977,
+      "event": "tx",
+      "detail": "DKEEP"
+    },
+    {
+      "hostMs": 28109.199999999953,
+      "event": "write_done",
+      "detail": "DKEEP"
+    },
+    {
+      "hostMs": 28131.800000000047,
+      "event": "rx",
+      "detail": "41434b2c444b4545500d0a"
+    },
+    {
+      "hostMs": 28131.900000000023,
+      "event": "reply",
+      "detail": {
+        "command": "DKEEP",
+        "line": "ACK,DKEEP",
+        "elapsedMs": 22.800000000046566
+      }
+    },
+    {
+      "hostMs": 28232.699999999953,
+      "event": "tx",
+      "detail": "DKEEP"
+    },
+    {
+      "hostMs": 28232.800000000047,
+      "event": "write_done",
+      "detail": "DKEEP"
+    },
+    {
+      "hostMs": 28437.699999999953,
+      "event": "command_timeout",
+      "detail": {
+        "command": "DKEEP",
+        "rxAgeMs": 305.79999999993015,
+        "writeDone": true,
+        "motionReport": {
+          "receivedAt": 25994.699999999953,
+          "source": "ACK,ARM,WHEELS_OFF_GROUND",
+          "mode": 0,
+          "imuReady": false,
+          "enabled": false
+        }
+      }
+    },
+    {
+      "hostMs": 28438.800000000047,
+      "event": "fault",
+      "detail": {
+        "name": "Error",
+        "message": "车端应答超时：DKEEP；仍有回传，但该命令未确认",
+        "pending": "DKEEP"
+      }
+    }
+  ],
+  "clientVersion": "safe-link-v40",
+  "incidentHistory": {
+    "schema": 1,
+    "storageError": "",
+    "incidents": [
+      {
+        "id": "1792939976297-5b57c0cc-1792939976577-0",
+        "sessionId": "1792939976297-5b57c0cc",
+        "mode": "direct_web_serial",
+        "startedAt": 1792939976577,
+        "events": [
+          {
+            "time": 1792939976577,
+            "event": "rx_unknown_line",
+            "reason": "收到未知或损坏的文本行",
+            "detail": {
+              "line": "SPEEDLIMIT,160",
+              "pending": "SPEEDLIMIT"
+            }
+          }
+        ],
+        "rootCause": "未确定；这里记录可观察到的触发条件",
+        "updatedAt": 1792939976577,
+        "outcome": "observed"
+      },
+      {
+        "id": "1792939976297-5b57c0cc-1792939991776-1",
+        "sessionId": "1792939976297-5b57c0cc",
+        "mode": "direct_web_serial",
+        "startedAt": 1792939991776,
+        "events": [
+          {
+            "time": 1792939991776,
+            "event": "rx_corruption",
+            "reason": "收到损坏字节",
+            "detail": {
+              "badBytes": 18
+            }
+          }
+        ],
+        "rootCause": "未确定；这里记录可观察到的触发条件",
+        "updatedAt": 1792939991780,
+        "outcome": "observed",
+        "repeats": 3,
+        "lastDetail": {
+          "badBytes": 5
+        }
+      },
+      {
+        "id": "1792939976297-5b57c0cc-1792939991832-2",
+        "sessionId": "1792939976297-5b57c0cc",
+        "mode": "direct_web_serial",
+        "startedAt": 1792939991832,
+        "events": [
+          {
+            "time": 1792939991832,
+            "event": "rx_unknown_line",
+            "reason": "收到未知或损坏的文本行",
+            "detail": {
+              "line": "DKEEP",
+              "pending": "DKEEP"
+            }
+          }
+        ],
+        "rootCause": "未确定；这里记录可观察到的触发条件",
+        "updatedAt": 1792939991832,
+        "outcome": "observed"
+      },
+      {
+        "id": "1792939976297-5b57c0cc-1792939992024-3",
+        "sessionId": "1792939976297-5b57c0cc",
+        "mode": "direct_web_serial",
+        "startedAt": 1792939992024,
+        "events": [
+          {
+            "time": 1792939992024,
+            "event": "command_timeout",
+            "reason": "命令应答超时",
+            "detail": {
+              "command": "DKEEP",
+              "rxAgeMs": 192.29999999993015,
+              "writeDone": true,
+              "motionReport": {
+                "receivedAt": 9447.900000000023,
+                "source": "ACK,ARM,WHEELS_OFF_GROUND",
+                "mode": 0,
+                "imuReady": false,
+                "enabled": false
+              }
+            }
+          },
+          {
+            "time": 1792939992026,
+            "event": "fault",
+            "reason": "串口会话中断",
+            "detail": {
+              "name": "Error",
+              "message": "车端应答超时：DKEEP；仍有回传，但该命令未确认",
+              "pending": "DKEEP"
+            }
+          }
+        ],
+        "rootCause": "未确定；这里记录可观察到的触发条件",
+        "updatedAt": 1792939992026,
+        "outcome": "disconnected",
+        "evidence": {
+          "mode": "direct_web_serial",
+          "baud": 115200,
+          "port": {
+            "usbProductId": 29987,
+            "usbVendorId": 6790
+          },
+          "verified": false,
+          "recovering": false,
+          "fault": "车端应答超时：DKEEP；仍有回传，但该命令未确认",
+          "stats": {
+            "rxBytes": 3851,
+            "rxLines": 77,
+            "badBytes": 60,
+            "timeouts": 1,
+            "txCommands": 36,
+            "keepAckMisses": 0,
+            "stopRecoveries": 0
+          },
+          "heartbeatAckMisses": 0,
+          "lastRxAt": 17007.400000000023,
+          "motionReport": {
+            "receivedAt": 9447.900000000023,
+            "source": "ACK,ARM,WHEELS_OFF_GROUND",
+            "mode": 0,
+            "imuReady": false,
+            "enabled": false
+          },
+          "traceDropped": 0,
+          "trace": [
+            {
+              "hostMs": 8842.800000000047,
+              "event": "rx",
+              "detail": "2c300d0a"
+            },
+            {
+              "hostMs": 9144.300000000047,
+              "event": "rx",
+              "detail": "54454c2c3530323036302c302c302c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 9145.400000000023,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323337302c302c312c312c312c313237"
+            },
+            {
+              "hostMs": 9146.400000000023,
+              "event": "rx",
+              "detail": "2c300d0a"
+            },
+            {
+              "hostMs": 9423.800000000047,
+              "event": "tx",
+              "detail": "ARM"
+            },
+            {
+              "hostMs": 9423.800000000047,
+              "event": "write_done",
+              "detail": "ARM"
+            },
+            {
+              "hostMs": 9436.699999999953,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 9436.699999999953,
+              "event": "rx",
+              "detail": "454c2c3530323336302c302c302c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 9438.099999999977,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 9438.099999999977,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323336352c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 9439.199999999953,
+              "event": "rx",
+              "detail": "2c300d0a"
+            },
+            {
+              "hostMs": 9447.699999999953,
+              "event": "rx",
+              "detail": "41434b2c41524d2c574845454c535f4f46465f47524f554e440d0a"
+            },
+            {
+              "hostMs": 9447.900000000023,
+              "event": "reply",
+              "detail": {
+                "command": "ARM",
+                "line": "ACK,ARM,WHEELS_OFF_GROUND",
+                "elapsedMs": 24.099999999976717
+              }
+            },
+            {
+              "hostMs": 9740.5,
+              "event": "rx",
+              "detail": "54454c2c3530323636302c302c302c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 9741.699999999953,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336352c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 9742.900000000023,
+              "event": "rx",
+              "detail": "2c300d0a"
+            },
+            {
+              "hostMs": 9767.699999999953,
+              "event": "tx",
+              "detail": "SPEED,1"
+            },
+            {
+              "hostMs": 9767.800000000047,
+              "event": "write_done",
+              "detail": "SPEED,1"
+            },
+            {
+              "hostMs": 9796.300000000047,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 9796.300000000047,
+              "event": "rx",
+              "detail": "434b2c53504545442c310d0a"
+            },
+            {
+              "hostMs": 9796.400000000023,
+              "event": "reply",
+              "detail": {
+                "command": "SPEED,1",
+                "line": "ACK,SPEED,1",
+                "elapsedMs": 28.70000000006985
+              }
+            },
+            {
+              "hostMs": 10089.099999999977,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 10089.099999999977,
+              "event": "rx",
+              "detail": "454c2c3530333031332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 10090.199999999953,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 10090.199999999953,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323336382c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 10091.400000000023,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 10392.699999999953,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 10392.699999999953,
+              "event": "rx",
+              "detail": "454c2c3530333331332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 10393.900000000023,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336382c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 10395.099999999977,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 10395.099999999977,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 10696.599999999977,
+              "event": "rx",
+              "detail": "54454c2c3530333631332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 10697.800000000047,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336332c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 10699.099999999977,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 10989.099999999977,
+              "event": "rx",
+              "detail": "54454c2c3530333931332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 10990.199999999953,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 10990.199999999953,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323335392c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 10991.800000000047,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 11292.599999999977,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 11292.699999999953,
+              "event": "rx",
+              "detail": "454c2c3530343231332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 11293.900000000023,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 11293.900000000023,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323336332c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 11295.099999999977,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 11295.199999999953,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 11596.599999999977,
+              "event": "rx",
+              "detail": "54454c2c3530343531332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 11597.900000000023,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336392c302c302c312c302c313238"
+            },
+            {
+              "hostMs": 11599.199999999953,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 11633.5,
+              "event": "tx",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 11633.599999999977,
+              "event": "write_done",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 11652.400000000023,
+              "event": "rx",
+              "detail": "504f4e470d0a"
+            },
+            {
+              "hostMs": 11652.400000000023,
+              "event": "reply",
+              "detail": {
+                "command": "PING",
+                "line": "PONG",
+                "elapsedMs": 18.900000000023283
+              }
+            },
+            {
+              "hostMs": 11888.900000000023,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 11889,
+              "event": "rx",
+              "detail": "454c2c3530343831332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 11890.199999999953,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 11890.199999999953,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323336382c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 11891.400000000023,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 11891.5,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 12226.400000000023,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 12226.599999999977,
+              "event": "rx",
+              "detail": "454c2c3530353131332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 12227.699999999953,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 12227.800000000047,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323337302c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 12228.900000000023,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 12228.900000000023,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 12507.900000000023,
+              "event": "rx",
+              "detail": "54454c2c3530353431332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 12509.199999999953,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323337312c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 12510.400000000023,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 12510.400000000023,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 12789,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 12789,
+              "event": "rx",
+              "detail": "454c2c3530353731332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 12790.199999999953,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323337332c2d31332c2d312c312c2d31"
+            },
+            {
+              "hostMs": 12791.599999999977,
+              "event": "rx",
+              "detail": "2c3132372c310d0a"
+            },
+            {
+              "hostMs": 13093,
+              "event": "rx",
+              "detail": "54454c2c3530363031332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 13094.199999999953,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336382c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 13095.400000000023,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 13396.5,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 13396.5,
+              "event": "rx",
+              "detail": "454c2c3530363331332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 13397.699999999953,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 13397.699999999953,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323336352c302c302c312c302c313237"
+            },
+            {
+              "hostMs": 13398.900000000023,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 13398.900000000023,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 13629.599999999977,
+              "event": "tx",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 13629.699999999953,
+              "event": "write_done",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 13655,
+              "event": "rx",
+              "detail": "504f4e470d0a"
+            },
+            {
+              "hostMs": 13655,
+              "event": "reply",
+              "detail": {
+                "command": "PING",
+                "line": "PONG",
+                "elapsedMs": 25.400000000023283
+              }
+            },
+            {
+              "hostMs": 13745.300000000047,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 13745.300000000047,
+              "event": "rx",
+              "detail": "454c2c3530363636332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 13746.5,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 13746.5,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323336362c302c2d322c312c2d322c31"
+            },
+            {
+              "hostMs": 13747.800000000047,
+              "event": "rx",
+              "detail": "32372c310d0a"
+            },
+            {
+              "hostMs": 14049,
+              "event": "rx",
+              "detail": "54454c2c3530363936332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 14050.300000000047,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 14050.300000000047,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323336362c302c2d312c312c2d312c31"
+            },
+            {
+              "hostMs": 14051.5,
+              "event": "rx",
+              "detail": "32362c310d0a"
+            },
+            {
+              "hostMs": 14341.599999999977,
+              "event": "rx",
+              "detail": "54454c2c3530373236332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 14342.699999999953,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336362c302c302c312c302c313236"
+            },
+            {
+              "hostMs": 14344,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 14344,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 14645.400000000023,
+              "event": "rx",
+              "detail": "54454c2c3530373536332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 14646.599999999977,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336352c302c302c312c302c313236"
+            },
+            {
+              "hostMs": 14647.800000000047,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 14949.199999999953,
+              "event": "rx",
+              "detail": "54454c2c3530373836332c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 14950.5,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336372c2d36312c2d31332c312c2d"
+            },
+            {
+              "hostMs": 14951.599999999977,
+              "event": "rx",
+              "detail": "31"
+            },
+            {
+              "hostMs": 14951.699999999953,
+              "event": "rx",
+              "detail": "332c3132362c310d0a"
+            },
+            {
+              "hostMs": 15117.400000000023,
+              "event": "tx",
+              "detail": "TEL,1"
+            },
+            {
+              "hostMs": 15117.5,
+              "event": "write_done",
+              "detail": "TEL,1"
+            },
+            {
+              "hostMs": 15139.699999999953,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 15139.800000000047,
+              "event": "rx",
+              "detail": "434b2c54454c2c310d0a"
+            },
+            {
+              "hostMs": 15139.900000000023,
+              "event": "reply",
+              "detail": {
+                "command": "TEL,1",
+                "line": "ACK,TEL,1",
+                "elapsedMs": 22.5
+              }
+            },
+            {
+              "hostMs": 15444,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 15444.099999999977,
+              "event": "rx",
+              "detail": "454c2c3530383336392c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 15445.199999999953,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 15445.199999999953,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323335362c302c302c312c302c313236"
+            },
+            {
+              "hostMs": 15446.300000000047,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 15446.400000000023,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 15747.900000000023,
+              "event": "rx",
+              "detail": "54454c2c3530383636392c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 15749,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336302c302c302c312c302c313236"
+            },
+            {
+              "hostMs": 15750.199999999953,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 15750.300000000047,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 16051.900000000023,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 16051.900000000023,
+              "event": "rx",
+              "detail": "454c2c3530383936392c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 16052.800000000047,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 16052.800000000047,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323336322c302c302c312c302c313236"
+            },
+            {
+              "hostMs": 16053.900000000023,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 16053.900000000023,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 16344.099999999977,
+              "event": "rx",
+              "detail": "54454c2c3530393236392c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 16345.199999999953,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 16345.199999999953,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323336332c302c2d322c312c2d322c31"
+            },
+            {
+              "hostMs": 16346.400000000023,
+              "event": "rx",
+              "detail": "32"
+            },
+            {
+              "hostMs": 16346.400000000023,
+              "event": "rx",
+              "detail": "362c310d0a"
+            },
+            {
+              "hostMs": 16537.300000000047,
+              "event": "tx",
+              "detail": "DRV,30,0,0"
+            },
+            {
+              "hostMs": 16537.300000000047,
+              "event": "write_done",
+              "detail": "DRV,30,0,0"
+            },
+            {
+              "hostMs": 16558.099999999977,
+              "event": "rx",
+              "detail": "41434b2c4452560d0a"
+            },
+            {
+              "hostMs": 16558.199999999953,
+              "event": "reply",
+              "detail": {
+                "command": "DRV,30,0,0",
+                "line": "ACK,DRV",
+                "elapsedMs": 20.899999999906868
+              }
+            },
+            {
+              "hostMs": 16558.300000000047,
+              "event": "tx",
+              "detail": "TEL,1"
+            },
+            {
+              "hostMs": 16558.300000000047,
+              "event": "write_done",
+              "detail": "TEL,1"
+            },
+            {
+              "hostMs": 16579.900000000023,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 16580,
+              "event": "rx",
+              "detail": "434b2c54454c2c310d0a"
+            },
+            {
+              "hostMs": 16580.199999999953,
+              "event": "reply",
+              "detail": {
+                "command": "TEL,1",
+                "line": "ACK,TEL,1",
+                "elapsedMs": 21.899999999906868
+              }
+            },
+            {
+              "hostMs": 16710.199999999953,
+              "event": "tx",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 16710.300000000047,
+              "event": "write_done",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 16737.400000000023,
+              "event": "rx",
+              "detail": "41434b2c444b4545500d0a"
+            },
+            {
+              "hostMs": 16737.5,
+              "event": "reply",
+              "detail": {
+                "command": "DKEEP",
+                "line": "ACK,DKEEP",
+                "elapsedMs": 27.300000000046566
+              }
+            },
+            {
+              "hostMs": 16833.699999999953,
+              "event": "tx",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 16833.699999999953,
+              "event": "write_done",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 16861.199999999953,
+              "event": "rx",
+              "detail": "41434b2c444b4545500d0a"
+            },
+            {
+              "hostMs": 16861.199999999953,
+              "event": "reply",
+              "detail": {
+                "command": "DKEEP",
+                "line": "ACK,DKEEP",
+                "elapsedMs": 27.599999999976717
+              }
+            },
+            {
+              "hostMs": 16951.800000000047,
+              "event": "rx",
+              "detail": "862813cac2b2ca6282628a626a9a82626a9a82626a9a82626a9a82626a8a8a62"
+            },
+            {
+              "hostMs": 16951.900000000023,
+              "event": "rx_corruption",
+              "detail": {
+                "badBytes": 18
+              }
+            },
+            {
+              "hostMs": 16954.699999999953,
+              "event": "rx",
+              "detail": "6a8aaa626a8aba626aca626a9a8292626a92b2a2626a92aaca626a9a92ca626a9a82626a9a82626a9a82626a9a82628a929aa2b2626a8ab29262aa92ca628a62"
+            },
+            {
+              "hostMs": 16954.699999999953,
+              "event": "rx_corruption",
+              "detail": {
+                "badBytes": 37
+              }
+            },
+            {
+              "hostMs": 16955.5,
+              "event": "rx",
+              "detail": "aa92ca628afe"
+            },
+            {
+              "hostMs": 16955.5,
+              "event": "rx_corruption",
+              "detail": {
+                "badBytes": 5
+              }
+            },
+            {
+              "hostMs": 16987.699999999953,
+              "event": "tx",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 16987.699999999953,
+              "event": "write_done",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 17007.400000000023,
+              "event": "rx",
+              "detail": "0a"
+            },
+            {
+              "hostMs": 17007.400000000023,
+              "event": "rx",
+              "detail": "444b4545500a"
+            },
+            {
+              "hostMs": 17007.400000000023,
+              "event": "rx_unknown_line",
+              "detail": {
+                "line": "DKEEP",
+                "pending": "DKEEP"
+              }
+            },
+            {
+              "hostMs": 17199.699999999953,
+              "event": "command_timeout",
+              "detail": {
+                "command": "DKEEP",
+                "rxAgeMs": 192.29999999993015,
+                "writeDone": true,
+                "motionReport": {
+                  "receivedAt": 9447.900000000023,
+                  "source": "ACK,ARM,WHEELS_OFF_GROUND",
+                  "mode": 0,
+                  "imuReady": false,
+                  "enabled": false
+                }
+              }
+            },
+            {
+              "hostMs": 17201.699999999953,
+              "event": "fault",
+              "detail": {
+                "name": "Error",
+                "message": "车端应答超时：DKEEP；仍有回传，但该命令未确认",
+                "pending": "DKEEP"
+              }
+            }
+          ],
+          "uiTrace": [
+            {
+              "hostMs": 2011.8000000000466,
+              "event": "tof_zone",
+              "detail": {
+                "tick": 494939,
+                "zone": "invalid",
+                "mm": -1,
+                "age": 41,
+                "errors": 0
+              }
+            },
+            {
+              "hostMs": 16537,
+              "event": "keydown",
+              "detail": {
+                "key": "w",
+                "keys": [
+                  "w"
+                ]
+              }
+            }
+          ],
+          "inputState": {
+            "keys": [
+              "w"
+            ],
+            "vector": {
+              "forward": 1,
+              "left": 0,
+              "rotate": 0
+            },
+            "ownsAngleMotion": false,
+            "ownsSpeedMotion": true,
+            "speedOnlyMode": true
+          }
+        }
+      },
+      {
+        "id": "1792939994414-ab50cb6e-1792939994678-4",
+        "sessionId": "1792939994414-ab50cb6e",
+        "mode": "direct_web_serial",
+        "startedAt": 1792939994678,
+        "events": [
+          {
+            "time": 1792939994678,
+            "event": "rx_unknown_line",
+            "reason": "收到未知或损坏的文本行",
+            "detail": {
+              "line": "SPEEDLIMIT,160",
+              "pending": "SPEEDLIMIT"
+            }
+          }
+        ],
+        "rootCause": "未确定；这里记录可观察到的触发条件",
+        "updatedAt": 1792939994678,
+        "outcome": "observed",
+        "evidence": {
+          "mode": "direct_web_serial",
+          "baud": 115200,
+          "port": {
+            "usbProductId": 29987,
+            "usbVendorId": 6790
+          },
+          "verified": true,
+          "recovering": false,
+          "stats": {
+            "rxBytes": 182,
+            "rxLines": 10,
+            "badBytes": 0,
+            "timeouts": 0,
+            "txCommands": 10,
+            "keepAckMisses": 0,
+            "stopRecoveries": 0
+          },
+          "heartbeatAckMisses": 0,
+          "lastRxAt": 19853.699999999953,
+          "motionReport": {
+            "receivedAt": 19639.699999999953,
+            "source": "ACK,DISARM",
+            "mode": 0,
+            "imuReady": false,
+            "enabled": false
+          },
+          "traceDropped": 0,
+          "trace": [
+            {
+              "hostMs": 19595.800000000047,
+              "event": "tx",
+              "detail": "STOP"
+            },
+            {
+              "hostMs": 19595.900000000023,
+              "event": "write_done",
+              "detail": "STOP"
+            },
+            {
+              "hostMs": 19617.099999999977,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 19617.099999999977,
+              "event": "rx",
+              "detail": "434b2c53544f500d0a"
+            },
+            {
+              "hostMs": 19617.199999999953,
+              "event": "reply",
+              "detail": {
+                "command": "STOP",
+                "line": "ACK,STOP",
+                "elapsedMs": 21.399999999906868
+              }
+            },
+            {
+              "hostMs": 19617.199999999953,
+              "event": "tx",
+              "detail": "DISARM"
+            },
+            {
+              "hostMs": 19617.300000000047,
+              "event": "write_done",
+              "detail": "DISARM"
+            },
+            {
+              "hostMs": 19639.599999999977,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 19639.599999999977,
+              "event": "rx",
+              "detail": "434b2c44495341524d0d0a"
+            },
+            {
+              "hostMs": 19639.699999999953,
+              "event": "reply",
+              "detail": {
+                "command": "DISARM",
+                "line": "ACK,DISARM",
+                "elapsedMs": 22.5
+              }
+            },
+            {
+              "hostMs": 19639.699999999953,
+              "event": "tx",
+              "detail": "TEL,0"
+            },
+            {
+              "hostMs": 19639.699999999953,
+              "event": "write_done",
+              "detail": "TEL,0"
+            },
+            {
+              "hostMs": 19662.099999999977,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 19662.199999999953,
+              "event": "rx",
+              "detail": "434b2c54454c2c300d0a"
+            },
+            {
+              "hostMs": 19662.300000000047,
+              "event": "reply",
+              "detail": {
+                "command": "TEL,0",
+                "line": "ACK,TEL,0",
+                "elapsedMs": 22.600000000093132
+              }
+            },
+            {
+              "hostMs": 19662.300000000047,
+              "event": "tx",
+              "detail": "TOF,0"
+            },
+            {
+              "hostMs": 19662.300000000047,
+              "event": "write_done",
+              "detail": "TOF,0"
+            },
+            {
+              "hostMs": 19695.900000000023,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 19695.900000000023,
+              "event": "rx",
+              "detail": "434b2c544f462c300d0a"
+            },
+            {
+              "hostMs": 19695.900000000023,
+              "event": "reply",
+              "detail": {
+                "command": "TOF,0",
+                "line": "ACK,TOF,0",
+                "elapsedMs": 33.59999999997672
+              }
+            },
+            {
+              "hostMs": 19696,
+              "event": "tx",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 19696,
+              "event": "write_done",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 19718.300000000047,
+              "event": "rx",
+              "detail": "50"
+            },
+            {
+              "hostMs": 19718.400000000023,
+              "event": "rx",
+              "detail": "4f4e470d0a"
+            },
+            {
+              "hostMs": 19718.400000000023,
+              "event": "reply",
+              "detail": {
+                "command": "PING",
+                "line": "PONG",
+                "elapsedMs": 22.5
+              }
+            },
+            {
+              "hostMs": 19718.400000000023,
+              "event": "verified",
+              "detail": {
+                "usbProductId": 29987,
+                "usbVendorId": 6790
+              }
+            },
+            {
+              "hostMs": 19718.5,
+              "event": "tx",
+              "detail": "VER"
+            },
+            {
+              "hostMs": 19718.5,
+              "event": "write_done",
+              "detail": "VER"
+            },
+            {
+              "hostMs": 19740.900000000023,
+              "event": "rx",
+              "detail": "56"
+            },
+            {
+              "hostMs": 19740.900000000023,
+              "event": "rx",
+              "detail": "45522c564754365f424d35305f41545449545544455f5232350d0a"
+            },
+            {
+              "hostMs": 19741.099999999977,
+              "event": "reply",
+              "detail": {
+                "command": "VER",
+                "line": "VER,VGT6_BM50_ATTITUDE_R25",
+                "elapsedMs": 22.599999999976717
+              }
+            },
+            {
+              "hostMs": 19741.099999999977,
+              "event": "tx",
+              "detail": "UART"
+            },
+            {
+              "hostMs": 19741.199999999953,
+              "event": "write_done",
+              "detail": "UART"
+            },
+            {
+              "hostMs": 19774.900000000023,
+              "event": "rx",
+              "detail": "554152542c3131353230302c34323030303030302c3336342c307830302c302c"
+            },
+            {
+              "hostMs": 19776,
+              "event": "rx",
+              "detail": "30"
+            },
+            {
+              "hostMs": 19776,
+              "event": "rx",
+              "detail": "2c302c302c300d0a"
+            },
+            {
+              "hostMs": 19776.099999999977,
+              "event": "reply",
+              "detail": {
+                "command": "UART",
+                "line": "UART,115200,42000000,364,0x00,0,0,0,0,0",
+                "elapsedMs": 35
+              }
+            },
+            {
+              "hostMs": 19776.099999999977,
+              "event": "tx",
+              "detail": "LINK"
+            },
+            {
+              "hostMs": 19776.099999999977,
+              "event": "write_done",
+              "detail": "LINK"
+            },
+            {
+              "hostMs": 19797.199999999953,
+              "event": "rx",
+              "detail": "4c494e4b2c313330302c3137362c302c302c302c300d0a"
+            },
+            {
+              "hostMs": 19797.300000000047,
+              "event": "reply",
+              "detail": {
+                "command": "LINK",
+                "line": "LINK,1300,176,0,0,0,0",
+                "elapsedMs": 21.20000000006985
+              }
+            },
+            {
+              "hostMs": 19797.300000000047,
+              "event": "tx",
+              "detail": "STACK"
+            },
+            {
+              "hostMs": 19797.300000000047,
+              "event": "write_done",
+              "detail": "STACK"
+            },
+            {
+              "hostMs": 19830.800000000047,
+              "event": "rx",
+              "detail": "53"
+            },
+            {
+              "hostMs": 19830.800000000047,
+              "event": "rx",
+              "detail": "5441434b2c343039362c323435362c313634302c310d0a"
+            },
+            {
+              "hostMs": 19831,
+              "event": "reply",
+              "detail": {
+                "command": "STACK",
+                "line": "STACK,4096,2456,1640,1",
+                "elapsedMs": 33.699999999953434
+              }
+            },
+            {
+              "hostMs": 19831,
+              "event": "tx",
+              "detail": "SPEEDLIMIT"
+            },
+            {
+              "hostMs": 19831,
+              "event": "write_done",
+              "detail": "SPEEDLIMIT"
+            },
+            {
+              "hostMs": 19853.699999999953,
+              "event": "rx",
+              "detail": "53"
+            },
+            {
+              "hostMs": 19853.699999999953,
+              "event": "rx",
+              "detail": "504545444c494d49542c3136300d0a"
+            },
+            {
+              "hostMs": 19853.699999999953,
+              "event": "rx_unknown_line",
+              "detail": {
+                "line": "SPEEDLIMIT,160",
+                "pending": "SPEEDLIMIT"
+              }
+            }
+          ],
+          "uiTrace": [
+            {
+              "hostMs": 2011.8000000000466,
+              "event": "tof_zone",
+              "detail": {
+                "tick": 494939,
+                "zone": "invalid",
+                "mm": -1,
+                "age": 41,
+                "errors": 0
+              }
+            },
+            {
+              "hostMs": 16537,
+              "event": "keydown",
+              "detail": {
+                "key": "w",
+                "keys": [
+                  "w"
+                ]
+              }
+            },
+            {
+              "hostMs": 18350.699999999953,
+              "event": "keyup",
+              "detail": {
+                "key": "w",
+                "keys": []
+              }
+            }
+          ],
+          "inputState": {
+            "keys": [],
+            "vector": {
+              "forward": 0,
+              "left": 0,
+              "rotate": 0
+            },
+            "ownsAngleMotion": false,
+            "ownsSpeedMotion": false,
+            "speedOnlyMode": false
+          }
+        }
+      },
+      {
+        "id": "1792939994414-ab50cb6e-1792940003262-5",
+        "sessionId": "1792939994414-ab50cb6e",
+        "mode": "direct_web_serial",
+        "startedAt": 1792940003262,
+        "events": [
+          {
+            "time": 1792940003262,
+            "event": "command_timeout",
+            "reason": "命令应答超时",
+            "detail": {
+              "command": "DKEEP",
+              "rxAgeMs": 305.79999999993015,
+              "writeDone": true,
+              "motionReport": {
+                "receivedAt": 25994.699999999953,
+                "source": "ACK,ARM,WHEELS_OFF_GROUND",
+                "mode": 0,
+                "imuReady": false,
+                "enabled": false
+              }
+            }
+          },
+          {
+            "time": 1792940003263,
+            "event": "fault",
+            "reason": "串口会话中断",
+            "detail": {
+              "name": "Error",
+              "message": "车端应答超时：DKEEP；仍有回传，但该命令未确认",
+              "pending": "DKEEP"
+            }
+          }
+        ],
+        "rootCause": "未确定；这里记录可观察到的触发条件",
+        "updatedAt": 1792940003263,
+        "outcome": "disconnected",
+        "evidence": {
+          "mode": "direct_web_serial",
+          "baud": 115200,
+          "port": {
+            "usbProductId": 29987,
+            "usbVendorId": 6790
+          },
+          "verified": false,
+          "recovering": false,
+          "fault": "车端应答超时：DKEEP；仍有回传，但该命令未确认",
+          "stats": {
+            "rxBytes": 2153,
+            "rxLines": 51,
+            "badBytes": 0,
+            "timeouts": 1,
+            "txCommands": 34,
+            "keepAckMisses": 0,
+            "stopRecoveries": 0
+          },
+          "heartbeatAckMisses": 0,
+          "lastRxAt": 28131.800000000047,
+          "motionReport": {
+            "receivedAt": 25994.699999999953,
+            "source": "ACK,ARM,WHEELS_OFF_GROUND",
+            "mode": 0,
+            "imuReady": false,
+            "enabled": false
+          },
+          "traceDropped": 0,
+          "trace": [
+            {
+              "hostMs": 20022.300000000047,
+              "event": "write_done",
+              "detail": "HEADGET"
+            },
+            {
+              "hostMs": 20044.599999999977,
+              "event": "rx",
+              "detail": "48"
+            },
+            {
+              "hostMs": 20044.699999999953,
+              "event": "rx",
+              "detail": "4541445049442c362e303030302c312e323530302c38302c32302c445f4d45"
+            },
+            {
+              "hostMs": 20045.800000000047,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 20045.900000000023,
+              "event": "rx",
+              "detail": "530d0a"
+            },
+            {
+              "hostMs": 20046,
+              "event": "reply",
+              "detail": {
+                "command": "HEADGET",
+                "line": "HEADPID,6.0000,1.2500,80,20,D_MEAS",
+                "elapsedMs": 23.800000000046566
+              }
+            },
+            {
+              "hostMs": 20046,
+              "event": "tx",
+              "detail": "ANGLESTATUS"
+            },
+            {
+              "hostMs": 20046,
+              "event": "write_done",
+              "detail": "ANGLESTATUS"
+            },
+            {
+              "hostMs": 20067.900000000023,
+              "event": "rx",
+              "detail": "4154454c2c3531323939362c302c312c302c302c302c302c2d31392c302c302c"
+            },
+            {
+              "hostMs": 20068.5,
+              "event": "rx",
+              "detail": "302c302c31323336360d0a"
+            },
+            {
+              "hostMs": 20068.800000000047,
+              "event": "reply",
+              "detail": {
+                "command": "ANGLESTATUS",
+                "line": "ATEL,512996,0,1,0,0,0,0,-19,0,0,0,0,12366",
+                "elapsedMs": 22.800000000046566
+              }
+            },
+            {
+              "hostMs": 20068.800000000047,
+              "event": "tx",
+              "detail": "TOF"
+            },
+            {
+              "hostMs": 20068.800000000047,
+              "event": "write_done",
+              "detail": "TOF"
+            },
+            {
+              "hostMs": 20089.699999999953,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 20089.699999999953,
+              "event": "rx",
+              "detail": "4f462c3531333031372c312c302c2d312c342c372c300d0a"
+            },
+            {
+              "hostMs": 20089.800000000047,
+              "event": "reply",
+              "detail": {
+                "command": "TOF",
+                "line": "TOF,513017,1,0,-1,4,7,0",
+                "elapsedMs": 21
+              }
+            },
+            {
+              "hostMs": 20089.900000000023,
+              "event": "tx",
+              "detail": "STACK"
+            },
+            {
+              "hostMs": 20089.900000000023,
+              "event": "write_done",
+              "detail": "STACK"
+            },
+            {
+              "hostMs": 20111.900000000023,
+              "event": "rx",
+              "detail": "53"
+            },
+            {
+              "hostMs": 20112,
+              "event": "rx",
+              "detail": "5441434b2c343039362c323537362c313532302c310d0a"
+            },
+            {
+              "hostMs": 20112.199999999953,
+              "event": "reply",
+              "detail": {
+                "command": "STACK",
+                "line": "STACK,4096,2576,1520,1",
+                "elapsedMs": 22.29999999993015
+              }
+            },
+            {
+              "hostMs": 21472,
+              "event": "tx",
+              "detail": "ARM"
+            },
+            {
+              "hostMs": 21472.099999999977,
+              "event": "write_done",
+              "detail": "ARM"
+            },
+            {
+              "hostMs": 21495.699999999953,
+              "event": "rx",
+              "detail": "41434b2c41524d2c574845454c535f4f46465f47524f554e440d0a"
+            },
+            {
+              "hostMs": 21495.699999999953,
+              "event": "reply",
+              "detail": {
+                "command": "ARM",
+                "line": "ACK,ARM,WHEELS_OFF_GROUND",
+                "elapsedMs": 23.699999999953434
+              }
+            },
+            {
+              "hostMs": 21801.099999999977,
+              "event": "tx",
+              "detail": "SPEED,1"
+            },
+            {
+              "hostMs": 21801.099999999977,
+              "event": "write_done",
+              "detail": "SPEED,1"
+            },
+            {
+              "hostMs": 21821.599999999977,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 21821.599999999977,
+              "event": "rx",
+              "detail": "434b2c53504545442c310d0a"
+            },
+            {
+              "hostMs": 21821.699999999953,
+              "event": "reply",
+              "detail": {
+                "command": "SPEED,1",
+                "line": "ACK,SPEED,1",
+                "elapsedMs": 20.599999999976717
+              }
+            },
+            {
+              "hostMs": 22125.699999999953,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 22125.699999999953,
+              "event": "rx",
+              "detail": "454c2c3531353035302c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 22127,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336382c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 22128.099999999977,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 22128.099999999977,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 22429.599999999977,
+              "event": "rx",
+              "detail": "54454c2c3531353335302c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 22430.800000000047,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 22431,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323337332c2d31332c2d332c312c2d33"
+            },
+            {
+              "hostMs": 22432.099999999977,
+              "event": "rx",
+              "detail": "2c2d31392c310d0a"
+            },
+            {
+              "hostMs": 22733.400000000023,
+              "event": "rx",
+              "detail": "54454c2c3531353635302c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 22734.5,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323337342c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 22735.699999999953,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 23025.900000000023,
+              "event": "rx",
+              "detail": "54454c2c3531353935302c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 23027,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323337302c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 23028.199999999953,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 23340.900000000023,
+              "event": "rx",
+              "detail": "54454c2c3531363235302c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 23342.099999999977,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336372c31322c342c312c342c2d31"
+            },
+            {
+              "hostMs": 23343.800000000047,
+              "event": "rx",
+              "detail": "392c310d0a"
+            },
+            {
+              "hostMs": 23633.900000000023,
+              "event": "rx",
+              "detail": "54454c2c3531363535302c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 23634.400000000023,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336392c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 23635.599999999977,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 23724.699999999953,
+              "event": "tx",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 23724.800000000047,
+              "event": "write_done",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 23745,
+              "event": "rx",
+              "detail": "50"
+            },
+            {
+              "hostMs": 23745,
+              "event": "rx",
+              "detail": "4f4e470d0a"
+            },
+            {
+              "hostMs": 23745,
+              "event": "reply",
+              "detail": {
+                "command": "PING",
+                "line": "PONG",
+                "elapsedMs": 20.300000000046566
+              }
+            },
+            {
+              "hostMs": 23925.599999999977,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 23925.599999999977,
+              "event": "rx",
+              "detail": "454c2c3531363835302c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 23926.800000000047,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323337322c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 23928.099999999977,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 24240.699999999953,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 24240.699999999953,
+              "event": "rx",
+              "detail": "454c2c3531373135302c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 24241.800000000047,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336382c302c2d312c312c2d312c2d"
+            },
+            {
+              "hostMs": 24242.900000000023,
+              "event": "rx",
+              "detail": "31"
+            },
+            {
+              "hostMs": 24242.900000000023,
+              "event": "rx",
+              "detail": "392c310d0a"
+            },
+            {
+              "hostMs": 24380.800000000047,
+              "event": "tx",
+              "detail": "STOP"
+            },
+            {
+              "hostMs": 24380.900000000023,
+              "event": "write_done",
+              "detail": "STOP"
+            },
+            {
+              "hostMs": 24408.699999999953,
+              "event": "rx",
+              "detail": "41434b2c53544f500d0a"
+            },
+            {
+              "hostMs": 24408.900000000023,
+              "event": "reply",
+              "detail": {
+                "command": "STOP",
+                "line": "ACK,STOP",
+                "elapsedMs": 28.20000000006985
+              }
+            },
+            {
+              "hostMs": 24408.900000000023,
+              "event": "tx",
+              "detail": "ANGLESTATUS"
+            },
+            {
+              "hostMs": 24408.900000000023,
+              "event": "write_done",
+              "detail": "ANGLESTATUS"
+            },
+            {
+              "hostMs": 24442.699999999953,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 24442.800000000047,
+              "event": "rx",
+              "detail": "54454c2c3531373336302c302c312c302c302c302c302c2d31392c302c302c"
+            },
+            {
+              "hostMs": 24443.900000000023,
+              "event": "rx",
+              "detail": "30"
+            },
+            {
+              "hostMs": 24444,
+              "event": "rx",
+              "detail": "2c302c31323337320d0a"
+            },
+            {
+              "hostMs": 24444.199999999953,
+              "event": "reply",
+              "detail": {
+                "command": "ANGLESTATUS",
+                "line": "ATEL,517360,0,1,0,0,0,0,-19,0,0,0,0,12372",
+                "elapsedMs": 35.29999999993015
+              }
+            },
+            {
+              "hostMs": 24444.199999999953,
+              "event": "tx",
+              "detail": "TEL,1"
+            },
+            {
+              "hostMs": 24444.199999999953,
+              "event": "write_done",
+              "detail": "TEL,1"
+            },
+            {
+              "hostMs": 24465,
+              "event": "rx",
+              "detail": "41434b2c54454c2c310d0a"
+            },
+            {
+              "hostMs": 24465.300000000047,
+              "event": "reply",
+              "detail": {
+                "command": "TEL,1",
+                "line": "ACK,TEL,1",
+                "elapsedMs": 21.100000000093132
+              }
+            },
+            {
+              "hostMs": 24769.199999999953,
+              "event": "rx",
+              "detail": "54454c2c3531373639332c302c302c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 24770.400000000023,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323337382c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 24771.5,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 24771.599999999977,
+              "event": "rx",
+              "detail": "300d0a"
+            },
+            {
+              "hostMs": 25072.900000000023,
+              "event": "rx",
+              "detail": "54454c2c3531373939332c302c302c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 25074,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323337332c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 25075.199999999953,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 25075.199999999953,
+              "event": "rx",
+              "detail": "300d0a"
+            },
+            {
+              "hostMs": 25376.300000000047,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 25376.300000000047,
+              "event": "rx",
+              "detail": "454c2c3531383239332c302c302c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 25377.699999999953,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336322c302c322c312c322c2d3139"
+            },
+            {
+              "hostMs": 25378.800000000047,
+              "event": "rx",
+              "detail": "2c300d0a"
+            },
+            {
+              "hostMs": 25669,
+              "event": "rx",
+              "detail": "54454c2c3531383539332c302c302c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 25670.300000000047,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336302c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 25671.5,
+              "event": "rx",
+              "detail": "2c300d0a"
+            },
+            {
+              "hostMs": 25726.900000000023,
+              "event": "tx",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 25726.900000000023,
+              "event": "write_done",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 25747.099999999977,
+              "event": "rx",
+              "detail": "50"
+            },
+            {
+              "hostMs": 25747.099999999977,
+              "event": "rx",
+              "detail": "4f4e470d0a"
+            },
+            {
+              "hostMs": 25747.099999999977,
+              "event": "reply",
+              "detail": {
+                "command": "PING",
+                "line": "PONG",
+                "elapsedMs": 20.199999999953434
+              }
+            },
+            {
+              "hostMs": 25969.900000000023,
+              "event": "tx",
+              "detail": "ARM"
+            },
+            {
+              "hostMs": 25969.900000000023,
+              "event": "write_done",
+              "detail": "ARM"
+            },
+            {
+              "hostMs": 25972.5,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 25972.5,
+              "event": "rx",
+              "detail": "454c2c3531383839332c302c302c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 25973.800000000047,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336312c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 25974.900000000023,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 25974.900000000023,
+              "event": "rx",
+              "detail": "300d0a"
+            },
+            {
+              "hostMs": 25994.599999999977,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 25994.599999999977,
+              "event": "rx",
+              "detail": "434b2c41524d2c574845454c535f4f46465f47524f554e440d0a"
+            },
+            {
+              "hostMs": 25994.699999999953,
+              "event": "reply",
+              "detail": {
+                "command": "ARM",
+                "line": "ACK,ARM,WHEELS_OFF_GROUND",
+                "elapsedMs": 24.79999999993015
+              }
+            },
+            {
+              "hostMs": 26276.400000000023,
+              "event": "rx",
+              "detail": "54454c2c3531393139332c302c302c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 26277.699999999953,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323336372c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 26278.900000000023,
+              "event": "rx",
+              "detail": "2c300d0a"
+            },
+            {
+              "hostMs": 26324.199999999953,
+              "event": "tx",
+              "detail": "SPEED,1"
+            },
+            {
+              "hostMs": 26324.199999999953,
+              "event": "write_done",
+              "detail": "SPEED,1"
+            },
+            {
+              "hostMs": 26343.300000000047,
+              "event": "rx",
+              "detail": "41434b2c53504545442c310d0a"
+            },
+            {
+              "hostMs": 26343.5,
+              "event": "reply",
+              "detail": {
+                "command": "SPEED,1",
+                "line": "ACK,SPEED,1",
+                "elapsedMs": 19.300000000046566
+              }
+            },
+            {
+              "hostMs": 26647.599999999977,
+              "event": "rx",
+              "detail": "54"
+            },
+            {
+              "hostMs": 26647.599999999977,
+              "event": "rx",
+              "detail": "454c2c3531393537322c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 26648.800000000047,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 26648.800000000047,
+              "event": "rx",
+              "detail": "302c302c302c302c302c302c302c31323336372c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 26649.900000000023,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 26649.900000000023,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 26952,
+              "event": "rx",
+              "detail": "54454c2c3531393837322c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 26952.599999999977,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323337302c302c302c312c302c2d3139"
+            },
+            {
+              "hostMs": 26953.800000000047,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 26953.800000000047,
+              "event": "rx",
+              "detail": "310d0a"
+            },
+            {
+              "hostMs": 27255.099999999977,
+              "event": "rx",
+              "detail": "54454c2c3532303137322c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 27256.300000000047,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323333362c2d31332c2d332c312c2d33"
+            },
+            {
+              "hostMs": 27257.400000000023,
+              "event": "rx",
+              "detail": "2c"
+            },
+            {
+              "hostMs": 27257.5,
+              "event": "rx",
+              "detail": "2d31392c310d0a"
+            },
+            {
+              "hostMs": 27547.5,
+              "event": "rx",
+              "detail": "54454c2c3532303437322c302c312c302c302c302c302c302c302c302c302c30"
+            },
+            {
+              "hostMs": 27548.599999999977,
+              "event": "rx",
+              "detail": "2c302c302c302c302c302c302c302c31323334332c302c312c312c312c2d3139"
+            },
+            {
+              "hostMs": 27549.900000000023,
+              "event": "rx",
+              "detail": "2c310d0a"
+            },
+            {
+              "hostMs": 27720.800000000047,
+              "event": "tx",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 27720.900000000023,
+              "event": "write_done",
+              "detail": "PING"
+            },
+            {
+              "hostMs": 27738.199999999953,
+              "event": "rx",
+              "detail": "50"
+            },
+            {
+              "hostMs": 27738.199999999953,
+              "event": "rx",
+              "detail": "4f4e470d0a"
+            },
+            {
+              "hostMs": 27738.199999999953,
+              "event": "reply",
+              "detail": {
+                "command": "PING",
+                "line": "PONG",
+                "elapsedMs": 17.399999999906868
+              }
+            },
+            {
+              "hostMs": 27795.099999999977,
+              "event": "tx",
+              "detail": "DRV,30,0,0"
+            },
+            {
+              "hostMs": 27795.099999999977,
+              "event": "write_done",
+              "detail": "DRV,30,0,0"
+            },
+            {
+              "hostMs": 27816.900000000023,
+              "event": "rx",
+              "detail": "41434b2c4452560d0a"
+            },
+            {
+              "hostMs": 27816.900000000023,
+              "event": "reply",
+              "detail": {
+                "command": "DRV,30,0,0",
+                "line": "ACK,DRV",
+                "elapsedMs": 21.800000000046566
+              }
+            },
+            {
+              "hostMs": 27817,
+              "event": "tx",
+              "detail": "TEL,1"
+            },
+            {
+              "hostMs": 27817,
+              "event": "write_done",
+              "detail": "TEL,1"
+            },
+            {
+              "hostMs": 27862.400000000023,
+              "event": "rx",
+              "detail": "41"
+            },
+            {
+              "hostMs": 27862.400000000023,
+              "event": "rx",
+              "detail": "434b2c54454c2c310d0a"
+            },
+            {
+              "hostMs": 27862.900000000023,
+              "event": "reply",
+              "detail": {
+                "command": "TEL,1",
+                "line": "ACK,TEL,1",
+                "elapsedMs": 45.90000000002328
+              }
+            },
+            {
+              "hostMs": 27954.199999999953,
+              "event": "tx",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 27954.300000000047,
+              "event": "write_done",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 27974.599999999977,
+              "event": "rx",
+              "detail": "41434b2c444b4545500d0a"
+            },
+            {
+              "hostMs": 27974.599999999977,
+              "event": "reply",
+              "detail": {
+                "command": "DKEEP",
+                "line": "ACK,DKEEP",
+                "elapsedMs": 20.400000000023283
+              }
+            },
+            {
+              "hostMs": 28109.099999999977,
+              "event": "tx",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 28109.199999999953,
+              "event": "write_done",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 28131.800000000047,
+              "event": "rx",
+              "detail": "41434b2c444b4545500d0a"
+            },
+            {
+              "hostMs": 28131.900000000023,
+              "event": "reply",
+              "detail": {
+                "command": "DKEEP",
+                "line": "ACK,DKEEP",
+                "elapsedMs": 22.800000000046566
+              }
+            },
+            {
+              "hostMs": 28232.699999999953,
+              "event": "tx",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 28232.800000000047,
+              "event": "write_done",
+              "detail": "DKEEP"
+            },
+            {
+              "hostMs": 28437.699999999953,
+              "event": "command_timeout",
+              "detail": {
+                "command": "DKEEP",
+                "rxAgeMs": 305.79999999993015,
+                "writeDone": true,
+                "motionReport": {
+                  "receivedAt": 25994.699999999953,
+                  "source": "ACK,ARM,WHEELS_OFF_GROUND",
+                  "mode": 0,
+                  "imuReady": false,
+                  "enabled": false
+                }
+              }
+            },
+            {
+              "hostMs": 28438.800000000047,
+              "event": "fault",
+              "detail": {
+                "name": "Error",
+                "message": "车端应答超时：DKEEP；仍有回传，但该命令未确认",
+                "pending": "DKEEP"
+              }
+            }
+          ],
+          "uiTrace": [
+            {
+              "hostMs": 2011.8000000000466,
+              "event": "tof_zone",
+              "detail": {
+                "tick": 494939,
+                "zone": "invalid",
+                "mm": -1,
+                "age": 41,
+                "errors": 0
+              }
+            },
+            {
+              "hostMs": 16537,
+              "event": "keydown",
+              "detail": {
+                "key": "w",
+                "keys": [
+                  "w"
+                ]
+              }
+            },
+            {
+              "hostMs": 18350.699999999953,
+              "event": "keyup",
+              "detail": {
+                "key": "w",
+                "keys": []
+              }
+            },
+            {
+              "hostMs": 27794.900000000023,
+              "event": "keydown",
+              "detail": {
+                "key": "w",
+                "keys": [
+                  "w"
+                ]
+              }
+            }
+          ],
+          "inputState": {
+            "keys": [
+              "w"
+            ],
+            "vector": {
+              "forward": 1,
+              "left": 0,
+              "rotate": 0
+            },
+            "ownsAngleMotion": false,
+            "ownsSpeedMotion": true,
+            "speedOnlyMode": true
+          }
+        }
+      }
+    ]
+  },
+  "uiTrace": [
+    {
+      "hostMs": 2011.8000000000466,
+      "event": "tof_zone",
+      "detail": {
+        "tick": 494939,
+        "zone": "invalid",
+        "mm": -1,
+        "age": 41,
+        "errors": 0
+      }
+    },
+    {
+      "hostMs": 16537,
+      "event": "keydown",
+      "detail": {
+        "key": "w",
+        "keys": [
+          "w"
+        ]
+      }
+    },
+    {
+      "hostMs": 18350.699999999953,
+      "event": "keyup",
+      "detail": {
+        "key": "w",
+        "keys": []
+      }
+    },
+    {
+      "hostMs": 27794.900000000023,
+      "event": "keydown",
+      "detail": {
+        "key": "w",
+        "keys": [
+          "w"
+        ]
+      }
+    },
+    {
+      "hostMs": 29543.5,
+      "event": "keyup",
+      "detail": {
+        "key": "w",
+        "keys": []
+      }
+    }
+  ],
+  "uiTraceDropped": 0,
+  "inputState": {
+    "keys": [],
+    "vector": {
+      "forward": 0,
+      "left": 0,
+      "rotate": 0
+    },
+    "ownsAngleMotion": false,
+    "ownsSpeedMotion": false,
+    "speedOnlyMode": false,
+    "driveActive": false,
+    "keepPending": false
+  }
+}

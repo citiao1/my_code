@@ -1,0 +1,24 @@
+{
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R17",
+  "loop": "angular_velocity",
+  "gains": null,
+  "scoring_source": "downloaded_HLOG",
+  "status": null,
+  "records": [],
+  "wire": [],
+  "timeline": [
+    {
+      "command": "VER",
+      "host_monotonic_s": 25913.968
+    }
+  ],
+  "timestamp_unit": "ms",
+  "batch_retries": [],
+  "safety_monitor": [],
+  "limits": {
+    "wheel_rpm": 160,
+    "rotation_rpm": 60,
+    "rate_dps": 80
+  },
+  "error": "hardware disconnected"
+}

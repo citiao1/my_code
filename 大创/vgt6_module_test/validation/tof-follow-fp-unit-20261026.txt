@@ -1,0 +1,1 @@
+PASS: 400mm follow signs/80RPM limits/filter/deadband, fixed first-loss +/-45deg anchor/reacquire, 25dps/16s search, raw stop/fault/wrap, assumed distance/yaw plants (not measured)

@@ -1,0 +1,85 @@
+[HW->] STOP
+[HW<-] ACK,STOP
+[HW->] DISARM
+[HW<-] ACK,DISARM
+[HW->] TEL,0
+[HW<-] ACK,TEL,0
+[HW->] TOF,0
+[HW<-] ACK,TOF,0
+[HW->] PING
+[HW<-] PONG
+[HW->] VER
+[HW<-] VER,VGT6_BM50_ATTITUDE_R24
+[HW->] UART
+[HW<-] UART,115200,42000000,364,0x00,0,0,0,0,0
+[HW->] LINK
+[HW<-] LINK,4314,633,0,0,0,0
+[HW->] CAPS
+[HW<-] CAPS,ATTITUDE_R24,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200
+[HW->] SPEEDLIMIT
+[HW<-] SPEEDLIMIT,160
+[HW->] STACK
+[HW<-] STACK,4096,2608,1488,1
+[HW->] UART
+[HW<-] UART,115200,42000000,364,0x00,0,0,0,0,0
+[HW->] LINK
+[HW<-] LINK,4351,638,0,0,0,0
+[HW->] PIDGET
+[HW<-] PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000
+[HW->] YAWGET
+[HW<-] YAWPID,0.1815,1.8062,60,80,20
+[HW->] YAWGET
+[HW<-] YAWPID,0.1815,1.8062,60,80,20
+[HW->] PIDGET
+[HW<-] PID,1.2000,0.0991,0.0000,1.2000,0.0998,0.0000,1.2000,0.0998,0.0000,1.2000,0.1008,0.0000
+[HW->] HLOG,STATUS
+[HW<-] HLOG,STATUS,0,0,1024,0,0
+{
+  "capabilities": "CAPS,ATTITUDE_R24,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS,SERIAL_115200",
+  "gains": [
+    0.1815,
+    1.8062
+  ],
+  "inner": [
+    0.1815,
+    1.8062
+  ],
+  "scoring_source": "downloaded_HLOG",
+  "recording_budget_s": 10,
+  "campaign_plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.1815,
+      1.8062
+    ],
+    "bounds": [
+      [
+        0.1089,
+        0.2541
+      ],
+      [
+        1.0837,
+        2.5287
+      ]
+    ],
+    "validation_targets": [
+      -15.0,
+      7.5
+    ],
+    "method": "bo",
+    "rounds": 5,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "motion_started": false
+}
+[HW->] STOP
+[HW<-] ACK,STOP
+[HW->] DISARM
+[HW<-] ACK,DISARM
+[HW->] TEL,0
+[HW<-] ACK,TEL,0
+[HW->] TOF,0
+[HW<-] ACK,TOF,0

@@ -1,0 +1,243 @@
+{
+  "source_commit": "3a6b55eb",
+  "hex_sha256": "E5ED905D37076797B522BC1A87A93090ADA73442CA4C94E2E5C1C00A07F5D615",
+  "before_flash": {
+    "DISARM": {
+      "type": "result",
+      "id": 1,
+      "ok": true,
+      "reply": "ACK,DISARM"
+    },
+    "ANGLESTATUS": {
+      "type": "result",
+      "id": 2,
+      "ok": true,
+      "reply": "ATEL,283113,0,1,0,0,0,0,-115,0,0,0,0,12487"
+    }
+  },
+  "boot": {
+    "VER": {
+      "type": "result",
+      "id": 1,
+      "ok": true,
+      "reply": "VER,VGT6_BM50_ATTITUDE_R19"
+    },
+    "CAPS": {
+      "type": "result",
+      "id": 2,
+      "ok": true,
+      "reply": "CAPS,ATTITUDE_R19,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B"
+    },
+    "DISARM": {
+      "type": "result",
+      "id": 3,
+      "ok": true,
+      "reply": "ACK,DISARM"
+    },
+    "ANGLESTATUS": {
+      "type": "result",
+      "id": 4,
+      "ok": true,
+      "reply": "ATEL,9113,0,1,0,1,0,0,3,0,0,0,0,12488"
+    },
+    "YAWGET": {
+      "type": "result",
+      "id": 5,
+      "ok": true,
+      "reply": "YAWPID,0.1815,1.8062,60,80,20"
+    },
+    "HEADGET": {
+      "type": "result",
+      "id": 6,
+      "ok": true,
+      "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+    },
+    "TOF": {
+      "type": "result",
+      "id": 7,
+      "ok": true,
+      "reply": "TOF,9397,1,0,-1,4,77,0"
+    },
+    "STACK": {
+      "type": "result",
+      "id": 8,
+      "ok": true,
+      "reply": "STACK,4096,1992,2104,1"
+    },
+    "UART": {
+      "type": "result",
+      "id": 9,
+      "ok": true,
+      "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+    },
+    "LINK": {
+      "type": "result",
+      "id": 10,
+      "ok": true,
+      "reply": "LINK,73,10,0,0,0,0"
+    }
+  },
+  "final_readback": {
+    "VER": {
+      "type": "result",
+      "id": 1,
+      "ok": true,
+      "reply": "VER,VGT6_BM50_ATTITUDE_R19"
+    },
+    "YAWGET": {
+      "type": "result",
+      "id": 2,
+      "ok": true,
+      "reply": "YAWPID,0.1815,1.8062,60,80,20"
+    },
+    "HEADGET": {
+      "type": "result",
+      "id": 3,
+      "ok": true,
+      "reply": "HEADPID,6.0000,1.2500,80,20,D_MEAS"
+    },
+    "TOF": {
+      "type": "result",
+      "id": 4,
+      "ok": true,
+      "reply": "TOF,81394,1,1,78,9,74,0"
+    },
+    "ANGLESTATUS": {
+      "type": "result",
+      "id": 5,
+      "ok": true,
+      "reply": "ATEL,81543,0,1,0,0,0,0,86552,0,0,0,0,12468"
+    },
+    "UART": {
+      "type": "result",
+      "id": 6,
+      "ok": true,
+      "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+    },
+    "LINK": {
+      "type": "result",
+      "id": 7,
+      "ok": true,
+      "reply": "LINK,277,36,0,0,0,0"
+    }
+  },
+  "stream": [
+    "TOF,35394,1,0,-1,4,74,0",
+    "TOF,35894,1,0,-1,4,84,0",
+    "TOF,36394,1,0,-1,4,104,0",
+    "TOF,36894,1,0,-1,4,114,0",
+    "TOF,37394,1,1,1098,9,84,0",
+    "TOF,37894,1,1,912,9,104,0",
+    "TOF,38394,1,1,722,9,114,0",
+    "TOF,38894,1,0,-1,4,44,0",
+    "TOF,39394,1,0,-1,4,64,0",
+    "TOF,39894,1,0,-1,4,74,0",
+    "TOF,40394,1,1,388,9,44,0",
+    "TOF,40894,1,1,468,9,64,0",
+    "TOF,41394,1,1,794,9,74,0",
+    "TOF,41894,1,1,747,9,84,0",
+    "TOF,42394,1,1,205,9,104,0",
+    "TOF,42894,1,1,727,9,114,0",
+    "TOF,43394,1,1,882,9,4,0",
+    "TOF,43894,1,1,822,9,24,0",
+    "TOF,44394,1,1,773,9,34,0",
+    "TOF,44894,1,1,810,9,54,0",
+    "TOF,45394,1,1,835,9,64,0",
+    "TOF,45894,1,1,624,9,74,0",
+    "TOF,46394,1,1,586,9,94,0",
+    "TOF,46894,1,1,166,9,104,0",
+    "TOF,47394,1,1,436,9,114,0",
+    "TOF,47894,1,1,1092,9,14,0",
+    "TOF,48394,1,1,716,9,24,0",
+    "TOF,48894,1,1,719,9,34,0",
+    "TOF,49394,1,1,408,9,54,0",
+    "TOF,49894,1,1,152,9,64,0",
+    "TOF,50394,1,1,83,9,74,0",
+    "TOF,50894,1,1,96,9,94,0",
+    "TOF,51394,1,1,96,9,104,0",
+    "TOF,51894,1,1,99,9,114,0",
+    "TOF,52394,1,1,107,9,14,0",
+    "TOF,52894,1,1,76,9,24,0",
+    "TOF,53394,1,1,77,9,34,0",
+    "TOF,53894,1,1,79,9,54,0",
+    "TOF,54394,1,1,78,9,64,0",
+    "TOF,54894,1,1,76,9,74,0",
+    "TOF,55394,1,1,76,9,94,0"
+  ],
+  "stream_deltas_ms": [
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500,
+    500
+  ],
+  "post_bridge_restart": {
+    "UART": {
+      "type": "result",
+      "id": 1,
+      "ok": true,
+      "reply": "UART,9600,42000000,4375,0x04,0,0,1,0,0"
+    },
+    "LINK": {
+      "type": "result",
+      "id": 2,
+      "ok": true,
+      "reply": "LINK,508,63,0,0,1,0"
+    },
+    "TOF": {
+      "type": "result",
+      "id": 3,
+      "ok": true,
+      "reply": "TOF,226303,1,1,76,9,93,0"
+    },
+    "ANGLESTATUS": {
+      "type": "result",
+      "id": 4,
+      "ok": true,
+      "reply": "ATEL,226401,0,1,0,0,0,0,84314,0,0,0,0,12463"
+    },
+    "STACK": {
+      "type": "result",
+      "id": 5,
+      "ok": true,
+      "reply": "STACK,4096,2048,2048,1"
+    }
+  },
+  "keil_flash_log": "Load \"vgt6_module_test\\\\vgt6_module_test.axf\" \nErase Done.Programming Done.Verify OK.Application running ...\nFlash Load finished at 22:44:31\n",
+  "independent_post_reset": "VERIFIED critical addresses, vector table and R19 marker at 0x08005700; device 0x101f6413; flash 1024 KiB\nCore state after programming: RUNNING\n"
+}

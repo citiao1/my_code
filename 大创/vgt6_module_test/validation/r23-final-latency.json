@@ -1,0 +1,1798 @@
+{
+  "commands": [
+    {
+      "command": "DISARM",
+      "host_monotonic": 13962.765,
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      },
+      "latency_ms": 188.00000000010186
+    },
+    {
+      "command": "ANGLESTATUS",
+      "host_monotonic": 13962.953,
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "ATEL,228935,0,1,0,0,0,0,-27,0,0,0,0,11763"
+      },
+      "latency_ms": 140.0000000012369
+    },
+    {
+      "command": "PS2STATUS",
+      "host_monotonic": 13963.093,
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,0"
+      },
+      "latency_ms": 202.9999999995198
+    },
+    {
+      "command": "VER",
+      "host_monotonic": 13963.296,
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R23"
+      },
+      "latency_ms": 156.9999999992433
+    },
+    {
+      "command": "CAPS",
+      "host_monotonic": 13963.453,
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS"
+      },
+      "latency_ms": 311.99999999989814
+    },
+    {
+      "command": "UART",
+      "host_monotonic": 13963.765,
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      },
+      "latency_ms": 141.00000000144064
+    },
+    {
+      "command": "LINK",
+      "host_monotonic": 13963.906,
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "LINK,132,17,0,0,0,0"
+      },
+      "latency_ms": 155.99999999903957
+    },
+    {
+      "command": "STACK",
+      "host_monotonic": 13964.062,
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "STACK,4096,2456,1640,1"
+      },
+      "latency_ms": 156.00000000085856
+    },
+    {
+      "command": "LINKQ",
+      "host_monotonic": 13964.218,
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "LINKQ,0,0,0,0"
+      },
+      "latency_ms": 156.9999999992433
+    },
+    {
+      "command": "TEL,0",
+      "host_monotonic": 13964.375,
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      },
+      "latency_ms": 202.9999999995198
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 13964.578,
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      },
+      "latency_ms": 61.99999999989814
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13964.64,
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 78.00000000133878
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13964.89,
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13965.171,
+      "result": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 156.9999999992433
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13965.484,
+      "result": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 155.99999999903957
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13965.796,
+      "result": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 156.9999999992433
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13966.109,
+      "result": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 172.0000000004802
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13966.437,
+      "result": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 77.99999999951979
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13966.671,
+      "result": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 140.99999999962165
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13966.968,
+      "result": {
+        "type": "result",
+        "id": 20,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 171.99999999866122
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13967.296,
+      "result": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 140.99999999962165
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13967.593,
+      "result": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 156.9999999992433
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13967.906,
+      "result": {
+        "type": "result",
+        "id": 23,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13968.203,
+      "result": {
+        "type": "result",
+        "id": 24,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 156.00000000085856
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13968.515,
+      "result": {
+        "type": "result",
+        "id": 25,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 203.00000000133878
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13968.875,
+      "result": {
+        "type": "result",
+        "id": 26,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 171.0000000002765
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13969.218,
+      "result": {
+        "type": "result",
+        "id": 27,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 156.9999999992433
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13969.531,
+      "result": {
+        "type": "result",
+        "id": 28,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 171.99999999866122
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13969.859,
+      "result": {
+        "type": "result",
+        "id": 29,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 202.9999999995198
+    },
+    {
+      "command": "UART",
+      "host_monotonic": 13970.203,
+      "result": {
+        "type": "result",
+        "id": 30,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      },
+      "latency_ms": 203.00000000133878
+    },
+    {
+      "command": "LINK",
+      "host_monotonic": 13970.406,
+      "result": {
+        "type": "result",
+        "id": 31,
+        "ok": true,
+        "reply": "LINK,280,41,0,0,0,0"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "LINKQ",
+      "host_monotonic": 13970.546,
+      "result": {
+        "type": "result",
+        "id": 32,
+        "ok": true,
+        "reply": "LINKQ,0,0,0,0"
+      },
+      "latency_ms": 156.9999999992433
+    },
+    {
+      "command": "TEL,0",
+      "host_monotonic": 13970.703,
+      "result": {
+        "type": "result",
+        "id": 33,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      },
+      "latency_ms": 78.00000000133878
+    },
+    {
+      "command": "TOF,1",
+      "host_monotonic": 13970.781,
+      "result": {
+        "type": "result",
+        "id": 34,
+        "ok": true,
+        "reply": "ACK,TOF,1"
+      },
+      "latency_ms": 171.99999999866122
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13970.953,
+      "result": {
+        "type": "result",
+        "id": 35,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 203.00000000133878
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13971.312,
+      "result": {
+        "type": "result",
+        "id": 36,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13971.593,
+      "result": {
+        "type": "result",
+        "id": 37,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 171.99999999866122
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13971.921,
+      "result": {
+        "type": "result",
+        "id": 38,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 172.0000000004802
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13972.25,
+      "result": {
+        "type": "result",
+        "id": 39,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 93.0000000007567
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13972.5,
+      "result": {
+        "type": "result",
+        "id": 40,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 109.00000000037835
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13972.781,
+      "result": {
+        "type": "result",
+        "id": 41,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 46.999999998661224
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13973.0,
+      "result": {
+        "type": "result",
+        "id": 42,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 171.0000000002765
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13973.343,
+      "result": {
+        "type": "result",
+        "id": 43,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 109.99999999876309
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13973.593,
+      "result": {
+        "type": "result",
+        "id": 44,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 77.99999999951979
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13973.828,
+      "result": {
+        "type": "result",
+        "id": 45,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 93.0000000007567
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13974.078,
+      "result": {
+        "type": "result",
+        "id": 46,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 186.99999999989814
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13974.421,
+      "result": {
+        "type": "result",
+        "id": 47,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 188.00000000010186
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13974.765,
+      "result": {
+        "type": "result",
+        "id": 48,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 110.00000000058208
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13975.031,
+      "result": {
+        "type": "result",
+        "id": 49,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 61.99999999989814
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13975.25,
+      "result": {
+        "type": "result",
+        "id": 50,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13975.531,
+      "result": {
+        "type": "result",
+        "id": 51,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 77.99999999951979
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13975.765,
+      "result": {
+        "type": "result",
+        "id": 52,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 94.00000000096043
+    },
+    {
+      "command": "UART",
+      "host_monotonic": 13976.015,
+      "result": {
+        "type": "result",
+        "id": 53,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      },
+      "latency_ms": 125.0
+    },
+    {
+      "command": "LINK",
+      "host_monotonic": 13976.14,
+      "result": {
+        "type": "result",
+        "id": 54,
+        "ok": true,
+        "reply": "LINK,421,64,0,0,0,0"
+      },
+      "latency_ms": 94.00000000096043
+    },
+    {
+      "command": "LINKQ",
+      "host_monotonic": 13976.234,
+      "result": {
+        "type": "result",
+        "id": 55,
+        "ok": true,
+        "reply": "LINKQ,0,0,1,0"
+      },
+      "latency_ms": 140.99999999962165
+    },
+    {
+      "command": "TEL,1",
+      "host_monotonic": 13976.375,
+      "result": {
+        "type": "result",
+        "id": 56,
+        "ok": true,
+        "reply": "ACK,TEL,1"
+      },
+      "latency_ms": 77.99999999951979
+    },
+    {
+      "command": "TOF,1",
+      "host_monotonic": 13976.453,
+      "result": {
+        "type": "result",
+        "id": 57,
+        "ok": true,
+        "reply": "ACK,TOF,1"
+      },
+      "latency_ms": 78.00000000133878
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13976.531,
+      "result": {
+        "type": "result",
+        "id": 58,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 61.99999999989814
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13976.75,
+      "result": {
+        "type": "result",
+        "id": 59,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 139.99999999941792
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13977.046,
+      "result": {
+        "type": "result",
+        "id": 60,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 110.00000000058208
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13977.328,
+      "result": {
+        "type": "result",
+        "id": 61,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 78.00000000133878
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13977.562,
+      "result": {
+        "type": "result",
+        "id": 62,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 172.0000000004802
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13977.89,
+      "result": {
+        "type": "result",
+        "id": 63,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 78.00000000133878
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13978.125,
+      "result": {
+        "type": "result",
+        "id": 64,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 156.00000000085856
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13978.437,
+      "result": {
+        "type": "result",
+        "id": 65,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 94.00000000096043
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13978.687,
+      "result": {
+        "type": "result",
+        "id": 66,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 140.99999999962165
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13978.984,
+      "result": {
+        "type": "result",
+        "id": 67,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 186.99999999989814
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13979.328,
+      "result": {
+        "type": "result",
+        "id": 68,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 93.0000000007567
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13979.578,
+      "result": {
+        "type": "result",
+        "id": 69,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 172.0000000004802
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13979.906,
+      "result": {
+        "type": "result",
+        "id": 70,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 186.99999999989814
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13980.25,
+      "result": {
+        "type": "result",
+        "id": 71,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 61.99999999989814
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13980.468,
+      "result": {
+        "type": "result",
+        "id": 72,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 156.9999999992433
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13980.796,
+      "result": {
+        "type": "result",
+        "id": 73,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 47.00000000048021
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13980.984,
+      "result": {
+        "type": "result",
+        "id": 74,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 202.9999999995198
+    },
+    {
+      "command": "PING",
+      "host_monotonic": 13981.328,
+      "result": {
+        "type": "result",
+        "id": 75,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "latency_ms": 156.00000000085856
+    },
+    {
+      "command": "UART",
+      "host_monotonic": 13981.64,
+      "result": {
+        "type": "result",
+        "id": 76,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      },
+      "latency_ms": 172.0000000004802
+    },
+    {
+      "command": "LINK",
+      "host_monotonic": 13981.812,
+      "result": {
+        "type": "result",
+        "id": 77,
+        "ok": true,
+        "reply": "LINK,562,87,0,0,0,1"
+      },
+      "latency_ms": 156.00000000085856
+    },
+    {
+      "command": "LINKQ",
+      "host_monotonic": 13981.968,
+      "result": {
+        "type": "result",
+        "id": 78,
+        "ok": true,
+        "reply": "LINKQ,0,0,12,0"
+      },
+      "latency_ms": 93.99999999914144
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 13982.062,
+      "result": {
+        "type": "result",
+        "id": 79,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      },
+      "latency_ms": 94.00000000096043
+    },
+    {
+      "command": "TEL,0",
+      "host_monotonic": 13982.156,
+      "result": {
+        "type": "result",
+        "id": 80,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      },
+      "latency_ms": 77.99999999951979
+    },
+    {
+      "command": "DISARM",
+      "host_monotonic": 13982.234,
+      "result": {
+        "type": "result",
+        "id": 81,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      },
+      "latency_ms": 77.99999999951979
+    },
+    {
+      "command": "ANGLESTATUS",
+      "host_monotonic": 13982.312,
+      "result": {
+        "type": "result",
+        "id": 82,
+        "ok": true,
+        "reply": "ATEL,248285,0,1,0,0,0,0,-27,0,0,0,0,11765"
+      },
+      "latency_ms": 109.00000000037835
+    },
+    {
+      "command": "PS2STATUS",
+      "host_monotonic": 13982.421,
+      "result": {
+        "type": "result",
+        "id": 83,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,11"
+      },
+      "latency_ms": 250.0
+    },
+    {
+      "command": "SPEEDSTATUS",
+      "host_monotonic": 13982.671,
+      "result": {
+        "type": "result",
+        "id": 84,
+        "ok": true,
+        "reply": "TEL,248646,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11762,0,-3,1,-3,-27,0"
+      },
+      "latency_ms": 235.00000000058208
+    },
+    {
+      "command": "UART",
+      "host_monotonic": 13982.906,
+      "result": {
+        "type": "result",
+        "id": 85,
+        "ok": true,
+        "reply": "UART,9600,42000000,4375,0x00,0,0,0,0,0"
+      },
+      "latency_ms": 218.99999999914144
+    },
+    {
+      "command": "LINK",
+      "host_monotonic": 13983.125,
+      "result": {
+        "type": "result",
+        "id": 86,
+        "ok": true,
+        "reply": "LINK,640,96,0,0,0,0"
+      },
+      "latency_ms": 202.9999999995198
+    },
+    {
+      "command": "STACK",
+      "host_monotonic": 13983.328,
+      "result": {
+        "type": "result",
+        "id": 87,
+        "ok": true,
+        "reply": "STACK,4096,2560,1536,1"
+      },
+      "latency_ms": 156.00000000085856
+    },
+    {
+      "command": "TOF,0",
+      "host_monotonic": 13983.484,
+      "result": {
+        "type": "result",
+        "id": 88,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      },
+      "latency_ms": 77.99999999951979
+    },
+    {
+      "command": "TEL,0",
+      "host_monotonic": 13983.562,
+      "result": {
+        "type": "result",
+        "id": 89,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      },
+      "latency_ms": 172.0000000004802
+    },
+    {
+      "command": "DISARM",
+      "host_monotonic": 13983.734,
+      "result": {
+        "type": "result",
+        "id": 90,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      },
+      "latency_ms": 77.99999999951979
+    }
+  ],
+  "wire": [
+    {
+      "host_monotonic": 13962.765,
+      "raw": "STATUS,1,ble connected\n"
+    },
+    {
+      "host_monotonic": 13962.953,
+      "raw": "ACK,DISARM\n"
+    },
+    {
+      "host_monotonic": 13962.953,
+      "raw": "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    },
+    {
+      "host_monotonic": 13963.093,
+      "raw": "ATEL,228935,0,1,0,0,0,0,-27,0,0,0,0,11763\n"
+    },
+    {
+      "host_monotonic": 13963.093,
+      "raw": "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"ATEL,228935,0,1,0,0,0,0,-27,0,0,0,0,11763\"}"
+    },
+    {
+      "host_monotonic": 13963.296,
+      "raw": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,0\n"
+    },
+    {
+      "host_monotonic": 13963.296,
+      "raw": "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,0\"}"
+    },
+    {
+      "host_monotonic": 13963.453,
+      "raw": "VER,VGT6_BM50_ATTITUDE_R23\n"
+    },
+    {
+      "host_monotonic": 13963.453,
+      "raw": "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R23\"}"
+    },
+    {
+      "host_monotonic": 13963.765,
+      "raw": "CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS\n"
+    },
+    {
+      "host_monotonic": 13963.765,
+      "raw": "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"CAPS,ATTITUDE_R23,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40,UART_QOS\"}"
+    },
+    {
+      "host_monotonic": 13963.906,
+      "raw": "UART,9600,42000000,4375,0x00,0,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13963.906,
+      "raw": "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x00,0,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13964.062,
+      "raw": "LINK,132,17,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13964.062,
+      "raw": "{\"type\": \"result\", \"id\": 7, \"ok\": true, \"reply\": \"LINK,132,17,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13964.218,
+      "raw": "STACK,4096,2456,1640,1\n"
+    },
+    {
+      "host_monotonic": 13964.218,
+      "raw": "{\"type\": \"result\", \"id\": 8, \"ok\": true, \"reply\": \"STACK,4096,2456,1640,1\"}"
+    },
+    {
+      "host_monotonic": 13964.375,
+      "raw": "LINKQ,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13964.375,
+      "raw": "{\"type\": \"result\", \"id\": 9, \"ok\": true, \"reply\": \"LINKQ,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13964.578,
+      "raw": "ACK,TEL,0\n"
+    },
+    {
+      "host_monotonic": 13964.578,
+      "raw": "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "host_monotonic": 13964.64,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 13964.64,
+      "raw": "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 13964.718,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13964.718,
+      "raw": "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13965.015,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13965.015,
+      "raw": "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13965.328,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13965.328,
+      "raw": "{\"type\": \"result\", \"id\": 14, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13965.64,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13965.64,
+      "raw": "{\"type\": \"result\", \"id\": 15, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13965.953,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13965.953,
+      "raw": "{\"type\": \"result\", \"id\": 16, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13966.281,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13966.281,
+      "raw": "{\"type\": \"result\", \"id\": 17, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13966.515,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13966.515,
+      "raw": "{\"type\": \"result\", \"id\": 18, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13966.812,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13966.812,
+      "raw": "{\"type\": \"result\", \"id\": 19, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13967.14,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13967.14,
+      "raw": "{\"type\": \"result\", \"id\": 20, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13967.437,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13967.437,
+      "raw": "{\"type\": \"result\", \"id\": 21, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13967.75,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13967.75,
+      "raw": "{\"type\": \"result\", \"id\": 22, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13968.046,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13968.046,
+      "raw": "{\"type\": \"result\", \"id\": 23, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13968.359,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13968.359,
+      "raw": "{\"type\": \"result\", \"id\": 24, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13968.718,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13968.718,
+      "raw": "{\"type\": \"result\", \"id\": 25, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13969.046,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13969.046,
+      "raw": "{\"type\": \"result\", \"id\": 26, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13969.375,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13969.375,
+      "raw": "{\"type\": \"result\", \"id\": 27, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13969.703,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13969.703,
+      "raw": "{\"type\": \"result\", \"id\": 28, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13970.062,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13970.062,
+      "raw": "{\"type\": \"result\", \"id\": 29, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13970.406,
+      "raw": "UART,9600,42000000,4375,0x00,0,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13970.406,
+      "raw": "{\"type\": \"result\", \"id\": 30, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x00,0,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13970.546,
+      "raw": "LINK,280,41,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13970.546,
+      "raw": "{\"type\": \"result\", \"id\": 31, \"ok\": true, \"reply\": \"LINK,280,41,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13970.703,
+      "raw": "LINKQ,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13970.703,
+      "raw": "{\"type\": \"result\", \"id\": 32, \"ok\": true, \"reply\": \"LINKQ,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13970.781,
+      "raw": "ACK,TEL,0\n"
+    },
+    {
+      "host_monotonic": 13970.781,
+      "raw": "{\"type\": \"result\", \"id\": 33, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "host_monotonic": 13970.953,
+      "raw": "ACK,TOF,1\n"
+    },
+    {
+      "host_monotonic": 13970.953,
+      "raw": "{\"type\": \"result\", \"id\": 34, \"ok\": true, \"reply\": \"ACK,TOF,1\"}"
+    },
+    {
+      "host_monotonic": 13971.015,
+      "raw": "TOF,236859,1,0,-1,4,12,0\n"
+    },
+    {
+      "host_monotonic": 13971.156,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13971.156,
+      "raw": "{\"type\": \"result\", \"id\": 35, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13971.437,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13971.437,
+      "raw": "{\"type\": \"result\", \"id\": 36, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13971.765,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13971.765,
+      "raw": "{\"type\": \"result\", \"id\": 37, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13972.093,
+      "raw": "TOF,237859,1,0,-1,4,39,0\n"
+    },
+    {
+      "host_monotonic": 13972.093,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13972.093,
+      "raw": "{\"type\": \"result\", \"id\": 38, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13972.343,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13972.343,
+      "raw": "{\"type\": \"result\", \"id\": 39, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13972.609,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13972.609,
+      "raw": "{\"type\": \"result\", \"id\": 40, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13972.828,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13972.828,
+      "raw": "{\"type\": \"result\", \"id\": 41, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13973.046,
+      "raw": "TOF,238859,1,0,-1,4,26,0\n"
+    },
+    {
+      "host_monotonic": 13973.171,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13973.171,
+      "raw": "{\"type\": \"result\", \"id\": 42, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13973.453,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13973.453,
+      "raw": "{\"type\": \"result\", \"id\": 43, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13973.671,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13973.671,
+      "raw": "{\"type\": \"result\", \"id\": 44, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13973.921,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13973.921,
+      "raw": "{\"type\": \"result\", \"id\": 45, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13974.14,
+      "raw": "TOF,239959,1,0,-1,4,32,0\n"
+    },
+    {
+      "host_monotonic": 13974.25,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13974.265,
+      "raw": "{\"type\": \"result\", \"id\": 46, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13974.609,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13974.609,
+      "raw": "{\"type\": \"result\", \"id\": 47, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13974.875,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13974.875,
+      "raw": "{\"type\": \"result\", \"id\": 48, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13975.093,
+      "raw": "TOF,240959,1,0,-1,4,18,0\n"
+    },
+    {
+      "host_monotonic": 13975.093,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13975.093,
+      "raw": "{\"type\": \"result\", \"id\": 49, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13975.375,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13975.375,
+      "raw": "{\"type\": \"result\", \"id\": 50, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13975.609,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13975.609,
+      "raw": "{\"type\": \"result\", \"id\": 51, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13975.859,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13975.859,
+      "raw": "{\"type\": \"result\", \"id\": 52, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13976.093,
+      "raw": "TOF,241959,1,0,-1,4,4,0\n"
+    },
+    {
+      "host_monotonic": 13976.14,
+      "raw": "UART,9600,42000000,4375,0x00,0,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13976.14,
+      "raw": "{\"type\": \"result\", \"id\": 53, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x00,0,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13976.234,
+      "raw": "LINK,421,64,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13976.234,
+      "raw": "{\"type\": \"result\", \"id\": 54, \"ok\": true, \"reply\": \"LINK,421,64,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13976.375,
+      "raw": "LINKQ,0,0,1,0\n"
+    },
+    {
+      "host_monotonic": 13976.375,
+      "raw": "{\"type\": \"result\", \"id\": 55, \"ok\": true, \"reply\": \"LINKQ,0,0,1,0\"}"
+    },
+    {
+      "host_monotonic": 13976.453,
+      "raw": "ACK,TEL,1\n"
+    },
+    {
+      "host_monotonic": 13976.453,
+      "raw": "{\"type\": \"result\", \"id\": 56, \"ok\": true, \"reply\": \"ACK,TEL,1\"}"
+    },
+    {
+      "host_monotonic": 13976.531,
+      "raw": "ACK,TOF,1\n"
+    },
+    {
+      "host_monotonic": 13976.531,
+      "raw": "{\"type\": \"result\", \"id\": 57, \"ok\": true, \"reply\": \"ACK,TOF,1\"}"
+    },
+    {
+      "host_monotonic": 13976.593,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13976.593,
+      "raw": "{\"type\": \"result\", \"id\": 58, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13976.812,
+      "raw": "TOF,242629,1,0,-1,4,25,0\n"
+    },
+    {
+      "host_monotonic": 13976.89,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13976.89,
+      "raw": "{\"type\": \"result\", \"id\": 59, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13977.156,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13977.156,
+      "raw": "{\"type\": \"result\", \"id\": 60, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13977.406,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13977.406,
+      "raw": "{\"type\": \"result\", \"id\": 61, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13977.734,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13977.734,
+      "raw": "{\"type\": \"result\", \"id\": 62, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13977.968,
+      "raw": "TOF,243829,1,0,-1,4,9,0\n"
+    },
+    {
+      "host_monotonic": 13977.968,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13977.968,
+      "raw": "{\"type\": \"result\", \"id\": 63, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13978.281,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13978.281,
+      "raw": "{\"type\": \"result\", \"id\": 64, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13978.531,
+      "raw": "TEL,244339,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11757,0,1,1,1,-27,0\n"
+    },
+    {
+      "host_monotonic": 13978.531,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13978.531,
+      "raw": "{\"type\": \"result\", \"id\": 65, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13978.828,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13978.828,
+      "raw": "{\"type\": \"result\", \"id\": 66, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13978.984,
+      "raw": "TOF,244829,1,0,-1,4,36,0\n"
+    },
+    {
+      "host_monotonic": 13979.171,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13979.171,
+      "raw": "{\"type\": \"result\", \"id\": 67, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13979.421,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13979.421,
+      "raw": "{\"type\": \"result\", \"id\": 68, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13979.75,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13979.75,
+      "raw": "{\"type\": \"result\", \"id\": 69, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13980.0,
+      "raw": "TOF,245829,1,0,-1,4,24,0\n"
+    },
+    {
+      "host_monotonic": 13980.093,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13980.093,
+      "raw": "{\"type\": \"result\", \"id\": 70, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13980.296,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13980.312,
+      "raw": "{\"type\": \"result\", \"id\": 71, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13980.578,
+      "raw": "TEL,246339,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11760,0,2,1,2,-25,0\n"
+    },
+    {
+      "host_monotonic": 13980.625,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13980.625,
+      "raw": "{\"type\": \"result\", \"id\": 72, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13980.843,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13980.843,
+      "raw": "{\"type\": \"result\", \"id\": 73, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13980.984,
+      "raw": "TOF,246829,1,0,-1,4,8,0\n"
+    },
+    {
+      "host_monotonic": 13981.187,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13981.187,
+      "raw": "{\"type\": \"result\", \"id\": 74, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13981.484,
+      "raw": "PONG\n"
+    },
+    {
+      "host_monotonic": 13981.484,
+      "raw": "{\"type\": \"result\", \"id\": 75, \"ok\": true, \"reply\": \"PONG\"}"
+    },
+    {
+      "host_monotonic": 13981.812,
+      "raw": "UART,9600,42000000,4375,0x00,0,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13981.812,
+      "raw": "{\"type\": \"result\", \"id\": 76, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x00,0,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13981.968,
+      "raw": "LINK,562,87,0,0,0,1\n"
+    },
+    {
+      "host_monotonic": 13981.968,
+      "raw": "{\"type\": \"result\", \"id\": 77, \"ok\": true, \"reply\": \"LINK,562,87,0,0,0,1\"}"
+    },
+    {
+      "host_monotonic": 13982.062,
+      "raw": "LINKQ,0,0,12,0\n"
+    },
+    {
+      "host_monotonic": 13982.062,
+      "raw": "{\"type\": \"result\", \"id\": 78, \"ok\": true, \"reply\": \"LINKQ,0,0,12,0\"}"
+    },
+    {
+      "host_monotonic": 13982.156,
+      "raw": "TOF,248029,1,0,-1,4,34,0\n"
+    },
+    {
+      "host_monotonic": 13982.156,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 13982.156,
+      "raw": "{\"type\": \"result\", \"id\": 79, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 13982.234,
+      "raw": "ACK,TEL,0\n"
+    },
+    {
+      "host_monotonic": 13982.234,
+      "raw": "{\"type\": \"result\", \"id\": 80, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "host_monotonic": 13982.312,
+      "raw": "ACK,DISARM\n"
+    },
+    {
+      "host_monotonic": 13982.312,
+      "raw": "{\"type\": \"result\", \"id\": 81, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    },
+    {
+      "host_monotonic": 13982.421,
+      "raw": "ATEL,248285,0,1,0,0,0,0,-27,0,0,0,0,11765\n"
+    },
+    {
+      "host_monotonic": 13982.421,
+      "raw": "{\"type\": \"result\", \"id\": 82, \"ok\": true, \"reply\": \"ATEL,248285,0,1,0,0,0,0,-27,0,0,0,0,11765\"}"
+    },
+    {
+      "host_monotonic": 13982.671,
+      "raw": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,11\n"
+    },
+    {
+      "host_monotonic": 13982.671,
+      "raw": "{\"type\": \"result\", \"id\": 83, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,11\"}"
+    },
+    {
+      "host_monotonic": 13982.906,
+      "raw": "TEL,248646,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11762,0,-3,1,-3,-27,0\n"
+    },
+    {
+      "host_monotonic": 13982.906,
+      "raw": "{\"type\": \"result\", \"id\": 84, \"ok\": true, \"reply\": \"TEL,248646,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11762,0,-3,1,-3,-27,0\"}"
+    },
+    {
+      "host_monotonic": 13983.125,
+      "raw": "UART,9600,42000000,4375,0x00,0,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13983.125,
+      "raw": "{\"type\": \"result\", \"id\": 85, \"ok\": true, \"reply\": \"UART,9600,42000000,4375,0x00,0,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13983.328,
+      "raw": "LINK,640,96,0,0,0,0\n"
+    },
+    {
+      "host_monotonic": 13983.328,
+      "raw": "{\"type\": \"result\", \"id\": 86, \"ok\": true, \"reply\": \"LINK,640,96,0,0,0,0\"}"
+    },
+    {
+      "host_monotonic": 13983.484,
+      "raw": "STACK,4096,2560,1536,1\n"
+    },
+    {
+      "host_monotonic": 13983.484,
+      "raw": "{\"type\": \"result\", \"id\": 87, \"ok\": true, \"reply\": \"STACK,4096,2560,1536,1\"}"
+    },
+    {
+      "host_monotonic": 13983.562,
+      "raw": "ACK,TOF,0\n"
+    },
+    {
+      "host_monotonic": 13983.562,
+      "raw": "{\"type\": \"result\", \"id\": 88, \"ok\": true, \"reply\": \"ACK,TOF,0\"}"
+    },
+    {
+      "host_monotonic": 13983.734,
+      "raw": "ACK,TEL,0\n"
+    },
+    {
+      "host_monotonic": 13983.734,
+      "raw": "{\"type\": \"result\", \"id\": 89, \"ok\": true, \"reply\": \"ACK,TEL,0\"}"
+    },
+    {
+      "host_monotonic": 13983.812,
+      "raw": "ACK,DISARM\n"
+    },
+    {
+      "host_monotonic": 13983.812,
+      "raw": "{\"type\": \"result\", \"id\": 90, \"ok\": true, \"reply\": \"ACK,DISARM\"}"
+    }
+  ],
+  "phases": {
+    "quiet": {
+      "count": 18,
+      "median_ms": 156.9999999992433,
+      "max_ms": 203.00000000133878,
+      "p95_ms": 202.9999999995198
+    },
+    "tof_only": {
+      "count": 18,
+      "median_ms": 109.99999999967258,
+      "max_ms": 203.00000000133878,
+      "p95_ms": 188.00000000010186
+    },
+    "tof_and_tel": {
+      "count": 18,
+      "median_ms": 140.4999999995198,
+      "max_ms": 202.9999999995198,
+      "p95_ms": 186.99999999989814
+    }
+  },
+  "motion_started": false,
+  "greeting": "BRIDGE,BM50_ACK_R3\n"
+}

@@ -1,0 +1,137 @@
+{
+  "loop": "angular_velocity",
+  "experiment": "spin",
+  "firmware": "VER,VGT6_BM50_ATTITUDE_R20",
+  "capabilities": "CAPS,ATTITUDE_R20,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED",
+  "form": "parallel",
+  "period_s": 0.02,
+  "derivative": "none",
+  "scoring_source": "downloaded_HLOG",
+  "log_period_s": 0.02,
+  "timestamp_unit": "us",
+  "limits": {
+    "wheel_rpm": 160,
+    "rotation_rpm": 60,
+    "rate_dps": 80
+  },
+  "training": {
+    "baseline": 0,
+    "target": 10.0,
+    "seconds": 6,
+    "baseline_seconds": 4
+  },
+  "inner_gains": [
+    0.1815,
+    1.8062
+  ],
+  "wheel_gains": [
+    1.2,
+    0.0991,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.0998,
+    0.0,
+    1.2,
+    0.1008,
+    0.0
+  ],
+  "ram_only": true,
+  "profile": {
+    "loop": "angular_velocity",
+    "mode": 1,
+    "controller_form": "parallel",
+    "controller_period_s": 0.02,
+    "reference_unit": "deg/s",
+    "output_unit": "RPM",
+    "output_limit": 60,
+    "parameters": [
+      "Kp",
+      "Ki"
+    ],
+    "derivative": "none",
+    "gain_decision_source": "validated_downloaded_HLOG",
+    "automatic_writeback": true
+  },
+  "objective": {
+    "step_weights": {
+      "normalized_iae": 1.0,
+      "overshoot": 2.0,
+      "steady_error_rms": 1.0,
+      "normalized_settling": 0.5,
+      "saturation_fraction": 0.1
+    },
+    "repeat_aggregation": "mean + 0.5 * sample_stdev",
+    "spin_aggregation": "mean of step scores; worst overshoot/saturation",
+    "acceptance": "independent holdout improvement plus per-case metric guards"
+  },
+  "plan": {
+    "loop": "angular_velocity",
+    "initial": [
+      0.1815,
+      1.8062
+    ],
+    "bounds": [
+      [
+        0.1089,
+        0.2541
+      ],
+      [
+        1.0837,
+        2.5287
+      ]
+    ],
+    "validation_targets": [
+      -5.0,
+      5.0
+    ],
+    "method": "bo",
+    "rounds": 5,
+    "repeats": 2,
+    "seed": 0,
+    "min_improvement": 0.01,
+    "max_overshoot": 0.3
+  },
+  "status": "failed",
+  "history": [],
+  "best_gains": null,
+  "selection": "pending_holdout",
+  "logs": [
+    {
+      "index": 1,
+      "stage": "train",
+      "target": null,
+      "repeat": 1,
+      "gains": [
+        0.1815,
+        1.8062
+      ],
+      "phases": [
+        [
+          0.0,
+          4
+        ],
+        [
+          10.0,
+          6
+        ],
+        [
+          -10.0,
+          6
+        ]
+      ],
+      "raw": "runs\\R20-live-20261021-01\\angular-rate\\round-01-raw.json",
+      "quality": "failed",
+      "error": "baseline has not settled; do not tune from this round"
+    }
+  ],
+  "writes": [],
+  "applied_gains": [
+    0.1815,
+    1.8062
+  ],
+  "error": "baseline has not settled; do not tune from this round",
+  "restored_readback": null
+}

@@ -1,0 +1,144 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              10/23/2026 00:15:09 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\Keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          /* 交通灯低电平点亮，K1 接 P3.2，按下接地。 */
+   2          #include <reg51.h>
+   3          #include <intrins.h>
+   4          
+   5          typedef unsigned char u8;
+   6          typedef unsigned int u16;
+   7          
+   8          sbit K1 = P3^2;
+   9          
+  10          #define ALL_RED 0xdb
+  11          #define ALL_OFF 0xff
+  12          
+  13          /* P1.0～P1.5：南北绿、黄、红，东西绿、黄、红。 */
+  14          static const u8 code phase_output[4] = {0xde, 0xdd, 0xf3, 0xeb};
+  15          static volatile bit key_pending;
+  16          static u8 phase;
+  17          static u8 release_ms;
+  18          static u16 phase_ms;
+  19          
+  20          /* 12 MHz、12T 下约 1 ms 的软件延时。 */
+  21          static void delay_ms(u16 milliseconds)
+  22          {
+  23   1          u8 count;
+  24   1      
+  25   1          while (milliseconds != 0)
+  26   1          {
+  27   2              count = 165;
+  28   2              do
+  29   2              {
+  30   3                  _nop_();
+  31   3                  _nop_();
+  32   3              } while (--count != 0);
+  33   2              --milliseconds;
+  34   2          }
+  35   1      }
+  36          
+  37          void int0_isr(void) interrupt 0
+  38          {
+  39   1          EX0 = 0;
+  40   1          key_pending = 1;  /* 中断只记录请求，消抖和闪灯由主程序处理。 */
+  41   1      }
+  42          
+  43          static void emergency_blink(void)
+  44          {
+  45   1          u8 i;
+  46   1      
+  47   1          for (i = 0; i < 4; ++i)
+  48   1          {
+  49   2              P1 = ALL_RED;
+  50   2              delay_ms(250);
+  51   2              P1 = ALL_OFF;
+  52   2              delay_ms(250);
+  53   2          }
+  54   1          P1 = phase_output[phase];  /* 闪烁约 2 秒后，继续原来的交通灯状态。 */
+C51 COMPILER V9.60.0.0   MAIN                                                              10/23/2026 00:15:09 PAGE 2   
+
+  55   1      }
+  56          
+  57          static void key_process(void)
+  58          {
+  59   1          if (key_pending)
+  60   1          {
+  61   2              key_pending = 0;
+  62   2              delay_ms(20);
+  63   2              if (K1 == 0)
+  64   2                  emergency_blink();
+  65   2          }
+  66   1      
+  67   1          if (EX0)
+  68   1              return;
+  69   1      
+  70   1          if (K1 == 0)
+  71   1          {
+  72   2              release_ms = 0;
+  73   2              return;
+  74   2          }
+  75   1      
+  76   1          if (++release_ms >= 20)
+  77   1          {
+  78   2              release_ms = 0;
+  79   2              IE0 = 0;
+  80   2              EX0 = 1;  /* 松开稳定后再允许下一次按键中断。 */
+  81   2          }
+  82   1      }
+  83          
+  84          static void traffic_init(void)
+  85          {
+  86   1          EA = 0;
+  87   1          phase = 0;
+  88   1          phase_ms = 0;
+  89   1          release_ms = 0;
+  90   1          key_pending = 0;
+  91   1          P1 = phase_output[phase];
+  92   1          K1 = 1;
+  93   1          IT0 = 1;  /* INT0 下降沿触发。 */
+  94   1          IE0 = 0;
+  95   1          EX0 = 1;
+  96   1          EA = 1;
+  97   1      }
+  98          
+  99          static void traffic_process(void)
+ 100          {
+ 101   1          delay_ms(1);
+ 102   1          key_process();
+ 103   1          if (++phase_ms >= 1000)
+ 104   1          {
+ 105   2              phase_ms = 0;
+ 106   2              phase = (phase + 1) & 0x03;
+ 107   2              P1 = phase_output[phase];
+ 108   2          }
+ 109   1      }
+ 110          
+ 111          void main(void)
+ 112          {
+ 113   1          traffic_init();
+ 114   1          while (1)
+ 115   1              traffic_process();
+ 116   1      }
+C51 COMPILER V9.60.0.0   MAIN                                                              10/23/2026 00:15:09 PAGE 3   
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    204    ----
+   CONSTANT SIZE    =      4    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    10/15/2026  13:30:14  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                    10/20/2026  22:03:45  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22.2.0, INVOKED BY:
@@ -59,38 +59,38 @@ SYMBOL TABLE OF MODULE:  .\Objects\liushuideng (MAIN)
   -------         PROC          _DELAY_MS
   D:0006H         SYMBOL        milliseconds
   -------         DO            
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/15/2026  13:30:14  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/20/2026  22:03:45  PAGE 2
 
 
   D:0004H         SYMBOL        i
   -------         ENDDO         
-  C:0026H         LINE#         8
-  C:0026H         LINE#         9
-  C:0026H         LINE#         12
-  C:0030H         LINE#         13
-  C:0030H         LINE#         14
-  C:003CH         LINE#         15
+  C:0026H         LINE#         10
+  C:0026H         LINE#         11
+  C:0026H         LINE#         14
+  C:0030H         LINE#         15
+  C:0030H         LINE#         16
   C:003CH         LINE#         17
-  C:0043H         LINE#         18
-  C:0043H         LINE#         19
+  C:003CH         LINE#         19
+  C:0043H         LINE#         20
+  C:0043H         LINE#         21
   -------         ENDPROC       _DELAY_MS
   -------         PROC          MAIN
   -------         DO            
   D:0001H         SYMBOL        pattern
   D:0003H         SYMBOL        i
   -------         ENDDO         
-  C:0003H         LINE#         21
-  C:0003H         LINE#         22
-  C:0003H         LINE#         26
-  C:0006H         LINE#         28
-  C:0006H         LINE#         29
+  C:0003H         LINE#         23
+  C:0003H         LINE#         24
+  C:0003H         LINE#         28
   C:0006H         LINE#         30
-  C:0008H         LINE#         31
-  C:0014H         LINE#         32
-  C:0014H         LINE#         33
-  C:0016H         LINE#         34
-  C:001DH         LINE#         35
-  C:0023H         LINE#         36
+  C:0006H         LINE#         31
+  C:0006H         LINE#         32
+  C:0008H         LINE#         33
+  C:0014H         LINE#         34
+  C:0014H         LINE#         35
+  C:0016H         LINE#         36
+  C:001DH         LINE#         37
+  C:0023H         LINE#         38
   -------         ENDPROC       MAIN
   -------         ENDMOD        MAIN
 
@@ -119,7 +119,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\liushuideng (MAIN)
   N:0000H         SYMBOL        XBPSTACKTOP
   N:0000H         SYMBOL        XDATALEN
   N:0000H         SYMBOL        XDATASTART
-BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/15/2026  13:30:14  PAGE 3
+BL51 BANKED LINKER/LOCATER V6.22.2.0                                                  10/20/2026  22:03:45  PAGE 3
 
 
   C:0000H         LINE#         126

@@ -1,0 +1,19 @@
+{
+  "evidence": "offline_replay_of_saved_HLOG",
+  "gain_proposals": false,
+  "ranking": false,
+  "weights": {
+    "normalized_iae": 1.0,
+    "overshoot": 2.0,
+    "steady_error_rms": 1.0,
+    "normalized_settling": 0.5,
+    "saturation_fraction": 0.1
+  },
+  "results": [
+    {
+      "raw": "runs\\R20-live-20261021-01\\angular-rate\\round-01-raw.json",
+      "quality": "failed",
+      "error": "source experiment recorded a failure: baseline has not settled; do not tune from this round"
+    }
+  ]
+}

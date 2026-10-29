@@ -1,0 +1,65 @@
+[
+  {
+    "command": "STOP",
+    "type": "result",
+    "id": 0,
+    "ok": true,
+    "reply": "ACK,STOP"
+  },
+  {
+    "command": "DISARM",
+    "type": "result",
+    "id": 1,
+    "ok": true,
+    "reply": "ACK,DISARM"
+  },
+  {
+    "command": "VER",
+    "type": "result",
+    "id": 2,
+    "ok": true,
+    "reply": "VER,VGT6_BM50_ATTITUDE_R26"
+  },
+  {
+    "command": "PIDGET",
+    "type": "result",
+    "id": 3,
+    "ok": true,
+    "reply": "PID,1.1000,0.0991,0.0000,1.1000,0.0998,0.0000,1.1000,0.0998,0.0000,1.1000,0.1008,0.0000"
+  },
+  {
+    "command": "HEADGET",
+    "type": "result",
+    "id": 4,
+    "ok": true,
+    "reply": "HEADPID,5.5000,2.5000,80,20,D_MEAS"
+  },
+  {
+    "command": "YAWGET",
+    "type": "result",
+    "id": 5,
+    "ok": true,
+    "reply": "YAWPID,0.1815,1.8062,60,80,20"
+  },
+  {
+    "command": "ANGLESTATUS",
+    "type": "result",
+    "id": 6,
+    "ok": true,
+    "reply": "ATEL,27352,0,1,0,0,0,0,3,0,0,0,0,12065"
+  },
+  {
+    "command": "PS2STATUS",
+    "type": "result",
+    "id": 7,
+    "ok": true,
+    "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,10"
+  },
+  {
+    "command": "STACK",
+    "type": "result",
+    "id": 8,
+    "ok": true,
+    "reply": "STACK,4096,2456,1640,1"
+  }
+]

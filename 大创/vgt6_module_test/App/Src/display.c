@@ -11,6 +11,7 @@
 #include "serial_dma.h"
 #include "ps2.h"
 #include "ps2_control.h"
+#include "tof_follow.h"
 #include "stm32f4xx_hal.h"
 
 #define DISPLAY_PERIOD_MS 250U
@@ -86,8 +87,8 @@ void Display_Process(void)
                  (long)(encoder.rpm_x10[3] / 10L));
   Display_PrintLine(48U, line);
   /* Fixed marker lets the independent DAP verifier identify this image. */
-  (void)snprintf(line, sizeof(line), "R16 F:%u P:%c S:%u V:%u",
-                 1U,
+  (void)snprintf(line, sizeof(line), "R26 F:%u P:%c S:%u V:%u",
+                 (unsigned)TofFollow_GetSnapshot().mode,
                  (ps2.connected != 0U) ? '1' : '0',
                  ps2_control.enabled, ps2_control.speed_rpm);
   Display_PrintLine(56U, line);

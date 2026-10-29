@@ -35,15 +35,21 @@ function Stop-Process {
     $script:ListenerAlive = $false
 }
 
-foreach ($Case in @("project", "other-python", "suffix-path", "other-executable")) {
+foreach ($Case in @("project", "project-forward-slash", "project-mixed-slash", "other-python", "suffix-path", "forward-slash-suffix", "other-executable")) {
     $script:ListenerAlive = $true
     $script:StopCalls = 0
     $script:ProcessName = "python.exe"
     $script:ProcessCommand = 'python.exe "' + $ExactScript + '" --transport ble'
-    if ($Case -eq "other-python") {
+    if ($Case -eq "project-forward-slash") {
+        $script:ProcessCommand = 'python.exe -u "' + $ExactScript.Replace('\', '/') + '" --transport serial'
+    } elseif ($Case -eq "project-mixed-slash") {
+        $script:ProcessCommand = 'python.exe "' + $ExactScript.Replace('\bridge\', '/bridge/') + '"'
+    } elseif ($Case -eq "other-python") {
         $script:ProcessCommand = "python.exe another-bridge.py"
     } elseif ($Case -eq "suffix-path") {
         $script:ProcessCommand = 'python.exe "' + $ExactScript + '.other"'
+    } elseif ($Case -eq "forward-slash-suffix") {
+        $script:ProcessCommand = 'python.exe "' + $ExactScript.Replace('\', '/') + '.other"'
     } elseif ($Case -eq "other-executable") {
         $script:ProcessName = "unrelated.exe"
     }
@@ -52,7 +58,7 @@ foreach ($Case in @("project", "other-python", "suffix-path", "other-executable"
         if ($_.Exception.Message -notmatch "used by another program") { throw }
         $Rejected = $true
     }
-    if ($Case -eq "project") {
+    if ($Case -like "project*") {
         if ($Rejected -or $script:StopCalls -ne 1 -or $script:ListenerAlive) {
             throw "The exact project bridge was not restarted once."
         }

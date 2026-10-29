@@ -1,0 +1,153 @@
+{
+  "status": "failed",
+  "purpose": "diagnostic_repeat_of_failed_negative_30rpm_holdout",
+  "target_command_rpm": -30,
+  "baseline_seconds": 2.0,
+  "phase_limit_seconds": 7.0,
+  "encoder_distance_m": 1.0,
+  "ram_only": true,
+  "pid_writes": false,
+  "required_setup": "four wheels on ground, synchronous all-wheel forward and return",
+  "records": [],
+  "wire": [
+    "STATUS,1,ble connected",
+    "ATEL,300404,0,1,0,0,0,0,-26,0,0,0,0,12427",
+    "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ATEL,300404,0,1,0,0,0,0,-26,0,0,0,0,12427\"}",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,7",
+    "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,7\"}",
+    "VER,VGT6_BM50_ATTITUDE_R22",
+    "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R22\"}",
+    "{\"type\": \"result\", \"id\": 4, \"ok\": false, \"error\": \"MCU reply timeout: CAPS\"}",
+    "CAPS,ATTITUDE_R22,20,10,160,60,60,80,SPEED_TUNABLE,HLOG,PS2,TRACKMOVE,HLOG_MODE,HLOG_US,TOF_DL1B,WLOG_US,TOF_GUARD,FRONT_REVERSED,TOF_FAST,TOF_GUARD_200_100_40",
+    "{\"type\": \"result\", \"id\": 5, \"ok\": false, \"error\": \"MCU reply timeout: STOP\"}",
+    "ACK,STOP",
+    "WLOG,STOP,OK",
+    "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"WLOG,STOP,OK\"}",
+    "ACK,DISARM",
+    "{\"type\": \"result\", \"id\": 7, \"ok\": true, \"reply\": \"ACK,DISARM\"}",
+    "ATEL,311744,0,1,0,0,0,0,-28,0,0,0,0,12428",
+    "{\"type\": \"result\", \"id\": 8, \"ok\": true, \"reply\": \"ATEL,311744,0,1,0,0,0,0,-28,0,0,0,0,12428\"}",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,12",
+    "{\"type\": \"result\", \"id\": 9, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,12\"}",
+    "VER,VGT6_BM50_ATTITUDE_R22",
+    "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"VER,VGT6_BM50_ATTITUDE_R22\"}",
+    "{\"type\": \"result\", \"id\": 11, \"ok\": false, \"error\": \"MCU reply timeout: CAPS\"}"
+  ],
+  "commands": [
+    {
+      "host_monotonic": 9198.875,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ATEL,300404,0,1,0,0,0,0,-26,0,0,0,0,12427"
+      }
+    },
+    {
+      "host_monotonic": 9200.109,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,7"
+      }
+    },
+    {
+      "host_monotonic": 9201.25,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R22"
+      }
+    },
+    {
+      "host_monotonic": 9202.234,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": false,
+        "error": "MCU reply timeout: CAPS"
+      }
+    },
+    {
+      "host_monotonic": 9205.25,
+      "command": "STOP",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": false,
+        "error": "MCU reply timeout: STOP"
+      }
+    },
+    {
+      "host_monotonic": 9208.265,
+      "command": "WLOG,STOP",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "WLOG,STOP,OK"
+      }
+    },
+    {
+      "host_monotonic": 9208.781,
+      "command": "DISARM",
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    },
+    {
+      "host_monotonic": 9210.453,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "ATEL,311744,0,1,0,0,0,0,-28,0,0,0,0,12428"
+      }
+    },
+    {
+      "host_monotonic": 9211.718,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,12"
+      }
+    },
+    {
+      "host_monotonic": 9213.375,
+      "command": "VER",
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R22"
+      }
+    },
+    {
+      "host_monotonic": 9214.203,
+      "command": "CAPS",
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": false,
+        "error": "MCU reply timeout: CAPS"
+      }
+    }
+  ],
+  "bridge": "BRIDGE,BM50_ACK_R3",
+  "started_local_time": "2026-10-22T16:50:42+0800",
+  "error": "CAPS: {'type': 'result', 'id': 4, 'ok': False, 'error': 'MCU reply timeout: CAPS'}",
+  "cleanup_stop_error": "STOP: {'type': 'result', 'id': 5, 'ok': False, 'error': 'MCU reply timeout: STOP'}",
+  "postcheck_error": "CAPS: {'type': 'result', 'id': 11, 'ok': False, 'error': 'MCU reply timeout: CAPS'}"
+}

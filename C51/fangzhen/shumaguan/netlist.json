@@ -1,0 +1,802 @@
+{
+  "nets": {
+    "named": [
+      {
+        "connections": [
+          {
+            "label": "GND",
+            "type": "Power Rail"
+          },
+          {
+            "name": "1",
+            "ref": "C2",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "C3",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "R9",
+            "type": "Passive"
+          },
+          {
+            "name": "GND",
+            "number": "20",
+            "ref": "U1",
+            "type": "Power Pin"
+          }
+        ],
+        "name": "GND",
+        "properties": {
+          "CLASS": "POWER"
+        }
+      },
+      {
+        "connections": [
+          {
+            "label": "VCC",
+            "type": "Power Terminal"
+          },
+          {
+            "label": "VCC/VDD",
+            "type": "Power Rail"
+          },
+          {
+            "name": "+",
+            "ref": "C1",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "BUTTON#0014",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "R1",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "R2",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "R3",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "R4",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "R5",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "R6",
+            "type": "Passive"
+          },
+          {
+            "name": "VCC",
+            "number": "40",
+            "ref": "U1",
+            "type": "Power Pin"
+          },
+          {
+            "name": "$EA$",
+            "number": "31",
+            "ref": "U1",
+            "type": "Input"
+          }
+        ],
+        "name": "VCC/VDD",
+        "properties": {
+          "CLASS": "POWER",
+          "IC": "+5V"
+        }
+      }
+    ],
+    "notconnected": [
+      {
+        "name": "ALE",
+        "number": "30",
+        "ref": "U1",
+        "type": "Output"
+      },
+      {
+        "name": "$PSEN$",
+        "number": "29",
+        "ref": "U1",
+        "type": "Output"
+      },
+      {
+        "name": "P0.0/AD0",
+        "number": "39",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.1/AD1",
+        "number": "38",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.2/AD2",
+        "number": "37",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.3/AD3",
+        "number": "36",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.4/AD4",
+        "number": "35",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.5/AD5",
+        "number": "34",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.6/AD6",
+        "number": "33",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.7/AD7",
+        "number": "32",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P1.6",
+        "number": "7",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P1.7",
+        "number": "8",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.0/RXD",
+        "number": "10",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.1/TXD",
+        "number": "11",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.2/$INT0$",
+        "number": "12",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.3/$INT1$",
+        "number": "13",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.4/T0",
+        "number": "14",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.7/$RD$",
+        "number": "17",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.6/$WR$",
+        "number": "16",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.5/T1",
+        "number": "15",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.7/A15",
+        "number": "28",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.0/A8",
+        "number": "21",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.1/A9",
+        "number": "22",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.2/A10",
+        "number": "23",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.3/A11",
+        "number": "24",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.4/A12",
+        "number": "25",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.5/A13",
+        "number": "26",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.6/A14",
+        "number": "27",
+        "ref": "U1",
+        "type": "I/O"
+      }
+    ],
+    "unnamed": [
+      {
+        "connections": [
+          {
+            "name": "XTAL2",
+            "number": "18",
+            "ref": "U1",
+            "type": "Output"
+          },
+          {
+            "name": "1",
+            "ref": "X1",
+            "type": "Passive"
+          },
+          {
+            "name": "2",
+            "ref": "C3",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "XTAL1",
+            "number": "19",
+            "ref": "U1",
+            "type": "Input"
+          },
+          {
+            "name": "2",
+            "ref": "X1",
+            "type": "Passive"
+          },
+          {
+            "name": "2",
+            "ref": "C2",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "RST",
+            "number": "9",
+            "ref": "U1",
+            "type": "Input"
+          },
+          {
+            "name": "2",
+            "ref": "R9",
+            "type": "Passive"
+          },
+          {
+            "name": "-",
+            "ref": "C1",
+            "type": "Passive"
+          },
+          {
+            "name": "2",
+            "ref": "R10",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "P1.0",
+            "number": "1",
+            "ref": "U1",
+            "type": "I/O"
+          },
+          {
+            "name": "K",
+            "ref": "D1",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "P1.1",
+            "number": "2",
+            "ref": "U1",
+            "type": "I/O"
+          },
+          {
+            "name": "K",
+            "ref": "D2",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "P1.2",
+            "number": "3",
+            "ref": "U1",
+            "type": "I/O"
+          },
+          {
+            "name": "K",
+            "ref": "D3",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "P1.3",
+            "number": "4",
+            "ref": "U1",
+            "type": "I/O"
+          },
+          {
+            "name": "K",
+            "ref": "D4",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "P1.4",
+            "number": "5",
+            "ref": "U1",
+            "type": "I/O"
+          },
+          {
+            "name": "K",
+            "ref": "D5",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "P1.5",
+            "number": "6",
+            "ref": "U1",
+            "type": "I/O"
+          },
+          {
+            "name": "K",
+            "ref": "D6",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "2",
+            "ref": "R1",
+            "type": "Passive"
+          },
+          {
+            "name": "A",
+            "ref": "D1",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "2",
+            "ref": "R2",
+            "type": "Passive"
+          },
+          {
+            "name": "A",
+            "ref": "D2",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "2",
+            "ref": "R3",
+            "type": "Passive"
+          },
+          {
+            "name": "A",
+            "ref": "D3",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "2",
+            "ref": "R4",
+            "type": "Passive"
+          },
+          {
+            "name": "A",
+            "ref": "D4",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "2",
+            "ref": "R5",
+            "type": "Passive"
+          },
+          {
+            "name": "A",
+            "ref": "D5",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "2",
+            "ref": "R6",
+            "type": "Passive"
+          },
+          {
+            "name": "A",
+            "ref": "D6",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "2",
+            "ref": "BUTTON#0014",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "R10",
+            "type": "Passive"
+          }
+        ]
+      }
+    ]
+  },
+  "objects": {
+    "components": [
+      {
+        "attributes": {
+          "PRIMITIVE": "PASSIVE",
+          "R(0)": "100M",
+          "R(1)": "100m",
+          "STATE": "0",
+          "TSWITCH": "1m"
+        },
+        "library_part": "RTSWITCH",
+        "package": "NULL",
+        "ref": "BUTTON#0014",
+        "sheet_id": "1",
+        "value": ""
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOGUE"
+        },
+        "library_part": "CAPACITOR",
+        "package": "ELEC-RAD10",
+        "ref": "C1",
+        "sheet_id": "1",
+        "value": "1uF"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOGUE"
+        },
+        "library_part": "CAPACITOR",
+        "package": "CAP10",
+        "ref": "C2",
+        "sheet_id": "1",
+        "value": "30pF"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOGUE"
+        },
+        "library_part": "CAPACITOR",
+        "package": "CAP10",
+        "ref": "C3",
+        "sheet_id": "1",
+        "value": "30pF"
+      },
+      {
+        "attributes": {
+          "BV": "4V",
+          "DRIVE": "1",
+          "IMAX": "10mA",
+          "MODFILE": "LEDA",
+          "ROFF": "100k",
+          "RS": "3",
+          "TLITMIN": "10m",
+          "VF": "2.2V"
+        },
+        "library_part": "LED-GREEN",
+        "ref": "D1",
+        "sheet_id": "1",
+        "value": "NS_GREEN "
+      },
+      {
+        "attributes": {
+          "BV": "4V",
+          "DRIVE": "1",
+          "IMAX": "10mA",
+          "MODFILE": "LEDA",
+          "ROFF": "100k",
+          "RS": "3",
+          "TLITMIN": "10m",
+          "VF": "2.2V"
+        },
+        "library_part": "LED-YELLOW",
+        "ref": "D2",
+        "sheet_id": "1",
+        "value": "NS_YELLOW "
+      },
+      {
+        "attributes": {
+          "BV": "4V",
+          "DRIVE": "1",
+          "IMAX": "10mA",
+          "MODFILE": "LEDA",
+          "ROFF": "100k",
+          "RS": "3",
+          "TLITMIN": "10m",
+          "VF": "2.2V"
+        },
+        "library_part": "LED-RED",
+        "ref": "D3",
+        "sheet_id": "1",
+        "value": "NS_RED "
+      },
+      {
+        "attributes": {
+          "BV": "4V",
+          "DRIVE": "1",
+          "IMAX": "10mA",
+          "MODFILE": "LEDA",
+          "ROFF": "100k",
+          "RS": "3",
+          "TLITMIN": "10m",
+          "VF": "2.2V"
+        },
+        "library_part": "LED-GREEN",
+        "ref": "D4",
+        "sheet_id": "1",
+        "value": "EW_GREEN "
+      },
+      {
+        "attributes": {
+          "BV": "4V",
+          "DRIVE": "1",
+          "IMAX": "10mA",
+          "MODFILE": "LEDA",
+          "ROFF": "100k",
+          "RS": "3",
+          "TLITMIN": "10m",
+          "VF": "2.2V"
+        },
+        "library_part": "LED-YELLOW",
+        "ref": "D5",
+        "sheet_id": "1",
+        "value": "EW_YELLOW "
+      },
+      {
+        "attributes": {
+          "BV": "4V",
+          "DRIVE": "1",
+          "IMAX": "10mA",
+          "MODFILE": "LEDA",
+          "ROFF": "100k",
+          "RS": "3",
+          "TLITMIN": "10m",
+          "VF": "2.2V"
+        },
+        "library_part": "LED-RED",
+        "ref": "D6",
+        "sheet_id": "1",
+        "value": "EW_RED "
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOG",
+          "PRIMTYPE": "RESISTOR"
+        },
+        "library_part": "RES",
+        "package": "RES40",
+        "ref": "R1",
+        "sheet_id": "1",
+        "value": "680"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOG",
+          "PRIMTYPE": "RESISTOR"
+        },
+        "library_part": "RES",
+        "package": "RES40",
+        "ref": "R2",
+        "sheet_id": "1",
+        "value": "680"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOG",
+          "PRIMTYPE": "RESISTOR"
+        },
+        "library_part": "RES",
+        "package": "RES40",
+        "ref": "R3",
+        "sheet_id": "1",
+        "value": "680"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOG",
+          "PRIMTYPE": "RESISTOR"
+        },
+        "library_part": "RES",
+        "package": "RES40",
+        "ref": "R4",
+        "sheet_id": "1",
+        "value": "680"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOG",
+          "PRIMTYPE": "RESISTOR"
+        },
+        "library_part": "RES",
+        "package": "RES40",
+        "ref": "R5",
+        "sheet_id": "1",
+        "value": "680"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOG",
+          "PRIMTYPE": "RESISTOR"
+        },
+        "library_part": "RES",
+        "package": "RES40",
+        "ref": "R6",
+        "sheet_id": "1",
+        "value": "680"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOG",
+          "PRIMTYPE": "RESISTOR"
+        },
+        "library_part": "RES",
+        "package": "RES40",
+        "ref": "R9",
+        "sheet_id": "1",
+        "value": "10k"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOG",
+          "PRIMTYPE": "RESISTOR"
+        },
+        "library_part": "RES",
+        "package": "RES40",
+        "ref": "R10",
+        "sheet_id": "1",
+        "value": "1k"
+      },
+      {
+        "attributes": {
+          "CLOCK": "12MHz",
+          "CODEGEN": "ASEM51",
+          "DBG_FETCH": "0",
+          "DBG_TRACE": "0",
+          "EEPROM": "0",
+          "HWDOG": "0",
+          "IRAM": "256",
+          "ITFMOD": "AT89",
+          "MODDLL": "MCS8051.DLL",
+          "PRIMITIVE": "DIGITAL",
+          "ROM": "4096",
+          "TRACE_DEFAULT": "1",
+          "X2": "0",
+          "XRAM": "0"
+        },
+        "library_part": "AT89C51",
+        "package": "DIL40",
+        "ref": "U1",
+        "sheet_id": "1",
+        "value": "AT89C51"
+      },
+      {
+        "attributes": {
+          "FREQ": "12MHz",
+          "MODFILE": "CRYSTAL.MDF"
+        },
+        "library_part": "CRYSTAL",
+        "package": "XTAL18",
+        "ref": "X1",
+        "sheet_id": "1",
+        "value": "12 MHz "
+      }
+    ],
+    "generators": [],
+    "probes": [],
+    "subcircuits": []
+  }
+}

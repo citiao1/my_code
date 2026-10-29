@@ -1,0 +1,30 @@
+{
+  "status": "failed",
+  "motion_started": false,
+  "selection": "pending",
+  "history": [],
+  "error": "stop angle/speed control and lock PS2 first",
+  "restored_readback": null,
+  "commands": [
+    {
+      "host_monotonic": 424.64,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ATEL,311071,2,1,0,0,0,-91675,-91775,99,0,0,1,12053"
+      }
+    },
+    {
+      "host_monotonic": 424.734,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "PS2,1,1,0x73,0x0000,127,128,127,128,30,0,11"
+      }
+    }
+  ]
+}

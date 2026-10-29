@@ -1,0 +1,88 @@
+{
+  "transport": "existing_ws_bridge",
+  "started_unix": 1792936143.6114695,
+  "requests": [
+    {
+      "id": 9501,
+      "command": "PING",
+      "started_monotonic": 788.312,
+      "result": {
+        "type": "result",
+        "id": 9501,
+        "ok": true,
+        "reply": "PONG"
+      },
+      "elapsed_ms": 15.99999999996271
+    },
+    {
+      "id": 9502,
+      "command": "VER",
+      "started_monotonic": 788.328,
+      "result": {
+        "type": "result",
+        "id": 9502,
+        "ok": true,
+        "reply": "VER,VGT6_BM50_ATTITUDE_R24"
+      },
+      "elapsed_ms": 31.000000000062755
+    },
+    {
+      "id": 9503,
+      "command": "UART",
+      "started_monotonic": 788.359,
+      "result": {
+        "type": "result",
+        "id": 9503,
+        "ok": true,
+        "reply": "UART,115200,42000000,364,0x00,0,0,0,0,0"
+      },
+      "elapsed_ms": 30.99999999994907
+    },
+    {
+      "id": 9504,
+      "command": "LINK",
+      "started_monotonic": 788.39,
+      "result": {
+        "type": "result",
+        "id": 9504,
+        "ok": true,
+        "reply": "LINK,3297,405,0,0,0,1"
+      },
+      "elapsed_ms": 15.99999999996271
+    },
+    {
+      "id": 9505,
+      "command": "LINKQ",
+      "started_monotonic": 788.406,
+      "result": {
+        "type": "result",
+        "id": 9505,
+        "ok": true,
+        "reply": "LINKQ,0,0,72,0"
+      },
+      "elapsed_ms": 31.000000000062755
+    },
+    {
+      "id": 9506,
+      "command": "ANGLESTATUS",
+      "started_monotonic": 788.437,
+      "result": {
+        "type": "result",
+        "id": 9506,
+        "ok": true,
+        "reply": "ATEL,1376274,0,1,0,0,0,93269,88625,4485,0,0,0,12480"
+      },
+      "elapsed_ms": 30.99999999994907
+    }
+  ],
+  "lines": [
+    "BRIDGE,BM50_ACK_R3\n",
+    "STATUS,1,serial connected\n",
+    "PONG\n",
+    "VER,VGT6_BM50_ATTITUDE_R24\n",
+    "UART,115200,42000000,364,0x00,0,0,0,0,0\n",
+    "LINK,3297,405,0,0,0,1\n",
+    "LINKQ,0,0,72,0\n",
+    "ATEL,1376274,0,1,0,0,0,93269,88625,4485,0,0,0,12480\n"
+  ]
+}

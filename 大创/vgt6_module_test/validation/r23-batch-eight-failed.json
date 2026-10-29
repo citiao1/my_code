@@ -1,0 +1,315 @@
+{
+  "motion_started": false,
+  "evidence": "stationary MCU cadence during PING traffic, no PID score",
+  "status": "failed",
+  "error": "invalid WLOG field count/type",
+  "commands": [
+    {
+      "host_monotonic": 13631.421,
+      "command": "DISARM",
+      "result": {
+        "type": "result",
+        "id": 1,
+        "ok": true,
+        "reply": "ACK,DISARM"
+      }
+    },
+    {
+      "host_monotonic": 13631.718,
+      "command": "TEL,0",
+      "result": {
+        "type": "result",
+        "id": 2,
+        "ok": true,
+        "reply": "ACK,TEL,0"
+      }
+    },
+    {
+      "host_monotonic": 13631.781,
+      "command": "TOF,0",
+      "result": {
+        "type": "result",
+        "id": 3,
+        "ok": true,
+        "reply": "ACK,TOF,0"
+      }
+    },
+    {
+      "host_monotonic": 13631.843,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 4,
+        "ok": true,
+        "reply": "ATEL,472889,0,1,0,0,0,0,1681,0,0,0,0,11794"
+      }
+    },
+    {
+      "host_monotonic": 13631.984,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 5,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,12"
+      }
+    },
+    {
+      "host_monotonic": 13632.093,
+      "command": "WLOG,CLEAR",
+      "result": {
+        "type": "result",
+        "id": 6,
+        "ok": true,
+        "reply": "WLOG,CLEAR,OK"
+      }
+    },
+    {
+      "host_monotonic": 13632.203,
+      "command": "WLOG,START",
+      "result": {
+        "type": "result",
+        "id": 7,
+        "ok": true,
+        "reply": "WLOG,START,OK"
+      }
+    },
+    {
+      "host_monotonic": 13632.343,
+      "command": "PING",
+      "result": {
+        "type": "result",
+        "id": 8,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "host_monotonic": 13632.5,
+      "command": "PING",
+      "result": {
+        "type": "result",
+        "id": 9,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "host_monotonic": 13632.578,
+      "command": "PING",
+      "result": {
+        "type": "result",
+        "id": 10,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "host_monotonic": 13632.656,
+      "command": "PING",
+      "result": {
+        "type": "result",
+        "id": 11,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "host_monotonic": 13632.75,
+      "command": "PING",
+      "result": {
+        "type": "result",
+        "id": 12,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "host_monotonic": 13632.843,
+      "command": "PING",
+      "result": {
+        "type": "result",
+        "id": 13,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "host_monotonic": 13633.14,
+      "command": "PING",
+      "result": {
+        "type": "result",
+        "id": 14,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "host_monotonic": 13633.265,
+      "command": "PING",
+      "result": {
+        "type": "result",
+        "id": 15,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "host_monotonic": 13633.39,
+      "command": "PING",
+      "result": {
+        "type": "result",
+        "id": 16,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "host_monotonic": 13633.531,
+      "command": "PING",
+      "result": {
+        "type": "result",
+        "id": 17,
+        "ok": true,
+        "reply": "PONG"
+      }
+    },
+    {
+      "host_monotonic": 13633.703,
+      "command": "WLOG,STOP",
+      "result": {
+        "type": "result",
+        "id": 18,
+        "ok": true,
+        "reply": "WLOG,STOP,OK"
+      }
+    },
+    {
+      "host_monotonic": 13633.921,
+      "command": "ANGLESTATUS",
+      "result": {
+        "type": "result",
+        "id": 19,
+        "ok": true,
+        "reply": "ATEL,474959,0,1,0,2,0,0,1683,0,0,0,0,11803"
+      }
+    },
+    {
+      "host_monotonic": 13634.14,
+      "command": "PS2STATUS",
+      "result": {
+        "type": "result",
+        "id": 20,
+        "ok": true,
+        "reply": "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,12"
+      }
+    },
+    {
+      "host_monotonic": 13634.375,
+      "command": "WLOG,STATUS",
+      "result": {
+        "type": "result",
+        "id": 21,
+        "ok": true,
+        "reply": "WLOG,STATUS,0,150,1024,0,150"
+      }
+    },
+    {
+      "host_monotonic": 13634.562,
+      "command": "WLOG,READ,0,8",
+      "result": {
+        "type": "result",
+        "id": 22,
+        "ok": true,
+        "reply": "WLOG,END,0,8,150"
+      }
+    },
+    {
+      "host_monotonic": 13635.609,
+      "command": "WLOG,READ,8,8",
+      "result": {
+        "type": "result",
+        "id": 23,
+        "ok": true,
+        "reply": "WLOG,END,8,8,150"
+      }
+    },
+    {
+      "host_monotonic": 13636.781,
+      "command": "WLOG,STOP",
+      "result": {
+        "type": "result",
+        "id": 24,
+        "ok": true,
+        "reply": "WLOG,STOP,OK"
+      }
+    }
+  ],
+  "wire": [
+    "STATUS,1,ble connected",
+    "ACK,DISARM",
+    "{\"type\": \"result\", \"id\": 1, \"ok\": true, \"reply\": \"ACK,DISARM\"}",
+    "ACK,TEL,0",
+    "{\"type\": \"result\", \"id\": 2, \"ok\": true, \"reply\": \"ACK,TEL,0\"}",
+    "ACK,TOF,0",
+    "{\"type\": \"result\", \"id\": 3, \"ok\": true, \"reply\": \"ACK,TOF,0\"}",
+    "ATEL,472889,0,1,0,0,0,0,1681,0,0,0,0,11794",
+    "{\"type\": \"result\", \"id\": 4, \"ok\": true, \"reply\": \"ATEL,472889,0,1,0,0,0,0,1681,0,0,0,0,11794\"}",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,12",
+    "{\"type\": \"result\", \"id\": 5, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,12\"}",
+    "WLOG,CLEAR,OK",
+    "{\"type\": \"result\", \"id\": 6, \"ok\": true, \"reply\": \"WLOG,CLEAR,OK\"}",
+    "WLOG,START,OK",
+    "{\"type\": \"result\", \"id\": 7, \"ok\": true, \"reply\": \"WLOG,START,OK\"}",
+    "PONG",
+    "{\"type\": \"result\", \"id\": 8, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG",
+    "{\"type\": \"result\", \"id\": 9, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG",
+    "{\"type\": \"result\", \"id\": 10, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG",
+    "{\"type\": \"result\", \"id\": 11, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG",
+    "{\"type\": \"result\", \"id\": 12, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG",
+    "{\"type\": \"result\", \"id\": 13, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG",
+    "{\"type\": \"result\", \"id\": 14, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG",
+    "{\"type\": \"result\", \"id\": 15, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG",
+    "{\"type\": \"result\", \"id\": 16, \"ok\": true, \"reply\": \"PONG\"}",
+    "PONG",
+    "{\"type\": \"result\", \"id\": 17, \"ok\": true, \"reply\": \"PONG\"}",
+    "WLOG,STOP,OK",
+    "{\"type\": \"result\", \"id\": 18, \"ok\": true, \"reply\": \"WLOG,STOP,OK\"}",
+    "ATEL,474959,0,1,0,2,0,0,1683,0,0,0,0,11803",
+    "{\"type\": \"result\", \"id\": 19, \"ok\": true, \"reply\": \"ATEL,474959,0,1,0,2,0,0,1683,0,0,0,0,11803\"}",
+    "PS2,1,0,0x73,0x0000,128,128,128,128,30,0,12",
+    "{\"type\": \"result\", \"id\": 20, \"ok\": true, \"reply\": \"PS2,1,0,0x73,0x0000,128,128,128,128,30,0,12\"}",
+    "WLOG,STATUS,0,150,1024,0,150",
+    "{\"type\": \"result\", \"id\": 21, \"ok\": true, \"reply\": \"WLOG,STATUS,0,150,1024,0,150\"}",
+    "WLOG,DATA,0,473257,473257283,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11784,-1,0,1",
+    "WLOG,DATA,1,473267,473267430,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11784,-1,0,1",
+    "WLOG,DATA,2,473277,473277581,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11784,-1,0,1",
+    "WLOG,DATA,3,473287,473287731,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11784,-1,0,1",
+    "WLOG,DATA,4,473297,473297883,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11784,-1,0,1",
+    "WLOG,DATA,5,473308,473308034,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11784,-1,0,1",
+    "WLOG,DATA,6,473320,473320120,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11784,-1,0,1",
+    "WLOG,DATA,7,473331,473331099,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11782,-1,0,1",
+    "WLOG,END,0,8,150",
+    "{\"type\": \"result\", \"id\": 22, \"ok\": true, \"reply\": \"WLOG,END,0,8,150\"}",
+    "WLOG,DATA,8,473341,473341251,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11782,-1,0,1",
+    "WLOG,DATA,9,473351,473351403,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11781,473381854,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11782,-1,0,1",
+    "WLOG,DATA,13,473392,473392005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11782,-1,0,1",
+    "WLOG,DATA,14,473402,473402155,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11782,-1,0,1",
+    "WLOG,DATA,15,473412,473412305,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11782,-1,0,1",
+    "WLOG,END,8,8,150",
+    "{\"type\": \"result\", \"id\": 23, \"ok\": true, \"reply\": \"WLOG,END,8,8,150\"}",
+    "ATA,14,473402,473402155,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11782,-1,0,1",
+    "WLOG,DATA,15,473412,473412305,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11782,-1,0,1",
+    "WLOG,END,8,8,150",
+    "WLOG,STOP,OK",
+    "{\"type\": \"result\", \"id\": 24, \"ok\": true, \"reply\": \"WLOG,STOP,OK\"}"
+  ]
+}
