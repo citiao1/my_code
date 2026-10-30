@@ -11,3 +11,26 @@
 **/MDK-ARM/*/*.lnp
 **/MDK-ARM/*/*.map
 **/MDK-ARM/*/*.o
+
+# Local CAD runtime and generated scratch files
+**/.cad_runtime/
+**/__pycache__/
+**/*.pyc
+/倒立摆/**/检查记录/切片验证/**/*.gcode
+/倒立摆/**/*.log
+/倒立摆/**/空白窗口备份/
+/倒立摆/设计输出/
+/倒立摆/设计输出_V2_短螺丝直连/
+/倒立摆/**/预览/*.bmp
+/倒立摆/result.json
+
+# Independent publication checkout (managed in its own repository)
+/大创/vgt6_module_test_public/
+
+# C51 build intermediates; keep source, project files and firmware HEX
+/C51/**/Listings/
+/C51/**/Objects/*
+!/C51/**/Objects/*.hex
+/C51/**/build.log
+/C51/**/Project Backups/
+/C51/**/*.workspace

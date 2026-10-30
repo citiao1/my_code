@@ -1,0 +1,681 @@
+{
+  "status": "nominal_kinematics_only",
+  "travel_deg": [
+    -180,
+    180
+  ],
+  "total_sweep_deg": 360,
+  "inner_radius_mm": 33.0,
+  "outer_radius_mm": 62.25,
+  "return_bend_radius_mm": 14.625,
+  "nominal_flexing_length_mm": 345.1824928131785,
+  "wire_od_assumption_mm": [
+    0.8,
+    1.2
+  ],
+  "z_levels_mm": [
+    107.5,
+    109.0,
+    110.5
+  ],
+  "samples": [
+    {
+      "angle_deg": -180,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 207.63779527559055,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -175,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 209.37007874015748,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -170,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 211.1023622047244,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -165,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 212.83464566929135,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -160,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 214.56692913385828,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -155,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 216.29921259842519,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -150,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 218.03149606299212,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -145,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 219.76377952755905,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -140,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 221.49606299212599,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -135,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 223.22834645669292,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -130,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 224.96062992125985,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -125,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 226.69291338582676,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -120,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 228.42519685039372,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -115,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 230.15748031496065,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -110,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 231.88976377952758,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -105,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 233.6220472440945,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -100,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 235.35433070866142,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -95,
+      "length_mm": 345.18249281317844,
+      "bend_position_deg": 237.08661417322833,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -90,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 238.81889763779526,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -85,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 240.55118110236222,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -80,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 242.28346456692913,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -75,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 244.01574803149606,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -70,
+      "length_mm": 345.18249281317844,
+      "bend_position_deg": 245.74803149606296,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -65,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 247.4803149606299,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -60,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 249.21259842519686,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -55,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 250.9448818897638,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -50,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 252.6771653543307,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -45,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 254.40944881889763,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -40,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 256.14173228346453,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -35,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 257.8740157480315,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -30,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 259.60629921259846,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -25,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 261.33858267716533,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -20,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 263.07086614173227,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -15,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 264.8031496062992,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -10,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 266.53543307086613,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": -5,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 268.26771653543307,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 0,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 270.0,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 5,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 271.73228346456693,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 10,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 273.4645669291338,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 15,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 275.1968503937008,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 20,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 276.92913385826773,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 25,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 278.66141732283467,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 30,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 280.39370078740154,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 35,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 282.1259842519685,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 40,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 283.85826771653547,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 45,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 285.5905511811024,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 50,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 287.3228346456693,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 55,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 289.0551181102362,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 60,
+      "length_mm": 345.18249281317844,
+      "bend_position_deg": 290.78740157480314,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 65,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 292.5196850393701,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 70,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 294.251968503937,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 75,
+      "length_mm": 345.18249281317844,
+      "bend_position_deg": 295.98425196850394,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 80,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 297.7165354330709,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 85,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 299.44881889763775,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 90,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 301.18110236220474,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 95,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 302.9133858267717,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 100,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 304.6456692913386,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 105,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 306.3779527559055,
+      "radial_range_mm": [
+        33.0,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 110,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 308.1102362204724,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 115,
+      "length_mm": 345.18249281317844,
+      "bend_position_deg": 309.84251968503935,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 120,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 311.57480314960634,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 125,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 313.3070866141732,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 130,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 315.03937007874015,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 135,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 316.7716535433071,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 140,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 318.503937007874,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 145,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 320.23622047244095,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 150,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 321.9685039370079,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 155,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 323.7007874015748,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 160,
+      "length_mm": 345.18249281317844,
+      "bend_position_deg": 325.4330708661417,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 165,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 327.1653543307086,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 170,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 328.8976377952756,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 175,
+      "length_mm": 345.18249281317856,
+      "bend_position_deg": 330.62992125984255,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    },
+    {
+      "angle_deg": 180,
+      "length_mm": 345.1824928131785,
+      "bend_position_deg": 332.3622047244094,
+      "radial_range_mm": [
+        32.99999999999999,
+        62.25000000000001
+      ]
+    }
+  ],
+  "limits": "No cable force, fatigue, gravity, insulation friction, contact or physical test. Wire is NOT a rigid CAD component. Controller or manual travel limits are required; no hard stop is provided."
+}

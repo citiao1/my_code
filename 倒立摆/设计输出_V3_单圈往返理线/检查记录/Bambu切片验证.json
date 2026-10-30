@@ -1,0 +1,80 @@
+[
+  {
+    "part": "V3_P02_Side_Right",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P02_Side_Left",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P03_MotorDeck",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P04_AdjustableDriveCup",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P06_SensorLBracket",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P07_LightPendulum_135",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P10_RotatingCableCover",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P11_MovingWireKeeper",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P09_FixedCableTray",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P12_FixedWireClamp",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P01_OpenBase",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P05_RibbedArm_156",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  },
+  {
+    "part": "V3_P08_FitCoupon",
+    "returncode": 0,
+    "profile": "A1 mini 0.4 / Generic PETG / Textured PEI / 0.20mm / 5 walls / 40% gyroid",
+    "supports": "normal(auto)"
+  }
+]

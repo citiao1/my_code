@@ -1,0 +1,261 @@
+[
+  {
+    "name": "V3_P01_OpenBase",
+    "group": "stationary",
+    "printed": true,
+    "quantity": 1,
+    "note": "160x150；电机下方60x56贯通窗口；底部留6mm螺母空间",
+    "volume_mm3": 67407.65846281205,
+    "print_bbox_mm": [
+      160.0,
+      150.0,
+      9.000000000000018
+    ],
+    "mesh_watertight": true,
+    "triangles": 3488
+  },
+  {
+    "name": "V3_P02_Side_Right",
+    "group": "stationary",
+    "printed": true,
+    "quantity": 1,
+    "note": "侧壁距主轴47mm，远离电机尾部插头；3mm连接耳",
+    "volume_mm3": 29280.098906533953,
+    "print_bbox_mm": [
+      85.0,
+      90.0,
+      15.000000000000007
+    ],
+    "mesh_watertight": true,
+    "triangles": 1724
+  },
+  {
+    "name": "V3_P02_Side_Left",
+    "group": "stationary",
+    "printed": true,
+    "quantity": 1,
+    "note": "侧壁距主轴47mm，远离电机尾部插头；3mm连接耳",
+    "volume_mm3": 29280.09890653396,
+    "print_bbox_mm": [
+      85.0,
+      90.0,
+      15.000000000000009
+    ],
+    "mesh_watertight": true,
+    "triangles": 1724
+  },
+  {
+    "name": "V3_P03_MotorDeck",
+    "group": "stationary",
+    "printed": true,
+    "quantity": 1,
+    "note": "保留电机原孔；穿线孔18x8，中心-22/32；四角改4.5mm通孔，用M4x14同时固定线槽",
+    "volume_mm3": 30653.619103512807,
+    "print_bbox_mm": [
+      110.0,
+      90.0,
+      8.0
+    ],
+    "mesh_watertight": true,
+    "triangles": 5132
+  },
+  {
+    "name": "V3_E03_Existing_M4_Adapter",
+    "group": "rotor",
+    "printed": false,
+    "quantity": 1,
+    "note": "照片估读包络：本体约20mm、圆柱约12mm；端面置于电机面上方30mm；不是精密测量",
+    "volume_mm3": 1796.0111595510477
+  },
+  {
+    "name": "V3_P04_AdjustableDriveCup",
+    "group": "rotor",
+    "printed": true,
+    "quantity": 1,
+    "note": "端面短M4直锁，不用垫套；两颗M3x10从两侧顶紧六角接头",
+    "volume_mm3": 5692.359334569361,
+    "print_bbox_mm": [
+      42.0,
+      42.0,
+      9.000000100000003
+    ],
+    "mesh_watertight": true,
+    "triangles": 4892
+  },
+  {
+    "name": "V3_P05_RibbedArm_156",
+    "group": "rotor",
+    "printed": true,
+    "quantity": 1,
+    "note": "156mm臂；增加两处5mm导线眼和旋转线槽盖固定孔",
+    "volume_mm3": 23285.529412586122,
+    "print_bbox_mm": [
+      142.12846301849606,
+      142.12846301849606,
+      13.0
+    ],
+    "mesh_watertight": true,
+    "triangles": 6108
+  },
+  {
+    "name": "V3_P06_SensorLBracket",
+    "group": "rotor",
+    "printed": true,
+    "quantity": 1,
+    "note": "原传感器四孔与2.8mm通孔保留，使用传感器原配螺丝",
+    "volume_mm3": 6866.968573057742,
+    "print_bbox_mm": [
+      48.00000000000003,
+      40.0,
+      22.000000000000014
+    ],
+    "mesh_watertight": true,
+    "triangles": 3836
+  },
+  {
+    "name": "V3_P07_LightPendulum_135",
+    "group": "pendulum",
+    "printed": true,
+    "quantity": 1,
+    "note": "3mm轻摆杆；6.2mm开口夹孔直接夹传感器轴；M3x10夹紧，不加轴承或联轴器",
+    "volume_mm3": 9015.649819189115,
+    "print_bbox_mm": [
+      153.00000009999997,
+      20.000000200000002,
+      11.000000200000002
+    ],
+    "mesh_watertight": true,
+    "triangles": 4278
+  },
+  {
+    "name": "V3_P08_FitCoupon",
+    "group": "coupon",
+    "printed": true,
+    "quantity": 1,
+    "note": "6.1/6.2/6.3轴孔与3.4/4.5螺丝孔；先打印确认",
+    "volume_mm3": 5809.285980768196,
+    "print_bbox_mm": [
+      76.0,
+      27.0,
+      3.0
+    ],
+    "mesh_watertight": true,
+    "triangles": 2132
+  },
+  {
+    "name": "V3_E01_MG513",
+    "group": "stationary",
+    "printed": false,
+    "quantity": 1,
+    "note": "原始STEP，不改变电机安装孔；尾端距桌面40.9mm",
+    "volume_mm3": 44865.51290181402
+  },
+  {
+    "name": "V3_E02_WDD35D4",
+    "group": "rotor",
+    "printed": false,
+    "quantity": 1,
+    "note": "原始STEP，直接利用原轴支撑轻摆杆",
+    "volume_mm3": 15363.68977542226
+  },
+  {
+    "name": "V3_P09_FixedCableTray",
+    "group": "stationary",
+    "printed": true,
+    "quantity": 1,
+    "note": "固定环形余线槽，外径136，内孔56；底部穿线；外端三线夹座",
+    "volume_mm3": 56721.75188270002,
+    "print_bbox_mm": [
+      136.0,
+      144.0,
+      25.200000000000006
+    ],
+    "mesh_watertight": true,
+    "triangles": 5398
+  },
+  {
+    "name": "V3_P10_RotatingCableCover",
+    "group": "rotor",
+    "printed": true,
+    "quantity": 1,
+    "note": "独立打印142mm盖；随臂转动；与固定槽径向/轴向间隙各1mm；曲面导入口",
+    "volume_mm3": 36423.64749166435,
+    "print_bbox_mm": [
+      142.0,
+      142.0,
+      22.0000001
+    ],
+    "mesh_watertight": true,
+    "triangles": 3858
+  },
+  {
+    "name": "V3_P11_MovingWireKeeper",
+    "group": "rotor",
+    "printed": true,
+    "quantity": 1,
+    "note": "转动端三槽压线片；两颗M3x10；按绝缘皮轻拧，不压伤导线",
+    "volume_mm3": 498.7692278311978,
+    "print_bbox_mm": [
+      12.0,
+      16.0,
+      3.0000000000000004
+    ],
+    "mesh_watertight": true,
+    "triangles": 896
+  },
+  {
+    "name": "V3_P12_FixedWireClamp",
+    "group": "stationary",
+    "printed": true,
+    "quantity": 1,
+    "note": "固定端夹片，1颗M3x10；调间隙适配约0.8至1.2mm软线",
+    "volume_mm3": 389.84159446225107,
+    "print_bbox_mm": [
+      12.0,
+      2.0,
+      17.0
+    ],
+    "mesh_watertight": true,
+    "triangles": 436
+  },
+  {
+    "name": "V3_H01_M3x10",
+    "group": "hardware",
+    "printed": false,
+    "quantity": 19,
+    "note": "新增M3x10；外螺纹用小径包络",
+    "volume_mm3": 128.5304094399924
+  },
+  {
+    "name": "V3_H02_M3_Nut",
+    "group": "hardware",
+    "printed": false,
+    "quantity": 19,
+    "note": "M3普通螺母，六角对边5.5、厚2.4",
+    "volume_mm3": 43.57149905109454
+  },
+  {
+    "name": "V3_H03_ShortM4",
+    "group": "hardware",
+    "printed": false,
+    "quantity": 1,
+    "note": "现有短M4示意为6mm；穿过驱动杯3mm，旋入接头约3mm；无需垫套",
+    "volume_mm3": 193.608501259105
+  },
+  {
+    "name": "V3_H04_M4x14",
+    "group": "hardware",
+    "printed": false,
+    "quantity": 4,
+    "note": "现有M4x14，固定新增线槽/电机板/支撑上耳",
+    "volume_mm3": 319.2172295312589
+  },
+  {
+    "name": "V3_H05_M4_Nut",
+    "group": "hardware",
+    "printed": false,
+    "quantity": 4,
+    "note": "M4普通螺母，对边7，厚3.2",
+    "volume_mm3": 95.58039734745061
+  }
+]

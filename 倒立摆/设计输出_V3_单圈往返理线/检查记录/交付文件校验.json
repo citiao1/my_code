@@ -1,0 +1,572 @@
+[
+  {
+    "file": "STEP零件/V3_P01_OpenBase.step",
+    "bytes": 117311,
+    "sha256": "05a5c6ca24fd34fb29dd28cc2ab651e9f47289889d8e6034fd844beba116b788"
+  },
+  {
+    "file": "SolidWorks/V3_P01_OpenBase.SLDPRT",
+    "bytes": 97034,
+    "sha256": "8316f552ba2f68a5b7e86dbfaeea0dd7f9f160b6fd7061ce132076acffc2e048"
+  },
+  {
+    "file": "STL打印/V3_P01_OpenBase.stl",
+    "bytes": 174484,
+    "sha256": "81471e5586acd3e6a38fa50aafb88a6149fcd8dc7fb9d626f0d3b05ef1925b10"
+  },
+  {
+    "file": "STL打印/V3_P01_OpenBase.3mf",
+    "bytes": 33571,
+    "sha256": "250356f3d539c062a3e8c81518fb3c099eae6ef6366d35291acee930ab810747"
+  },
+  {
+    "file": "STEP零件/V3_P02_Side_Right.step",
+    "bytes": 43625,
+    "sha256": "2cc751d7f388eb98445ac79ef35f3238a1ac9e6e14dd0f469df7009c85d7c395"
+  },
+  {
+    "file": "SolidWorks/V3_P02_Side_Right.SLDPRT",
+    "bytes": 73866,
+    "sha256": "484267c6a0ffd95b1a4d35947da8b4eb9b379bd33121e61c73b1e0475e29c900"
+  },
+  {
+    "file": "STL打印/V3_P02_Side_Right.stl",
+    "bytes": 86284,
+    "sha256": "447a7ab4d4a6239a77592f33e214d93ba462d43fc216693e67447fe4bd4e1c18"
+  },
+  {
+    "file": "STL打印/V3_P02_Side_Right.3mf",
+    "bytes": 16208,
+    "sha256": "0e4d83f86bcc8632084c28b646ba3c9cdd4ab948d17b558baddb769894c3f4a8"
+  },
+  {
+    "file": "STEP零件/V3_P02_Side_Left.step",
+    "bytes": 48097,
+    "sha256": "ed4e3a8a7295d1970a15cb5aea4661ecf8575435d95041078cc2d039224e6a43"
+  },
+  {
+    "file": "SolidWorks/V3_P02_Side_Left.SLDPRT",
+    "bytes": 77847,
+    "sha256": "e259767bb8a264a5b15549a6f6ab7c0ec20af35d4f4e34ef564476f118cf6efc"
+  },
+  {
+    "file": "STL打印/V3_P02_Side_Left.stl",
+    "bytes": 86284,
+    "sha256": "193d228861de1ccdf538dda49af790e8891d71dc2eae6a4c889ba0f2a0bb9981"
+  },
+  {
+    "file": "STL打印/V3_P02_Side_Left.3mf",
+    "bytes": 16009,
+    "sha256": "55ce7ab6bddcd3a8a6db424ad6e70871ea74aaaab90ce01904841f9002844261"
+  },
+  {
+    "file": "STEP零件/V3_P03_MotorDeck.step",
+    "bytes": 103068,
+    "sha256": "9c359d1074260675796d07b9854297400c019fad686e66402fdbeee28d834081"
+  },
+  {
+    "file": "SolidWorks/V3_P03_MotorDeck.SLDPRT",
+    "bytes": 106842,
+    "sha256": "29ba7f43868310e6a1af62c0d046f7d54e2bfc68ef3de397fabb25e8710bd7f7"
+  },
+  {
+    "file": "STL打印/V3_P03_MotorDeck.stl",
+    "bytes": 256684,
+    "sha256": "7290916ba9f01e319b930be68c11c7a8f80112d8bb394d0cd53056a6a81f28fd"
+  },
+  {
+    "file": "STL打印/V3_P03_MotorDeck.3mf",
+    "bytes": 53872,
+    "sha256": "4a7a79008631ea626f81250e2c1d9f390036d6145867b8ef4230d4b62df19b01"
+  },
+  {
+    "file": "STEP零件/V3_E03_Existing_M4_Adapter.step",
+    "bytes": 108482,
+    "sha256": "9bb6e89a27e0c5f9ac482244205beed09b6004adb7227c1d03f0b26b0c89b293"
+  },
+  {
+    "file": "SolidWorks/V3_E03_Existing_M4_Adapter.SLDPRT",
+    "bytes": 134541,
+    "sha256": "ca7b5dd8342f87b56e79b2b101e2182c1f999be67cc3791a582f52e0105c5072"
+  },
+  {
+    "file": "STEP零件/V3_P04_AdjustableDriveCup.step",
+    "bytes": 123241,
+    "sha256": "6447e5f47fea85b38f180bdd43ceb58ea202ac167a65148d3a7dda1ff79a6f9a"
+  },
+  {
+    "file": "SolidWorks/V3_P04_AdjustableDriveCup.SLDPRT",
+    "bytes": 113010,
+    "sha256": "56943304a3426b7c6b4ee68058e7341c93879242ef934fbff084db22f9d34c11"
+  },
+  {
+    "file": "STL打印/V3_P04_AdjustableDriveCup.stl",
+    "bytes": 244684,
+    "sha256": "d4e11e172fee2b5eea07b82ce8bb86e5371f93cee74d08d20cf0a0873951b5f0"
+  },
+  {
+    "file": "STL打印/V3_P04_AdjustableDriveCup.3mf",
+    "bytes": 51755,
+    "sha256": "0a802f63b9399116e44156ef6be3cc0d65f8c4e4980dd27251dd71deec0b1df9"
+  },
+  {
+    "file": "STEP零件/V3_P05_RibbedArm_156.step",
+    "bytes": 165739,
+    "sha256": "487a6b43c73c88dfeb9d674e2d06997968fd86a4c34613dec51b595d2738f5e9"
+  },
+  {
+    "file": "SolidWorks/V3_P05_RibbedArm_156.SLDPRT",
+    "bytes": 149715,
+    "sha256": "f759f3e76d5b79e206153c9414d5b40a30b96bc4f97dd56e8d5d2c9538d41966"
+  },
+  {
+    "file": "STL打印/V3_P05_RibbedArm_156.stl",
+    "bytes": 305484,
+    "sha256": "6745cdc6de30d56e402616b4e3512613f7af5d8ffe05816a0633a0c79caab01b"
+  },
+  {
+    "file": "STL打印/V3_P05_RibbedArm_156.3mf",
+    "bytes": 68465,
+    "sha256": "ef294dbe130dedbfad8e6fac30bd48823b634050131de1d2d19d0157fedc1739"
+  },
+  {
+    "file": "STEP零件/V3_P06_SensorLBracket.step",
+    "bytes": 55759,
+    "sha256": "858675cbc6462da759649107c9cb6d57c0ad2149bc138c5c9e90ad49ea6fddd1"
+  },
+  {
+    "file": "SolidWorks/V3_P06_SensorLBracket.SLDPRT",
+    "bytes": 100197,
+    "sha256": "281cce92a6c291b3bc94c4c7df53dfb87978ae1c5c841b34db6b87099d242dfb"
+  },
+  {
+    "file": "STL打印/V3_P06_SensorLBracket.stl",
+    "bytes": 191884,
+    "sha256": "9e44b8dd761578cbf1d87e1a465a406d9561abfc0dc9a641c90a0a14972f1e96"
+  },
+  {
+    "file": "STL打印/V3_P06_SensorLBracket.3mf",
+    "bytes": 36328,
+    "sha256": "45375b44c0a6c342ff1e06f505383346a78e27308d4cba6c7c12bcac9a3b4562"
+  },
+  {
+    "file": "STEP零件/V3_P07_LightPendulum_135.step",
+    "bytes": 181867,
+    "sha256": "a5ae7c6447bd0e72cbe52169bbeacfeff0656bfb815b5aadeb7e543190af95d2"
+  },
+  {
+    "file": "SolidWorks/V3_P07_LightPendulum_135.SLDPRT",
+    "bytes": 121515,
+    "sha256": "f52dac13bda99efe5d3ca95868d54bfce4373039a00c671fac86c5b1f35bcf4a"
+  },
+  {
+    "file": "STL打印/V3_P07_LightPendulum_135.stl",
+    "bytes": 213984,
+    "sha256": "dd51b27c0dce0ca32cc93bf60f44b2de5c52e7cba2cbc0b71f42fe619dcab9da"
+  },
+  {
+    "file": "STL打印/V3_P07_LightPendulum_135.3mf",
+    "bytes": 43303,
+    "sha256": "b95ec0e9d7c46de9590cf7c6b9b942eb9d7574127a2cac3a537fdf657bba1513"
+  },
+  {
+    "file": "STEP零件/V3_P08_FitCoupon.step",
+    "bytes": 33555,
+    "sha256": "ef38889c6027efb96fc6d45f369bddcad316bdac60246858720a0d5846e75731"
+  },
+  {
+    "file": "SolidWorks/V3_P08_FitCoupon.SLDPRT",
+    "bytes": 97407,
+    "sha256": "d6dac6f3ac1f94e98b8f0f869e5b3e7a0c8e26338c4b4c1922541fd667f6136c"
+  },
+  {
+    "file": "STL打印/V3_P08_FitCoupon.stl",
+    "bytes": 106684,
+    "sha256": "9174e9647589dbf9958848e883fd524a54d7a338236123a74f72813876f0acd4"
+  },
+  {
+    "file": "STL打印/V3_P08_FitCoupon.3mf",
+    "bytes": 22245,
+    "sha256": "f6fb0288af9957f4d031f016355910fcd705661163c8e23534100b363e503c37"
+  },
+  {
+    "file": "STEP零件/V3_E01_MG513.step",
+    "bytes": 681041,
+    "sha256": "4eed86fa372b18162f160eaae04c9320ec9510e881d3031f01001b9b602fa75c"
+  },
+  {
+    "file": "SolidWorks/V3_E01_MG513.SLDPRT",
+    "bytes": 324581,
+    "sha256": "8b246e542fa63ae90dea18ca7fd0c8e8d83789f727100afbca2bc564deb6f66d"
+  },
+  {
+    "file": "STEP零件/V3_E02_WDD35D4.step",
+    "bytes": 812919,
+    "sha256": "0d8e7d479ad6e288110b853fd8f5a7112aa2131d1367e197e5efe69be6d9719d"
+  },
+  {
+    "file": "SolidWorks/V3_E02_WDD35D4.SLDPRT",
+    "bytes": 677092,
+    "sha256": "7b6281dbfda7dfc865a7f578c174e30c7c04f138ca2dd9269ff4dc0920ae6b1f"
+  },
+  {
+    "file": "STEP零件/V3_P09_FixedCableTray.step",
+    "bytes": 142069,
+    "sha256": "45788f6b687bc7d95c9d7205fd4e8dc3d2c316be91a309683b013a206592a614"
+  },
+  {
+    "file": "SolidWorks/V3_P09_FixedCableTray.SLDPRT",
+    "bytes": 156538,
+    "sha256": "ebab768d34ccc0afcf89ae76581c369f40f59cb4b649c1be412d203e47308b73"
+  },
+  {
+    "file": "STL打印/V3_P09_FixedCableTray.stl",
+    "bytes": 269984,
+    "sha256": "fc84ff85409c589224022c1348f3961134f788c8acc9102039f95707a1c33201"
+  },
+  {
+    "file": "STL打印/V3_P09_FixedCableTray.3mf",
+    "bytes": 53116,
+    "sha256": "0ed9ae693fef84fc4080641bdf6217b3b291e962c4072e15a710608eebda1c3a"
+  },
+  {
+    "file": "STEP零件/V3_P10_RotatingCableCover.step",
+    "bytes": 136059,
+    "sha256": "0387b3d0e572b3dd0ab297e11ba1e75ead9eb2b92498e73d2265613f1116aaee"
+  },
+  {
+    "file": "SolidWorks/V3_P10_RotatingCableCover.SLDPRT",
+    "bytes": 115199,
+    "sha256": "0ebffc9b3480fba58521cc59ee17ec5f198439cbe5789286e96728bfabd318d8"
+  },
+  {
+    "file": "STL打印/V3_P10_RotatingCableCover.stl",
+    "bytes": 192984,
+    "sha256": "5657c7b87e2cf05771f607e7ac0abd6f31a44e9bc30d304708d21e5e629d1819"
+  },
+  {
+    "file": "STL打印/V3_P10_RotatingCableCover.3mf",
+    "bytes": 40343,
+    "sha256": "cdb95b8eb8e178dfa8bbcaaa4bc0e4917d796a2832c25c60d72064c5d00f618a"
+  },
+  {
+    "file": "STEP零件/V3_P11_MovingWireKeeper.step",
+    "bytes": 58343,
+    "sha256": "ce417a2ddc70a4c49dd89c1b3112f559fcf9115c63ec5e439dc8064a7e55fd43"
+  },
+  {
+    "file": "SolidWorks/V3_P11_MovingWireKeeper.SLDPRT",
+    "bytes": 85327,
+    "sha256": "71fee6e554cb6eb72e5990a822df368c899f2ad27020b56d385beedefd8186be"
+  },
+  {
+    "file": "STL打印/V3_P11_MovingWireKeeper.stl",
+    "bytes": 44884,
+    "sha256": "edf2560b42584fb1d918f17b73fca6af2c237f953b6849cf09780a228ee35376"
+  },
+  {
+    "file": "STL打印/V3_P11_MovingWireKeeper.3mf",
+    "bytes": 8852,
+    "sha256": "f21dc452ee8f82886309edb02873b5f63242e1a54c2cf0093397f77d9f299a8d"
+  },
+  {
+    "file": "STEP零件/V3_P12_FixedWireClamp.step",
+    "bytes": 19209,
+    "sha256": "c26dca6ded40f3a4ecf31c64c3df46538cd343b3b0ce80f9cfa19b1003ba8669"
+  },
+  {
+    "file": "SolidWorks/V3_P12_FixedWireClamp.SLDPRT",
+    "bytes": 87612,
+    "sha256": "fcf999b2697cebaed0ce0b93fac7344958e70b571b8a165c50d879bf6d46c01a"
+  },
+  {
+    "file": "STL打印/V3_P12_FixedWireClamp.stl",
+    "bytes": 21884,
+    "sha256": "efd9da1604b6a7f2d8131f151369f68f2ce91df0929d919d57a04654f7c45431"
+  },
+  {
+    "file": "STL打印/V3_P12_FixedWireClamp.3mf",
+    "bytes": 4995,
+    "sha256": "29b30284e57e1a577f822717cc64113fe0f1bd5957b6a32ae15c4b3fded5f223"
+  },
+  {
+    "file": "STEP零件/V3_H01_M3x10.step",
+    "bytes": 9553,
+    "sha256": "d261972e3a1651bfceeb7a90d0e4307030b1562f76f98f4cc93a220079be6774"
+  },
+  {
+    "file": "SolidWorks/V3_H01_M3x10.SLDPRT",
+    "bytes": 122322,
+    "sha256": "ff5ff1ba06d644141f2535a8f12755a7690ea932193daf0e62a1dd8f4dc57aac"
+  },
+  {
+    "file": "STEP零件/V3_H02_M3_Nut.step",
+    "bytes": 27247,
+    "sha256": "08f459d1d5155f2bad656ef116182b774ce543d670911e242363520f6a8511f7"
+  },
+  {
+    "file": "SolidWorks/V3_H02_M3_Nut.SLDPRT",
+    "bytes": 91745,
+    "sha256": "21b7ad049b2020af58d54467cd87bc8fcc0902b2bd7e33220b4688a5a09f56f1"
+  },
+  {
+    "file": "STEP零件/V3_H03_ShortM4.step",
+    "bytes": 9541,
+    "sha256": "5f459836362b5093117e124a659e8344f5a84baa2bbd5c8ffb63bbcf715914ab"
+  },
+  {
+    "file": "SolidWorks/V3_H03_ShortM4.SLDPRT",
+    "bytes": 108566,
+    "sha256": "58aafa7082c76a1a0b90cfe6b9776af12b0090bda628ce939267305eb63ffb4d"
+  },
+  {
+    "file": "STEP零件/V3_H04_M4x14.step",
+    "bytes": 9545,
+    "sha256": "1818e7a9be2c43bd6f6830c11bb1515bea10b19fa7b4d351e53a41ce0f4402bb"
+  },
+  {
+    "file": "SolidWorks/V3_H04_M4x14.SLDPRT",
+    "bytes": 122687,
+    "sha256": "1bc54516c3d0897d1b2fd910f7eb032efd9f5d09cb11cd612b1ace56e5ccfb2e"
+  },
+  {
+    "file": "STEP零件/V3_H05_M4_Nut.step",
+    "bytes": 27213,
+    "sha256": "78c5c30da7610baf05508d5a5009019ce64fc3b70b45ea9cba3e69d539200e2f"
+  },
+  {
+    "file": "SolidWorks/V3_H05_M4_Nut.SLDPRT",
+    "bytes": 91623,
+    "sha256": "1f1c2e03f00173841361dc800156d57a8b12b1dbfe4bb73fc74d327b9acda252"
+  },
+  {
+    "file": "SolidWorks/V3_A01_Stationary.SLDASM",
+    "bytes": 298867,
+    "sha256": "d61363de8aa01bc628c9668be380aebb13aa6af3665e5b7e696b1cf746f15181"
+  },
+  {
+    "file": "SolidWorks/V3_A02_Rotor.SLDASM",
+    "bytes": 492574,
+    "sha256": "c96cee8ac7ab34e210951edf451659c6dc688d563f30e1187ee0302b025f46e1"
+  },
+  {
+    "file": "SolidWorks/V3_A03_Pendulum.SLDASM",
+    "bytes": 111106,
+    "sha256": "cdf52074496792624a094522a0e3e004fa6238db5fa8acd0e5a59412debc2cad"
+  },
+  {
+    "file": "SolidWorks/V3_Furuta_DirectDrive_297.SLDASM",
+    "bytes": 672588,
+    "sha256": "e80ad72a3fe4975e7d7758d7fc821ef9edec941f2ccf22ff6526f4ee985ef76c"
+  },
+  {
+    "file": "V3_倒立摆_完整装配.step",
+    "bytes": 3873687,
+    "sha256": "535377b6d7b04b28229eb71e23a718c9cfb369c59bbdeab562db209b6033812b"
+  },
+  {
+    "file": "打印与装配说明_V3.md",
+    "bytes": 9796,
+    "sha256": "4d2dd69cec9623ac5d61230016bad2e675d35a07393f0777f07cebfc749438ee"
+  },
+  {
+    "file": "预览/分层装配示意.png",
+    "bytes": 76470,
+    "sha256": "7edc12da7cc95e2573648fbff571fcb8a933b11b17d92054a70a9908aace58f4"
+  },
+  {
+    "file": "预览/摆杆下垂.png",
+    "bytes": 76552,
+    "sha256": "dc577ac59e6bab9131d797b6afcf31c6c7dc44675eab9aaba3a6d825e380ebdb"
+  },
+  {
+    "file": "预览/理线机构_+0度.png",
+    "bytes": 125972,
+    "sha256": "2c7a1725602ed64c2e6a61b63468e706747d4654842af24ff0e71ad084fa9be5"
+  },
+  {
+    "file": "预览/理线机构_+180度.png",
+    "bytes": 127325,
+    "sha256": "2edd876712a4d105f21f58e650d8b9aee2abd1b8acca054da10e889a885c7af4"
+  },
+  {
+    "file": "预览/理线机构_-180度.png",
+    "bytes": 127807,
+    "sha256": "0792e50b2700ef03c6e5b7c1f244fbddce81290ba6c1af772e60a29217ae2410"
+  },
+  {
+    "file": "预览/装配预览.png",
+    "bytes": 63343,
+    "sha256": "f16c78c32872324292f8a8b1bb16976a97496836f42dcbb4dc6a081c3c2ab9e2"
+  },
+  {
+    "file": "预览/走线示意_+0度.svg",
+    "bytes": 25152,
+    "sha256": "542938e9184baf3a872747ae0b34217ab8d12a4331fe40c2e12722202adc11ed"
+  },
+  {
+    "file": "预览/走线示意_+180度.svg",
+    "bytes": 24356,
+    "sha256": "e8387dd717ce40e44b6f3b063294d97c91854baa41277e619805a5b347427dfd"
+  },
+  {
+    "file": "预览/走线示意_-180度.svg",
+    "bytes": 25723,
+    "sha256": "841580a09f2230ed70ae0cd7ad3d2e832087c6fdcf2ac7ea5f8950ed4ff15da4"
+  },
+  {
+    "file": "预览/SolidWorks实际装配.bmp",
+    "bytes": 4620054,
+    "sha256": "617d65470386699aeff3817ed175dfe6d5dba8c93992c288d7e515cd5fcc3c02"
+  },
+  {
+    "file": "检查记录/零件清单.json",
+    "bytes": 6747,
+    "sha256": "f5c3199b77c9c15a8a88f8d1b3185c0c0f05afc738d9e85428c759c62ecd5eb6"
+  },
+  {
+    "file": "检查记录/装配实例.json",
+    "bytes": 23200,
+    "sha256": "831619752cbdc250da5f67ca5e5beb47bb45e7f55cca6eacc001254840bbe813"
+  },
+  {
+    "file": "检查记录/干涉检查.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "file": "检查记录/运动检查.json",
+    "bytes": 1320,
+    "sha256": "89d0f79d88dc37f309bd6d3fba1409e790fa0cca2f1363bba2f5b1e5a75cc1ca"
+  },
+  {
+    "file": "检查记录/Bambu切片验证.json",
+    "bytes": 2538,
+    "sha256": "3b0363c6f68aabf9d2ea6945c9aab86387fb188ae4c3248d52157630c14b9123"
+  },
+  {
+    "file": "检查记录/SolidWorks最终验证.json",
+    "bytes": 38114,
+    "sha256": "3cde60b8816919784bc1eb2e9a6c13c0e7ef5b5ed0149981f7ce79e707e5d8d0"
+  },
+  {
+    "file": "检查记录/导线名义运动.json",
+    "bytes": 16568,
+    "sha256": "3a19674b68eee9d0368dd25892b3327703e4e3f70b96743258218b54876369a9"
+  },
+  {
+    "file": "检查记录/自由转动验证.json",
+    "bytes": 711,
+    "sha256": "168e639872cd3df7bb8dd5c162fb3d91d04380c5b427e64323032791679c6521"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P02_Side_Right/result.json",
+    "bytes": 1920,
+    "sha256": "c22f87871ec1a7df636acb02f7698f5480ff6e7853ddb552267a336253e525c3"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P02_Side_Left/result.json",
+    "bytes": 1922,
+    "sha256": "04f6380bdfea747a01741e032df21733d907fa92606e17db8c2033e3f045e693"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P03_MotorDeck/result.json",
+    "bytes": 1925,
+    "sha256": "be6737e48a56182f1024efbc21ad381ce8c1b2c919facab52a2d16cd097e10b9"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P04_AdjustableDriveCup/result.json",
+    "bytes": 1931,
+    "sha256": "82e19dc88bf94f8f5e12526231a99eb0a14d81e60d2a23f78c276d80202be994"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P06_SensorLBracket/result.json",
+    "bytes": 1920,
+    "sha256": "893d9631cd916cb68f7a7f5c3c7544e71e9a11136cde15fac4d0f4cad991f52d"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P07_LightPendulum_135/result.json",
+    "bytes": 1928,
+    "sha256": "e3500bbf60bd4a7a1ef94022d8b2ce4308241b6d30a83690881b7cfc7baa24e6"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P10_RotatingCableCover/result.json",
+    "bytes": 1865,
+    "sha256": "8c75cbf606436c18df69064ef2c1d10151a8026f51806ae1a6de3caf55450972"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P11_MovingWireKeeper/result.json",
+    "bytes": 1648,
+    "sha256": "698fa1ed92290b21db9dd2cb0bedba4e07d5c4e97a2b9754709c143588f14a99"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P09_FixedCableTray/result.json",
+    "bytes": 1923,
+    "sha256": "9f0385aad8d1f5d6a02062c8b4c0f5f4e4bce5298bf305987af37ca1239ddcd3"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P12_FixedWireClamp/result.json",
+    "bytes": 1712,
+    "sha256": "8996a880c905a935a5144b285eb66b69f8e19e68e3bc3fdff4546f69f421326d"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P01_OpenBase/result.json",
+    "bytes": 1706,
+    "sha256": "aabe3c8a5b491e9576f065873892c123f980954c83c139192f413ed46e5d9426"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P05_RibbedArm_156/result.json",
+    "bytes": 1927,
+    "sha256": "21c12c5ed44fe8b0388d1283139ac61e3b5ed3b02e50b8200cb267baa0c7ee30"
+  },
+  {
+    "file": "检查记录/切片验证/V3_P08_FitCoupon/result.json",
+    "bytes": 1712,
+    "sha256": "41b55396342335c75027ccc4453febee3f1a32d0d857ec4c346a394c8e0058a0"
+  },
+  {
+    "file": "scripts/build_solidworks.py",
+    "bytes": 8776,
+    "sha256": "94e03c498361cd1a3e047ce2a24042940a5ef9b5c1a3997545d94c358b62e53f"
+  },
+  {
+    "file": "scripts/build_v3.py",
+    "bytes": 14659,
+    "sha256": "9b3525c66e9496635a4df3c721182bafc4757105d2badcd1ba0e87aca00591ca"
+  },
+  {
+    "file": "scripts/final_verify_sw.py",
+    "bytes": 3800,
+    "sha256": "90be7ab1909df2cb78a4c2b005354fec9c85119785b1fe6f405f0f8ea6581e52"
+  },
+  {
+    "file": "scripts/package_outputs.py",
+    "bytes": 2961,
+    "sha256": "8bd5446278185ea1f23dfea70094831c0a5c15fe188cae99c4ac13447c56ce20"
+  },
+  {
+    "file": "scripts/slicer_check.py",
+    "bytes": 2842,
+    "sha256": "90d39d2b3d527cd3864cabfd4d586263fcc3411d8a289b0ac9c54811ca6ab2c7"
+  },
+  {
+    "file": "scripts/sw_probe.py",
+    "bytes": 640,
+    "sha256": "7c2da88dd05f9a39006171cdb99667a48ed3e074195e02c2beac36e78b585b79"
+  },
+  {
+    "file": "scripts/validate_render.py",
+    "bytes": 6639,
+    "sha256": "20602853ce65cbfe3eca9952ad078d251dc8fc2aa0b0a845b1ec4d11521101e1"
+  },
+  {
+    "file": "scripts/verify_free_motion.py",
+    "bytes": 2160,
+    "sha256": "81c52c5a8d8cef13561a389d85daabd56eceb4110efa10d991585eaa9b609214"
+  },
+  {
+    "file": "scripts/wire_path.py",
+    "bytes": 3792,
+    "sha256": "dc01532fd92c7534355ed38d83b745cbd6f3716a80d511d8e6d228d5ad2389cd"
+  }
+]

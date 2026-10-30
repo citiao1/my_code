@@ -1,0 +1,166 @@
+{
+  "version": "32.0.1",
+  "parts": [
+    {
+      "name": "V3_P01_OpenBase",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P02_Side_Right",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P02_Side_Left",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P03_MotorDeck",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_E03_Existing_M4_Adapter",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P04_AdjustableDriveCup",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P05_RibbedArm_156",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P06_SensorLBracket",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P07_LightPendulum_135",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P08_FitCoupon",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_E01_MG513",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_E02_WDD35D4",
+      "solid_bodies": 9,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P09_FixedCableTray",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P10_RotatingCableCover",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P11_MovingWireKeeper",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_P12_FixedWireClamp",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_H01_M3x10",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_H02_M3_Nut",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_H03_ShortM4",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_H04_M4x14",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    },
+    {
+      "name": "V3_H05_M4_Nut",
+      "solid_bodies": 1,
+      "import_error": 0,
+      "saved": true
+    }
+  ],
+  "subassemblies": [
+    {
+      "name": "V3_A01_Stationary",
+      "components": 25
+    },
+    {
+      "name": "V3_A02_Rotor",
+      "components": 34
+    },
+    {
+      "name": "V3_A03_Pendulum",
+      "components": 3
+    }
+  ],
+  "mates": [
+    {
+      "name": "Main revolute axis",
+      "error": 1
+    },
+    {
+      "name": "Rotor axial position",
+      "error": 1
+    },
+    {
+      "name": "Pendulum revolute axis",
+      "error": 1
+    },
+    {
+      "name": "Pendulum axial position",
+      "error": 1
+    }
+  ],
+  "top_components": 65,
+  "resolved": 0,
+  "preview_saved": true
+}

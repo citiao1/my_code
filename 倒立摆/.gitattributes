@@ -1,0 +1,9 @@
+# Keep engineering exports and delivery hashes byte-for-byte stable.
+* -text
+*.step binary
+*.stp binary
+*.stl binary
+*.3mf binary
+*.SLDASM binary
+*.SLDPRT binary
+*.zip binary
