@@ -1,0 +1,532 @@
+{
+  "nets": {
+    "named": [
+      {
+        "connections": [
+          {
+            "label": "GND",
+            "type": "Power Rail"
+          },
+          {
+            "name": "GND",
+            "number": "20",
+            "ref": "U1",
+            "type": "Power Pin"
+          },
+          {
+            "name": "1",
+            "ref": "C2",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "C3",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "R9",
+            "type": "Passive"
+          }
+        ],
+        "name": "GND",
+        "properties": {
+          "CLASS": "POWER"
+        }
+      },
+      {
+        "connections": [
+          {
+            "label": "VCC",
+            "type": "Power Terminal"
+          },
+          {
+            "label": "VCC/VDD",
+            "type": "Power Rail"
+          },
+          {
+            "name": "VCC",
+            "number": "40",
+            "ref": "U1",
+            "type": "Power Pin"
+          },
+          {
+            "name": "+",
+            "ref": "C1",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "BUTTON#0014",
+            "type": "Passive"
+          },
+          {
+            "name": "$EA$",
+            "number": "31",
+            "ref": "U1",
+            "type": "Input"
+          }
+        ],
+        "name": "VCC/VDD",
+        "properties": {
+          "CLASS": "POWER",
+          "IC": "+5V"
+        }
+      }
+    ],
+    "notconnected": [
+      {
+        "name": "ALE",
+        "number": "30",
+        "ref": "U1",
+        "type": "Output"
+      },
+      {
+        "name": "$PSEN$",
+        "number": "29",
+        "ref": "U1",
+        "type": "Output"
+      },
+      {
+        "name": "P0.0/AD0",
+        "number": "39",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.1/AD1",
+        "number": "38",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.2/AD2",
+        "number": "37",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.3/AD3",
+        "number": "36",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.4/AD4",
+        "number": "35",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.5/AD5",
+        "number": "34",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.6/AD6",
+        "number": "33",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P0.7/AD7",
+        "number": "32",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P1.0",
+        "number": "1",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P1.1",
+        "number": "2",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P1.2",
+        "number": "3",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P1.3",
+        "number": "4",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P1.4",
+        "number": "5",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P1.5",
+        "number": "6",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P1.6",
+        "number": "7",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P1.7",
+        "number": "8",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.2/$INT0$",
+        "number": "12",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.3/$INT1$",
+        "number": "13",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.4/T0",
+        "number": "14",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.7/$RD$",
+        "number": "17",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.6/$WR$",
+        "number": "16",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P3.5/T1",
+        "number": "15",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.7/A15",
+        "number": "28",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.0/A8",
+        "number": "21",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.1/A9",
+        "number": "22",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.2/A10",
+        "number": "23",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.3/A11",
+        "number": "24",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.4/A12",
+        "number": "25",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.5/A13",
+        "number": "26",
+        "ref": "U1",
+        "type": "I/O"
+      },
+      {
+        "name": "P2.6/A14",
+        "number": "27",
+        "ref": "U1",
+        "type": "I/O"
+      }
+    ],
+    "unnamed": [
+      {
+        "connections": [
+          {
+            "name": "2",
+            "ref": "R9",
+            "type": "Passive"
+          },
+          {
+            "name": "-",
+            "ref": "C1",
+            "type": "Passive"
+          },
+          {
+            "name": "2",
+            "ref": "R10",
+            "type": "Passive"
+          },
+          {
+            "name": "RST",
+            "number": "9",
+            "ref": "U1",
+            "type": "Input"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "2",
+            "ref": "BUTTON#0014",
+            "type": "Passive"
+          },
+          {
+            "name": "1",
+            "ref": "R10",
+            "type": "Passive"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "1",
+            "ref": "X1",
+            "type": "Passive"
+          },
+          {
+            "name": "2",
+            "ref": "C3",
+            "type": "Passive"
+          },
+          {
+            "name": "XTAL2",
+            "number": "18",
+            "ref": "U1",
+            "type": "Output"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "2",
+            "ref": "X1",
+            "type": "Passive"
+          },
+          {
+            "name": "2",
+            "ref": "C2",
+            "type": "Passive"
+          },
+          {
+            "name": "XTAL1",
+            "number": "19",
+            "ref": "U1",
+            "type": "Input"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "P3.0/RXD",
+            "number": "10",
+            "ref": "U1",
+            "type": "I/O"
+          },
+          {
+            "name": "TXD",
+            "ref": "$IVIRTUAL TERMINAL#0008",
+            "type": "Output"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "P3.1/TXD",
+            "number": "11",
+            "ref": "U1",
+            "type": "I/O"
+          },
+          {
+            "name": "RXD",
+            "ref": "$IVIRTUAL TERMINAL#0008",
+            "type": "Input"
+          }
+        ]
+      },
+      {
+        "connections": [
+          {
+            "name": "RTS",
+            "ref": "$IVIRTUAL TERMINAL#0008",
+            "type": "Output"
+          },
+          {
+            "name": "CTS",
+            "ref": "$IVIRTUAL TERMINAL#0008",
+            "type": "Input"
+          }
+        ]
+      }
+    ]
+  },
+  "objects": {
+    "components": [
+      {
+        "attributes": {
+          "AUTOHIDE": "0",
+          "AUTOLF": "0",
+          "BAUDRATE": "9600",
+          "CTLPOL": "0",
+          "CURSOR": "1",
+          "DATABITS": "8",
+          "ECHO": "0",
+          "FREEZEFONT": "0",
+          "HINTS": "1",
+          "ISACSII": "0",
+          "MODDLL": "INSTRUMENTS.DLL",
+          "NCOLUMNS": "80",
+          "PARITY": "NONE",
+          "PRIMITIVE": "DIGITAL",
+          "SIGPOL": "0",
+          "STOPBITS": "1",
+          "TERMINAL": "TELETYPE",
+          "TRACE": "1",
+          "XONXOFF": "0"
+        },
+        "library_part": "VTERM",
+        "package": "NULL",
+        "ref": "$IVIRTUAL TERMINAL#0008",
+        "sheet_id": "1",
+        "value": ""
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "PASSIVE",
+          "R(0)": "100M",
+          "R(1)": "100m",
+          "STATE": "0",
+          "TSWITCH": "1m"
+        },
+        "library_part": "RTSWITCH",
+        "package": "NULL",
+        "ref": "BUTTON#0014",
+        "sheet_id": "1",
+        "value": ""
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOGUE"
+        },
+        "library_part": "CAPACITOR",
+        "package": "ELEC-RAD10",
+        "ref": "C1",
+        "sheet_id": "1",
+        "value": "1uF"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOGUE"
+        },
+        "library_part": "CAPACITOR",
+        "package": "CAP10",
+        "ref": "C2",
+        "sheet_id": "1",
+        "value": "30pF"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOGUE"
+        },
+        "library_part": "CAPACITOR",
+        "package": "CAP10",
+        "ref": "C3",
+        "sheet_id": "1",
+        "value": "30pF"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOG",
+          "PRIMTYPE": "RESISTOR"
+        },
+        "library_part": "RES",
+        "package": "RES40",
+        "ref": "R9",
+        "sheet_id": "1",
+        "value": "10k"
+      },
+      {
+        "attributes": {
+          "PRIMITIVE": "ANALOG",
+          "PRIMTYPE": "RESISTOR"
+        },
+        "library_part": "RES",
+        "package": "RES40",
+        "ref": "R10",
+        "sheet_id": "1",
+        "value": "1k"
+      },
+      {
+        "attributes": {
+          "CLOCK": "11.0592MHz",
+          "CODEGEN": "ASEM51",
+          "DBG_FETCH": "0",
+          "DBG_TRACE": "0",
+          "EEPROM": "0",
+          "HWDOG": "0",
+          "IRAM": "256",
+          "ITFMOD": "AT89",
+          "MODDLL": "MCS8051.DLL",
+          "PRIMITIVE": "DIGITAL",
+          "ROM": "4096",
+          "TRACE_DEFAULT": "1",
+          "X2": "0",
+          "XRAM": "0"
+        },
+        "library_part": "AT89C51",
+        "package": "DIL40",
+        "ref": "U1",
+        "sheet_id": "1",
+        "value": "AT89C51"
+      },
+      {
+        "attributes": {
+          "FREQ": "11.0592MHz",
+          "MODFILE": "CRYSTAL.MDF"
+        },
+        "library_part": "CRYSTAL",
+        "package": "XTAL18",
+        "ref": "X1",
+        "sheet_id": "1",
+        "value": "11.0592 MHz"
+      }
+    ],
+    "generators": [],
+    "probes": [],
+    "subcircuits": []
+  }
+}

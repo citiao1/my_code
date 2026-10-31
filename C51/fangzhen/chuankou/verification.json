@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-31",
+  "scope": "Proteus simulation; no physical hardware test",
+  "build": {
+    "project": "../../chuankou/chuankou.uvproj",
+    "result": "0 errors, 0 warnings",
+    "code_bytes": 754,
+    "data": "71.2",
+    "hex_sha256": "5F76B8518C67486D94A131B22C729CB7238BE763D72EE1C5EC3E8E2829081DF8"
+  },
+  "saved_schematic": {
+    "project": "chuankou.pdsprj",
+    "sha256": "792896A952B081FFE62530D805243C10100A5DFC77BEDD33642ECFA2DF0C39E1",
+    "mcu": "AT89C51",
+    "clock_hz": 11059200,
+    "program_file": "../../chuankou/Objects/chuankou.hex",
+    "uart": "9600 8N1",
+    "local_echo": false,
+    "rts_cts_connected": true,
+    "p1_unused_labels_removed": true,
+    "simulation_stopped_after_validation": true
+  },
+  "netlist_checks": {
+    "txd_to_terminal_rxd": true,
+    "terminal_txd_to_rxd": true,
+    "tx_and_rx_separate": true,
+    "ea_to_vcc": true,
+    "power_reset_crystal_checked": true,
+    "rts_cts_joined": true,
+    "p1_unused_labels_removed": true
+  },
+  "runtime_observations": {
+    "observer": "computer_operator / GPT-6.1 Terra",
+    "method": "actual Proteus user interface",
+    "counter": "Final saved circuit: Count = 1 incremented continuously to at least Count = 27",
+    "echo_input": [
+      "a",
+      "b",
+      "1"
+    ],
+    "echo_result": "Keys were entered separately, several seconds apart; each character echoed once with local echo disabled; counter continued",
+    "final_state": "Simulation stopped and project saved again after validation"
+  },
+  "limitations": [
+    "No physical hardware test",
+    "No sustained full-rate input or continuous-string stress test",
+    "No precise period measurement"
+  ],
+  "artifacts": {
+    "netlist": "netlist.json",
+    "schematic_svg": "schematic.svg",
+    "schematic_png": "schematic.png",
+    "simulation_log": "simulation.log"
+  },
+  "simulation_log_evidence": "Proteus loaded the final chuankou design and read 754 bytes from ../../chuankou/Objects/chuankou.hex; terminal contents were verified separately through the user interface"
+}

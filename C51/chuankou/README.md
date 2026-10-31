@@ -2,6 +2,8 @@
 
 用 Keil 打开 `chuankou.uvproj`，按 F7 编译；HEX 输出到 `Objects\chuankou.hex`。目录和现有实验一致：`main.c`、`STARTUP.A51`、Keil 工程、`Objects`、`Listings` 和编译日志。
 
+配套电路位于 `../fangzhen/chuankou/chuankou.pdsprj`。保留 `chuankou` 与 `fangzhen` 的相对目录位置，修改程序时先停止仿真、重新编译，再启动仿真。
+
 ## 实验功能
 
 1. 串口方式 1（8 位 UART），允许接收，9600 bps；收到虚拟终端发送的字节后原样回显。
@@ -16,8 +18,9 @@
 - 单片机 P3.1/TXD（11 脚）接虚拟终端 RXD。
 - 单片机 P3.0/RXD（10 脚）接虚拟终端 TXD。
 - EA/VPP（31 脚）接 VCC；VCC（40 脚）接 +5 V、GND（20 脚）接地。隐藏电源脚时使用匹配的电源网络。
-- 虚拟终端 RTS、CTS 按题图短接；如有流控选项，关闭硬件流控。
+- 配套电路按题图将虚拟终端 RTS、CTS 短接，XON/XOFF 关闭；数据通过 TXD/RXD 双向收发。
 - Program File 选择本目录的 `Objects\chuankou.hex`。
+- 配套 Proteus 工程中的 Program File 从仿真目录出发，设为 `../../chuankou/Objects/chuankou.hex`。
 - 为单独观察程序回显，关闭终端本地回显（Local Echo / Echo Typed Characters）；否则输入可能显示两次。
 
 特别注意：其他实验的 12 MHz 或 24 MHz 设置不能直接沿用。本工程、波特率参数、定时初值均按 11.0592 MHz 配套设置。
@@ -38,4 +41,8 @@
 3. 在终端输入 `abc123`，应收到同样的 `abc123`，并继续看到递增计数。
 4. 在输出计数期间继续输入短字符串，检查接收回显和定时计数能同时工作；复位后计数重新开始。
 
-本次生成程序和 Keil 工程，未创建或运行 Proteus 仿真工程。
+## 编译记录
+
+2026-10-31 使用现有 Keil 工程全量编译：**0 Error(s)、0 Warning(s)**，`data=71.2`、`xdata=0`、`code=754`；详见 `build.log`。HEX 的 SHA256 为 `5F76B8518C67486D94A131B22C729CB7238BE763D72EE1C5EC3E8E2829081DF8`。
+
+电路配置及实际仿真结果见 `../fangzhen/chuankou/README.md`。
